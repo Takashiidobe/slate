@@ -33,7 +33,7 @@ int main(void) {
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "memory_order_relaxed",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           0,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -41,7 +41,7 @@ int main(void) {
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "memory_order_consume",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           1,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "memory_order_acquire",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           2,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -57,7 +57,7 @@ int main(void) {
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "memory_order_release",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           3,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -65,7 +65,7 @@ int main(void) {
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "memory_order_acq_rel",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           4,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -73,7 +73,7 @@ int main(void) {
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "memory_order_seq_cst",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           5,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -175,14 +175,12 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Float(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   value: Single(
-// DEFAULT-NEXT:                                                       1.5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Float(
+// DEFAULT-NEXT:                                           FloatLiteral {
+// DEFAULT-NEXT:                                               value: Single(
+// DEFAULT-NEXT:                                                   1.5,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -204,30 +202,29 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__c11_atomic_fetch_add",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "f",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__c11_atomic_fetch_add",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "f",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Float(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       value: Single(
+// DEFAULT-NEXT:                                                           2.25,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Single(
-// DEFAULT-NEXT:                                                               2.25,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "memory_order_relaxed",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "memory_order_relaxed",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -248,23 +245,22 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__c11_atomic_load",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__c11_atomic_load",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "f",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   5,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "f",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -288,7 +284,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       "values",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -299,40 +295,32 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           10,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       10,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           20,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       20,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           30,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       30,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           40,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       40,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -364,10 +352,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "values",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "values",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -395,26 +381,25 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__c11_atomic_fetch_add",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__c11_atomic_fetch_add",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   2,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "p",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "memory_order_acq_rel",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "memory_order_acq_rel",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -441,23 +426,22 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__c11_atomic_load",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__c11_atomic_load",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   5,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "p",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -484,32 +468,31 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__c11_atomic_exchange",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__c11_atomic_exchange",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: Add,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "values",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "memory_order_release",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "p",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "values",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "memory_order_release",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -536,23 +519,22 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__c11_atomic_load",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__c11_atomic_load",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   5,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "p",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -560,71 +542,68 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%.2f %.2f %td %td %d %td %td\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%.2f %.2f %td %td %d %td %td\\n",
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "old_f",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "now_f",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: Sub,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "old_p",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "old_f",
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "values",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "now_f",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: Sub,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "now_p",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "old_p",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "values",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "now_p",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "values",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Deref(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "now_p",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "values",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "old_x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "values",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "now_x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "values",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: Deref,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "now_p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: Sub,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "old_x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "values",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: Sub,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "now_x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "values",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

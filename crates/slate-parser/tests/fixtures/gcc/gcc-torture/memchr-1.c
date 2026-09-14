@@ -360,10 +360,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   49,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               49,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -399,17 +397,15 @@ int main() {
 // DEFAULT-NEXT:                           "s1",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "1",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -445,17 +441,15 @@ int main() {
 // DEFAULT-NEXT:                           "s4",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "1234",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "1234",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -492,13 +486,13 @@ int main() {
 // DEFAULT-NEXT:                               "s4_2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -558,13 +552,13 @@ int main() {
 // DEFAULT-NEXT:                               "s5_3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   3,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               5,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -631,10 +625,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -670,10 +662,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -709,10 +699,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -748,10 +736,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -787,10 +773,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -828,10 +812,8 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -856,17 +838,15 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "i0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "i0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -890,17 +870,15 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "i1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "i1",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -924,17 +902,15 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "i2",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "i2",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -958,17 +934,15 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "i3",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "i3",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -976,1008 +950,1026 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: StringLit(
-// DEFAULT-NEXT:                                               "",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           36,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( \"\" + 1 , 0 , 0 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "c",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "c",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           38,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & c , 0 , sizeof c ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "c",
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: StringLit(
+// DEFAULT-NEXT:                                                   "",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "c",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           39,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & c + 1 , 0 , sizeof c - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "c",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "c",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           40,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & c + i1 , 0 , sizeof c - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "c",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "c",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           41,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & c + v1 , 0 , sizeof c - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "s1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           43,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s1 , 0 , sizeof s1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           44,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s1 + 1 , 0 , sizeof s1 - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           45,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s1 + i1 , 0 , sizeof s1 - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           46,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s1 + v1 , 0 , sizeof s1 - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           48,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 , 0 , sizeof s1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           49,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 + 1 , 0 , sizeof s1 - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           50,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 + i1 , 0 , sizeof s1 - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           51,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 + v1 , 0 , sizeof s1 - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               36,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( \"\" + 1 , 0 , 0 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "c",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           SizeOfExpr(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "c",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               38,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & c , 0 , sizeof c ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "c",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "c",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               39,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & c + 1 , 0 , sizeof c - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "c",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "c",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               40,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & c + i1 , 0 , sizeof c - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "c",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "c",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               41,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & c + v1 , 0 , sizeof c - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "s1",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           SizeOfExpr(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           53,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ 0 ] , 0 , sizeof s1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               43,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s1 , 0 , sizeof s1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               44,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s1 + 1 , 0 , sizeof s1 - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               45,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s1 + i1 , 0 , sizeof s1 - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               46,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s1 + v1 , 0 , sizeof s1 - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           SizeOfExpr(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               48,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 , 0 , sizeof s1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               49,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 + 1 , 0 , sizeof s1 - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               50,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 + i1 , 0 , sizeof s1 - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               51,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 + v1 , 0 , sizeof s1 - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s1",
 // DEFAULT-NEXT:                                                   ),
@@ -1985,1787 +1977,1862 @@ int main() {
 // DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "s1",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               53,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ 0 ] , 0 , sizeof s1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           54,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ 0 ] + 1 , 0 , sizeof s1 - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               54,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ 0 ] + 1 , 0 , sizeof s1 - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               55,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ 0 ] + i1 , 0 , sizeof s1 - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               56,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ 0 ] + v1 , 0 , sizeof s1 - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s1",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "i0",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "s1",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               58,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ i0 ] , 0 , sizeof s1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           55,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ 0 ] + i1 , 0 , sizeof s1 - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "i0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               59,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ i0 ] + 1 , 0 , sizeof s1 - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "i0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               60,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ i0 ] + i1 , 0 , sizeof s1 - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "i0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               61,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ i0 ] + v1 , 0 , sizeof s1 - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s1",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "v0",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "s1",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               63,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ v0 ] , 0 , sizeof s1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           56,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ 0 ] + v1 , 0 , sizeof s1 - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "v0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               64,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ v0 ] + 1 , 0 , sizeof s1 - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "v0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               65,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ v0 ] + i1 , 0 , sizeof s1 - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s1",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "v0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s1",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               66,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s1 [ v0 ] + v1 , 0 , sizeof s1 - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
 // DEFAULT-NEXT:                                                   "i0",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "s1",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i0",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           58,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ i0 ] , 0 , sizeof s1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               68,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + i0 , 0 , sizeof s4 - i0 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s1",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i0",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               69,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + i1 , 0 , sizeof s4 - i1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           59,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ i0 ] + 1 , 0 , sizeof s1 - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s1",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i0",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               70,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + i2 , 0 , sizeof s4 - i2 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           60,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ i0 ] + i1 , 0 , sizeof s1 - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s1",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i0",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               71,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + i3 , 0 , sizeof s4 - i3 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           61,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ i0 ] + v1 , 0 , sizeof s1 - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "s1",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               72,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + i4 , 0 , sizeof s4 - i4 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
 // DEFAULT-NEXT:                                                   "v0",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           63,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ v0 ] , 0 , sizeof s1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s1",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "v0",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           64,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ v0 ] + 1 , 0 , sizeof s1 - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s1",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "v0",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           65,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ v0 ] + i1 , 0 , sizeof s1 - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s1",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "v0",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s1",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           66,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s1 [ v0 ] + v1 , 0 , sizeof s1 - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           68,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + i0 , 0 , sizeof s4 - i0 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           69,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + i1 , 0 , sizeof s4 - i1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           70,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + i2 , 0 , sizeof s4 - i2 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           71,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + i3 , 0 , sizeof s4 - i3 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           72,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + i4 , 0 , sizeof s4 - i4 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           74,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + v0 , 0 , sizeof s4 - v0 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           75,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + v1 , 0 , sizeof s4 - v1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           76,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + v2 , 0 , sizeof s4 - v2 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           77,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + v3 , 0 , sizeof s4 - v3 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "s4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s4",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "v4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           78,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4 + v4 , 0 , sizeof s4 - v4 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "s4_2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "s4_2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           80,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 , 0 , sizeof s4_2 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s4_2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                           Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "s4_2",
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v0",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           82,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ 0 ] , 0 , sizeof s4_2 [ 0 ] ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               74,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + v0 , 0 , sizeof s4 - v0 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Index {
-// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               75,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + v1 , 0 , sizeof s4 - v1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               76,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + v2 , 0 , sizeof s4 - v2 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               77,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + v3 , 0 , sizeof s4 - v3 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "s4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s4",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "v4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               78,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4 + v4 , 0 , sizeof s4 - v4 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "s4_2",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                           SizeOfExpr(
+// DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "s4_2",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           83,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ 1 ] , 0 , sizeof s4_2 [ 1 ] ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               80,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 , 0 , sizeof s4_2 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Index {
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "s4_2",
 // DEFAULT-NEXT:                                               ),
@@ -3773,16 +3840,10 @@ int main() {
 // DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s4_2",
@@ -3792,63 +3853,63 @@ int main() {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               82,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ 0 ] , 0 , sizeof s4_2 [ 0 ] ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           85,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ 0 ] + 1 , 0 , sizeof s4_2 [ 0 ] - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Index {
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "s4_2",
 // DEFAULT-NEXT:                                               ),
@@ -3856,16 +3917,10 @@ int main() {
 // DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s4_2",
@@ -3875,81 +3930,154 @@ int main() {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               83,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ 1 ] , 0 , sizeof s4_2 [ 1 ] ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           86,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ 1 ] + 2 , 0 , sizeof s4_2 [ 1 ] - 2 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "s4_2",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "s4_2",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
 // DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s4_2",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               85,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ 0 ] + 1 , 0 , sizeof s4_2 [ 0 ] - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s4_2",
 // DEFAULT-NEXT:                                                   ),
@@ -3957,73 +4085,174 @@ int main() {
 // DEFAULT-NEXT:                                                       1,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s4_2",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               86,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ 1 ] + 2 , 0 , sizeof s4_2 [ 1 ] - 2 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           87,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ 1 ] + 3 , 0 , sizeof s4_2 [ 1 ] - 3 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s4_2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Identifier(
-// DEFAULT-NEXT:                                               "v0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "s4_2",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s4_2",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               87,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ 1 ] + 3 , 0 , sizeof s4_2 [ 1 ] - 3 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Index {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "s4_2",
@@ -4032,77 +4261,10 @@ int main() {
 // DEFAULT-NEXT:                                                   "v0",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           89,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ v0 ] , 0 , sizeof s4_2 [ v0 ] ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "s4_2",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "v0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Index {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "s4_2",
@@ -4112,45 +4274,135 @@ int main() {
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               89,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ v0 ] , 0 , sizeof s4_2 [ v0 ] ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "s4_2",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "v0",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s4_2",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "v0",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           90,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s4_2 [ v0 ] + 1 , 0 , sizeof s4_2 [ v0 ] - 1 ) == 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               90,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s4_2 [ v0 ] + 1 , 0 , sizeof s4_2 [ v0 ] - 1 ) == 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -4182,616 +4434,669 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           93,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( \"\" , 0 , 1 ) != 0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               93,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( \"\" , 0 , 1 ) != 0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "s5_3",
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOf(
+// DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "s5_3",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s5_3",
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           94,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( s5_3 , 0 , sizeof s5_3 ) == & s5_3 [ 1 ] [ 4 ]",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "s5_3",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
+// DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "s5_3",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s5_3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           96,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s5_3 [ 0 ] [ 0 ] + i0 , 0 , sizeof s5_3 - i0 ) == & s5_3 [ 1 ] [ 4 ]",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "s5_3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               94,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( s5_3 , 0 , sizeof s5_3 ) == & s5_3 [ 1 ] [ 4 ]",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "s5_3",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "s5_3",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       index: Integer(
 // DEFAULT-NEXT:                                                           0,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s5_3",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s5_3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s5_3 [ 0 ] [ 0 ] + i1 , 0 , sizeof s5_3 - i1 ) == & s5_3 [ 1 ] [ 4 ]",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "s5_3",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s5_3",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s5_3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           98,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s5_3 [ 0 ] [ 0 ] + i2 , 0 , sizeof s5_3 - i2 ) == & s5_3 [ 1 ] [ 4 ]",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "s5_3",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "s5_3",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s5_3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s5_3 [ 0 ] [ 0 ] + i4 , 0 , sizeof s5_3 - i4 ) == & s5_3 [ 1 ] [ 4 ]",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "memchr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "s5_3",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                               right: Identifier(
 // DEFAULT-NEXT:                                                   "i0",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: SizeOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
 // DEFAULT-NEXT:                                                       "s5_3",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i0",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "s5_3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               96,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s5_3 [ 0 ] [ 0 ] + i0 , 0 , sizeof s5_3 - i0 ) == & s5_3 [ 1 ] [ 4 ]",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "s5_3",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s5_3",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i1",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "s5_3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s5_3 [ 0 ] [ 0 ] + i1 , 0 , sizeof s5_3 - i1 ) == & s5_3 [ 1 ] [ 4 ]",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "s5_3",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s5_3",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i2",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "s5_3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s5_3 [ 0 ] [ 0 ] + i2 , 0 , sizeof s5_3 - i2 ) == & s5_3 [ 1 ] [ 4 ]",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Index {
+// DEFAULT-NEXT:                                                       base: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "s5_3",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "s5_3",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i4",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "s5_3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s5_3 [ 0 ] [ 0 ] + i4 , 0 , sizeof s5_3 - i4 ) == & s5_3 [ 1 ] [ 4 ]",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Conditional {
+// DEFAULT-NEXT:                           condition: Paren(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "memchr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Index {
+// DEFAULT-NEXT:                                                   base: Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s5_3",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "i0",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "i0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s5_3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           4,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: SizeOfExpr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s5_3",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "i0",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           else_value: Comma(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_printf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "assertion failed on line %i: %s\\n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "memchr ( & s5_3 [ 1 ] [ i0 ] , 0 , sizeof s5_3 [ 1 ] - i0 ) == & s5_3 [ 1 ] [ 4 ]",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "s5_3",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               4,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           then_value: Some(
+// DEFAULT-NEXT:                               Cast {
+// DEFAULT-NEXT:                                   ty: Void,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_value: Paren(
+// DEFAULT-NEXT:                               Comma {
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "assertion failed on line %i: %s\\n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "memchr ( & s5_3 [ 1 ] [ i0 ] , 0 , sizeof s5_3 [ 1 ] - i0 ) == & s5_3 [ 1 ] [ 4 ]",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -4833,24 +5138,20 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "test_narrow",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "test_narrow",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "test_wide",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "test_wide",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

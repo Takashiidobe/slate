@@ -78,37 +78,33 @@ int f2(char *d, char *e, int f) { int g = e - d; return *f1(&f, &g); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Less,
-// DEFAULT-NEXT:                           left: Deref(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "b",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Deref(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Less,
+// DEFAULT-NEXT:                       left: Unary {
+// DEFAULT-NEXT:                           op: Deref,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "b",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Unary {
+// DEFAULT-NEXT:                           op: Deref,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "b",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "b",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "a",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "a",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -195,17 +191,15 @@ int f2(char *d, char *e, int f) { int g = e - d; return *f1(&f, &g); }
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Sub,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "e",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "d",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Sub,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "e",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Identifier(
+// DEFAULT-NEXT:                                               "d",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -213,27 +207,28 @@ int f2(char *d, char *e, int f) { int g = e - d; return *f1(&f, &g); }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Deref(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "f1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   AddrOf(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                   Unary {
+// DEFAULT-NEXT:                       op: Deref,
+// DEFAULT-NEXT:                       operand: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "f1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "f",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   AddrOf(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "g",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "g",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

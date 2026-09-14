@@ -325,10 +325,8 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           StringLit(
-// DEFAULT-NEXT:                                               "-7xyz",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       StringLit(
+// DEFAULT-NEXT:                                           "-7xyz",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -337,226 +335,206 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%d\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atoi",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atoi",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "42abc",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "42abc",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%d\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atoi",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atoi",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "  +13 ",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "  +13 ",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%d\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atoi",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atoi",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "s",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "s",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%d\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atoi",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atoi",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "nope",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "nope",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%ld\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%ld\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atol",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atol",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "1000000000000",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "1000000000000",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%lld\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%lld\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atoll",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atoll",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "-9000000000000",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "-9000000000000",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%.2f\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%.2f\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atof",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atof",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "  3.14  ",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "  3.14  ",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%.1f\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%.1f\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atof",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atof",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "2",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%.2f\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%.2f\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "atof",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "atof",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "6.5garbage",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "6.5garbage",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

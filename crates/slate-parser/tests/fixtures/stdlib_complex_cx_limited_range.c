@@ -293,14 +293,12 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Float(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   value: Double(
-// DEFAULT-NEXT:                                                       0.5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Float(
+// DEFAULT-NEXT:                                           FloatLiteral {
+// DEFAULT-NEXT:                                               value: Double(
+// DEFAULT-NEXT:                                                   0.5,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -325,18 +323,16 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Unary {
-// DEFAULT-NEXT:                                               op: Minus,
-// DEFAULT-NEXT:                                               value: Float(
-// DEFAULT-NEXT:                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                       value: Double(
-// DEFAULT-NEXT:                                                           0.25,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Unary {
+// DEFAULT-NEXT:                                           op: Minus,
+// DEFAULT-NEXT:                                           operand: Float(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   value: Double(
+// DEFAULT-NEXT:                                                       0.25,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -359,21 +355,19 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__builtin_complex",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "real",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "real",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "imaginary",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "imaginary",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -396,24 +390,22 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "__builtin_complex",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__builtin_complex",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "real",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "real",
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "imaginary",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Identifier(
-// DEFAULT-NEXT:                                                           "imaginary",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -459,154 +451,106 @@ int main(void) {
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "product",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "product",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Binary {
+// DEFAULT-NEXT:                                   op: Mul,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "a",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Binary {
-// DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Identifier(
+// DEFAULT-NEXT:                                       "b",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "quotient",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "quotient",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Binary {
+// DEFAULT-NEXT:                                   op: Div,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "a",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Binary {
-// DEFAULT-NEXT:                                       op: Div,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Identifier(
+// DEFAULT-NEXT:                                       "b",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%.4f %.4f %.4f %.4f\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%.4f %.4f %.4f %.4f\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "creal",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "creal",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "product",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "product",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "cimag",
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "cimag",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "product",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "product",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "creal",
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "creal",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "quotient",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "quotient",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "cimag",
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "cimag",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "quotient",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "quotient",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       condition: Binary {
+// DEFAULT-NEXT:                           op: And,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: And,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: And,
 // DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: And,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: Equal,
-// DEFAULT-NEXT:                                           left: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "creal",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "product",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Float(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   value: Double(
-// DEFAULT-NEXT:                                                       0.3125,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Equal,
-// DEFAULT-NEXT:                                           left: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "cimag",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "product",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Float(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   value: Double(
-// DEFAULT-NEXT:                                                       0.0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
 // DEFAULT-NEXT:                                       op: Equal,
 // DEFAULT-NEXT:                                       left: Call {
 // DEFAULT-NEXT:                                           callee: Identifier(
@@ -614,14 +558,34 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
 // DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "quotient",
+// DEFAULT-NEXT:                                                   "product",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Float(
 // DEFAULT-NEXT:                                           FloatLiteral {
 // DEFAULT-NEXT:                                               value: Double(
-// DEFAULT-NEXT:                                                   0.6,
+// DEFAULT-NEXT:                                                   0.3125,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                                       op: Equal,
+// DEFAULT-NEXT:                                       left: Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "cimag",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "product",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Float(
+// DEFAULT-NEXT:                                           FloatLiteral {
+// DEFAULT-NEXT:                                               value: Double(
+// DEFAULT-NEXT:                                                   0.0,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -631,7 +595,7 @@ int main(void) {
 // DEFAULT-NEXT:                                   op: Equal,
 // DEFAULT-NEXT:                                   left: Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "cimag",
+// DEFAULT-NEXT:                                           "creal",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Identifier(
@@ -639,26 +603,48 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Unary {
-// DEFAULT-NEXT:                                       op: Minus,
-// DEFAULT-NEXT:                                       value: Float(
-// DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               value: Double(
-// DEFAULT-NEXT:                                                   0.8,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               0.6,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Integer(
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "cimag",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "quotient",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Unary {
+// DEFAULT-NEXT:                                   op: Minus,
+// DEFAULT-NEXT:                                   operand: Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: Double(
+// DEFAULT-NEXT:                                               0.8,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       then_value: Some(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           else_value: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       else_value: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

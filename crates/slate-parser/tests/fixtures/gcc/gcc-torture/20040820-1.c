@@ -127,27 +127,23 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -197,40 +193,46 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "check",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitOr,
-// DEFAULT-NEXT:                                   left: Ternary {
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "check",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: BitOr,
+// DEFAULT-NEXT:                               left: Paren(
+// DEFAULT-NEXT:                                   Conditional {
 // DEFAULT-NEXT:                                       condition: Identifier(
 // DEFAULT-NEXT:                                           "a",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       then_value: Integer(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       then_value: Some(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       else_value: Integer(
 // DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Ternary {
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Conditional {
 // DEFAULT-NEXT:                                       condition: Identifier(
 // DEFAULT-NEXT:                                           "b",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       then_value: Integer(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                       then_value: Some(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       else_value: Integer(
 // DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -254,35 +256,31 @@ int main(void) {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "test",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "test",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

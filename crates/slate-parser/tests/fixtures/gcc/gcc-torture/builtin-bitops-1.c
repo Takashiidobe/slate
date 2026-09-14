@@ -288,23 +288,19 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "x",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Equal,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "x",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
@@ -313,62 +309,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -386,8 +377,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -396,17 +387,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Add,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -466,62 +455,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -539,8 +523,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -549,10 +533,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -613,62 +595,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -682,36 +659,40 @@ int main(void) {
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: Binary {
+// DEFAULT-NEXT:                                       right: Paren(
+// DEFAULT-NEXT:                                           Binary {
 // DEFAULT-NEXT:                                               op: Sub,
 // DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                   op: Sub,
+// DEFAULT-NEXT:                                                   left: Paren(
+// DEFAULT-NEXT:                                                       Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: SizeOfType {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "i",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -720,10 +701,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -798,10 +777,10 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: BitAnd,
-// DEFAULT-NEXT:                                               left: Binary {
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: BitAnd,
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
 // DEFAULT-NEXT:                                                   op: ShiftRight,
 // DEFAULT-NEXT:                                                   left: Identifier(
 // DEFAULT-NEXT:                                                       "x",
@@ -828,11 +807,11 @@ int main(void) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -842,102 +821,103 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: BitAnd,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: ShiftRight,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "x",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Binary {
-// DEFAULT-NEXT:                                               op: Sub,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Sub,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Mul,
-// DEFAULT-NEXT:                                                       left: Integer(
-// DEFAULT-NEXT:                                                           8,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: SizeOfType {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                       left: Paren(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: ShiftRight,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Paren(
+// DEFAULT-NEXT:                                                   Binary {
+// DEFAULT-NEXT:                                                       op: Sub,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: Sub,
+// DEFAULT-NEXT:                                                           left: Paren(
+// DEFAULT-NEXT:                                                               Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       8,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: SizeOfType {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           right: Identifier(
+// DEFAULT-NEXT:                                                               "i",
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "leading",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "leading",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -946,17 +926,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Sub,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Sub,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1030,10 +1008,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -1044,62 +1020,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -1117,17 +1088,16 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "count",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "count",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -1135,10 +1105,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "count",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "count",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -1213,10 +1181,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -1227,62 +1193,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -1300,17 +1261,16 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "count",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "count",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -1318,17 +1278,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: BitAnd,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "count",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: BitAnd,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "count",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1386,23 +1344,19 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "x",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Equal,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "x",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
@@ -1411,62 +1365,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -1484,8 +1433,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -1494,17 +1443,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Add,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1564,62 +1511,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -1637,8 +1579,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -1647,10 +1589,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -1711,62 +1651,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -1780,36 +1715,40 @@ int main(void) {
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: Binary {
+// DEFAULT-NEXT:                                       right: Paren(
+// DEFAULT-NEXT:                                           Binary {
 // DEFAULT-NEXT:                                               op: Sub,
 // DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Long,
-// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                   op: Sub,
+// DEFAULT-NEXT:                                                   left: Paren(
+// DEFAULT-NEXT:                                                       Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: SizeOfType {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Long,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "i",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -1818,10 +1757,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -1896,10 +1833,10 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: BitAnd,
-// DEFAULT-NEXT:                                               left: Binary {
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: BitAnd,
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
 // DEFAULT-NEXT:                                                   op: ShiftRight,
 // DEFAULT-NEXT:                                                   left: Identifier(
 // DEFAULT-NEXT:                                                       "x",
@@ -1926,11 +1863,11 @@ int main(void) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1940,102 +1877,103 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: BitAnd,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: ShiftRight,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "x",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Binary {
-// DEFAULT-NEXT:                                               op: Sub,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Sub,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Mul,
-// DEFAULT-NEXT:                                                       left: Integer(
-// DEFAULT-NEXT:                                                           8,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: SizeOfType {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                       left: Paren(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: ShiftRight,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Paren(
+// DEFAULT-NEXT:                                                   Binary {
+// DEFAULT-NEXT:                                                       op: Sub,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: Sub,
+// DEFAULT-NEXT:                                                           left: Paren(
+// DEFAULT-NEXT:                                                               Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       8,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: SizeOfType {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Long,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           right: Identifier(
+// DEFAULT-NEXT:                                                               "i",
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "leading",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "leading",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -2044,17 +1982,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Sub,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Sub,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -2128,10 +2064,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -2142,62 +2076,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -2215,17 +2144,16 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "count",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "count",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -2233,10 +2161,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "count",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "count",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -2311,10 +2237,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -2325,62 +2249,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -2398,17 +2317,16 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "count",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "count",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -2416,17 +2334,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: BitAnd,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "count",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: BitAnd,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "count",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -2484,23 +2400,19 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "x",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Equal,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "x",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
@@ -2509,62 +2421,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: LongLong,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -2582,8 +2489,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -2592,17 +2499,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Add,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -2662,62 +2567,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: LongLong,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -2735,8 +2635,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -2745,10 +2645,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -2809,62 +2707,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: LongLong,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -2878,36 +2771,40 @@ int main(void) {
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: Binary {
+// DEFAULT-NEXT:                                       right: Paren(
+// DEFAULT-NEXT:                                           Binary {
 // DEFAULT-NEXT:                                               op: Sub,
 // DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: SizeOfType {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: LongLong,
-// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                   op: Sub,
+// DEFAULT-NEXT:                                                   left: Paren(
+// DEFAULT-NEXT:                                                       Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: SizeOfType {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "i",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -2916,10 +2813,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -2994,10 +2889,10 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: BitAnd,
-// DEFAULT-NEXT:                                               left: Binary {
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: BitAnd,
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
 // DEFAULT-NEXT:                                                   op: ShiftRight,
 // DEFAULT-NEXT:                                                   left: Identifier(
 // DEFAULT-NEXT:                                                       "x",
@@ -3024,11 +2919,11 @@ int main(void) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -3038,102 +2933,103 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: LongLong,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: BitAnd,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: ShiftRight,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "x",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Binary {
-// DEFAULT-NEXT:                                               op: Sub,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Sub,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Mul,
-// DEFAULT-NEXT:                                                       left: Integer(
-// DEFAULT-NEXT:                                                           8,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: SizeOfType {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: LongLong,
-// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                       left: Paren(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: ShiftRight,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Paren(
+// DEFAULT-NEXT:                                                   Binary {
+// DEFAULT-NEXT:                                                       op: Sub,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: Sub,
+// DEFAULT-NEXT:                                                           left: Paren(
+// DEFAULT-NEXT:                                                               Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                       8,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: SizeOfType {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: LongLong,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           right: Identifier(
+// DEFAULT-NEXT:                                                               "i",
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "leading",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "leading",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
@@ -3142,17 +3038,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Sub,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "i",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Sub,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "i",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -3226,10 +3120,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -3240,62 +3132,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: LongLong,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -3313,17 +3200,16 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "count",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "count",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -3331,10 +3217,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "count",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "count",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -3409,10 +3293,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -3423,62 +3305,57 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       8,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   8,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfType {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: LongLong,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitAnd,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: BitAnd,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
 // DEFAULT-NEXT:                                           ty: Integer(
@@ -3496,17 +3373,16 @@ int main(void) {
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "count",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "count",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -3514,17 +3390,15 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: BitAnd,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "count",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: BitAnd,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "count",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -3621,130 +3495,104 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2147483648,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2147483648,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               1073741824,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1073741824,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               65536,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           65536,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               32768,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           32768,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2779096485,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2779096485,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               1515870810,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1515870810,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               3405643776,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           3405643776,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               13303296,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           13303296,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               51966,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           51966,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               4294967295,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4294967295,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -3787,130 +3635,104 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -9223372036854775808,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -9223372036854775808,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               4611686018427387904,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4611686018427387904,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               4294967296,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4294967296,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2147483648,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2147483648,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -6510615555426900571,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -6510615555426900571,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               6510615555426900570,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           6510615555426900570,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -3819392241693097984,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -3819392241693097984,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               223195676147712,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           223195676147712,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               3405695742,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           3405695742,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -3953,130 +3775,104 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -9223372036854775808,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -9223372036854775808,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               4611686018427387904,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4611686018427387904,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               4294967296,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4294967296,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               2147483648,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           2147483648,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -6510615555426900571,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -6510615555426900571,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               6510615555426900570,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           6510615555426900570,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -3819392241693097984,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -3819392241693097984,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               223195676147712,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           223195676147712,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               3405695742,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           3405695742,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               -1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           -1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -4127,114 +3923,285 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Div,
-// DEFAULT-NEXT:                                   left: SizeOf(
-// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "ints",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "ints",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: [
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_ffs",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "ints",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_ffs",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "ints",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "ints",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOf(
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_clz",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "ints",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "my_clz",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "ints",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "ints",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_ctz",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "ints",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "my_ctz",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "ints",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_clrsb",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "ints",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_clrsb",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "ints",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_ffs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_ffs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_popcount",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "ints",
 // DEFAULT-NEXT:                                           ),
@@ -4242,66 +4209,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_clz",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "ints",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "my_clz",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "ints",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_popcount",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "ints",
 // DEFAULT-NEXT:                                           ),
@@ -4309,205 +4224,63 @@ int main(void) {
 // DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_ctz",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "ints",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "my_ctz",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "ints",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_clrsb",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_clrsb",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_parity",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "ints",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_parity",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "ints",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_popcount",
+// DEFAULT-NEXT:                                           "abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       arguments: [],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_popcount",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_parity",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_parity",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "ints",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -4517,114 +4290,285 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Div,
-// DEFAULT-NEXT:                                   left: SizeOf(
-// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "longs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: [
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_ffsl",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_ffsl",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "longs",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOf(
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_clzl",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "my_clzl",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "longs",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_ctzl",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "my_ctzl",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_clrsbl",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "longs",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_clrsbl",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_ffsl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_ffsl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_popcountl",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "longs",
 // DEFAULT-NEXT:                                           ),
@@ -4632,66 +4576,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_clzl",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "my_clzl",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_popcountl",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "longs",
 // DEFAULT-NEXT:                                           ),
@@ -4699,205 +4591,63 @@ int main(void) {
 // DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_ctzl",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "my_ctzl",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_clrsbl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_clrsbl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_parityl",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_parityl",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_popcountl",
+// DEFAULT-NEXT:                                           "abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       arguments: [],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_popcountl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_parityl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_parityl",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -4907,64 +4657,126 @@ int main(void) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Div,
-// DEFAULT-NEXT:                                   left: SizeOf(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "longlongs",
+// DEFAULT-NEXT:                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "longlongs",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOf(
+// DEFAULT-NEXT:                                   right: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longlongs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: [
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_ffsll",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "longlongs",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_ffsll",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longlongs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "longlongs",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: NotEqual,
 // DEFAULT-NEXT:                                   left: Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_ffsll",
+// DEFAULT-NEXT:                                           "__builtin_clzll",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Index {
@@ -4979,7 +4791,7 @@ int main(void) {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_ffsll",
+// DEFAULT-NEXT:                                           "my_clzll",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Index {
@@ -4993,28 +4805,91 @@ int main(void) {
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "longlongs",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_ctzll",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longlongs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "my_ctzll",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "longlongs",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "longlongs",
 // DEFAULT-NEXT:                                           ),
@@ -5022,66 +4897,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_clzll",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longlongs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "my_clzll",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longlongs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_clrsbll",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "longlongs",
 // DEFAULT-NEXT:                                           ),
@@ -5089,205 +4912,109 @@ int main(void) {
 // DEFAULT-NEXT:                                               "i",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "__builtin_ctzll",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longlongs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "my_ctzll",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "longlongs",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_clrsbll",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longlongs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_clrsbll",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longlongs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_popcountll",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longlongs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_popcountll",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longlongs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_popcountll",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longlongs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_popcountll",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longlongs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_parityll",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longlongs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               right: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_parityll",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "longlongs",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Identifier(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Call {
+// DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_parityll",
+// DEFAULT-NEXT:                                           "abort",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longlongs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       arguments: [],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "my_parityll",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "longlongs",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Identifier(
-// DEFAULT-NEXT:                                                   "i",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -5320,12 +5047,58 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5335,7 +5108,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5344,132 +5117,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5479,7 +5156,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5488,97 +5165,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -5587,156 +5290,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5746,7 +5351,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5755,28 +5360,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5786,7 +5399,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -5795,57 +5408,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -5854,156 +5533,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2147483648,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2147483648,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2147483648,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6013,7 +5594,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6022,28 +5603,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2147483648,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6053,7 +5642,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6062,57 +5651,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -6121,156 +5776,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1073741824,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1073741824,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1073741824,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1073741824,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1073741824,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1073741824,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1073741824,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1073741824,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1073741824,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6280,7 +5837,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6289,28 +5846,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1073741824,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6320,7 +5885,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6329,57 +5894,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1073741824,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1073741824,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1073741824,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1073741824,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1073741824,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1073741824,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1073741824,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1073741824,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -6388,156 +6019,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       65536,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       65536,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   65536,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           65536,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           65536,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   65536,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           65536,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           65536,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               65536,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6547,7 +6080,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6556,28 +6089,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               65536,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6587,7 +6128,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6596,57 +6137,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   65536,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       65536,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       65536,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   65536,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   65536,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   65536,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   65536,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   65536,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -6655,156 +6262,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       32768,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       32768,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   32768,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32768,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32768,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   32768,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32768,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           32768,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               32768,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6814,7 +6323,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6823,28 +6332,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               32768,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6854,7 +6371,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -6863,57 +6380,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   32768,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       32768,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       32768,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   32768,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   32768,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   32768,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   32768,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   32768,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -6922,156 +6505,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2779096485,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2779096485,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2779096485,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2779096485,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2779096485,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2779096485,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2779096485,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2779096485,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2779096485,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7081,7 +6566,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7090,28 +6575,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2779096485,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7121,7 +6614,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7130,57 +6623,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2779096485,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2779096485,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2779096485,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2779096485,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2779096485,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2779096485,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2779096485,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2779096485,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -7189,156 +6748,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1515870810,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1515870810,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1515870810,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1515870810,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1515870810,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1515870810,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1515870810,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1515870810,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1515870810,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7348,7 +6809,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7357,28 +6818,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1515870810,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7388,7 +6857,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7397,57 +6866,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1515870810,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1515870810,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1515870810,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1515870810,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1515870810,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1515870810,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1515870810,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1515870810,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -7456,156 +6991,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405643776,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405643776,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   3405643776,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405643776,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405643776,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   3405643776,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405643776,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405643776,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               3405643776,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7615,7 +7052,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7624,28 +7061,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               3405643776,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7655,7 +7100,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7664,57 +7109,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405643776,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405643776,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405643776,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405643776,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405643776,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405643776,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405643776,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405643776,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -7723,156 +7234,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       13303296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       13303296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   13303296,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           13303296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           13303296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   13303296,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           13303296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           13303296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               13303296,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7882,7 +7295,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7891,28 +7304,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               13303296,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7922,7 +7343,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -7931,57 +7352,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13303296,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       13303296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       13303296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13303296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13303296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13303296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13303296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   13303296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -7990,156 +7477,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       51966,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       51966,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   51966,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           51966,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           51966,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   51966,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           51966,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           51966,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               51966,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8149,7 +7538,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8158,28 +7547,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               51966,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8189,7 +7586,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8198,57 +7595,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   51966,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       51966,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       51966,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   51966,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   51966,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   51966,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   51966,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   51966,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -8257,156 +7720,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967295,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967295,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   4294967295,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967295,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967295,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffs",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   4294967295,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967295,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967295,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsb",
+// DEFAULT-NEXT:                                   "__builtin_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8416,7 +7781,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsb",
+// DEFAULT-NEXT:                                   "my_clz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8425,28 +7790,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               4294967295,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcount",
+// DEFAULT-NEXT:                                   "__builtin_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8456,7 +7829,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcount",
+// DEFAULT-NEXT:                                   "my_ctz",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8465,57 +7838,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parity",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967295,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967295,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parity",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967295,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsb",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcount",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcount",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parity",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967295,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -8524,12 +7963,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8539,7 +8024,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8548,132 +8033,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8683,7 +8072,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8692,97 +8081,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -8791,156 +8206,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8950,7 +8267,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8959,28 +8276,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8990,7 +8315,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -8999,57 +8324,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -9058,156 +8449,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -9223372036854775808,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -9223372036854775808,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -9223372036854775808,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -9223372036854775808,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -9223372036854775808,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -9223372036854775808,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -9223372036854775808,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -9223372036854775808,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -9223372036854775808,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9217,7 +8510,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9226,28 +8519,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -9223372036854775808,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9257,7 +8558,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9266,57 +8567,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -9223372036854775808,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -9223372036854775808,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -9223372036854775808,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -9223372036854775808,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -9223372036854775808,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -9223372036854775808,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -9223372036854775808,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -9223372036854775808,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -9325,156 +8692,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9484,7 +8753,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9493,28 +8762,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9524,7 +8801,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9533,57 +8810,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -9592,156 +8935,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4611686018427387904,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4611686018427387904,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   4611686018427387904,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4611686018427387904,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4611686018427387904,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   4611686018427387904,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4611686018427387904,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4611686018427387904,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               4611686018427387904,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9751,7 +8996,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9760,28 +9005,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               4611686018427387904,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9791,7 +9044,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -9800,57 +9053,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4611686018427387904,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4611686018427387904,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4611686018427387904,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4611686018427387904,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4611686018427387904,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4611686018427387904,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4611686018427387904,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4611686018427387904,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -9859,156 +9178,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   4294967296,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   4294967296,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           4294967296,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               4294967296,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10018,7 +9239,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10027,28 +9248,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               4294967296,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10058,7 +9287,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10067,57 +9296,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967296,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       4294967296,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   4294967296,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -10126,156 +9421,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2147483648,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2147483648,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           2147483648,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2147483648,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10285,7 +9482,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10294,28 +9491,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               2147483648,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10325,7 +9530,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10334,57 +9539,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       2147483648,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   2147483648,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -10393,156 +9664,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -6510615555426900571,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -6510615555426900571,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -6510615555426900571,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -6510615555426900571,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -6510615555426900571,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -6510615555426900571,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -6510615555426900571,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -6510615555426900571,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -6510615555426900571,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10552,7 +9725,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10561,28 +9734,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -6510615555426900571,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10592,7 +9773,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10601,57 +9782,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -6510615555426900571,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -6510615555426900571,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -6510615555426900571,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -6510615555426900571,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -6510615555426900571,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -6510615555426900571,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -6510615555426900571,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -6510615555426900571,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -10660,156 +9907,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       6510615555426900570,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       6510615555426900570,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   6510615555426900570,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           6510615555426900570,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           6510615555426900570,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   6510615555426900570,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           6510615555426900570,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           6510615555426900570,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               6510615555426900570,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10819,7 +9968,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10828,28 +9977,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               6510615555426900570,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10859,7 +10016,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -10868,57 +10025,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6510615555426900570,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       6510615555426900570,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       6510615555426900570,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6510615555426900570,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6510615555426900570,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6510615555426900570,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6510615555426900570,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   6510615555426900570,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -10927,156 +10150,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -3819392241693097984,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -3819392241693097984,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -3819392241693097984,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -3819392241693097984,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -3819392241693097984,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -3819392241693097984,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -3819392241693097984,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -3819392241693097984,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -3819392241693097984,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11086,7 +10211,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11095,28 +10220,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -3819392241693097984,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11126,7 +10259,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11135,57 +10268,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -3819392241693097984,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -3819392241693097984,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -3819392241693097984,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -3819392241693097984,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -3819392241693097984,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -3819392241693097984,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -3819392241693097984,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -3819392241693097984,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -11194,156 +10393,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       223195676147712,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       223195676147712,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   223195676147712,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           223195676147712,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           223195676147712,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   223195676147712,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           223195676147712,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           223195676147712,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               223195676147712,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11353,7 +10454,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11362,28 +10463,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               223195676147712,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11393,7 +10502,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11402,57 +10511,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   223195676147712,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       223195676147712,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       223195676147712,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   223195676147712,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   223195676147712,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   223195676147712,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   223195676147712,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   223195676147712,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -11461,156 +10636,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405695742,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405695742,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   3405695742,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405695742,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405695742,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   3405695742,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405695742,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           3405695742,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               3405695742,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11620,7 +10697,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11629,28 +10706,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               3405695742,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11660,7 +10745,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11669,57 +10754,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405695742,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405695742,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       3405695742,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405695742,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405695742,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405695742,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405695742,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   3405695742,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -11728,156 +10879,58 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_ffsll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_clzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_ffsll",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   -1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "my_ctzll",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           -1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_clrsbll",
+// DEFAULT-NEXT:                                   "__builtin_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11887,7 +10940,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_clrsbll",
+// DEFAULT-NEXT:                                   "my_clzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11896,28 +10949,36 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               -1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_popcountll",
+// DEFAULT-NEXT:                                   "__builtin_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11927,7 +10988,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Call {
 // DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_popcountll",
+// DEFAULT-NEXT:                                   "my_ctzll",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Integer(
@@ -11936,57 +10997,123 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_parityll",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -1,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_parityll",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       -1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_clrsbll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_popcountll",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_popcountll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "my_parityll",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   -1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -11995,18 +11122,16 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

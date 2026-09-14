@@ -108,10 +108,8 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "12345",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "12345",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -146,10 +144,8 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "12345",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "12345",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -208,95 +204,95 @@ int main(void) {
 // DEFAULT-NEXT:                   increment: None,
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Switch {
-// DEFAULT-NEXT:                           discriminant: Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Deref(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                           discriminant: Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Unary {
+// DEFAULT-NEXT:                                   op: Deref,
+// DEFAULT-NEXT:                                   operand: Paren(
+// DEFAULT-NEXT:                                       Postfix {
+// DEFAULT-NEXT:                                           op: Increment,
+// DEFAULT-NEXT:                                           operand: Identifier(
 // DEFAULT-NEXT:                                               "pz",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Deref(
-// DEFAULT-NEXT:                                       PostIncrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "pzDta",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: Deref,
+// DEFAULT-NEXT:                                   operand: Paren(
+// DEFAULT-NEXT:                                       Postfix {
+// DEFAULT-NEXT:                                           op: Increment,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "pzDta",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Goto(
 // DEFAULT-NEXT:                                   "loopDone2",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           34,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       34,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       92,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "pz",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Unary {
+// DEFAULT-NEXT:                                               op: Minus,
+// DEFAULT-NEXT:                                               operand: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Integer(
 // DEFAULT-NEXT:                                           92,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "pz",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               92,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Deref(
-// DEFAULT-NEXT:                                               PostIncrement(
-// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Unary {
+// DEFAULT-NEXT:                                           op: Deref,
+// DEFAULT-NEXT:                                           operand: Paren(
+// DEFAULT-NEXT:                                               Postfix {
+// DEFAULT-NEXT:                                                   op: Increment,
+// DEFAULT-NEXT:                                                   operand: Identifier(
 // DEFAULT-NEXT:                                                       "pz",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "pzDta",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Unary {
-// DEFAULT-NEXT:                                                   op: Minus,
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "pzDta",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Unary {
+// DEFAULT-NEXT:                                               op: Minus,
+// DEFAULT-NEXT:                                               operand: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -309,39 +305,35 @@ int main(void) {
 // DEFAULT-NEXT:                   [],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: Sub,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "a",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "pz",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: Sub,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "b",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "pzDta",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: Sub,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "pz",
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: Sub,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "pzDta",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -368,35 +360,31 @@ int main(void) {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "loop",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "loop",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "b",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

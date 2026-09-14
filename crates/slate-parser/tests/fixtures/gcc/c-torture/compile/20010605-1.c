@@ -77,10 +77,8 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           10,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -112,10 +110,8 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                                                               "val",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           size: Expression(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "size",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "size",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -153,22 +149,21 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                       name: "retframe_block",
 // DEFAULT-NEXT:                       body: [
 // DEFAULT-NEXT:                           Return(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Deref(
-// DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "block",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: Deref,
+// DEFAULT-NEXT:                                   operand: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "block",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
@@ -182,10 +177,8 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

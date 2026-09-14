@@ -604,17 +604,15 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "bar_arg",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "v",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "bar_arg",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "v",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -665,74 +663,67 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "x",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -783,71 +774,64 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "d",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ty: Floating(
+// DEFAULT-NEXT:                                       Double,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -914,10 +898,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -926,86 +908,77 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "j",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_c23_va_start",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_c23_va_start",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_va_end",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "bar",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
 // DEFAULT-NEXT:                                       "x",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_va_end",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "bar",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "x",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -1074,10 +1047,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -1086,93 +1057,84 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "j",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_c23_va_start",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_c23_va_start",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "d",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
+// DEFAULT-NEXT:                                   ty: Floating(
+// DEFAULT-NEXT:                                       Double,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_va_end",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "bar",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Binary {
+// DEFAULT-NEXT:                                       op: Add,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "d",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
+// DEFAULT-NEXT:                                       right: Float(
+// DEFAULT-NEXT:                                           FloatLiteral {
+// DEFAULT-NEXT:                                               value: Double(
+// DEFAULT-NEXT:                                                   4.0,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_va_end",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "bar",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "d",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Float(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   value: Double(
-// DEFAULT-NEXT:                                                       4.0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -1225,74 +1187,67 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "s1",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "s1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "S1",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Tagged {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: Some(
-// DEFAULT-NEXT:                                               "S1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1343,74 +1298,67 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "s2",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "s2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "S2",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Tagged {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: Some(
-// DEFAULT-NEXT:                                               "S2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1477,10 +1425,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -1489,89 +1435,80 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "j",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_c23_va_start",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_c23_va_start",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "s1",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "s1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "S1",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Tagged {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: Some(
-// DEFAULT-NEXT:                                               "S1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_va_end",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_va_end",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "bar",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "s1",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "bar",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "i",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                       field: "i",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -1640,10 +1577,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -1652,111 +1587,100 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Greater,
-// DEFAULT-NEXT:                           left: PostDecrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "j",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Greater,
+// DEFAULT-NEXT:                       left: Postfix {
+// DEFAULT-NEXT:                           op: Decrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_c23_va_start",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_c23_va_start",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "s2",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "s2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
+// DEFAULT-NEXT:                                   ty: Tagged {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: Some(
+// DEFAULT-NEXT:                                           "S2",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Tagged {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: Some(
-// DEFAULT-NEXT:                                               "S2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "y",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                                   list: Identifier(
+// DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: VaArg {
-// DEFAULT-NEXT:                                       ap: Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_va_end",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "ap",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "bar",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "i",
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Int,
+// DEFAULT-NEXT:                                           signed: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_va_end",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "ap",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "bar",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "s2",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "i",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -1830,135 +1754,241 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f1",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               7,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   7,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   5,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   7,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   9,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   11,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   13,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               5,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               7,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               9,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               13,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "x",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           11,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f2",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               6,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   6,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           1.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           2.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           4.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           8.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           16.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           32.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           64.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       1.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       2.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       4.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       8.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       16.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       32.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       64.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "d",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   32.0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f3",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "bar_arg",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f4",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       17.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       19.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "bar_arg",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               21,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "d",
@@ -1966,266 +1996,210 @@ int main(void) {
 // DEFAULT-NEXT:                           right: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       32.0,
+// DEFAULT-NEXT:                                       17.0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f3",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a1",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           field: "i",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Or,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "bar_arg",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "x",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           131,
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f4",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a1",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           17.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           19.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           field: "j",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           251,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "d",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   15.0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "e",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   191.0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "a3",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "a1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "j",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           254,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "e",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   178.0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f5",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
 // DEFAULT-NEXT:                           op: Or,
 // DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "bar_arg",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   21,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               op: Or,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "s1",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "i",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       131,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "s1",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "j",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       254,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "d",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               left: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "s1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "d",
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Float(
 // DEFAULT-NEXT:                                   FloatLiteral {
 // DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           17.0,
+// DEFAULT-NEXT:                                           15.0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
 // DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "i",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               131,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "j",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               251,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "d",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       15.0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a1",
+// DEFAULT-NEXT:                                   "s1",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               field: "e",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       191.0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "a3",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "a1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "j",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               254,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "e",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Float(
+// DEFAULT-NEXT:                           right: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: Double(
 // DEFAULT-NEXT:                                       178.0,
@@ -2233,63 +2207,58 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f5",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f5",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
 // DEFAULT-NEXT:                           op: Or,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Or,
 // DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Or,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "i",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           131,
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "s1",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "i",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "j",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           254,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       131,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: NotEqual,
@@ -2297,14 +2266,10 @@ int main(void) {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "s1",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "d",
+// DEFAULT-NEXT:                                       field: "j",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Float(
-// DEFAULT-NEXT:                                       FloatLiteral {
-// DEFAULT-NEXT:                                           value: Double(
-// DEFAULT-NEXT:                                               15.0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       251,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -2314,200 +2279,155 @@ int main(void) {
 // DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "s1",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "e",
+// DEFAULT-NEXT:                                   field: "d",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Float(
 // DEFAULT-NEXT:                                   FloatLiteral {
 // DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           178.0,
+// DEFAULT-NEXT:                                           15.0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f5",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Or,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: Or,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Or,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "i",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           131,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "j",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           251,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "s1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "d",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Float(
-// DEFAULT-NEXT:                                       FloatLiteral {
-// DEFAULT-NEXT:                                           value: Double(
-// DEFAULT-NEXT:                                               15.0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s1",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "e",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           191.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
 // DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a2",
+// DEFAULT-NEXT:                                   "s1",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "i",
+// DEFAULT-NEXT:                               field: "e",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               138,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "d",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Float(
+// DEFAULT-NEXT:                           right: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       16.0,
+// DEFAULT-NEXT:                                       191.0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "i",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           138,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "d",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   16.0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a4",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "i",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           257,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "a4",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "d",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   176.0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f6",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a4",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
 // DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a4",
+// DEFAULT-NEXT:                                   "s2",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               field: "i",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
+// DEFAULT-NEXT:                           right: Integer(
 // DEFAULT-NEXT:                               257,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
 // DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "a4",
+// DEFAULT-NEXT:                                   "s2",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               field: "d",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Float(
+// DEFAULT-NEXT:                           right: Float(
 // DEFAULT-NEXT:                               FloatLiteral {
 // DEFAULT-NEXT:                                   value: Double(
 // DEFAULT-NEXT:                                       176.0,
@@ -2515,205 +2435,123 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f6",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a4",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Or,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "i",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   257,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "d",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           176.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f6",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f6",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a4",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a4",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Or,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "i",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   138,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "s2",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "i",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "d",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           16.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               138,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "s2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "d",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       16.0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f7",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f7",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a1",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
 // DEFAULT-NEXT:                           op: Or,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Or,
 // DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Or,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "i",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           131,
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "s1",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "i",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "s1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "j",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           254,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       131,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: NotEqual,
@@ -2721,14 +2559,10 @@ int main(void) {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "s1",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "d",
+// DEFAULT-NEXT:                                       field: "j",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Float(
-// DEFAULT-NEXT:                                       FloatLiteral {
-// DEFAULT-NEXT:                                           value: Double(
-// DEFAULT-NEXT:                                               15.0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       254,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -2738,134 +2572,136 @@ int main(void) {
 // DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "s1",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "e",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           178.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "bar_arg",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               131,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f8",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a4",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Or,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "i",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   257,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "s2",
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   field: "d",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Float(
 // DEFAULT-NEXT:                                   FloatLiteral {
 // DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           176.0,
+// DEFAULT-NEXT:                                           15.0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "s1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "e",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       178.0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "bar_arg",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           131,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f8",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a4",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "s2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "i",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               257,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "s2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "d",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       176.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

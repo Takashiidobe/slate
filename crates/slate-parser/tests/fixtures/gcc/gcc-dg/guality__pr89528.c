@@ -210,10 +210,8 @@ int main() { n(); }
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -250,21 +248,19 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "l",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "l",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -301,43 +297,43 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Or,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "l",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "b",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "l",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Identifier(
-// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       condition: Binary {
+// DEFAULT-NEXT:                           op: Or,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           else_value: Binary {
-// DEFAULT-NEXT:                               op: Rem,
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: And,
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "l",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "l",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       then_value: Some(
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       else_value: Binary {
+// DEFAULT-NEXT:                           op: Rem,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "b",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "l",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -389,17 +385,15 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Mul,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "l",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "m",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Mul,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "l",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Identifier(
+// DEFAULT-NEXT:                           "m",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -451,35 +445,33 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Or,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "m",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "m",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: And,
+// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "l",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   767,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: And,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "l",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       767,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "m",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "m",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -531,10 +523,10 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Less,
-// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Less,
+// DEFAULT-NEXT:                       left: Paren(
+// DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: BitXor,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: BitXor,
@@ -555,15 +547,17 @@ int main() { n(); }
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Binary {
 // DEFAULT-NEXT:                                       op: Sub,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: BitAnd,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "m",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               647,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       left: Paren(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: BitAnd,
+// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                                   "m",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   647,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Identifier(
 // DEFAULT-NEXT:                                           "m",
 // DEFAULT-NEXT:                                       ),
@@ -573,11 +567,11 @@ int main() { n(); }
 // DEFAULT-NEXT:                                   "m",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "m",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Identifier(
+// DEFAULT-NEXT:                           "m",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -616,55 +610,55 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Or,
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       condition: Binary {
+// DEFAULT-NEXT:                           op: Or,
+// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: And,
 // DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "l",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       647,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Equal,
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "d",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "l",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           647,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Identifier(
-// DEFAULT-NEXT:                               "l",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           else_value: Binary {
-// DEFAULT-NEXT:                               op: Rem,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "l",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "d",
-// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       then_value: Some(
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "l",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       else_value: Binary {
+// DEFAULT-NEXT:                           op: Rem,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "l",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "d",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -704,23 +698,21 @@ int main() { n(); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: ShiftRight,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: GreaterEqual,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "l",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: ShiftRight,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: GreaterEqual,
+// DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Identifier(
+// DEFAULT-NEXT:                           "l",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -781,33 +773,31 @@ int main() { n(); }
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: BitXor,
-// DEFAULT-NEXT:                                               left: Unary {
-// DEFAULT-NEXT:                                                   op: BitNot,
-// DEFAULT-NEXT:                                                   value: Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "j",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Binary {
-// DEFAULT-NEXT:                                                               op: Or,
-// DEFAULT-NEXT:                                                               left: Integer(
-// DEFAULT-NEXT:                                                                   9,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: BitXor,
+// DEFAULT-NEXT:                                           left: Unary {
+// DEFAULT-NEXT:                                               op: BitNot,
+// DEFAULT-NEXT:                                               operand: Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "j",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Binary {
+// DEFAULT-NEXT:                                                           op: Or,
+// DEFAULT-NEXT:                                                           left: Integer(
+// DEFAULT-NEXT:                                                               9,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   65535,
-// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               65535,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -840,78 +830,70 @@ int main() { n(); }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "optimize_me_not",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "optimize_me_not",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "f",
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "f",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "l_1127",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "l_1127",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: BitXor,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: And,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "e",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: BitXor,
+// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                                       op: And,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: Identifier(
+// DEFAULT-NEXT:                                           "e",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "g",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       4,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "g",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "e",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "e",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           5,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       5,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -937,14 +919,12 @@ int main() { n(); }
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "n",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "n",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

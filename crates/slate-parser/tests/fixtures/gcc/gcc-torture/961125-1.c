@@ -173,74 +173,34 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "tab",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Identifier(
+// DEFAULT-NEXT:                       "tab",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       While {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Less,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "ptr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "lim",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: PostDecrement(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "sword",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: And,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: Less,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "ptr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Identifier(
+// DEFAULT-NEXT:                                       "lim",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               right: Postfix {
+// DEFAULT-NEXT:                                   op: Decrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "sword",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               While {
-// DEFAULT-NEXT:                                   condition: Const(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: And,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: Less,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "ptr",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "lim",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Binary {
-// DEFAULT-NEXT:                                               op: NotEqual,
-// DEFAULT-NEXT:                                               left: Deref(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "ptr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "tab",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   body: [
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               PreIncrement(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "ptr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Const(
-// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                   condition: Binary {
+// DEFAULT-NEXT:                                       op: And,
+// DEFAULT-NEXT:                                       left: Binary {
 // DEFAULT-NEXT:                                           op: Less,
 // DEFAULT-NEXT:                                           left: Identifier(
 // DEFAULT-NEXT:                                               "ptr",
@@ -249,16 +209,48 @@ int main(void) {
 // DEFAULT-NEXT:                                               "lim",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                           op: NotEqual,
+// DEFAULT-NEXT:                                           left: Unary {
+// DEFAULT-NEXT:                                               op: Deref,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "ptr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Identifier(
+// DEFAULT-NEXT:                                               "tab",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   body: [
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: PreIncrement,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "ptr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               If {
+// DEFAULT-NEXT:                                   condition: Binary {
+// DEFAULT-NEXT:                                       op: Less,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "ptr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: Identifier(
+// DEFAULT-NEXT:                                           "lim",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   then_branch: [
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               PreIncrement(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "ptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: PreIncrement,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "ptr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   else_branch: None,
@@ -269,10 +261,8 @@ int main(void) {
 // DEFAULT-NEXT:                   else_branch: Some(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           While {
-// DEFAULT-NEXT:                               condition: Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               condition: Integer(
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               body: [
 // DEFAULT-NEXT:                                   Block(
@@ -284,45 +274,39 @@ int main(void) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: LessEqual,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: LessEqual,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "ptr",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "schar",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Identifier(
+// DEFAULT-NEXT:                           "lim",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:                   then_branch: [
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: AddAssign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "ptr",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                               value: Identifier(
 // DEFAULT-NEXT:                                   "schar",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "lim",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: AddAssign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "ptr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "schar",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "ptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "ptr",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -366,10 +350,8 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           StringLit(
-// DEFAULT-NEXT:                                               ":ab",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       StringLit(
+// DEFAULT-NEXT:                                           ":ab",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -396,17 +378,15 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "s",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   3,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "s",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -414,69 +394,63 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "begfield",
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "begfield",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   58,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       58,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "s",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "lim",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "s",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "lim",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "s",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

@@ -733,10 +733,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -765,10 +763,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -793,10 +789,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -818,10 +812,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -845,7 +837,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       "multibyte16",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -856,10 +848,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -886,7 +876,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       "multibyte32",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -897,10 +887,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -925,31 +913,31 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "mbrtoc16",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "mbrtoc16",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "converted16",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               StringLit(
+// DEFAULT-NEXT:                                                   "A",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "converted16",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "state16",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   StringLit(
-// DEFAULT-NEXT:                                                       "A",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "state16",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -970,26 +958,25 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "c16rtomb",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "c16rtomb",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "multibyte16",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "multibyte16",
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   65,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "state16",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       65,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "state16",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1010,31 +997,31 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "mbrtoc32",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "mbrtoc32",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "converted32",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               StringLit(
+// DEFAULT-NEXT:                                                   "B",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "converted32",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "state32",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   StringLit(
-// DEFAULT-NEXT:                                                       "B",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "state32",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1055,26 +1042,25 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "c32rtomb",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "c32rtomb",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "multibyte32",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "multibyte32",
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   66,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "state32",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       66,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "state32",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1082,76 +1068,72 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%zu %zu %u %d %zu %zu %u %d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%zu %zu %u %d %zu %zu %u %d\\n",
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "read16",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "write16",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "read16",
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "converted16",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "write16",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Index {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "multibyte16",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "converted16",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Index {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "multibyte16",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "read32",
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "write32",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "read32",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "write32",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: false,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "converted32",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Index {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "multibyte32",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "converted32",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Index {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "multibyte32",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

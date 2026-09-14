@@ -143,7 +143,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                                                               "u64",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           size: Expression(
-// DEFAULT-NEXT:                                                               IntLit(
+// DEFAULT-NEXT:                                                               Integer(
 // DEFAULT-NEXT:                                                                   2,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
@@ -174,81 +174,73 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "bits",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u64",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "bits",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u64",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
 // DEFAULT-NEXT:                               base: Identifier(
 // DEFAULT-NEXT:                                   "bits",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "f80",
+// DEFAULT-NEXT:                               field: "u64",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "value",
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "bits",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u64",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "bits",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "f80",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "value",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Cast {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
-// DEFAULT-NEXT:                           value: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "bits",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "f80",
+// DEFAULT-NEXT:                   Cast {
+// DEFAULT-NEXT:                       ty: Integer(
+// DEFAULT-NEXT:                           Ranked {
+// DEFAULT-NEXT:                               rank: Int,
+// DEFAULT-NEXT:                               signed: true,
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                       value: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "bits",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "f80",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -273,32 +265,30 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%d\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "convert",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "convert",
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Float(
+// DEFAULT-NEXT:                                       FloatLiteral {
+// DEFAULT-NEXT:                                           value: LongDouble(
+// DEFAULT-NEXT:                                               0x4001d800000000000000,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Float(
-// DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               value: LongDouble(
-// DEFAULT-NEXT:                                                   0x4001d800000000000000,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

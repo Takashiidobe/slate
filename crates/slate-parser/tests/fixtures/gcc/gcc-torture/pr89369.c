@@ -116,7 +116,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       "u",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -236,15 +236,15 @@ int main() { return 0; }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "th",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: BitOr,
-// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "th",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitOr,
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Cast {
 // DEFAULT-NEXT:                                       ty: Integer(
@@ -255,11 +255,12 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                       value: Index {
-// DEFAULT-NEXT:                                           base: Arrow {
+// DEFAULT-NEXT:                                           base: Member {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "in",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           index: Integer(
 // DEFAULT-NEXT:                                               3,
@@ -270,31 +271,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       32,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Index {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "in",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "u",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Index {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "in",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "u",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "tl",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: BitOr,
-// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "tl",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitOr,
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Cast {
 // DEFAULT-NEXT:                                       ty: Integer(
@@ -305,11 +307,12 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                       value: Index {
-// DEFAULT-NEXT:                                           base: Arrow {
+// DEFAULT-NEXT:                                           base: Member {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "in",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           index: Integer(
 // DEFAULT-NEXT:                                               1,
@@ -320,34 +323,35 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       32,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Index {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "in",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "u",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Index {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "in",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "u",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "oh",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "th",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "th",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "shift",
@@ -356,23 +360,23 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       8,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "ol",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "ol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "tl",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "tl",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "shift",
@@ -381,23 +385,23 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       8,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: BitOrAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "ol",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: BitOrAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "ol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftLeft,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "th",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftLeft,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "th",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Sub,
 // DEFAULT-NEXT:                                   left: Integer(
 // DEFAULT-NEXT:                                       64,
@@ -412,105 +416,101 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "ol",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   32,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "ol",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "oh",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   32,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               32,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "ol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               32,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "oh",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -616,15 +616,15 @@ int main() { return 0; }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "th",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: BitOr,
-// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "th",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitOr,
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Cast {
 // DEFAULT-NEXT:                                       ty: Integer(
@@ -635,11 +635,12 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                       value: Index {
-// DEFAULT-NEXT:                                           base: Arrow {
+// DEFAULT-NEXT:                                           base: Member {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "in",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           index: Integer(
 // DEFAULT-NEXT:                                               3,
@@ -650,31 +651,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       32,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Index {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "in",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "u",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Index {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "in",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "u",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "tl",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: BitOr,
-// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "tl",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitOr,
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Cast {
 // DEFAULT-NEXT:                                       ty: Integer(
@@ -685,11 +687,12 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       declarator: Abstract,
 // DEFAULT-NEXT:                                       value: Index {
-// DEFAULT-NEXT:                                           base: Arrow {
+// DEFAULT-NEXT:                                           base: Member {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "in",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           index: Integer(
 // DEFAULT-NEXT:                                               1,
@@ -700,34 +703,35 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       32,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Index {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "in",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "u",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Index {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "in",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "u",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "oh",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftLeft,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "th",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftLeft,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "th",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "shift",
@@ -736,23 +740,23 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       8,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "ol",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "ol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftLeft,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "tl",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftLeft,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "tl",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "shift",
@@ -761,23 +765,23 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       8,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: BitOrAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: BitOrAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "oh",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "tl",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "tl",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Sub,
 // DEFAULT-NEXT:                                   left: Integer(
 // DEFAULT-NEXT:                                       64,
@@ -792,105 +796,101 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "ol",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   32,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "ol",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "oh",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   32,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "out",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               32,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "ol",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "oh",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               32,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "out",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "oh",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1016,139 +1016,145 @@ int main() { return 0; }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "bar",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "a",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "foo",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "y",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "c",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "r",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "bar",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "x",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "a",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "foo",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "c",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "r",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitXor,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: BitXor,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: BitXor,
 // DEFAULT-NEXT:                                   left: Binary {
 // DEFAULT-NEXT:                                       op: BitXor,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: BitXor,
-// DEFAULT-NEXT:                                           left: Index {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Index {
-// DEFAULT-NEXT:                                               base: Member {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                       right: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Paren(
+// DEFAULT-NEXT:                                       Binary {
 // DEFAULT-NEXT:                                           op: BitAnd,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: ShiftRight,
-// DEFAULT-NEXT:                                               left: Index {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                   left: Index {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "u",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           0,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "u",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       11,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   11,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: Integer(
 // DEFAULT-NEXT:                                               3758096367,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Index {
-// DEFAULT-NEXT:                                       base: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                               right: Index {
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Index {
-// DEFAULT-NEXT:                                       base: Arrow {
+// DEFAULT-NEXT:                                       base: Member {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "d",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "u",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       index: Integer(
 // DEFAULT-NEXT:                                           0,
@@ -1158,100 +1164,108 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       18,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "r",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "r",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitXor,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: BitXor,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: BitXor,
 // DEFAULT-NEXT:                                   left: Binary {
 // DEFAULT-NEXT:                                       op: BitXor,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: BitXor,
-// DEFAULT-NEXT:                                           left: Index {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Index {
-// DEFAULT-NEXT:                                               base: Member {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   1,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                       right: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Paren(
+// DEFAULT-NEXT:                                       Binary {
 // DEFAULT-NEXT:                                           op: BitAnd,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: ShiftRight,
-// DEFAULT-NEXT:                                               left: Index {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                   left: Index {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "u",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "u",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       11,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   11,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: Integer(
 // DEFAULT-NEXT:                                               3724462975,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Index {
-// DEFAULT-NEXT:                                       base: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                               right: Index {
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Index {
-// DEFAULT-NEXT:                                       base: Arrow {
+// DEFAULT-NEXT:                                       base: Member {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "d",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "u",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       index: Integer(
 // DEFAULT-NEXT:                                           1,
@@ -1261,100 +1275,108 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       18,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "r",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "r",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitXor,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: BitXor,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: BitXor,
 // DEFAULT-NEXT:                                   left: Binary {
 // DEFAULT-NEXT:                                       op: BitXor,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: BitXor,
-// DEFAULT-NEXT:                                           left: Index {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Index {
-// DEFAULT-NEXT:                                               base: Member {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   2,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                       right: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Paren(
+// DEFAULT-NEXT:                                       Binary {
 // DEFAULT-NEXT:                                           op: BitAnd,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: ShiftRight,
-// DEFAULT-NEXT:                                               left: Index {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                   left: Index {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "u",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           2,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "u",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       11,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   11,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: Integer(
 // DEFAULT-NEXT:                                               3220897791,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Index {
-// DEFAULT-NEXT:                                       base: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           2,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                               right: Index {
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Index {
-// DEFAULT-NEXT:                                       base: Arrow {
+// DEFAULT-NEXT:                                       base: Member {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "d",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "u",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       index: Integer(
 // DEFAULT-NEXT:                                           2,
@@ -1364,100 +1386,108 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       18,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "r",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "u",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "r",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "u",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: BitXor,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: BitXor,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: BitXor,
 // DEFAULT-NEXT:                                   left: Binary {
 // DEFAULT-NEXT:                                       op: BitXor,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: BitXor,
-// DEFAULT-NEXT:                                           left: Index {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                       left: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Index {
-// DEFAULT-NEXT:                                               base: Member {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   3,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                       right: Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Paren(
+// DEFAULT-NEXT:                                       Binary {
 // DEFAULT-NEXT:                                           op: BitAnd,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: ShiftRight,
-// DEFAULT-NEXT:                                               left: Index {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                           left: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                   left: Index {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "b",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "u",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           3,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "u",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       3,
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       11,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   11,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: Integer(
 // DEFAULT-NEXT:                                               3221225462,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Index {
-// DEFAULT-NEXT:                                       base: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           3,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                               right: Index {
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: ShiftLeft,
 // DEFAULT-NEXT:                                   left: Index {
-// DEFAULT-NEXT:                                       base: Arrow {
+// DEFAULT-NEXT:                                       base: Member {
 // DEFAULT-NEXT:                                           base: Identifier(
 // DEFAULT-NEXT:                                               "d",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "u",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       index: Integer(
 // DEFAULT-NEXT:                                           3,
@@ -1467,9 +1497,9 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       18,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1524,40 +1554,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       1235,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1235,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3159640283,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3159640283,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       4062961311,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   4062961311,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3954462607,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3954462607,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1571,40 +1593,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       61024153,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   61024153,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       1623097926,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1623097926,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       2731697901,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   2731697901,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       2057405750,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   2057405750,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1618,40 +1632,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       363037976,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   363037976,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3479526625,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3479526625,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       4091582868,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   4091582868,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       1357867518,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1357867518,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1665,40 +1671,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       2284276487,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   2284276487,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3888728166,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3888728166,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3236601671,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3236601671,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3064478787,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3064478787,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1712,40 +1710,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       3440181298,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3440181298,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       1564997079,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1564997079,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       1510669302,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   1510669302,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       2930277156,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   2930277156,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1759,40 +1749,32 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -1807,143 +1789,109 @@ int main() { return 0; }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "baz",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           5,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           2,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           3,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "baz",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       5,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
 // DEFAULT-NEXT:                           op: Or,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Or,
 // DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Or,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   4,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "u",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Index {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "u",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       index: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Index {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                   right: Index {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: Integer(
+// DEFAULT-NEXT:                                                   5,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "u",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Index {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "a",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       5,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "u",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       index: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Binary {
@@ -1961,7 +1909,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                           field: "u",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Index {
@@ -1977,7 +1925,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                           field: "u",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
@@ -1997,7 +1945,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       field: "u",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                       2,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Index {
@@ -2013,31 +1961,62 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       field: "u",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                       2,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Index {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "a",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Integer(
+// DEFAULT-NEXT:                                           4,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "u",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Index {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "a",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Integer(
+// DEFAULT-NEXT:                                           5,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "u",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

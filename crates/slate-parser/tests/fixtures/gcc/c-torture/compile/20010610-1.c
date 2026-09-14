@@ -69,7 +69,7 @@ main(void)
 // DEFAULT-NEXT:                                       "arr",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -79,16 +79,14 @@ main(void)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Switch {
-// DEFAULT-NEXT:                   discriminant: Const(
-// DEFAULT-NEXT:                       Index {
-// DEFAULT-NEXT:                           base: Identifier(
-// DEFAULT-NEXT:                               "arr",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           index: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   discriminant: Index {
+// DEFAULT-NEXT:                       base: Identifier(
+// DEFAULT-NEXT:                           "arr",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       index: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Default,
 // DEFAULT-NEXT:                       Block(
@@ -97,10 +95,8 @@ main(void)
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

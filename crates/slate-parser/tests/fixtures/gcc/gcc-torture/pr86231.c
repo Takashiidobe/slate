@@ -87,13 +87,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "p",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Cast {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Equal,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "p",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Cast {
 // DEFAULT-NEXT:                               ty: Void,
 // DEFAULT-NEXT:                               declarator: Pointer {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
@@ -103,51 +103,51 @@ int main() {
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Unary {
-// DEFAULT-NEXT:                           op: Not,
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "p",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Unary {
+// DEFAULT-NEXT:                       op: Not,
+// DEFAULT-NEXT:                       operand: Identifier(
+// DEFAULT-NEXT:                           "p",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "p",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Conditional {
+// DEFAULT-NEXT:                                   condition: Identifier(
+// DEFAULT-NEXT:                                       "x",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Ternary {
-// DEFAULT-NEXT:                                       condition: Identifier(
-// DEFAULT-NEXT:                                           "x",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       then_value: Cast {
-// DEFAULT-NEXT:                                           ty: Void,
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                   then_value: Some(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Void,
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Integer(
+// DEFAULT-NEXT:                                                   2,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               2,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       else_value: Cast {
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   else_value: Paren(
+// DEFAULT-NEXT:                                       Cast {
 // DEFAULT-NEXT:                                           ty: Void,
 // DEFAULT-NEXT:                                           declarator: Pointer {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers,
@@ -157,22 +157,22 @@ int main() {
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "p",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Cast {
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       condition: Binary {
+// DEFAULT-NEXT:                           op: Equal,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "p",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Cast {
 // DEFAULT-NEXT:                                   ty: Void,
 // DEFAULT-NEXT:                                   declarator: Pointer {
 // DEFAULT-NEXT:                                       qualifiers: Qualifiers,
@@ -182,15 +182,17 @@ int main() {
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_value: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           else_value: Integer(
-// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       then_value: Some(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       else_value: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -223,7 +225,7 @@ int main() {
 // DEFAULT-NEXT:                           "v",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -251,8 +253,9 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Or,
+// DEFAULT-NEXT:                       left: Binary {
 // DEFAULT-NEXT:                           op: Or,
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Or,
@@ -265,59 +268,30 @@ int main() {
 // DEFAULT-NEXT:                                           left: Binary {
 // DEFAULT-NEXT:                                               op: Or,
 // DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: Or,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: NotEqual,
-// DEFAULT-NEXT:                                                       left: Call {
-// DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "foo",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           arguments: [
-// DEFAULT-NEXT:                                                               Cast {
-// DEFAULT-NEXT:                                                                   ty: Void,
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                   op: NotEqual,
+// DEFAULT-NEXT:                                                   left: Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "foo",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Void,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                               value: Integer(
 // DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: NotEqual,
-// DEFAULT-NEXT:                                                       left: Call {
-// DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "foo",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               0,
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           arguments: [
-// DEFAULT-NEXT:                                                               Cast {
-// DEFAULT-NEXT:                                                                   ty: Void,
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               Integer(
-// DEFAULT-NEXT:                                                                   1,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: Binary {
 // DEFAULT-NEXT:                                                   op: NotEqual,
@@ -333,16 +307,16 @@ int main() {
 // DEFAULT-NEXT:                                                                   inner: Abstract,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                               1,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       1,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
@@ -353,18 +327,20 @@ int main() {
 // DEFAULT-NEXT:                                                       "foo",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   arguments: [
-// DEFAULT-NEXT:                                                       Cast {
-// DEFAULT-NEXT:                                                           ty: Void,
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Void,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                           0,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
@@ -380,23 +356,25 @@ int main() {
 // DEFAULT-NEXT:                                                   "foo",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Void,
-// DEFAULT-NEXT:                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: Void,
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               1,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Integer(
-// DEFAULT-NEXT:                                                           2,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       1,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
@@ -407,18 +385,20 @@ int main() {
 // DEFAULT-NEXT:                                               "foo",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Void,
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Cast {
+// DEFAULT-NEXT:                                                       ty: Void,
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Integer(
-// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
@@ -434,18 +414,20 @@ int main() {
 // DEFAULT-NEXT:                                           "foo",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           AddrOf(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "v",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       7,
+// DEFAULT-NEXT:                                           Paren(
+// DEFAULT-NEXT:                                               Cast {
+// DEFAULT-NEXT:                                                   ty: Void,
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Integer(
+// DEFAULT-NEXT:                                                       2,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
@@ -461,8 +443,9 @@ int main() {
 // DEFAULT-NEXT:                                       "foo",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                       Unary {
+// DEFAULT-NEXT:                                           op: AddrOf,
+// DEFAULT-NEXT:                                           operand: Index {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "v",
 // DEFAULT-NEXT:                                               ),
@@ -470,9 +453,9 @@ int main() {
 // DEFAULT-NEXT:                                                   7,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -481,26 +464,49 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "foo",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "v",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Integer(
+// DEFAULT-NEXT:                                               7,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

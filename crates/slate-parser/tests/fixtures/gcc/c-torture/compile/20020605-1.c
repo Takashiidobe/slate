@@ -73,10 +73,8 @@ void f (void)
 // DEFAULT-NEXT:               DoWhile {
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "c",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           condition: Identifier(
+// DEFAULT-NEXT:                               "c",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Break,
@@ -84,38 +82,30 @@ void f (void)
 // DEFAULT-NEXT:                           else_branch: None,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       1,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Unary {
-// DEFAULT-NEXT:                           op: Not,
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Unary {
+// DEFAULT-NEXT:                       op: Not,
+// DEFAULT-NEXT:                       operand: Identifier(
+// DEFAULT-NEXT:                           "c",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       While {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           condition: Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "f",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "f",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },

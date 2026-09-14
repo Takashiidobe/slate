@@ -26,7 +26,7 @@ void convert(void) {
 // DEFAULT-NEXT:                           "values",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -57,7 +57,7 @@ void convert(void) {
 // DEFAULT-NEXT:                           "source",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -96,10 +96,8 @@ void convert(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -108,44 +106,40 @@ void convert(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Index {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Index {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "values",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           index: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Cast {
+// DEFAULT-NEXT:                           ty: TypeOf(
+// DEFAULT-NEXT:                               Expression(
+// DEFAULT-NEXT:                                   Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "values",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                           value: Index {
 // DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "values",
+// DEFAULT-NEXT:                                   "source",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               index: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Cast {
-// DEFAULT-NEXT:                               ty: TypeOf(
-// DEFAULT-NEXT:                                   Expression(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "values",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: Index {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "source",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

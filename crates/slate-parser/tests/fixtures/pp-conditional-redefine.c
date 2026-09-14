@@ -35,7 +35,7 @@ int nested[X];
 // DEFAULT-NEXT:                           "redefined",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -69,7 +69,7 @@ int nested[X];
 // DEFAULT-NEXT:                           "nested",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -105,7 +105,7 @@ int nested[X];
 // A-NEXT:                           "redefined",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               2,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -139,7 +139,7 @@ int nested[X];
 // A-NEXT:                           "nested",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               2,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -175,7 +175,7 @@ int nested[X];
 // B-NEXT:                           "redefined",
 // B-NEXT:                       ),
 // B-NEXT:                       size: Expression(
-// B-NEXT:                           IntLit(
+// B-NEXT:                           Integer(
 // B-NEXT:                               1,
 // B-NEXT:                           ),
 // B-NEXT:                       ),
@@ -209,7 +209,7 @@ int nested[X];
 // B-NEXT:                           "nested",
 // B-NEXT:                       ),
 // B-NEXT:                       size: Expression(
-// B-NEXT:                           IntLit(
+// B-NEXT:                           Integer(
 // B-NEXT:                               1,
 // B-NEXT:                           ),
 // B-NEXT:                       ),
@@ -245,7 +245,7 @@ int nested[X];
 // AB-NEXT:                           "redefined",
 // AB-NEXT:                       ),
 // AB-NEXT:                       size: Expression(
-// AB-NEXT:                           IntLit(
+// AB-NEXT:                           Integer(
 // AB-NEXT:                               2,
 // AB-NEXT:                           ),
 // AB-NEXT:                       ),
@@ -279,7 +279,7 @@ int nested[X];
 // AB-NEXT:                           "nested",
 // AB-NEXT:                       ),
 // AB-NEXT:                       size: Expression(
-// AB-NEXT:                           IntLit(
+// AB-NEXT:                           Integer(
 // AB-NEXT:                               5,
 // AB-NEXT:                           ),
 // AB-NEXT:                       ),

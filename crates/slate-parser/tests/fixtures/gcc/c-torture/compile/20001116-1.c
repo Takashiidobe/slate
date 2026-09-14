@@ -22,7 +22,7 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:                           "x",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               60,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -58,7 +58,7 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                           Paren(
 // DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Sub,
 // DEFAULT-NEXT:                                   left: Cast {
@@ -71,28 +71,31 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:                                           qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                           inner: Abstract,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: AddrOf(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "x",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               index: Binary {
-// DEFAULT-NEXT:                                                   op: Add,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Mul,
-// DEFAULT-NEXT:                                                       left: Integer(
+// DEFAULT-NEXT:                                       value: Unary {
+// DEFAULT-NEXT:                                           op: AddrOf,
+// DEFAULT-NEXT:                                           operand: Paren(
+// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "x",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Binary {
+// DEFAULT-NEXT:                                                       op: Add,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Integer(
+// DEFAULT-NEXT:                                                               2,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Integer(
 // DEFAULT-NEXT:                                                           2,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           8,
-// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Integer(
 // DEFAULT-NEXT:                                       8,
@@ -130,11 +133,12 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
+// DEFAULT-NEXT:                           Paren(
 // DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: AddrOf(
-// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                   left: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
 // DEFAULT-NEXT:                                           base: StringLit(
 // DEFAULT-NEXT:                                               "Foobar",
 // DEFAULT-NEXT:                                           ),
@@ -142,9 +146,10 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: AddrOf(
-// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: AddrOf,
+// DEFAULT-NEXT:                                       operand: Index {
 // DEFAULT-NEXT:                                           base: StringLit(
 // DEFAULT-NEXT:                                               "Foobar",
 // DEFAULT-NEXT:                                           ),
@@ -152,7 +157,7 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),

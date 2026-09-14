@@ -39,10 +39,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   7,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               7,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -74,17 +72,15 @@ int main() {
 // DEFAULT-NEXT:                           "message",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               6,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "hello",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "hello",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -118,13 +114,13 @@ int main() {
 // DEFAULT-NEXT:                               "matrix",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   2,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -139,20 +135,16 @@ int main() {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           2,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       2,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -166,20 +158,16 @@ int main() {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           3,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       3,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           4,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       4,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -298,10 +286,8 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               9,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           9,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -312,10 +298,8 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               4,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -351,7 +335,7 @@ int main() {
 // DEFAULT-NEXT:                           "values",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -366,10 +350,8 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               8,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           8,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -380,10 +362,8 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -419,10 +399,8 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   22,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               22,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -449,10 +427,8 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -485,10 +461,8 @@ int main() {
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:                   initializer: Some(
 // ENABLED-NEXT:                       Expr(
-// ENABLED-NEXT:                           Const(
-// ENABLED-NEXT:                               Integer(
-// ENABLED-NEXT:                                   7,
-// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           Integer(
+// ENABLED-NEXT:                               7,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
@@ -520,17 +494,15 @@ int main() {
 // ENABLED-NEXT:                           "message",
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                       size: Expression(
-// ENABLED-NEXT:                           IntLit(
+// ENABLED-NEXT:                           Integer(
 // ENABLED-NEXT:                               6,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   },
 // ENABLED-NEXT:                   initializer: Some(
 // ENABLED-NEXT:                       Expr(
-// ENABLED-NEXT:                           Const(
-// ENABLED-NEXT:                               StringLit(
-// ENABLED-NEXT:                                   "hello",
-// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           StringLit(
+// ENABLED-NEXT:                               "hello",
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
@@ -564,13 +536,13 @@ int main() {
 // ENABLED-NEXT:                               "matrix",
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                           size: Expression(
-// ENABLED-NEXT:                               IntLit(
+// ENABLED-NEXT:                               Integer(
 // ENABLED-NEXT:                                   2,
 // ENABLED-NEXT:                               ),
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       },
 // ENABLED-NEXT:                       size: Expression(
-// ENABLED-NEXT:                           IntLit(
+// ENABLED-NEXT:                           Integer(
 // ENABLED-NEXT:                               2,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
@@ -585,20 +557,16 @@ int main() {
 // ENABLED-NEXT:                                           InitializerItem {
 // ENABLED-NEXT:                                               designators: [],
 // ENABLED-NEXT:                                               value: Expr(
-// ENABLED-NEXT:                                                   Const(
-// ENABLED-NEXT:                                                       Integer(
-// ENABLED-NEXT:                                                           1,
-// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   Integer(
+// ENABLED-NEXT:                                                       1,
 // ENABLED-NEXT:                                                   ),
 // ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           },
 // ENABLED-NEXT:                                           InitializerItem {
 // ENABLED-NEXT:                                               designators: [],
 // ENABLED-NEXT:                                               value: Expr(
-// ENABLED-NEXT:                                                   Const(
-// ENABLED-NEXT:                                                       Integer(
-// ENABLED-NEXT:                                                           2,
-// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   Integer(
+// ENABLED-NEXT:                                                       2,
 // ENABLED-NEXT:                                                   ),
 // ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           },
@@ -612,20 +580,16 @@ int main() {
 // ENABLED-NEXT:                                           InitializerItem {
 // ENABLED-NEXT:                                               designators: [],
 // ENABLED-NEXT:                                               value: Expr(
-// ENABLED-NEXT:                                                   Const(
-// ENABLED-NEXT:                                                       Integer(
-// ENABLED-NEXT:                                                           3,
-// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   Integer(
+// ENABLED-NEXT:                                                       3,
 // ENABLED-NEXT:                                                   ),
 // ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           },
 // ENABLED-NEXT:                                           InitializerItem {
 // ENABLED-NEXT:                                               designators: [],
 // ENABLED-NEXT:                                               value: Expr(
-// ENABLED-NEXT:                                                   Const(
-// ENABLED-NEXT:                                                       Integer(
-// ENABLED-NEXT:                                                           4,
-// ENABLED-NEXT:                                                       ),
+// ENABLED-NEXT:                                                   Integer(
+// ENABLED-NEXT:                                                       4,
 // ENABLED-NEXT:                                                   ),
 // ENABLED-NEXT:                                               ),
 // ENABLED-NEXT:                                           },
@@ -744,10 +708,8 @@ int main() {
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ],
 // ENABLED-NEXT:                                   value: Expr(
-// ENABLED-NEXT:                                       Const(
-// ENABLED-NEXT:                                           Integer(
-// ENABLED-NEXT:                                               9,
-// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       Integer(
+// ENABLED-NEXT:                                           9,
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               },
@@ -758,10 +720,8 @@ int main() {
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ],
 // ENABLED-NEXT:                                   value: Expr(
-// ENABLED-NEXT:                                       Const(
-// ENABLED-NEXT:                                           Integer(
-// ENABLED-NEXT:                                               4,
-// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       Integer(
+// ENABLED-NEXT:                                           4,
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               },
@@ -797,7 +757,7 @@ int main() {
 // ENABLED-NEXT:                           "values",
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                       size: Expression(
-// ENABLED-NEXT:                           IntLit(
+// ENABLED-NEXT:                           Integer(
 // ENABLED-NEXT:                               4,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
@@ -812,10 +772,8 @@ int main() {
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ],
 // ENABLED-NEXT:                                   value: Expr(
-// ENABLED-NEXT:                                       Const(
-// ENABLED-NEXT:                                           Integer(
-// ENABLED-NEXT:                                               8,
-// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       Integer(
+// ENABLED-NEXT:                                           8,
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               },
@@ -826,10 +784,8 @@ int main() {
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ],
 // ENABLED-NEXT:                                   value: Expr(
-// ENABLED-NEXT:                                       Const(
-// ENABLED-NEXT:                                           Integer(
-// ENABLED-NEXT:                                               1,
-// ENABLED-NEXT:                                           ),
+// ENABLED-NEXT:                                       Integer(
+// ENABLED-NEXT:                                           1,
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ),
 // ENABLED-NEXT:                               },
@@ -865,10 +821,8 @@ int main() {
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:                   initializer: Some(
 // ENABLED-NEXT:                       Expr(
-// ENABLED-NEXT:                           Const(
-// ENABLED-NEXT:                               Integer(
-// ENABLED-NEXT:                                   11,
-// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           Integer(
+// ENABLED-NEXT:                               11,
 // ENABLED-NEXT:                           ),
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
@@ -895,10 +849,8 @@ int main() {
 // ENABLED-NEXT:           name: "main",
 // ENABLED-NEXT:           body: [
 // ENABLED-NEXT:               Return(
-// ENABLED-NEXT:                   Const(
-// ENABLED-NEXT:                       Integer(
-// ENABLED-NEXT:                           0,
-// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                   Integer(
+// ENABLED-NEXT:                       0,
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           ],

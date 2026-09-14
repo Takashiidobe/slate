@@ -198,7 +198,7 @@ int main() {
 // DEFAULT-NEXT:                                       "h",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           30,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -213,30 +213,24 @@ int main() {
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -251,16 +245,14 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Index {
-// DEFAULT-NEXT:                           base: Identifier(
-// DEFAULT-NEXT:                               "h",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           index: Integer(
-// DEFAULT-NEXT:                               29,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Index {
+// DEFAULT-NEXT:                       base: Identifier(
+// DEFAULT-NEXT:                           "h",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       index: Integer(
+// DEFAULT-NEXT:                           29,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -284,30 +276,26 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "e",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "e",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "foo",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "foo",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           arguments: [],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Member {
-// DEFAULT-NEXT:                           base: Identifier(
-// DEFAULT-NEXT:                               "e",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           field: "b",
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Member {
+// DEFAULT-NEXT:                       base: Identifier(
+// DEFAULT-NEXT:                           "e",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       field: "b",
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

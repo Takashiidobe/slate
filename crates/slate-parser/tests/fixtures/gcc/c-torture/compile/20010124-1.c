@@ -124,42 +124,40 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:                           "x",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Ternary {
-// DEFAULT-NEXT:                                   condition: Binary {
+// DEFAULT-NEXT:                           Conditional {
+// DEFAULT-NEXT:                               condition: Paren(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: SizeOf(
-// DEFAULT-NEXT:                                           CompoundLiteral {
-// DEFAULT-NEXT:                                               ty: Tagged {
-// DEFAULT-NEXT:                                                   kind: Struct,
-// DEFAULT-NEXT:                                                   name: Some(
-// DEFAULT-NEXT:                                                       "s",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                               initializer: [
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                       left: Paren(
+// DEFAULT-NEXT:                                           SizeOfExpr(
+// DEFAULT-NEXT:                                               CompoundLiteral {
+// DEFAULT-NEXT:                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                       kind: Struct,
+// DEFAULT-NEXT:                                                       name: Some(
+// DEFAULT-NEXT:                                                           "s",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   initializer: [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: Expr(
 // DEFAULT-NEXT:                                                               Integer(
 // DEFAULT-NEXT:                                                                   1,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: Expr(
-// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: Expr(
 // DEFAULT-NEXT:                                                               Integer(
 // DEFAULT-NEXT:                                                                   2,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
 // DEFAULT-NEXT:                                           ty: Tagged {
@@ -171,17 +169,19 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:                                           declarator: Abstract,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_value: Integer(
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               then_value: Some(
+// DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   else_value: Unary {
-// DEFAULT-NEXT:                                       op: Minus,
-// DEFAULT-NEXT:                                       value: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               else_value: Unary {
+// DEFAULT-NEXT:                                   op: Minus,
+// DEFAULT-NEXT:                                   operand: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },

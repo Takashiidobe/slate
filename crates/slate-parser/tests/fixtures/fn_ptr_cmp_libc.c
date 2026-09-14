@@ -236,20 +236,18 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "h",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "malloc_fn",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "malloc",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "h",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "malloc_fn",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "malloc",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -268,7 +266,7 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Binary {
 // DEFAULT-NEXT:                                               op: Equal,
 // DEFAULT-NEXT:                                               left: Member {
@@ -289,19 +287,19 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Ternary {
-// DEFAULT-NEXT:                           condition: Identifier(
-// DEFAULT-NEXT:                               "matches",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_value: Integer(
+// DEFAULT-NEXT:                   Conditional {
+// DEFAULT-NEXT:                       condition: Identifier(
+// DEFAULT-NEXT:                           "matches",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       then_value: Some(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           else_value: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       else_value: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

@@ -44,10 +44,8 @@ int picked(void) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -100,10 +98,8 @@ int picked(void) {
 // DEFAULT-NEXT:           name: "picked",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       4,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -136,10 +132,8 @@ int picked(void) {
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:                   initializer: Some(
 // SELECT-NEXT:                       Expr(
-// SELECT-NEXT:                           Const(
-// SELECT-NEXT:                               Integer(
-// SELECT-NEXT:                                   1,
-// SELECT-NEXT:                               ),
+// SELECT-NEXT:                           Integer(
+// SELECT-NEXT:                               1,
 // SELECT-NEXT:                           ),
 // SELECT-NEXT:                       ),
 // SELECT-NEXT:                   ),
@@ -193,10 +187,8 @@ int picked(void) {
 // SELECT-NEXT:           name: "picked",
 // SELECT-NEXT:           body: [
 // SELECT-NEXT:               Return(
-// SELECT-NEXT:                   Const(
-// SELECT-NEXT:                       Integer(
-// SELECT-NEXT:                           3,
-// SELECT-NEXT:                       ),
+// SELECT-NEXT:                   Integer(
+// SELECT-NEXT:                       3,
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ],

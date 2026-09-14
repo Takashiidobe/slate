@@ -110,14 +110,12 @@ int main() {
 // DEFAULT-NEXT:           name: "vec_assert_fail",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "abort",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -369,7 +367,7 @@ int main() {
 // DEFAULT-NEXT:                                       "vec",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -450,66 +448,74 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Cast {
-// DEFAULT-NEXT:                           ty: Void,
-// DEFAULT-NEXT:                           declarator: Abstract,
-// DEFAULT-NEXT:                           value: Ternary {
-// DEFAULT-NEXT:                               condition: Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "vec_",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                   Cast {
+// DEFAULT-NEXT:                       ty: Void,
+// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Conditional {
+// DEFAULT-NEXT:                               condition: Paren(
+// DEFAULT-NEXT:                                   Binary {
+// DEFAULT-NEXT:                                       op: And,
+// DEFAULT-NEXT:                                       left: Identifier(
 // DEFAULT-NEXT:                                           "vec_",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "num",
+// DEFAULT-NEXT:                                       right: Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "vec_",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "num",
+// DEFAULT-NEXT:                                           arrow: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_value: Integer(
-// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               else_value: Comma(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "vec_assert_fail",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               then_value: Some(
 // DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               else_value: Paren(
+// DEFAULT-NEXT:                                   Comma {
+// DEFAULT-NEXT:                                       left: Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "vec_assert_fail",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       AddrOf(
-// DEFAULT-NEXT:                           Index {
-// DEFAULT-NEXT:                               base: Arrow {
+// DEFAULT-NEXT:                   Unary {
+// DEFAULT-NEXT:                       op: AddrOf,
+// DEFAULT-NEXT:                       operand: Index {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "vec_",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "vec",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           index: Binary {
+// DEFAULT-NEXT:                               op: Sub,
+// DEFAULT-NEXT:                               left: Member {
 // DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "vec_",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "vec",
+// DEFAULT-NEXT:                                   field: "num",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               index: Binary {
-// DEFAULT-NEXT:                                   op: Sub,
-// DEFAULT-NEXT:                                   left: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "vec_",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "num",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -545,46 +551,53 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Cast {
-// DEFAULT-NEXT:                           ty: Void,
-// DEFAULT-NEXT:                           declarator: Abstract,
-// DEFAULT-NEXT:                           value: Ternary {
-// DEFAULT-NEXT:                               condition: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "vec_",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "num",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_value: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               else_value: Comma(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "vec_assert_fail",
+// DEFAULT-NEXT:                   Cast {
+// DEFAULT-NEXT:                       ty: Void,
+// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Conditional {
+// DEFAULT-NEXT:                               condition: Paren(
+// DEFAULT-NEXT:                                   Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "vec_",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                       field: "num",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               then_value: Some(
 // DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       PreDecrement(
-// DEFAULT-NEXT:                           Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "vec_",
+// DEFAULT-NEXT:                               else_value: Paren(
+// DEFAULT-NEXT:                                   Comma {
+// DEFAULT-NEXT:                                       left: Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "vec_assert_fail",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "num",
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Unary {
+// DEFAULT-NEXT:                       op: PreDecrement,
+// DEFAULT-NEXT:                       operand: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "vec_",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "num",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -620,14 +633,12 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "abort",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -800,13 +811,12 @@ int main() {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "deferred_access_no_check",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                   Unary {
+// DEFAULT-NEXT:                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                           "deferred_access_no_check",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ],
@@ -833,20 +843,17 @@ int main() {
 // DEFAULT-NEXT:           name: "pop_to_parent_deferring_access_checks",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "deferred_access_no_check",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Identifier(
+// DEFAULT-NEXT:                       "deferred_access_no_check",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               PostDecrement(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "deferred_access_no_check",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           Postfix {
+// DEFAULT-NEXT:                               op: Decrement,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "deferred_access_no_check",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: Some(
@@ -890,28 +897,32 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "checks",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Arrow {
-// DEFAULT-NEXT:                                           base: Call {
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "checks",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Paren(
+// DEFAULT-NEXT:                                           Call {
 // DEFAULT-NEXT:                                               callee: Identifier(
 // DEFAULT-NEXT:                                                   "VEC_deferred_access_base_last",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Ternary {
+// DEFAULT-NEXT:                                                   Conditional {
 // DEFAULT-NEXT:                                                       condition: Identifier(
 // DEFAULT-NEXT:                                                           "deferred_access_stack",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       then_value: AddrOf(
-// DEFAULT-NEXT:                                                           Arrow {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "deferred_access_stack",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "base",
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "deferred_access_stack",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "base",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       else_value: Integer(
@@ -920,28 +931,66 @@ int main() {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "deferred_access_checks",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "deferred_access_checks",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "VEC_deferred_access_base_pop",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Ternary {
-// DEFAULT-NEXT:                                               condition: Identifier(
-// DEFAULT-NEXT:                                                   "deferred_access_stack",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               then_value: AddrOf(
-// DEFAULT-NEXT:                                                   Arrow {
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "VEC_deferred_access_base_pop",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Conditional {
+// DEFAULT-NEXT:                                           condition: Identifier(
+// DEFAULT-NEXT:                                               "deferred_access_stack",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Member {
 // DEFAULT-NEXT:                                                       base: Identifier(
 // DEFAULT-NEXT:                                                           "deferred_access_stack",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       field: "base",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "ptr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "VEC_deferred_access_base_last",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Conditional {
+// DEFAULT-NEXT:                                               condition: Identifier(
+// DEFAULT-NEXT:                                                   "deferred_access_stack",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               then_value: Some(
+// DEFAULT-NEXT:                                                   Unary {
+// DEFAULT-NEXT:                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                       operand: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "deferred_access_stack",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "base",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               else_value: Integer(
@@ -950,70 +999,34 @@ int main() {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "ptr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "VEC_deferred_access_base_last",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Ternary {
-// DEFAULT-NEXT:                                                   condition: Identifier(
-// DEFAULT-NEXT:                                                       "deferred_access_stack",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   then_value: AddrOf(
-// DEFAULT-NEXT:                                                       Arrow {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "deferred_access_stack",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "base",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   else_value: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           If {
-// DEFAULT-NEXT:                               condition: Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "ptr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "deferring_access_checks_kind",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                               condition: Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "ptr",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "deferring_access_checks_kind",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               then_branch: [
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "perform_access_checks",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "perform_access_checks",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "checks",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "checks",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                               else_branch: None,
@@ -1046,104 +1059,96 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "deferred_access_stack",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "deferred_access_stack",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_malloc",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_malloc",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: SizeOfType {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "VEC_deferred_access_gc",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                                       op: Mul,
 // DEFAULT-NEXT:                                       left: SizeOfType {
 // DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "VEC_deferred_access_gc",
+// DEFAULT-NEXT:                                               "deferred_access",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           declarator: Abstract,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Mul,
-// DEFAULT-NEXT:                                           left: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Named(
-// DEFAULT-NEXT:                                                   "deferred_access",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               8,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Integer(
+// DEFAULT-NEXT:                                           8,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "deferred_access_stack",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "base",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               field: "num",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               2,
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Index {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "deferred_access_stack",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "base",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           field: "num",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Index {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "deferred_access_stack",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "base",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "vec",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "deferred_access_stack",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "base",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "vec",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               field: "deferring_access_checks_kind",
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "deferring_access_checks_kind",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "pop_to_parent_deferring_access_checks",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "pop_to_parent_deferring_access_checks",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

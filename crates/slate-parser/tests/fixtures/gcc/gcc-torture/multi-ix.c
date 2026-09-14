@@ -445,7 +445,7 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                           "l",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               500,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -1004,1883 +1004,1712 @@ void c(int n, ...) {
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "n",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "s",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "s",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       40,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           40,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a3",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a4",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a5",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a6",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a7",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a8",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a9",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a10",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a11",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a12",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a13",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a14",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a15",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a16",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a17",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a18",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a19",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a20",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a21",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a22",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a23",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a24",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a25",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a26",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a27",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a28",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a29",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a30",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a31",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a32",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a33",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a34",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a35",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a36",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a37",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a38",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a39",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a0",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a2",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a3",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a4",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a5",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a6",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a7",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a8",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a9",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a10",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a11",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a12",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a13",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a14",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a15",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a16",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a17",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a18",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a19",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a20",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a21",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a22",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a23",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a24",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a25",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a26",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a27",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a28",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a29",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a30",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a31",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a32",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a33",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a34",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a35",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a36",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a37",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a38",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a39",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i0",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a0",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i1",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a1",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i2",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a2",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i3",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i3",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a3",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a3",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i4",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i4",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a4",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a4",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i5",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i5",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a5",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a5",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i6",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i6",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a6",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a6",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i7",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i7",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a7",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a7",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i8",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i8",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a8",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a8",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i9",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i9",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a9",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a9",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i10",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i10",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a10",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a10",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i11",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i11",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a11",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a11",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i12",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i12",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a12",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a12",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i13",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i13",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a13",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a13",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i14",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i14",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a14",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a14",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i15",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i15",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a15",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a15",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i16",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i16",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a16",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a16",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i17",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i17",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a17",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a17",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i18",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i18",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a18",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a18",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i19",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i19",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a19",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a19",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i20",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i20",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a20",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a20",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i21",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i21",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a21",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a21",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i22",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i22",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a22",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a22",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i23",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i23",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a23",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a23",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i24",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i24",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a24",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a24",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i25",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i25",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a25",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a25",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i26",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i26",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a26",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a26",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i27",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i27",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a27",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a27",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i28",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i28",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a28",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a28",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i29",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i29",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a29",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a29",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i30",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i30",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a30",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a30",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i31",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i31",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a31",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a31",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i32",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i32",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a32",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a32",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i33",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i33",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a33",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a33",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i34",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i34",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a34",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a34",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i35",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i35",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a35",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a35",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i36",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i36",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a36",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a36",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i37",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i37",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a37",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a37",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i38",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i38",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a38",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a38",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i39",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "i39",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a39",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a39",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "z",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "z",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       40,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           40,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a3",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a4",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a5",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a6",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a7",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a8",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a9",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a10",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a11",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a12",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a13",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a14",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a15",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a16",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a17",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a18",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a19",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a20",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a21",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a22",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a23",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a24",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a25",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a26",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a27",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a28",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a29",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a30",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a31",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a32",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a33",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a34",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a35",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a36",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a37",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a38",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a39",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a0",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a2",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a3",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a4",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a5",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a6",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a7",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a8",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a9",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a10",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a11",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a12",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a13",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a14",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a15",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a16",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a17",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a18",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a19",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a20",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a21",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a22",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a23",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a24",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a25",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a26",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a27",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a28",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a29",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a30",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a31",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a32",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a33",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a34",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a35",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a36",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a37",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a38",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a39",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a0",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i0",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i0",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i1",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a2",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i2",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a3",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i3",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a3",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i3",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i3",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a4",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i4",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a4",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i4",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i4",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a5",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i5",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a5",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i5",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i5",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a6",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i6",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a6",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i6",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i6",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a7",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i7",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a7",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i7",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i7",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a8",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i8",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a8",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i8",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i8",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a9",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i9",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a9",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i9",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i9",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a10",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i10",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a10",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i10",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i10",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a11",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i11",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a11",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i11",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i11",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a12",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i12",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a12",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i12",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i12",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a13",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i13",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a13",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i13",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i13",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a14",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i14",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a14",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i14",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i14",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a15",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i15",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a15",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i15",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i15",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a16",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i16",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a16",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i16",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i16",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a17",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i17",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a17",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i17",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i17",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a18",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i18",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a18",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i18",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i18",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a19",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i19",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a19",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i19",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i19",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a20",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i20",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a20",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i20",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i20",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a21",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i21",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a21",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i21",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i21",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a22",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i22",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a22",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i22",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i22",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a23",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i23",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a23",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i23",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i23",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a24",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i24",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a24",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i24",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i24",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a25",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i25",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a25",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i25",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i25",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a26",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i26",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a26",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i26",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i26",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a27",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i27",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a27",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i27",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i27",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a28",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i28",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a28",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i28",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i28",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a29",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i29",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a29",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i29",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i29",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a30",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i30",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a30",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i30",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i30",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a31",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i31",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a31",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i31",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i31",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a32",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i32",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a32",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i32",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i32",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a33",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i33",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a33",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i33",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i33",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a34",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i34",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a34",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i34",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i34",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a35",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i35",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a35",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i35",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i35",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a36",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i36",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a36",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i36",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i36",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a37",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i37",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a37",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i37",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i37",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a38",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i38",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a38",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i38",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i38",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a39",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i39",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a39",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "i39",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i39",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "c",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       40,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           40,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a1",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a3",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a4",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a5",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a6",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a7",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a8",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a9",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a10",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a11",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a12",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a13",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a14",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a15",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a16",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a17",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a18",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a19",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a20",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a21",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a22",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a23",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a24",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a25",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a26",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a27",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a28",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a29",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a30",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a31",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a32",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a33",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a34",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a35",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a36",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a37",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a38",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a39",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a0",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a1",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a2",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a3",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a4",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a5",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a6",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a7",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a8",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a9",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a10",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a11",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a12",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a13",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a14",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a15",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a16",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a17",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a18",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a19",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a20",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a21",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a22",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a23",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a24",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a25",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a26",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a27",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a28",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a29",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a30",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a31",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a32",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a33",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a34",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a35",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a36",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a37",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a38",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a39",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -2931,62 +2760,54 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Less,
-// DEFAULT-NEXT:                           left: Integer(
-// DEFAULT-NEXT:                               500,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               40,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Less,
+// DEFAULT-NEXT:                       left: Integer(
+// DEFAULT-NEXT:                           500,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           40,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "exit",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "exit",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "f",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "f",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -3037,30 +2858,27 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "list",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "n",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       PostDecrement(
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               While {
+// DEFAULT-NEXT:                   condition: Postfix {
+// DEFAULT-NEXT:                       op: Decrement,
+// DEFAULT-NEXT:                       operand: Identifier(
+// DEFAULT-NEXT:                           "n",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Decl(
 // DEFAULT-NEXT:                           Declaration {
@@ -3082,23 +2900,21 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   VaArg {
-// DEFAULT-NEXT:                                                       ap: Identifier(
-// DEFAULT-NEXT:                                                           "list",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: true,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                               VaArg {
+// DEFAULT-NEXT:                                                   list: Identifier(
+// DEFAULT-NEXT:                                                       "list",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -3106,38 +2922,34 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "n",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "list",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -3188,30 +3000,27 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "list",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "n",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       PostDecrement(
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               While {
+// DEFAULT-NEXT:                   condition: Postfix {
+// DEFAULT-NEXT:                       op: Decrement,
+// DEFAULT-NEXT:                       operand: Identifier(
+// DEFAULT-NEXT:                           "n",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Decl(
 // DEFAULT-NEXT:                           Declaration {
@@ -3233,23 +3042,21 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   VaArg {
-// DEFAULT-NEXT:                                                       ap: Identifier(
-// DEFAULT-NEXT:                                                           "list",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: true,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                               VaArg {
+// DEFAULT-NEXT:                                                   list: Identifier(
+// DEFAULT-NEXT:                                                       "list",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -3257,43 +3064,39 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_memset",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "__builtin_memset",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "a",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "a",
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   SizeOfType {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "l",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       SizeOfType {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "l",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "list",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -3344,30 +3147,27 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_c23_va_start",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_c23_va_start",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "list",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "n",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       PostDecrement(
 // DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               While {
+// DEFAULT-NEXT:                   condition: Postfix {
+// DEFAULT-NEXT:                       op: Decrement,
+// DEFAULT-NEXT:                       operand: Identifier(
+// DEFAULT-NEXT:                           "n",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Decl(
 // DEFAULT-NEXT:                           Declaration {
@@ -3389,23 +3189,21 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   VaArg {
-// DEFAULT-NEXT:                                                       ap: Identifier(
-// DEFAULT-NEXT:                                                           "list",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: true,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                               VaArg {
+// DEFAULT-NEXT:                                                   list: Identifier(
+// DEFAULT-NEXT:                                                       "list",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
 // DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -3413,32 +3211,28 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "n",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Identifier(
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
 // DEFAULT-NEXT:                                       "n",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "abort",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "abort",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,
@@ -3446,18 +3240,16 @@ void c(int n, ...) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "__builtin_va_end",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "__builtin_va_end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "list",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

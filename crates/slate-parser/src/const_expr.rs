@@ -1,6 +1,6 @@
 use crate::ast::{
-    ArraySize, CType, Declarator, Designator, Expr, FloatingType, Initializer, InitializerItem,
-    IntegerRank, IntegerType, IntegerValue, Span,
+    ArraySize, CType, Declarator, Designator, Expr, ExprKind, FloatingType, GenericAssociation,
+    Initializer, InitializerItem, IntegerRank, IntegerType, IntegerValue, Span,
 };
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
@@ -135,189 +135,16 @@ impl std::fmt::Display for WideInt {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum ConstExpr {
-    Integer(i64),
-    WideInteger(WideInt),
-    Float(FloatLiteral),
-    Identifier(String),
-    StringLit(String),
-    Utf8StringLit(String),
-    Utf16StringLit(String),
-    Utf32StringLit(String),
-    WideStringLit(String),
-    Generic {
-        controlling: Box<Self>,
-        associations: Vec<ConstGenericAssociation>,
-    },
-    SizeOf(Box<Self>),
-    SizeOfType {
-        ty: Box<CType>,
-        declarator: Declarator,
-    },
-    AlignOf {
-        ty: Box<CType>,
-        declarator: Declarator,
-    },
-    OffsetOf {
-        ty: Box<CType>,
-        declarator: Declarator,
-        member: Box<Self>,
-    },
-    TypesCompatible {
-        left_ty: Box<CType>,
-        left_declarator: Declarator,
-        right_ty: Box<CType>,
-        right_declarator: Declarator,
-    },
-    Unary {
-        op: UnaryOp,
-        value: Box<Self>,
-    },
-    Binary {
-        op: BinaryOp,
-        left: Box<Self>,
-        right: Box<Self>,
-    },
-    Assign {
-        op: AssignOp,
-        target: Box<Self>,
-        value: Box<Self>,
-    },
-    Ternary {
-        condition: Box<Self>,
-        then_value: Box<Self>,
-        else_value: Box<Self>,
-    },
-    Elvis {
-        condition: Box<Self>,
-        else_value: Box<Self>,
-    },
-    Comma(Box<Self>, Box<Self>),
-    Call {
-        callee: Box<Self>,
-        arguments: Vec<Self>,
-    },
-    Member {
-        base: Box<Self>,
-        field: String,
-    },
-    Arrow {
-        base: Box<Self>,
-        field: String,
-    },
-    Index {
-        base: Box<Self>,
-        index: Box<Self>,
-    },
-    PostIncrement(Box<Self>),
-    PostDecrement(Box<Self>),
-    PreIncrement(Box<Self>),
-    PreDecrement(Box<Self>),
-    AddrOf(Box<Self>),
-    Deref(Box<Self>),
-    Cast {
-        ty: Box<CType>,
-        declarator: Declarator,
-        value: Box<Self>,
-    },
-    BitCast {
-        ty: Box<CType>,
-        declarator: Declarator,
-        value: Box<Self>,
-    },
-    VaArg {
-        ap: Box<Self>,
-        ty: Box<CType>,
-        declarator: Declarator,
-    },
-    CompoundLiteral {
-        ty: Box<CType>,
-        declarator: Declarator,
-        initializer: Vec<InitializerItem>,
-    },
-    LabelAddr(String),
-    StatementExpression(Vec<Span<Token>>),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ConstGenericAssociation {
-    pub type_name: Option<String>,
-    pub expression: ConstExpr,
-}
-
-impl std::fmt::Display for ConstExpr {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Integer(value) => write!(formatter, "{value}"),
-            Self::WideInteger(value) => write!(formatter, "{value}"),
-            Self::Float(value) => write!(formatter, "{value}"),
-            Self::Identifier(value) => formatter.write_str(value),
-            Self::StringLit(value) => write!(formatter, "\"{value}\""),
-            Self::Utf8StringLit(value) => write!(formatter, "u8\"{value}\""),
-            Self::Utf16StringLit(value) => write!(formatter, "u\"{value}\""),
-            Self::Utf32StringLit(value) => write!(formatter, "U\"{value}\""),
-            Self::WideStringLit(value) => write!(formatter, "L\"{value}\""),
-            Self::Generic { .. } => formatter.write_str("_Generic(...)"),
-            Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
-            Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
-            Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
-            Self::OffsetOf { member, .. } => write!(formatter, "__builtin_offsetof(..., {member})"),
-            Self::TypesCompatible { .. } => {
-                formatter.write_str("__builtin_types_compatible_p(...)")
-            }
-            Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
-            Self::Binary { op, left, right } => {
-                write!(formatter, "({left} {} {right})", <&str>::from(*op))
-            }
-            Self::Assign { op, target, value } => {
-                write!(formatter, "({target} {} {value})", <&str>::from(*op))
-            }
-            Self::Ternary {
-                condition,
-                then_value,
-                else_value,
-            } => write!(formatter, "({condition} ? {then_value} : {else_value})"),
-            Self::Elvis {
-                condition,
-                else_value,
-            } => write!(formatter, "({condition} ?: {else_value})"),
-            Self::Comma(left, right) => write!(formatter, "({left}, {right})"),
-            Self::Call { callee, arguments } => {
-                write!(formatter, "{callee}(")?;
-                for (index, argument) in arguments.iter().enumerate() {
-                    if index > 0 {
-                        write!(formatter, ", ")?;
-                    }
-                    write!(formatter, "{argument}")?;
-                }
-                write!(formatter, ")")
-            }
-            Self::Member { base, field } => write!(formatter, "{base}.{field}"),
-            Self::Arrow { base, field } => write!(formatter, "{base}->{field}"),
-            Self::Index { base, index } => write!(formatter, "{base}[{index}]"),
-            Self::PostIncrement(value) => write!(formatter, "{value}++"),
-            Self::PostDecrement(value) => write!(formatter, "{value}--"),
-            Self::PreIncrement(value) => write!(formatter, "++{value}"),
-            Self::PreDecrement(value) => write!(formatter, "--{value}"),
-            Self::AddrOf(value) => write!(formatter, "&{value}"),
-            Self::Deref(value) => write!(formatter, "*{value}"),
-            Self::Cast { value, .. } => write!(formatter, "(cast){value}"),
-            Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
-            Self::VaArg { ap, .. } => write!(formatter, "__builtin_va_arg({ap}, ...)"),
-            Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
-            Self::LabelAddr(label) => write!(formatter, "&&{label}"),
-            Self::StatementExpression(_) => formatter.write_str("({ ... })"),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UnaryOp {
     Plus,
     Minus,
     BitNot,
     Not,
+    AddrOf,
+    Deref,
+    PreIncrement,
+    PreDecrement,
 }
 
 impl From<UnaryOp> for &'static str {
@@ -327,6 +154,25 @@ impl From<UnaryOp> for &'static str {
             UnaryOp::Minus => "-",
             UnaryOp::BitNot => "~",
             UnaryOp::Not => "!",
+            UnaryOp::AddrOf => "&",
+            UnaryOp::Deref => "*",
+            UnaryOp::PreIncrement => "++",
+            UnaryOp::PreDecrement => "--",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PostfixOp {
+    Increment,
+    Decrement,
+}
+
+impl From<PostfixOp> for &'static str {
+    fn from(op: PostfixOp) -> Self {
+        match op {
+            PostfixOp::Increment => "++",
+            PostfixOp::Decrement => "--",
         }
     }
 }
@@ -448,6 +294,8 @@ pub enum ConstExprError {
     RequiresSemanticEvaluation(&'static str),
     #[error("invalid floating literal `{0}`")]
     InvalidFloatLiteral(String),
+    #[error("{0}")]
+    StatementExpression(String),
 }
 
 #[derive(custom_debug::Debug, Clone, PartialEq)]
@@ -528,23 +376,26 @@ fn parse_wide_integer_literal(spelling: &str) -> WideInt {
     WideInt::wrap(magnitude, width.max(2), signed)
 }
 
-fn contains_wide(expression: &ConstExpr) -> bool {
-    match expression {
-        ConstExpr::WideInteger(_) => true,
-        ConstExpr::Unary { value, .. } => contains_wide(value),
-        ConstExpr::Cast { ty, value, .. } => bit_int_width(ty).is_some() || contains_wide(value),
-        ConstExpr::Binary { left, right, .. } => contains_wide(left) || contains_wide(right),
-        ConstExpr::Ternary {
+fn contains_wide(expression: &Expr) -> bool {
+    match &expression.value {
+        ExprKind::WideInteger(_) => true,
+        ExprKind::Paren(operand) | ExprKind::Unary { operand, .. } => contains_wide(operand),
+        ExprKind::Cast { ty, value, .. } => bit_int_width(ty).is_some() || contains_wide(value),
+        ExprKind::Binary { left, right, .. } => contains_wide(left) || contains_wide(right),
+        ExprKind::Conditional {
+            condition,
             then_value,
             else_value,
-            ..
-        } => contains_wide(then_value) || contains_wide(else_value),
-        ConstExpr::Elvis {
-            condition,
-            else_value,
-        } => contains_wide(condition) || contains_wide(else_value),
-        ConstExpr::Comma(_, right) => contains_wide(right),
+        } => contains_wide(then_value.as_ref().unwrap_or(condition)) || contains_wide(else_value),
+        ExprKind::Comma { right, .. } => contains_wide(right),
         _ => false,
+    }
+}
+
+fn identifier(expression: &Expr) -> Option<&str> {
+    match &expression.value {
+        ExprKind::Identifier(name) => Some(name),
+        _ => None,
     }
 }
 
@@ -583,15 +434,16 @@ pub struct LocatedConstExprError {
     pub token: Option<usize>,
 }
 
-pub struct Parser {
+pub struct Parser<'a> {
     tokens: Vec<Span<Token>>,
     position: usize,
     typedef_names: HashSet<String>,
+    statements: Option<&'a crate::parser::Parser>,
 }
 
-impl Parser {
-    pub fn parse(tokens: &[Span<Token>]) -> Result<ConstExpr, ConstExprError> {
-        let mut parser = Self::new(tokens, &HashSet::new());
+impl<'a> Parser<'a> {
+    pub fn parse(tokens: &[Span<Token>]) -> Result<Expr, ConstExprError> {
+        let mut parser = Self::new(tokens, &HashSet::new(), None);
         let expression = parser.parse_conditional()?;
         if parser.peek().is_some() {
             return Err(ConstExprError::UnexpectedTokens);
@@ -602,8 +454,9 @@ impl Parser {
     pub fn parse_expression(
         tokens: &[Span<Token>],
         typedef_names: &HashSet<String>,
-    ) -> Result<ConstExpr, ConstExprError> {
-        let mut parser = Self::new(tokens, typedef_names);
+        statements: Option<&'a crate::parser::Parser>,
+    ) -> Result<Expr, ConstExprError> {
+        let mut parser = Self::new(tokens, typedef_names, statements);
         let expression = parser.parse_comma()?;
         if parser.peek().is_some() {
             return Err(ConstExprError::UnexpectedTokens);
@@ -615,8 +468,9 @@ impl Parser {
         tokens: &[Span<Token>],
         start: usize,
         typedef_names: &HashSet<String>,
-    ) -> Result<(ConstExpr, usize), ConstExprError> {
-        let mut parser = Self::new(&tokens[start..], typedef_names);
+        statements: Option<&'a crate::parser::Parser>,
+    ) -> Result<(Expr, usize), ConstExprError> {
+        let mut parser = Self::new(&tokens[start..], typedef_names, statements);
         let expression = parser.parse_assignment()?;
         Ok((expression, start + parser.position))
     }
@@ -629,7 +483,7 @@ impl Parser {
         tokens: &[Span<Token>],
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
-        let mut parser = Self::new(tokens, &HashSet::new());
+        let mut parser = Self::new(tokens, &HashSet::new(), None);
         let at_position = |parser: &Self, error| LocatedConstExprError {
             token: Some(parser.failure_position(&error)),
             error,
@@ -645,73 +499,100 @@ impl Parser {
     }
 
     fn evaluate_expr(
-        expression: &ConstExpr,
+        expression: &Expr,
         is_defined: Option<&dyn Fn(&str) -> bool>,
     ) -> Result<i64, ConstExprError> {
-        match expression {
-            ConstExpr::Integer(value) => Ok(*value),
-            ConstExpr::WideInteger(value) => Ok(value.truncate_to_i64()),
-            ConstExpr::StringLit(_)
-            | ConstExpr::Utf8StringLit(_)
-            | ConstExpr::Utf16StringLit(_)
-            | ConstExpr::Utf32StringLit(_)
-            | ConstExpr::WideStringLit(_) => Err(ConstExprError::NotConstant("string literal")),
-            ConstExpr::Generic { .. } => Err(ConstExprError::RequiresSemanticEvaluation(
+        match &expression.value {
+            ExprKind::Integer(value) => Ok(*value),
+            ExprKind::WideInteger(value) => Ok(value.truncate_to_i64()),
+            ExprKind::StringLit(_)
+            | ExprKind::Utf8StringLit(_)
+            | ExprKind::Utf16StringLit(_)
+            | ExprKind::Utf32StringLit(_)
+            | ExprKind::WideStringLit(_) => Err(ConstExprError::NotConstant("string literal")),
+            ExprKind::Generic { .. } => Err(ConstExprError::RequiresSemanticEvaluation(
                 "generic selection",
             )),
-            ConstExpr::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
-            ConstExpr::Identifier(name) => match is_defined {
+            ExprKind::Float(_) => Err(ConstExprError::NotConstant("floating literal")),
+            ExprKind::Identifier(name) => match is_defined {
                 Some(_) if name == "true" => Ok(1),
                 Some(_) => Ok(0),
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
             },
-            ConstExpr::SizeOf(_) => Err(ConstExprError::UnsupportedSizeOf),
-            ConstExpr::SizeOfType { ty, declarator } => {
+            ExprKind::Paren(inner) => Self::evaluate_expr(inner, is_defined),
+            ExprKind::SizeOfExpr(_) => Err(ConstExprError::UnsupportedSizeOf),
+            ExprKind::SizeOfType { ty, declarator } => {
                 declarator_size(ty, declarator).map(|size| size as i64)
             }
-            ConstExpr::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
-            ConstExpr::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
-            ConstExpr::TypesCompatible { .. } => {
+            ExprKind::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
+            ExprKind::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
+            ExprKind::TypesCompatible { .. } => {
                 Err(ConstExprError::NotConstant("types compatible"))
             }
-            ConstExpr::Call { callee, arguments } => {
-                match (is_defined, callee.as_ref(), arguments.as_slice()) {
-                    (
-                        Some(is_defined),
-                        ConstExpr::Identifier(name),
-                        [ConstExpr::Identifier(macro_name)],
-                    ) if name == "defined" => Ok(is_defined(macro_name) as i64),
-                    (Some(_), ConstExpr::Identifier(name), [ConstExpr::Identifier(_)])
-                        if matches!(
-                            name.as_str(),
-                            "__has_c_attribute" | "__has_cpp_attribute" | "__building_module"
-                        ) =>
-                    {
-                        Ok(0)
+            ExprKind::Call { callee, arguments } => {
+                let argument = match arguments.as_slice() {
+                    [argument] => identifier(argument),
+                    _ => None,
+                };
+                match (is_defined, identifier(callee), argument) {
+                    (Some(is_defined), Some("defined"), Some(macro_name)) => {
+                        Ok(is_defined(macro_name) as i64)
                     }
+                    (
+                        Some(_),
+                        Some("__has_c_attribute" | "__has_cpp_attribute" | "__building_module"),
+                        Some(_),
+                    ) => Ok(0),
                     _ => Err(ConstExprError::UnsupportedCall(callee.to_string())),
                 }
             }
-            ConstExpr::Cast { ty, value, .. } if bit_int_width(ty).is_some() => {
+            ExprKind::Cast { ty, .. } if bit_int_width(ty).is_some() => {
                 Self::evaluate_wide(expression, is_defined).map(|wide| wide.truncate_to_i64())
             }
-            ConstExpr::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
-            ConstExpr::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
-            ConstExpr::VaArg { .. } => Err(ConstExprError::NotConstant("va_arg")),
-            ConstExpr::Unary { op, value } => {
-                if contains_wide(value) {
+            ExprKind::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
+            ExprKind::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
+            ExprKind::VaArg { .. } => Err(ConstExprError::NotConstant("va_arg")),
+            ExprKind::Unary {
+                op: UnaryOp::AddrOf,
+                ..
+            } => Err(ConstExprError::NotConstant("address-of")),
+            ExprKind::Unary {
+                op: UnaryOp::Deref, ..
+            } => Err(ConstExprError::NotConstant("dereference")),
+            ExprKind::Unary {
+                op: UnaryOp::PreIncrement,
+                ..
+            }
+            | ExprKind::Postfix {
+                op: PostfixOp::Increment,
+                ..
+            } => Err(ConstExprError::NotConstant("increment")),
+            ExprKind::Unary {
+                op: UnaryOp::PreDecrement,
+                ..
+            }
+            | ExprKind::Postfix {
+                op: PostfixOp::Decrement,
+                ..
+            } => Err(ConstExprError::NotConstant("decrement")),
+            ExprKind::Unary { op, operand } => {
+                if contains_wide(operand) {
                     return Self::evaluate_wide(expression, is_defined)
                         .map(|wide| wide.truncate_to_i64());
                 }
-                let value = Self::evaluate_expr(value, is_defined)?;
+                let value = Self::evaluate_expr(operand, is_defined)?;
                 match op {
                     UnaryOp::Plus => Ok(value),
                     UnaryOp::Minus => value.checked_neg().ok_or(ConstExprError::IntegerOverflow),
                     UnaryOp::BitNot => Ok(!value),
                     UnaryOp::Not => Ok((value == 0) as i64),
+                    UnaryOp::AddrOf
+                    | UnaryOp::Deref
+                    | UnaryOp::PreIncrement
+                    | UnaryOp::PreDecrement => unreachable!("rejected above"),
                 }
             }
-            ConstExpr::Binary { op, left, right } => {
+            ExprKind::Binary { op, left, right } => {
                 if contains_wide(left) || contains_wide(right) {
                     return Self::evaluate_wide(expression, is_defined)
                         .map(|wide| wide.truncate_to_i64());
@@ -750,76 +631,59 @@ impl Parser {
                         .ok_or(ConstExprError::InvalidIntegerConstant),
                 }
             }
-            ConstExpr::Ternary {
+            ExprKind::Conditional {
                 condition,
                 then_value,
                 else_value,
             } => {
-                if Self::evaluate_expr(condition, is_defined)? != 0 {
-                    Self::evaluate_expr(then_value, is_defined)
-                } else {
-                    Self::evaluate_expr(else_value, is_defined)
-                }
-            }
-            ConstExpr::Elvis {
-                condition,
-                else_value,
-            } => {
                 let value = Self::evaluate_expr(condition, is_defined)?;
-                if value != 0 {
-                    Ok(value)
-                } else {
-                    Self::evaluate_expr(else_value, is_defined)
+                match (value != 0, then_value) {
+                    (true, Some(then_value)) => Self::evaluate_expr(then_value, is_defined),
+                    (true, None) => Ok(value),
+                    (false, _) => Self::evaluate_expr(else_value, is_defined),
                 }
             }
-            ConstExpr::Comma(left, right) => {
+            ExprKind::Comma { left, right } => {
                 Self::evaluate_expr(left, is_defined)?;
                 Self::evaluate_expr(right, is_defined)
             }
-            ConstExpr::Assign { .. } => Err(ConstExprError::NotConstant("assignment")),
-            ConstExpr::Member { .. } => Err(ConstExprError::NotConstant("member access")),
-            ConstExpr::Arrow { .. } => Err(ConstExprError::NotConstant("member access")),
-            ConstExpr::Index { .. } => Err(ConstExprError::NotConstant("array subscript")),
-            ConstExpr::PostIncrement(_) => Err(ConstExprError::NotConstant("increment")),
-            ConstExpr::PostDecrement(_) => Err(ConstExprError::NotConstant("decrement")),
-            ConstExpr::PreIncrement(_) => Err(ConstExprError::NotConstant("increment")),
-            ConstExpr::PreDecrement(_) => Err(ConstExprError::NotConstant("decrement")),
-            ConstExpr::AddrOf(_) => Err(ConstExprError::NotConstant("address-of")),
-            ConstExpr::Deref(_) => Err(ConstExprError::NotConstant("dereference")),
-            ConstExpr::CompoundLiteral { .. } => {
+            ExprKind::Assign { .. } => Err(ConstExprError::NotConstant("assignment")),
+            ExprKind::Member { .. } => Err(ConstExprError::NotConstant("member access")),
+            ExprKind::Index { .. } => Err(ConstExprError::NotConstant("array subscript")),
+            ExprKind::CompoundLiteral { .. } => {
                 Err(ConstExprError::NotConstant("compound literal"))
             }
-            ConstExpr::LabelAddr(_) => Err(ConstExprError::NotConstant("label address")),
-            ConstExpr::StatementExpression(_) => {
+            ExprKind::LabelAddress(_) => Err(ConstExprError::NotConstant("label address")),
+            ExprKind::StatementExpression(_) => {
                 Err(ConstExprError::NotConstant("statement expression"))
             }
         }
     }
 
     fn evaluate_wide(
-        expression: &ConstExpr,
+        expression: &Expr,
         is_defined: Option<&dyn Fn(&str) -> bool>,
     ) -> Result<WideInt, ConstExprError> {
-        match expression {
-            ConstExpr::WideInteger(value) => Ok(value.clone()),
-            ConstExpr::Unary { op, value } => {
-                let value = Self::evaluate_wide(value, is_defined)?;
-                match op {
-                    UnaryOp::Plus => Ok(value),
-                    UnaryOp::Minus => Ok(WideInt::wrap(
-                        -value.value.clone(),
-                        value.width,
-                        value.signed,
-                    )),
-                    UnaryOp::BitNot => Ok(WideInt::wrap(
-                        !value.value.clone(),
-                        value.width,
-                        value.signed,
-                    )),
-                    UnaryOp::Not => Ok(WideInt::from_i64(value.is_zero() as i64)),
-                }
+        match &expression.value {
+            ExprKind::WideInteger(value) => Ok(value.clone()),
+            ExprKind::Paren(inner) => Self::evaluate_wide(inner, is_defined),
+            ExprKind::Unary {
+                op: op @ (UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot | UnaryOp::Not),
+                operand,
+            } => {
+                let value = Self::evaluate_wide(operand, is_defined)?;
+                Ok(match op {
+                    UnaryOp::Plus => value,
+                    UnaryOp::Minus => {
+                        WideInt::wrap(-value.value.clone(), value.width, value.signed)
+                    }
+                    UnaryOp::BitNot => {
+                        WideInt::wrap(!value.value.clone(), value.width, value.signed)
+                    }
+                    _ => WideInt::from_i64(value.is_zero() as i64),
+                })
             }
-            ConstExpr::Binary { op, left, right } => {
+            ExprKind::Binary { op, left, right } => {
                 let left = Self::evaluate_wide(left, is_defined)?;
                 if *op == BinaryOp::And && left.is_zero() || *op == BinaryOp::Or && !left.is_zero()
                 {
@@ -857,49 +721,48 @@ impl Parser {
                     )),
                 }
             }
-            ConstExpr::Cast { ty, value, .. } => {
+            ExprKind::Cast { ty, value, .. } => {
                 let value = Self::evaluate_wide(value, is_defined)?;
                 match bit_int_width(ty) {
                     Some((width, signed)) => Ok(WideInt::wrap(value.value, width, signed)),
                     None => Ok(value),
                 }
             }
-            ConstExpr::Ternary {
+            ExprKind::Conditional {
                 condition,
                 then_value,
                 else_value,
             } => {
-                if !Self::evaluate_wide(condition, is_defined)?.is_zero() {
-                    Self::evaluate_wide(then_value, is_defined)
-                } else {
-                    Self::evaluate_wide(else_value, is_defined)
-                }
-            }
-            ConstExpr::Elvis {
-                condition,
-                else_value,
-            } => {
                 let value = Self::evaluate_wide(condition, is_defined)?;
-                if !value.is_zero() {
-                    Ok(value)
-                } else {
-                    Self::evaluate_wide(else_value, is_defined)
+                match (value.is_zero(), then_value) {
+                    (false, Some(then_value)) => Self::evaluate_wide(then_value, is_defined),
+                    (false, None) => Ok(value),
+                    (true, _) => Self::evaluate_wide(else_value, is_defined),
                 }
             }
-            ConstExpr::Comma(left, right) => {
+            ExprKind::Comma { left, right } => {
                 Self::evaluate_wide(left, is_defined)?;
                 Self::evaluate_wide(right, is_defined)
             }
-            other => Self::evaluate_expr(other, is_defined).map(WideInt::from_i64),
+            _ => Self::evaluate_expr(expression, is_defined).map(WideInt::from_i64),
         }
     }
 
-    fn new(tokens: &[Span<Token>], typedef_names: &HashSet<String>) -> Self {
+    fn new(
+        tokens: &[Span<Token>],
+        typedef_names: &HashSet<String>,
+        statements: Option<&'a crate::parser::Parser>,
+    ) -> Self {
         Self {
             tokens: tokens.to_vec(),
             position: 0,
             typedef_names: typedef_names.clone(),
+            statements,
         }
+    }
+
+    fn node(&self, kind: ExprKind, start: usize) -> Expr {
+        Box::new(Span::cover(kind, &self.tokens[start..self.position]))
     }
 
     fn failure_position(&self, error: &ConstExprError) -> usize {
@@ -952,26 +815,29 @@ impl Parser {
         token
     }
 
-    fn parse_comma(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_comma(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         let mut expression = self.parse_assignment()?;
-        while self.peek() == Some(&Token::Comma) {
-            self.take();
+        while self.consume(&Token::Comma) {
             let right = self.parse_assignment()?;
-            expression = ConstExpr::Comma(Box::new(expression), Box::new(right));
+            expression = self.node(
+                ExprKind::Comma {
+                    left: expression,
+                    right,
+                },
+                start,
+            );
         }
         Ok(expression)
     }
 
-    fn parse_assignment(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_assignment(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         let target = self.parse_conditional()?;
         if let Some(op) = self.assignment_operator() {
             self.take();
             let value = self.parse_assignment()?;
-            return Ok(ConstExpr::Assign {
-                op,
-                target: Box::new(target),
-                value: Box::new(value),
-            });
+            return Ok(self.node(ExprKind::Assign { op, target, value }, start));
         }
         Ok(target)
     }
@@ -993,31 +859,31 @@ impl Parser {
         })
     }
 
-    fn parse_conditional(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_conditional(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         let condition = self.parse_binary(0)?;
-        if self.peek() == Some(&Token::Question) {
-            self.take();
-            if self.peek() == Some(&Token::Colon) {
-                self.take();
-                let else_value = self.parse_conditional()?;
-                return Ok(ConstExpr::Elvis {
-                    condition: Box::new(condition),
-                    else_value: Box::new(else_value),
-                });
-            }
-            let then_value = self.parse_comma()?;
-            self.expect(Token::Colon)?;
-            let else_value = self.parse_conditional()?;
-            return Ok(ConstExpr::Ternary {
-                condition: Box::new(condition),
-                then_value: Box::new(then_value),
-                else_value: Box::new(else_value),
-            });
+        if !self.consume(&Token::Question) {
+            return Ok(condition);
         }
-        Ok(condition)
+        let then_value = if self.peek() == Some(&Token::Colon) {
+            None
+        } else {
+            Some(self.parse_comma()?)
+        };
+        self.expect(Token::Colon)?;
+        let else_value = self.parse_conditional()?;
+        Ok(self.node(
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            },
+            start,
+        ))
     }
 
-    fn parse_binary(&mut self, minimum_precedence: u8) -> Result<ConstExpr, ConstExprError> {
+    fn parse_binary(&mut self, minimum_precedence: u8) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         let mut left = self.parse_cast()?;
         while let Some((op, precedence)) = self.binary_operator() {
             if precedence < minimum_precedence {
@@ -1025,16 +891,13 @@ impl Parser {
             }
             self.take();
             let right = self.parse_binary(precedence + 1)?;
-            left = ConstExpr::Binary {
-                op,
-                left: Box::new(left),
-                right: Box::new(right),
-            };
+            left = self.node(ExprKind::Binary { op, left, right }, start);
         }
         Ok(left)
     }
 
-    fn parse_cast(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_cast(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         if self.peek() == Some(&Token::LParen)
             && let Some(next) = self.peek_at(1)
             && starts_type_name(next, &self.typedef_names)
@@ -1044,16 +907,20 @@ impl Parser {
         {
             self.position = end + 1;
             let value = self.parse_cast()?;
-            return Ok(ConstExpr::Cast {
-                ty,
-                declarator,
-                value: Box::new(value),
-            });
+            return Ok(self.node(
+                ExprKind::Cast {
+                    ty,
+                    declarator,
+                    value,
+                },
+                start,
+            ));
         }
         self.parse_unary()
     }
 
-    fn try_parse_compound_literal(&mut self) -> Result<Option<ConstExpr>, ConstExprError> {
+    fn try_parse_compound_literal(&mut self) -> Result<Option<Expr>, ConstExprError> {
+        let start = self.position;
         if self.peek() != Some(&Token::LParen) {
             return Ok(None);
         }
@@ -1073,11 +940,14 @@ impl Parser {
         }
         self.position = end + 1;
         let initializer = self.parse_initializer_list()?;
-        Ok(Some(ConstExpr::CompoundLiteral {
-            ty,
-            declarator,
-            initializer,
-        }))
+        Ok(Some(self.node(
+            ExprKind::CompoundLiteral {
+                ty,
+                declarator,
+                initializer,
+            },
+            start,
+        )))
     }
 
     fn parse_initializer_list(&mut self) -> Result<Vec<InitializerItem>, ConstExprError> {
@@ -1137,28 +1007,16 @@ impl Parser {
     }
 
     fn parse_initializer_value(&mut self) -> Result<Initializer, ConstExprError> {
-        let start = self.position;
         if self.peek() == Some(&Token::LBrace) {
             Ok(Initializer::List(self.parse_initializer_list()?))
-        } else if let Some(expression) = string_literal_expr(self.peek())
-            && matches!(self.peek_at(1), Some(&Token::Comma) | Some(&Token::RBrace))
-        {
-            self.take();
-            Ok(Initializer::Expr(Span::cover(
-                expression,
-                &self.tokens[start..self.position],
-            )))
         } else {
-            let expression = self.parse_assignment()?;
-            Ok(Initializer::Expr(Span::cover(
-                Expr::Const(Box::new(expression)),
-                &self.tokens[start..self.position],
-            )))
+            Ok(Initializer::Expr(self.parse_assignment()?))
         }
     }
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<CType>, Declarator, usize)> {
-        let mut declarator_parser = DeclaratorParser::new(&self.tokens, start, &self.typedef_names);
+        let mut declarator_parser = DeclaratorParser::new(&self.tokens, start, &self.typedef_names)
+            .with_statements(self.statements);
         let mut leading_attributes = declarator_parser.parse_attributes().ok()?;
         let leading = declarator_parser.take_qualifiers();
         leading_attributes.extend(declarator_parser.parse_attributes().ok()?);
@@ -1183,7 +1041,8 @@ impl Parser {
         Some((Box::new(ty), declarator, declarator_parser.position()))
     }
 
-    fn parse_unary(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_unary(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         if let Some(Token::Ident(name)) = self.peek()
             && name == "__extension__"
         {
@@ -1199,14 +1058,13 @@ impl Parser {
             && self.token_at(end + 1) != Some(&Token::LBrace)
         {
             self.position = end + 1;
-            return Ok(ConstExpr::SizeOfType { ty, declarator });
+            return Ok(self.node(ExprKind::SizeOfType { ty, declarator }, start));
         }
-        if self.peek() == Some(&Token::Sizeof) {
-            self.take();
-            return Ok(ConstExpr::SizeOf(Box::new(self.parse_unary()?)));
+        if self.consume(&Token::Sizeof) {
+            let operand = self.parse_unary()?;
+            return Ok(self.node(ExprKind::SizeOfExpr(operand), start));
         }
-        if self.peek() == Some(&Token::Alignof) {
-            self.take();
+        if self.consume(&Token::Alignof) {
             self.expect(Token::LParen)?;
             let (ty, declarator, end) = self
                 .try_parse_type_name(self.position)
@@ -1218,133 +1076,111 @@ impl Parser {
                 });
             }
             self.position = end + 1;
-            return Ok(ConstExpr::AlignOf { ty, declarator });
+            return Ok(self.node(ExprKind::AlignOf { ty, declarator }, start));
         }
         if let Some(Token::Ident(name)) = self.peek()
             && matches!(name.as_str(), "__real__" | "__imag__" | "__real" | "__imag")
         {
             let name = name.clone();
             self.take();
-            return Ok(ConstExpr::Call {
-                callee: Box::new(ConstExpr::Identifier(name)),
-                arguments: vec![self.parse_unary()?],
-            });
+            let callee = self.node(ExprKind::Identifier(name), start);
+            let argument = self.parse_unary()?;
+            return Ok(self.node(
+                ExprKind::Call {
+                    callee,
+                    arguments: vec![argument],
+                },
+                start,
+            ));
         }
-        match self.peek() {
-            Some(Token::Plus) => {
-                self.take();
-                Ok(ConstExpr::Unary {
-                    op: UnaryOp::Plus,
-                    value: Box::new(self.parse_cast()?),
-                })
-            }
-            Some(Token::Minus) => {
-                self.take();
-                Ok(ConstExpr::Unary {
-                    op: UnaryOp::Minus,
-                    value: Box::new(self.parse_cast()?),
-                })
-            }
-            Some(Token::Tilde) => {
-                self.take();
-                Ok(ConstExpr::Unary {
-                    op: UnaryOp::BitNot,
-                    value: Box::new(self.parse_cast()?),
-                })
-            }
-            Some(Token::Bang) => {
-                self.take();
-                Ok(ConstExpr::Unary {
-                    op: UnaryOp::Not,
-                    value: Box::new(self.parse_cast()?),
-                })
-            }
-            Some(Token::PlusPlus) => {
-                self.take();
-                Ok(ConstExpr::PreIncrement(Box::new(self.parse_unary()?)))
-            }
-            Some(Token::MinusMinus) => {
-                self.take();
-                Ok(ConstExpr::PreDecrement(Box::new(self.parse_unary()?)))
-            }
-            Some(Token::Amp) => {
-                self.take();
-                Ok(ConstExpr::AddrOf(Box::new(self.parse_cast()?)))
-            }
-            Some(Token::Star) => {
-                self.take();
-                Ok(ConstExpr::Deref(Box::new(self.parse_cast()?)))
-            }
+        let op = match self.peek() {
+            Some(Token::Plus) => UnaryOp::Plus,
+            Some(Token::Minus) => UnaryOp::Minus,
+            Some(Token::Tilde) => UnaryOp::BitNot,
+            Some(Token::Bang) => UnaryOp::Not,
+            Some(Token::PlusPlus) => UnaryOp::PreIncrement,
+            Some(Token::MinusMinus) => UnaryOp::PreDecrement,
+            Some(Token::Amp) => UnaryOp::AddrOf,
+            Some(Token::Star) => UnaryOp::Deref,
             Some(Token::AndAnd) => {
                 self.take();
-                match self.take() {
-                    Some(Token::Ident(label)) => Ok(ConstExpr::LabelAddr(label)),
+                return match self.take() {
+                    Some(Token::Ident(label)) => {
+                        Ok(self.node(ExprKind::LabelAddress(label), start))
+                    }
                     Some(token) => Err(ConstExprError::UnexpectedToken(token)),
                     None => Err(ConstExprError::ExpectedIdentifier),
-                }
+                };
             }
-            _ => self.parse_postfix(),
-        }
+            _ => return self.parse_postfix(),
+        };
+        self.take();
+        let operand = match op {
+            UnaryOp::PreIncrement | UnaryOp::PreDecrement => self.parse_unary()?,
+            _ => self.parse_cast()?,
+        };
+        Ok(self.node(ExprKind::Unary { op, operand }, start))
     }
 
-    fn parse_postfix(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_postfix(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         let mut expression = match self.try_parse_compound_literal()? {
             Some(result) => result,
             None => self.parse_primary()?,
         };
         loop {
-            expression = match self.peek() {
+            let kind = match self.peek() {
                 Some(Token::LParen) => {
                     self.take();
                     let mut arguments = Vec::new();
                     if self.peek() != Some(&Token::RParen) {
                         loop {
                             arguments.push(self.parse_assignment()?);
-                            if self.peek() != Some(&Token::Comma) {
+                            if !self.consume(&Token::Comma) {
                                 break;
                             }
-                            self.take();
                         }
                     }
                     self.expect(Token::RParen)?;
-                    ConstExpr::Call {
-                        callee: Box::new(expression),
+                    ExprKind::Call {
+                        callee: expression,
                         arguments,
                     }
                 }
-                Some(Token::Dot) => {
-                    self.take();
-                    ConstExpr::Member {
-                        base: Box::new(expression),
+                Some(Token::Dot | Token::Arrow) => {
+                    let arrow = self.take() == Some(Token::Arrow);
+                    ExprKind::Member {
+                        base: expression,
                         field: self.expect_field_name()?,
-                    }
-                }
-                Some(Token::Arrow) => {
-                    self.take();
-                    ConstExpr::Arrow {
-                        base: Box::new(expression),
-                        field: self.expect_field_name()?,
+                        arrow,
                     }
                 }
                 Some(Token::LBracket) => {
                     self.take();
                     let index = self.parse_comma()?;
                     self.expect(Token::RBracket)?;
-                    ConstExpr::Index {
-                        base: Box::new(expression),
-                        index: Box::new(index),
+                    ExprKind::Index {
+                        base: expression,
+                        index,
                     }
                 }
                 Some(Token::PlusPlus) => {
                     self.take();
-                    ConstExpr::PostIncrement(Box::new(expression))
+                    ExprKind::Postfix {
+                        op: PostfixOp::Increment,
+                        operand: expression,
+                    }
                 }
                 Some(Token::MinusMinus) => {
                     self.take();
-                    ConstExpr::PostDecrement(Box::new(expression))
+                    ExprKind::Postfix {
+                        op: PostfixOp::Decrement,
+                        operand: expression,
+                    }
                 }
                 _ => break,
             };
+            expression = self.node(kind, start);
         }
         Ok(expression)
     }
@@ -1357,21 +1193,22 @@ impl Parser {
         }
     }
 
-    fn parse_primary(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_primary(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         if self.peek() == Some(&Token::LParen) && self.peek_at(1) == Some(&Token::LBrace) {
             return self.parse_statement_expression();
         }
         if self.take() == Some(Token::LParen) {
             let expression = self.parse_comma()?;
             self.expect(Token::RParen)?;
-            return Ok(expression);
+            return Ok(self.node(ExprKind::Paren(expression), start));
         }
-        match self.tokens.value_at(self.position.saturating_sub(1)) {
+        let kind = match self.tokens.value_at(self.position.saturating_sub(1)) {
             Some(Token::IntLit(value)) => match Token::IntLit(value.clone()).integer_value() {
-                Some(value) => Ok(ConstExpr::Integer(value)),
-                None => Ok(ConstExpr::WideInteger(parse_wide_integer_literal(value))),
+                Some(value) => ExprKind::Integer(value),
+                None => ExprKind::WideInteger(parse_wide_integer_literal(value)),
             },
-            Some(Token::FloatLit(value)) => FloatLiteral::parse(value).map(ConstExpr::Float),
+            Some(Token::FloatLit(value)) => ExprKind::Float(FloatLiteral::parse(value)?),
             Some(
                 token @ (Token::StringLit(_)
                 | Token::Utf8StringLit(_)
@@ -1391,14 +1228,14 @@ impl Parser {
                     merged = crate::parser::concatenated_string_literal(&merged, next, content);
                     self.take();
                 }
-                Ok(match merged {
-                    Token::StringLit(value) => ConstExpr::StringLit(value),
-                    Token::Utf8StringLit(value) => ConstExpr::Utf8StringLit(value),
-                    Token::Utf16StringLit(value) => ConstExpr::Utf16StringLit(value),
-                    Token::Utf32StringLit(value) => ConstExpr::Utf32StringLit(value),
-                    Token::WideStringLit(value) => ConstExpr::WideStringLit(value),
+                match merged {
+                    Token::StringLit(value) => ExprKind::StringLit(value),
+                    Token::Utf8StringLit(value) => ExprKind::Utf8StringLit(value),
+                    Token::Utf16StringLit(value) => ExprKind::Utf16StringLit(value),
+                    Token::Utf32StringLit(value) => ExprKind::Utf32StringLit(value),
+                    Token::WideStringLit(value) => ExprKind::WideStringLit(value),
                     _ => unreachable!(),
-                })
+                }
             }
             Some(
                 Token::CharLit(_, value)
@@ -1406,42 +1243,57 @@ impl Parser {
                 | Token::Utf16CharLit(_, value)
                 | Token::Utf32CharLit(_, value)
                 | Token::WideCharLit(_, value),
-            ) => Ok(ConstExpr::Integer(*value)),
-            Some(Token::Ident(value)) if value == "defined" => self.parse_defined(),
-            Some(Token::Ident(value)) if value == "__builtin_offsetof" => self.parse_offsetof(),
-            Some(Token::Ident(value)) if value == "__builtin_bit_cast" => self.parse_bit_cast(),
-            Some(Token::Ident(value)) if value == "__builtin_va_arg" => self.parse_va_arg(),
+            ) => ExprKind::Integer(*value),
+            Some(Token::Ident(value)) if value == "defined" => return self.parse_defined(start),
+            Some(Token::Ident(value)) if value == "__builtin_offsetof" => {
+                return self.parse_offsetof(start);
+            }
+            Some(Token::Ident(value)) if value == "__builtin_bit_cast" => {
+                return self.parse_bit_cast(start);
+            }
+            Some(Token::Ident(value)) if value == "__builtin_va_arg" => {
+                return self.parse_va_arg(start);
+            }
             Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
-                self.parse_types_compatible()
+                return self.parse_types_compatible(start);
             }
-            Some(Token::Ident(value)) if value == "_Generic" => self.parse_generic(),
-            Some(Token::Ident(value)) => Ok(ConstExpr::Identifier(value.clone())),
-            Some(Token::Keyword(keyword)) => {
-                Ok(ConstExpr::Identifier(<&str>::from(*keyword).into()))
-            }
-            Some(token) => Err(ConstExprError::UnexpectedToken(token.clone())),
-            None => Err(ConstExprError::ExpectedIntegerExpression),
-        }
+            Some(Token::Ident(value)) if value == "_Generic" => return self.parse_generic(start),
+            Some(Token::Ident(value)) => ExprKind::Identifier(value.clone()),
+            Some(Token::Keyword(keyword)) => ExprKind::Identifier(<&str>::from(*keyword).into()),
+            Some(token) => return Err(ConstExprError::UnexpectedToken(token.clone())),
+            None => return Err(ConstExprError::ExpectedIntegerExpression),
+        };
+        Ok(self.node(kind, start))
     }
 
-    fn parse_statement_expression(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_statement_expression(&mut self) -> Result<Expr, ConstExprError> {
+        let start = self.position;
         self.expect(Token::LParen)?;
         let open = self.position;
         let close = crate::parser::matching_brace(&self.tokens, open)
             .ok_or(ConstExprError::ExpectedIntegerExpression)?;
-        let body = self.tokens[open + 1..close].to_vec();
+        let statements = self
+            .statements
+            .ok_or(ConstExprError::NotConstant("statement expression"))?;
+        let body = statements
+            .parse_statement_expression_body(&self.tokens[open + 1..close])
+            .map_err(|error| ConstExprError::StatementExpression(error.to_string()))?;
         self.position = close + 1;
         self.expect(Token::RParen)?;
-        Ok(ConstExpr::StatementExpression(body))
+        Ok(self.node(ExprKind::StatementExpression(body), start))
     }
 
-    fn parse_generic(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_generic(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
+        let controlling_start = self.position;
         let controlling = if let Some((_, _, end)) = self.try_parse_type_name(self.position)
             && self.token_at(end) == Some(&Token::Comma)
         {
             self.position = end;
-            ConstExpr::Identifier("<type-name>".into())
+            self.node(
+                ExprKind::Identifier("<type-name>".into()),
+                controlling_start,
+            )
         } else {
             self.parse_assignment()?
         };
@@ -1471,7 +1323,7 @@ impl Parser {
                         .join(" "),
                 ),
             };
-            associations.push(ConstGenericAssociation {
+            associations.push(GenericAssociation {
                 type_name,
                 expression: self.parse_assignment()?,
             });
@@ -1481,66 +1333,82 @@ impl Parser {
             self.expect(Token::RParen)?;
             break;
         }
-        Ok(ConstExpr::Generic {
-            controlling: Box::new(controlling),
-            associations,
-        })
+        Ok(self.node(
+            ExprKind::Generic {
+                controlling,
+                associations,
+            },
+            start,
+        ))
     }
 
-    fn parse_defined(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_defined(&mut self, start: usize) -> Result<Expr, ConstExprError> {
+        let callee = self.node(ExprKind::Identifier("defined".to_string()), start);
         let parenthesized = self.consume(&Token::LParen);
+        let name_start = self.position;
         let name = match self.take() {
             Some(Token::Ident(value)) => value,
             Some(token) => return Err(ConstExprError::UnexpectedToken(token)),
             None => return Err(ConstExprError::ExpectedIntegerExpression),
         };
+        let argument = self.node(ExprKind::Identifier(name), name_start);
         if parenthesized {
             self.expect(Token::RParen)?;
         }
-        Ok(ConstExpr::Call {
-            callee: Box::new(ConstExpr::Identifier("defined".to_string())),
-            arguments: vec![ConstExpr::Identifier(name)],
-        })
+        Ok(self.node(
+            ExprKind::Call {
+                callee,
+                arguments: vec![argument],
+            },
+            start,
+        ))
     }
 
-    fn parse_offsetof(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_offsetof(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let (ty, declarator, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::Comma)?;
-        let mut member = ConstExpr::Identifier(self.expect_field_name()?);
+        let member_start = self.position;
+        let name = self.expect_field_name()?;
+        let mut member = self.node(ExprKind::Identifier(name), member_start);
         loop {
-            member = match self.peek() {
+            let kind = match self.peek() {
                 Some(Token::Dot) => {
                     self.take();
-                    ConstExpr::Member {
-                        base: Box::new(member),
+                    ExprKind::Member {
+                        base: member,
                         field: self.expect_field_name()?,
+                        arrow: false,
                     }
                 }
                 Some(Token::LBracket) => {
                     self.take();
                     let index = self.parse_comma()?;
                     self.expect(Token::RBracket)?;
-                    ConstExpr::Index {
-                        base: Box::new(member),
-                        index: Box::new(index),
+                    ExprKind::Index {
+                        base: member,
+                        index,
                     }
                 }
                 _ => break,
             };
+            member = self.node(kind, member_start);
         }
         self.expect(Token::RParen)?;
-        Ok(ConstExpr::OffsetOf {
-            ty,
-            declarator,
-            member: Box::new(member),
-        })
+        Ok(self.node(
+            ExprKind::OffsetOf {
+                ty,
+                declarator,
+                member,
+            },
+            start,
+        ))
     }
 
-    fn parse_bit_cast(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_bit_cast(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let (ty, declarator, end) = self
             .try_parse_type_name(self.position)
@@ -1549,30 +1417,36 @@ impl Parser {
         self.expect(Token::Comma)?;
         let value = self.parse_assignment()?;
         self.expect(Token::RParen)?;
-        Ok(ConstExpr::BitCast {
-            ty,
-            declarator,
-            value: Box::new(value),
-        })
+        Ok(self.node(
+            ExprKind::BitCast {
+                ty,
+                declarator,
+                value,
+            },
+            start,
+        ))
     }
 
-    fn parse_va_arg(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_va_arg(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
-        let ap = self.parse_assignment()?;
+        let list = self.parse_assignment()?;
         self.expect(Token::Comma)?;
         let (ty, declarator, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::RParen)?;
-        Ok(ConstExpr::VaArg {
-            ap: Box::new(ap),
-            ty,
-            declarator,
-        })
+        Ok(self.node(
+            ExprKind::VaArg {
+                list,
+                ty,
+                declarator,
+            },
+            start,
+        ))
     }
 
-    fn parse_types_compatible(&mut self) -> Result<ConstExpr, ConstExprError> {
+    fn parse_types_compatible(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let (left_ty, left_declarator, end) = self
             .try_parse_type_name(self.position)
@@ -1584,12 +1458,15 @@ impl Parser {
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::RParen)?;
-        Ok(ConstExpr::TypesCompatible {
-            left_ty,
-            left_declarator,
-            right_ty,
-            right_declarator,
-        })
+        Ok(self.node(
+            ExprKind::TypesCompatible {
+                left_ty,
+                left_declarator,
+                right_ty,
+                right_declarator,
+            },
+            start,
+        ))
     }
 
     fn binary_operator(&self) -> Option<(BinaryOp, u8)> {
@@ -1628,7 +1505,7 @@ fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExpr
             let element = declarator_size(ty, inner)?;
             let count = match size {
                 ArraySize::Expression(expr) => match &expr.value {
-                    Expr::IntLit(value) => *value as u64,
+                    ExprKind::Integer(value) => *value as u64,
                     _ => return Err(ConstExprError::UnsupportedTypeSize),
                 },
                 ArraySize::Unspecified | ArraySize::Star => {
@@ -1684,7 +1561,7 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
             let element_size = ctype_size(element)?;
             let count = match size {
                 ArraySize::Expression(expr) => match &expr.value {
-                    Expr::IntLit(value) => *value as u64,
+                    ExprKind::Integer(value) => *value as u64,
                     _ => return Err(ConstExprError::UnsupportedTypeSize),
                 },
                 ArraySize::Unspecified | ArraySize::Star => {
@@ -1756,16 +1633,5 @@ pub(crate) fn starts_type_name(token: &Token, typedef_names: &HashSet<String>) -
                 || matches!(name.as_str(), "__attribute__" | "__attribute")
         }
         _ => false,
-    }
-}
-
-pub(crate) fn string_literal_expr(token: Option<&Token>) -> Option<Expr> {
-    match token? {
-        Token::StringLit(value) => Some(Expr::StringLit(value.clone())),
-        Token::Utf8StringLit(value) => Some(Expr::Utf8StringLit(value.clone())),
-        Token::Utf16StringLit(value) => Some(Expr::Utf16StringLit(value.clone())),
-        Token::Utf32StringLit(value) => Some(Expr::Utf32StringLit(value.clone())),
-        Token::WideStringLit(value) => Some(Expr::WideStringLit(value.clone())),
-        _ => None,
     }
 }

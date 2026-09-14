@@ -29,10 +29,8 @@ typedef int Socket;
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       3,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -115,10 +113,8 @@ typedef int Socket;
 // WIN32-NEXT:           name: "main",
 // WIN32-NEXT:           body: [
 // WIN32-NEXT:               Return(
-// WIN32-NEXT:                   Const(
-// WIN32-NEXT:                       Integer(
-// WIN32-NEXT:                           2,
-// WIN32-NEXT:                       ),
+// WIN32-NEXT:                   Integer(
+// WIN32-NEXT:                       2,
 // WIN32-NEXT:                   ),
 // WIN32-NEXT:               ),
 // WIN32-NEXT:           ],

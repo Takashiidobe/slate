@@ -176,13 +176,12 @@ splice_viable (cands)
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "cands",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                       Unary {
+// DEFAULT-NEXT:                                           op: AddrOf,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "cands",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -192,89 +191,104 @@ splice_viable (cands)
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: None,
 // DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Deref(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "p",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                       Unary {
+// DEFAULT-NEXT:                           op: Deref,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "p",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   increment: None,
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Ternary {
-// DEFAULT-NEXT:                                   condition: Identifier(
-// DEFAULT-NEXT:                                       "pedantic",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   then_value: Binary {
+// DEFAULT-NEXT:                           condition: Conditional {
+// DEFAULT-NEXT:                               condition: Identifier(
+// DEFAULT-NEXT:                                   "pedantic",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               then_value: Some(
+// DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: Arrow {
-// DEFAULT-NEXT:                                           base: Deref(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "p",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                       left: Member {
+// DEFAULT-NEXT:                                           base: Paren(
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: Deref,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "viable",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   else_value: Arrow {
-// DEFAULT-NEXT:                                       base: Deref(
-// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               else_value: Member {
+// DEFAULT-NEXT:                                   base: Paren(
+// DEFAULT-NEXT:                                       Unary {
+// DEFAULT-NEXT:                                           op: Deref,
+// DEFAULT-NEXT:                                           operand: Identifier(
 // DEFAULT-NEXT:                                               "p",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "viable",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "p",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: AddrOf(
-// DEFAULT-NEXT:                                               Arrow {
-// DEFAULT-NEXT:                                                   base: Deref(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "p",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "next",
-// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "viable",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           then_branch: [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Identifier(
+// DEFAULT-NEXT:                                           "p",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       value: Unary {
+// DEFAULT-NEXT:                                           op: AddrOf,
+// DEFAULT-NEXT:                                           operand: Paren(
+// DEFAULT-NEXT:                                               Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Deref,
+// DEFAULT-NEXT:                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                               "p",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "next",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: Some(
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Assign {
-// DEFAULT-NEXT:                                               op: Assign,
-// DEFAULT-NEXT:                                               target: Deref(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "p",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       Assign {
+// DEFAULT-NEXT:                                           op: Assign,
+// DEFAULT-NEXT:                                           target: Unary {
+// DEFAULT-NEXT:                                               op: Deref,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "p",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               value: Arrow {
-// DEFAULT-NEXT:                                                   base: Deref(
-// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Member {
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Unary {
+// DEFAULT-NEXT:                                                       op: Deref,
+// DEFAULT-NEXT:                                                       operand: Identifier(
 // DEFAULT-NEXT:                                                           "p",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "next",
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "next",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           ),
@@ -282,10 +296,8 @@ splice_viable (cands)
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "cands",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "cands",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

@@ -3,8 +3,8 @@ use super::declarator::DeclaratorParser;
 use super::{Cursor, Fragment, Parser, span_tokens};
 use crate::ast::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
-    AsmConstraintModifier, AsmLabel, AsmOperand, AsmOperands, AsmQualifier, AsmTemplatePiece,
-    GnuAsm, Span, SpannedExpr, StorageClass,
+    AsmConstraintModifier, AsmLabel, AsmOperand, AsmOperands, AsmQualifier, AsmTemplatePiece, Expr,
+    GnuAsm, Span, StorageClass,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::error::ParseError;
@@ -104,7 +104,7 @@ struct RawOperand {
     name: Option<Span<String>>,
     constraint: Span<String>,
     constraint_pos: usize,
-    expr: SpannedExpr,
+    expr: Expr,
 }
 
 impl Parser {

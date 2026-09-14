@@ -286,7 +286,7 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           3,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -561,7 +561,7 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           3,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -571,250 +571,257 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "h",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "x",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "c",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "m",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Member {
+// DEFAULT-NEXT:                           base: Identifier(
 // DEFAULT-NEXT:                               "h",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                           field: "a",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "l",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "h",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "b",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "n",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "y",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "o",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Double(
+// DEFAULT-NEXT:                                   0.0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "c",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "m",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "h",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "a",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "l",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "h",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "b",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "n",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "y",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "o",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Double(
-// DEFAULT-NEXT:                                       0.0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "x",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "d",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               8,
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Equal,
+// DEFAULT-NEXT:                       left: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "x",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "d",
+// DEFAULT-NEXT:                           arrow: true,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           8,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       For {
 // DEFAULT-NEXT:                           init: Some(
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "j",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           condition: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Less,
-// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Identifier(
 // DEFAULT-NEXT:                                           "j",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "x",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "e",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           increment: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   PostIncrement(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "j",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           condition: Some(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Less,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "j",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   right: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "x",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "e",
+// DEFAULT-NEXT:                                       arrow: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           increment: Some(
+// DEFAULT-NEXT:                               Postfix {
+// DEFAULT-NEXT:                                   op: Increment,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "j",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               For {
 // DEFAULT-NEXT:                                   init: Some(
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "k",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   condition: Some(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Less,
-// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
 // DEFAULT-NEXT:                                                   "k",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                               value: Integer(
+// DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   increment: Some(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           PostIncrement(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "k",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                   condition: Some(
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Less,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "k",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               3,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   increment: Some(
+// DEFAULT-NEXT:                                       Postfix {
+// DEFAULT-NEXT:                                           op: Increment,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "k",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   body: [
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "n",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Identifier(
-// DEFAULT-NEXT:                                                       "y",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "n",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Identifier(
+// DEFAULT-NEXT:                                                   "y",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "o",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Float(
-// DEFAULT-NEXT:                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               0.0,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "o",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Float(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       value: Double(
+// DEFAULT-NEXT:                                                           0.0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       If {
-// DEFAULT-NEXT:                                           condition: Const(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "m",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           condition: Identifier(
+// DEFAULT-NEXT:                                               "m",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           then_branch: [
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Const(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "q",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Sub,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Sub,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Index {
+// DEFAULT-NEXT:                                                                       base: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "x",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "f",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       index: Identifier(
+// DEFAULT-NEXT:                                                                           "k",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "x",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "e",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Identifier(
+// DEFAULT-NEXT:                                                               "j",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           else_branch: Some(
+// DEFAULT-NEXT:                                               [
+// DEFAULT-NEXT:                                                   Expr(
 // DEFAULT-NEXT:                                                       Assign {
 // DEFAULT-NEXT:                                                           op: Assign,
 // DEFAULT-NEXT:                                                           target: Identifier(
 // DEFAULT-NEXT:                                                               "q",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           value: Binary {
-// DEFAULT-NEXT:                                                               op: Sub,
-// DEFAULT-NEXT:                                                               left: Binary {
-// DEFAULT-NEXT:                                                                   op: Sub,
-// DEFAULT-NEXT:                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                       op: Add,
-// DEFAULT-NEXT:                                                                       left: Index {
-// DEFAULT-NEXT:                                                                           base: Arrow {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "x",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "f",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                               "k",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Arrow {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "x",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "e",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Index {
+// DEFAULT-NEXT:                                                                   base: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "x",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "f",
+// DEFAULT-NEXT:                                                                       arrow: true,
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   index: Identifier(
+// DEFAULT-NEXT:                                                                       "k",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               right: Identifier(
@@ -823,67 +830,39 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           else_branch: Some(
-// DEFAULT-NEXT:                                               [
-// DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: Assign,
-// DEFAULT-NEXT:                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                   "q",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               value: Binary {
-// DEFAULT-NEXT:                                                                   op: Add,
-// DEFAULT-NEXT:                                                                   left: Index {
-// DEFAULT-NEXT:                                                                       base: Arrow {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "x",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "f",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       index: Identifier(
-// DEFAULT-NEXT:                                                                           "k",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Identifier(
-// DEFAULT-NEXT:                                                                       "j",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "p",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Div,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Mul,
-// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Binary {
+// DEFAULT-NEXT:                                                   op: Div,
+// DEFAULT-NEXT:                                                   left: Binary {
+// DEFAULT-NEXT:                                                       op: Mul,
+// DEFAULT-NEXT:                                                       left: Paren(
+// DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Sub,
-// DEFAULT-NEXT:                                                               left: Deref(
-// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                               left: Unary {
+// DEFAULT-NEXT:                                                                   op: Deref,
+// DEFAULT-NEXT:                                                                   operand: Identifier(
 // DEFAULT-NEXT:                                                                       "q",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               right: Identifier(
 // DEFAULT-NEXT:                                                                   "o",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "y",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Paren(
+// DEFAULT-NEXT:                                                       Binary {
 // DEFAULT-NEXT:                                                           op: Sub,
 // DEFAULT-NEXT:                                                           left: Identifier(
 // DEFAULT-NEXT:                                                               "n",
@@ -892,133 +871,128 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:                                                               "o",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "p",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: Greater,
-// DEFAULT-NEXT:                                                           left: Float(
-// DEFAULT-NEXT:                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                   value: Double(
-// DEFAULT-NEXT:                                                                       0.0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "p",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Float(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Greater,
+// DEFAULT-NEXT:                                                       left: Float(
 // DEFAULT-NEXT:                                                           FloatLiteral {
 // DEFAULT-NEXT:                                                               value: Double(
 // DEFAULT-NEXT:                                                                   0.0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       else_value: Identifier(
+// DEFAULT-NEXT:                                                       right: Identifier(
 // DEFAULT-NEXT:                                                           "p",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Identifier(
 // DEFAULT-NEXT:                                                       "p",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: Less,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "y",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "p",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Identifier(
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "p",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Conditional {
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Less,
+// DEFAULT-NEXT:                                                       left: Identifier(
 // DEFAULT-NEXT:                                                           "y",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       else_value: Identifier(
+// DEFAULT-NEXT:                                                       right: Identifier(
 // DEFAULT-NEXT:                                                           "p",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_value: Some(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_value: Identifier(
+// DEFAULT-NEXT:                                                       "p",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       If {
-// DEFAULT-NEXT:                                           condition: Const(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "l",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           condition: Identifier(
+// DEFAULT-NEXT:                                               "l",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           then_branch: [
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Assign {
-// DEFAULT-NEXT:                                                           op: Assign,
-// DEFAULT-NEXT:                                                           target: Identifier(
-// DEFAULT-NEXT:                                                               "p",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           value: Index {
-// DEFAULT-NEXT:                                                               base: Index {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "r",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   index: Identifier(
-// DEFAULT-NEXT:                                                                       "k",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               index: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                           signed: true,
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                       "p",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "p",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Index {
+// DEFAULT-NEXT:                                                           base: Index {
+// DEFAULT-NEXT:                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                   "r",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                   "k",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           index: Cast {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                       signed: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                   "p",
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                           else_branch: None,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Call {
-// DEFAULT-NEXT:                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                       "bar",
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "bar",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "p",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   arguments: [
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "p",
+// DEFAULT-NEXT:                                                   Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "x",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Arrow {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "x",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "g",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                                       field: "g",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
@@ -1028,10 +1002,8 @@ int foo (S1 *x, float y)
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       1,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

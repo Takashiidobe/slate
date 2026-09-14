@@ -123,10 +123,8 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                                       "type",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   bit_width: Some(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Integer(
-// DEFAULT-NEXT:                                                                               3,
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           3,
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
@@ -155,10 +153,8 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                                       "markbit",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   bit_width: Some(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Integer(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           1,
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
@@ -187,10 +183,8 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                                       "val",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   bit_width: Some(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Integer(
-// DEFAULT-NEXT:                                                                               32,
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           32,
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
@@ -357,10 +351,8 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "initialized",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Identifier(
+// DEFAULT-NEXT:                       "initialized",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Decl(
@@ -382,108 +374,98 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                       DoWhile {
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "tdevice",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: CompoundLiteral {
-// DEFAULT-NEXT:                                               ty: Tagged {
-// DEFAULT-NEXT:                                                   kind: Union,
-// DEFAULT-NEXT:                                                   name: Some(
-// DEFAULT-NEXT:                                                       "Lisp_Object",
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Identifier(
+// DEFAULT-NEXT:                                           "tdevice",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       value: CompoundLiteral {
+// DEFAULT-NEXT:                                           ty: Tagged {
+// DEFAULT-NEXT:                                               kind: Union,
+// DEFAULT-NEXT:                                               name: Some(
+// DEFAULT-NEXT:                                                   "Lisp_Object",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           initializer: [
+// DEFAULT-NEXT:                                               InitializerItem {
+// DEFAULT-NEXT:                                                   designators: [
+// DEFAULT-NEXT:                                                       Field(
+// DEFAULT-NEXT:                                                           "gu",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   value: List(
+// DEFAULT-NEXT:                                                       [
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [
+// DEFAULT-NEXT:                                                                   Field(
+// DEFAULT-NEXT:                                                                       "markbit",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [
+// DEFAULT-NEXT:                                                                   Field(
+// DEFAULT-NEXT:                                                                       "type",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "Lisp_Record",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitializerItem {
+// DEFAULT-NEXT:                                                               designators: [
+// DEFAULT-NEXT:                                                                   Field(
+// DEFAULT-NEXT:                                                                       "val",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               value: Expr(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Cast {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Identifier(
+// DEFAULT-NEXT:                                                                               "d",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                               initializer: [
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [
-// DEFAULT-NEXT:                                                           Field(
-// DEFAULT-NEXT:                                                               "gu",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                       value: List(
-// DEFAULT-NEXT:                                                           [
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [
-// DEFAULT-NEXT:                                                                       Field(
-// DEFAULT-NEXT:                                                                           "markbit",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Integer(
-// DEFAULT-NEXT:                                                                               0,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [
-// DEFAULT-NEXT:                                                                       Field(
-// DEFAULT-NEXT:                                                                           "type",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "Lisp_Record",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [
-// DEFAULT-NEXT:                                                                       Field(
-// DEFAULT-NEXT:                                                                           "val",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Long,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Identifier(
-// DEFAULT-NEXT:                                                                                   "d",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           condition: Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "call_critical_lisp_code",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "call_critical_lisp_code",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "tdevice",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "tdevice",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,

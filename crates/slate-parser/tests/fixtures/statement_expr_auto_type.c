@@ -113,30 +113,24 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           4,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       4,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           9,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       9,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           16,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       16,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -164,10 +158,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -208,19 +200,21 @@ int main(void) {
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               initializer: Some(
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           AddrOf(
-// DEFAULT-NEXT:                                                                               Index {
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Index {
 // DEFAULT-NEXT:                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                       "values",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: PostIncrement(
-// DEFAULT-NEXT:                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                   index: Postfix {
+// DEFAULT-NEXT:                                                                                       op: Increment,
+// DEFAULT-NEXT:                                                                                       operand: Identifier(
 // DEFAULT-NEXT:                                                                                           "index",
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
@@ -242,13 +236,12 @@ int main(void) {
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               initializer: Some(
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Deref(
-// DEFAULT-NEXT:                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                   "exchange_pointer",
-// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: Deref,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "exchange_pointer",
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
@@ -256,25 +249,24 @@ int main(void) {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Assign {
-// DEFAULT-NEXT:                                                           op: Assign,
-// DEFAULT-NEXT:                                                           target: Deref(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "exchange_pointer",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           value: Integer(
-// DEFAULT-NEXT:                                                               25,
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Unary {
+// DEFAULT-NEXT:                                                           op: Deref,
+// DEFAULT-NEXT:                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                               "exchange_pointer",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               25,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "exchange_value",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "exchange_value",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
@@ -286,38 +278,34 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%ld %ld %d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%ld %ld %d\\n",
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "old",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Index {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "values",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "old",
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Index {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "values",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "index",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "index",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

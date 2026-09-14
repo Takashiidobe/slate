@@ -22,13 +22,13 @@ int f(int idx) { return (__builtin_strlen(list[idx])); }
 // DEFAULT-NEXT:                               "list",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               IntLit(
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   250,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               64,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -71,7 +71,7 @@ int f(int idx) { return (__builtin_strlen(list[idx])); }
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Call {
 // DEFAULT-NEXT:                           callee: Identifier(
 // DEFAULT-NEXT:                               "__builtin_strlen",

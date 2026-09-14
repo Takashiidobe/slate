@@ -47,7 +47,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:                           "popped_in_branch",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -81,7 +81,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:                           "unreachable_pop",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -115,7 +115,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:                           "partial_push",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -149,7 +149,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:                           "second_pop",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -185,7 +185,7 @@ int second_pop[Y];
 // A-NEXT:                           "popped_in_branch",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               1,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -219,7 +219,7 @@ int second_pop[Y];
 // A-NEXT:                           "unreachable_pop",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               2,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -253,7 +253,7 @@ int second_pop[Y];
 // A-NEXT:                           "partial_push",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               2,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -287,7 +287,7 @@ int second_pop[Y];
 // A-NEXT:                           "second_pop",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               1,
 // A-NEXT:                           ),
 // A-NEXT:                       ),

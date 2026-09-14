@@ -42,7 +42,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "inner",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -76,7 +76,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "outer",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -110,7 +110,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "unmatched_pop",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -144,7 +144,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:                           "after",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -180,7 +180,7 @@ int after[WIDTH];
 // WIDE-NEXT:                           "inner",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntLit(
+// WIDE-NEXT:                           Integer(
 // WIDE-NEXT:                               8,
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
@@ -214,7 +214,7 @@ int after[WIDTH];
 // WIDE-NEXT:                           "outer",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntLit(
+// WIDE-NEXT:                           Integer(
 // WIDE-NEXT:                               4,
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
@@ -248,7 +248,7 @@ int after[WIDTH];
 // WIDE-NEXT:                           "unmatched_pop",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntLit(
+// WIDE-NEXT:                           Integer(
 // WIDE-NEXT:                               4,
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
@@ -282,7 +282,7 @@ int after[WIDTH];
 // WIDE-NEXT:                           "wide",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntLit(
+// WIDE-NEXT:                           Integer(
 // WIDE-NEXT:                               16,
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),
@@ -316,7 +316,7 @@ int after[WIDTH];
 // WIDE-NEXT:                           "after",
 // WIDE-NEXT:                       ),
 // WIDE-NEXT:                       size: Expression(
-// WIDE-NEXT:                           IntLit(
+// WIDE-NEXT:                           Integer(
 // WIDE-NEXT:                               4,
 // WIDE-NEXT:                           ),
 // WIDE-NEXT:                       ),

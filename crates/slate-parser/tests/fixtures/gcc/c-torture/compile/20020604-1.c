@@ -265,13 +265,13 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                           "c",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           IntLit(
+// DEFAULT-NEXT:                                           Integer(
 // DEFAULT-NEXT:                                               2048,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -281,134 +281,114 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Switch {
-// DEFAULT-NEXT:                   discriminant: Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "x",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   discriminant: Identifier(
+// DEFAULT-NEXT:                       "x",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   6406,
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               6406,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "a",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Unary {
-// DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   6410,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Unary {
-// DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   32841,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Unary {
-// DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   6407,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "a",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                               value: Assign {
 // DEFAULT-NEXT:                                   op: Assign,
 // DEFAULT-NEXT:                                   target: Identifier(
 // DEFAULT-NEXT:                                       "b",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       2,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       operand: Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Break,
+// DEFAULT-NEXT:                       Case(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               6410,
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "b",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       operand: Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Break,
+// DEFAULT-NEXT:                       Case(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               32841,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "b",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       operand: Integer(
+// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Break,
+// DEFAULT-NEXT:                       Case(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               6407,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   2,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Break,
 // DEFAULT-NEXT:                       Default,
@@ -416,17 +396,15 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: GreaterEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: GreaterEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "a",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Decl(
 // DEFAULT-NEXT:                           Declaration {
@@ -449,10 +427,8 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "z",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -482,40 +458,35 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                       For {
 // DEFAULT-NEXT:                           init: Some(
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           condition: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Less,
-// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Identifier(
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "n",
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           increment: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   PostIncrement(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           condition: Some(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Less,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "i",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   right: Identifier(
+// DEFAULT-NEXT:                                       "n",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           increment: Some(
+// DEFAULT-NEXT:                               Postfix {
+// DEFAULT-NEXT:                                   op: Increment,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               DoWhile {
@@ -591,64 +562,166 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Member {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "e",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "r",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Index {
-// DEFAULT-NEXT:                                                       base: Index {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "c",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           index: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "e",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "r",
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Index {
+// DEFAULT-NEXT:                                               value: Index {
+// DEFAULT-NEXT:                                                   base: Index {
 // DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "d",
+// DEFAULT-NEXT:                                                           "c",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       index: Identifier(
-// DEFAULT-NEXT:                                                           "a",
+// DEFAULT-NEXT:                                                           "i",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: GreaterEqual,
-// DEFAULT-NEXT:                                                           left: Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "e",
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "d",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "a",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Paren(
+// DEFAULT-NEXT:                                                   Conditional {
+// DEFAULT-NEXT:                                                       condition: Paren(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: GreaterEqual,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "e",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "i",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   1065287680,
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "i",
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1065287680,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Ternary {
-// DEFAULT-NEXT:                                                           condition: Binary {
-// DEFAULT-NEXT:                                                               op: Less,
-// DEFAULT-NEXT:                                                               left: Cast {
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Conditional {
+// DEFAULT-NEXT:                                                               condition: Paren(
+// DEFAULT-NEXT:                                                                   Binary {
+// DEFAULT-NEXT:                                                                       op: Less,
+// DEFAULT-NEXT:                                                                       left: Cast {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "e",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "i",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                   Cast {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Char {
+// DEFAULT-NEXT:                                                                               signed: Some(
+// DEFAULT-NEXT:                                                                                   false,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               else_value: Cast {
 // DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: Some(
+// DEFAULT-NEXT:                                                                               false,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       255,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       else_value: Paren(
+// DEFAULT-NEXT:                                                           Comma {
+// DEFAULT-NEXT:                                                               left: Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "e",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "r",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: Add,
+// DEFAULT-NEXT:                                                                       left: Binary {
+// DEFAULT-NEXT:                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                           left: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "e",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "r",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Div,
+// DEFAULT-NEXT:                                                                                   left: Float(
+// DEFAULT-NEXT:                                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                                           value: Single(
+// DEFAULT-NEXT:                                                                                               255.0,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Float(
+// DEFAULT-NEXT:                                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                                           value: Single(
+// DEFAULT-NEXT:                                                                                               256.0,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   32768.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Cast {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: Some(
+// DEFAULT-NEXT:                                                                               false,
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
@@ -659,123 +732,27 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                                       field: "i",
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           then_value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           else_value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   255,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Comma(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: Assign,
-// DEFAULT-NEXT:                                                               target: Member {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "e",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "r",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Binary {
-// DEFAULT-NEXT:                                                                   op: Add,
-// DEFAULT-NEXT:                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                       op: Mul,
-// DEFAULT-NEXT:                                                                       left: Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "e",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "r",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Float(
-// DEFAULT-NEXT:                                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                                   value: Single(
-// DEFAULT-NEXT:                                                                                       255.0,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Float(
-// DEFAULT-NEXT:                                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                                   value: Single(
-// DEFAULT-NEXT:                                                                                       256.0,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Float(
-// DEFAULT-NEXT:                                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                                           value: Single(
-// DEFAULT-NEXT:                                                                               32768.0,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Member {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "e",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "i",
-// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   condition: Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   condition: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: AddAssign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "d",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: AddAssign,
+// DEFAULT-NEXT:                                       target: Identifier(
+// DEFAULT-NEXT:                                           "d",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -783,17 +760,15 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: GreaterEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "b",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: GreaterEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "b",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Decl(
 // DEFAULT-NEXT:                           Declaration {
@@ -816,10 +791,8 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "z",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "z",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -849,40 +822,35 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                       For {
 // DEFAULT-NEXT:                           init: Some(
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           condition: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Less,
-// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Identifier(
 // DEFAULT-NEXT:                                           "i",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "n",
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           increment: Some(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   PostIncrement(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           condition: Some(
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Less,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "i",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   right: Identifier(
+// DEFAULT-NEXT:                                       "n",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           increment: Some(
+// DEFAULT-NEXT:                               Postfix {
+// DEFAULT-NEXT:                                   op: Increment,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               DoWhile {
@@ -958,64 +926,166 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Member {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "e",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "r",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Index {
-// DEFAULT-NEXT:                                                       base: Index {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "c",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           index: Identifier(
-// DEFAULT-NEXT:                                                               "i",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           2,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "e",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "r",
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Index {
+// DEFAULT-NEXT:                                               value: Index {
+// DEFAULT-NEXT:                                                   base: Index {
 // DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "d",
+// DEFAULT-NEXT:                                                           "c",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       index: Identifier(
-// DEFAULT-NEXT:                                                           "b",
+// DEFAULT-NEXT:                                                           "i",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: GreaterEqual,
-// DEFAULT-NEXT:                                                           left: Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "e",
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "d",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "b",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Paren(
+// DEFAULT-NEXT:                                                   Conditional {
+// DEFAULT-NEXT:                                                       condition: Paren(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: GreaterEqual,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "e",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "i",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   1065287680,
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "i",
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1065287680,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Ternary {
-// DEFAULT-NEXT:                                                           condition: Binary {
-// DEFAULT-NEXT:                                                               op: Less,
-// DEFAULT-NEXT:                                                               left: Cast {
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Conditional {
+// DEFAULT-NEXT:                                                               condition: Paren(
+// DEFAULT-NEXT:                                                                   Binary {
+// DEFAULT-NEXT:                                                                       op: Less,
+// DEFAULT-NEXT:                                                                       left: Cast {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "e",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "i",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                   Cast {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Char {
+// DEFAULT-NEXT:                                                                               signed: Some(
+// DEFAULT-NEXT:                                                                                   false,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               else_value: Cast {
 // DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: Some(
+// DEFAULT-NEXT:                                                                               false,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       255,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       else_value: Paren(
+// DEFAULT-NEXT:                                                           Comma {
+// DEFAULT-NEXT:                                                               left: Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "e",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "r",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: Add,
+// DEFAULT-NEXT:                                                                       left: Binary {
+// DEFAULT-NEXT:                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                           left: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "e",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "r",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Div,
+// DEFAULT-NEXT:                                                                                   left: Float(
+// DEFAULT-NEXT:                                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                                           value: Single(
+// DEFAULT-NEXT:                                                                                               255.0,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Float(
+// DEFAULT-NEXT:                                                                                       FloatLiteral {
+// DEFAULT-NEXT:                                                                                           value: Single(
+// DEFAULT-NEXT:                                                                                               256.0,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Float(
+// DEFAULT-NEXT:                                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                                               value: Single(
+// DEFAULT-NEXT:                                                                                   32768.0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Cast {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: Some(
+// DEFAULT-NEXT:                                                                               false,
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   declarator: Abstract,
@@ -1026,123 +1096,27 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:                                                                       field: "i",
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           then_value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           else_value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   255,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       else_value: Comma(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: Assign,
-// DEFAULT-NEXT:                                                               target: Member {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "e",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "r",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Binary {
-// DEFAULT-NEXT:                                                                   op: Add,
-// DEFAULT-NEXT:                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                       op: Mul,
-// DEFAULT-NEXT:                                                                       left: Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "e",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "r",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Float(
-// DEFAULT-NEXT:                                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                                   value: Single(
-// DEFAULT-NEXT:                                                                                       255.0,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Float(
-// DEFAULT-NEXT:                                                                               FloatLiteral {
-// DEFAULT-NEXT:                                                                                   value: Single(
-// DEFAULT-NEXT:                                                                                       256.0,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Float(
-// DEFAULT-NEXT:                                                                       FloatLiteral {
-// DEFAULT-NEXT:                                                                           value: Single(
-// DEFAULT-NEXT:                                                                               32768.0,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Member {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "e",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "i",
-// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   condition: Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   condition: Integer(
+// DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: AddAssign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "d",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: AddAssign,
+// DEFAULT-NEXT:                                       target: Identifier(
+// DEFAULT-NEXT:                                           "d",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "y",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },

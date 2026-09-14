@@ -1938,7 +1938,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       "gemDirtyPageKinds",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           10,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -1972,7 +1972,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       "stoneDirtyPageKinds",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           10,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -2939,7 +2939,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                       "sessionStats",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           40,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -3636,343 +3636,339 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Arrow {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "statsPtr",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "sessionId",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Identifier(
+// DEFAULT-NEXT:                           "sessionId",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Member {
 // DEFAULT-NEXT:                               base: Identifier(
 // DEFAULT-NEXT:                                   "statsPtr",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "sessionId",
+// DEFAULT-NEXT:                               field: "cmn",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Identifier(
-// DEFAULT-NEXT:                               "sessionId",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "a1",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Arrow {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "statsPtr",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "cmn",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           field: "n1",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           5,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Local1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "statsPtr",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               field: "local1",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Local2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "statsPtr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               field: "local2",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Local3",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "statsPtr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               field: "local3",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "RDbf1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "statsPtr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               field: "rdbf1",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "RDbf2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "statsPtr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               field: "rdbf2",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "RDbf3",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "statsPtr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               field: "milli",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Unary {
+// DEFAULT-NEXT:                           op: Deref,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "RDbf3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "IntVc1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               field: "a1",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "statsPtr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "cmn",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "IntVc2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               field: "n1",
+// DEFAULT-NEXT:                               field: "a2",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               5,
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Local1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Arrow {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "IntCode3",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "statsPtr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "cmn",
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "local1",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "a3",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Local2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Arrow {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "IntCode4",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "statsPtr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "cmn",
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "local2",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "a4",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Local3",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Arrow {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "IntCode5",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "statsPtr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "cmn",
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "local3",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "a5",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "RDbf1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Arrow {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "IntCode6",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
+// DEFAULT-NEXT:                                   base: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "statsPtr",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "cmn",
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "rdbf1",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "a6",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "RDbf2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "statsPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "cmn",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "rdbf2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "RDbf3",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "statsPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "cmn",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "milli",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Deref(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "RDbf3",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "IntVc1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "a1",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "IntVc2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "a2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "IntCode3",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "a3",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "IntCode4",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "a4",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "IntCode5",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "a5",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "IntCode6",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
-// DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "a6",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
@@ -3996,606 +3992,616 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "workSpPtr",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "Workspace",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Expr(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "Workspace",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p1",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a7",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p1",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a7",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p2",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a8",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p2",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a8",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p3",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a9",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p3",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a9",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p4",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a10",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p4",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a10",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p5",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a11",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p5",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a11",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p6",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a12",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p6",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a12",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p7",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a13",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p7",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a13",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p8",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a14",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p8",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a14",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p9",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a15",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p9",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a15",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p10",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "gem",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "a16",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p10",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a16",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "workSpPtr",
 // DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "p11",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "workSpPtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "p11",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: AddrOf(
-// DEFAULT-NEXT:                                       Member {
+// DEFAULT-NEXT:                               value: Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Member {
 // DEFAULT-NEXT:                                           base: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "statsPtr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "u",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "gem",
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "statsPtr",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "u",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "a17",
+// DEFAULT-NEXT:                                           field: "gem",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       field: "a17",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c1",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c1",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c2",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c2",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom3",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom3",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c3",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c3",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom4",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom4",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c4",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c4",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom5",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom5",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c5",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c5",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom6",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom6",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c6",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c6",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom7",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom7",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c7",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c7",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom8",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom8",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c8",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c8",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom9",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom9",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c9",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c9",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "Lom10",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "Lom10",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c10",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c10",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "RDbf11",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "RDbf11",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c11",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c11",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "RDbf12",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "RDbf12",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Member {
 // DEFAULT-NEXT:                                   base: Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "statsPtr",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "gem",
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "statsPtr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "u",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   field: "c12",
+// DEFAULT-NEXT:                                   field: "gem",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               field: "c12",
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -4750,41 +4756,40 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "ptePtr",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: AddrOf(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "MyPte",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "ptePtr",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Unary {
+// DEFAULT-NEXT:                           op: AddrOf,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "MyPte",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "setStatPointers",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "setStatPointers",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "ptePtr",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "stats",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "sessionId",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "ptePtr",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "stats",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "sessionId",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -4819,21 +4824,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "initPte",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "initPte",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "sessionId",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "sessionId",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -4890,24 +4893,20 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "InitCache",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "InitCache",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               5,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   5,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

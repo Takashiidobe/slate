@@ -66,17 +66,18 @@ foo ()
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Binary {
 // DEFAULT-NEXT:                           op: Greater,
 // DEFAULT-NEXT:                           left: Integer(
 // DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                           right: Postfix {
+// DEFAULT-NEXT:                               op: Increment,
+// DEFAULT-NEXT:                               operand: Identifier(
 // DEFAULT-NEXT:                                   "Y",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),

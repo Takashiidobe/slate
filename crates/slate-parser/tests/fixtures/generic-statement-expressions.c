@@ -21,29 +21,27 @@ int statement_value() {
 // DEFAULT-NEXT:           name: "generic_value",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Generic {
-// DEFAULT-NEXT:                           controlling: Integer(
-// DEFAULT-NEXT:                               1,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               ConstGenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "int",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               ConstGenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Generic {
+// DEFAULT-NEXT:                       controlling: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       associations: [
+// DEFAULT-NEXT:                           GenericAssociation {
+// DEFAULT-NEXT:                               type_name: Some(
+// DEFAULT-NEXT:                                   "int",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               expression: Integer(
+// DEFAULT-NEXT:                                   1,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           GenericAssociation {
+// DEFAULT-NEXT:                               type_name: None,
+// DEFAULT-NEXT:                               expression: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -70,20 +68,16 @@ int statement_value() {
 // DEFAULT-NEXT:                   StatementExpression(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Integer(
-// DEFAULT-NEXT:                                       1,
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               Integer(
+// DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

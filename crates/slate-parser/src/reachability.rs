@@ -1,6 +1,4 @@
 use crate::ast::*;
-use crate::const_expr::ConstExpr;
-use crate::lexer::Token;
 use std::collections::{HashMap, HashSet};
 
 pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> TranslationUnit {
@@ -193,44 +191,33 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn mark_expr(&mut self, expr: &SpannedExpr) {
+    fn mark_expr(&mut self, expr: &Expr) {
         match &expr.value {
-            Expr::Const(value) => self.mark_const_expr(value),
-            Expr::Identifier(name) => self.mark_name(name),
-            Expr::Unary { value, .. } | Expr::SizeOf(value) => self.mark_expr(value),
-            Expr::Binary { left, right, .. } => {
-                self.mark_expr(left);
-                self.mark_expr(right);
-            }
-            Expr::StatementExpression(body) => self.mark_stmts(body),
-            Expr::IntLit(_)
-            | Expr::StringLit(_)
-            | Expr::Utf8StringLit(_)
-            | Expr::Utf16StringLit(_)
-            | Expr::Utf32StringLit(_)
-            | Expr::WideStringLit(_) => {}
-        }
-    }
-
-    fn mark_const_expr(&mut self, expr: &ConstExpr) {
-        match expr {
-            ConstExpr::Identifier(name) => self.mark_name(name),
-            ConstExpr::Generic {
+            ExprKind::Identifier(name) => self.mark_name(name),
+            ExprKind::Generic {
                 controlling,
                 associations,
             } => {
-                self.mark_const_expr(controlling);
+                self.mark_expr(controlling);
                 for association in associations {
                     if let Some(type_name) = &association.type_name {
                         self.mark_name(type_name);
                     }
-                    self.mark_const_expr(&association.expression);
+                    self.mark_expr(&association.expression);
                 }
             }
-            ConstExpr::SizeOfType { ty, declarator }
-            | ConstExpr::AlignOf { ty, declarator }
-            | ConstExpr::OffsetOf { ty, declarator, .. } => self.mark_type_name(ty, declarator),
-            ConstExpr::TypesCompatible {
+            ExprKind::SizeOfType { ty, declarator } | ExprKind::AlignOf { ty, declarator } => {
+                self.mark_type_name(ty, declarator)
+            }
+            ExprKind::OffsetOf {
+                ty,
+                declarator,
+                member,
+            } => {
+                self.mark_type_name(ty, declarator);
+                self.mark_expr(member);
+            }
+            ExprKind::TypesCompatible {
                 left_ty,
                 left_declarator,
                 right_ty,
@@ -239,25 +226,25 @@ impl<'a> Reachability<'a> {
                 self.mark_type_name(left_ty, left_declarator);
                 self.mark_type_name(right_ty, right_declarator);
             }
-            ConstExpr::Cast {
+            ExprKind::Cast {
                 ty,
                 declarator,
                 value,
             }
-            | ConstExpr::BitCast {
+            | ExprKind::BitCast {
                 ty,
                 declarator,
                 value,
             }
-            | ConstExpr::VaArg {
-                ap: value,
+            | ExprKind::VaArg {
+                list: value,
                 ty,
                 declarator,
             } => {
                 self.mark_type_name(ty, declarator);
-                self.mark_const_expr(value);
+                self.mark_expr(value);
             }
-            ConstExpr::CompoundLiteral {
+            ExprKind::CompoundLiteral {
                 ty,
                 declarator,
                 initializer,
@@ -267,65 +254,52 @@ impl<'a> Reachability<'a> {
                     self.mark_initializer(&item.value);
                 }
             }
-            ConstExpr::SizeOf(value)
-            | ConstExpr::Unary { value, .. }
-            | ConstExpr::Member { base: value, .. }
-            | ConstExpr::Arrow { base: value, .. }
-            | ConstExpr::PostIncrement(value)
-            | ConstExpr::PostDecrement(value)
-            | ConstExpr::PreIncrement(value)
-            | ConstExpr::PreDecrement(value)
-            | ConstExpr::AddrOf(value)
-            | ConstExpr::Deref(value) => self.mark_const_expr(value),
-            ConstExpr::Binary { left, right, .. }
-            | ConstExpr::Assign {
+            ExprKind::Paren(value)
+            | ExprKind::SizeOfExpr(value)
+            | ExprKind::Unary { operand: value, .. }
+            | ExprKind::Postfix { operand: value, .. }
+            | ExprKind::Member { base: value, .. } => self.mark_expr(value),
+            ExprKind::Binary { left, right, .. }
+            | ExprKind::Assign {
                 target: left,
                 value: right,
                 ..
             }
-            | ConstExpr::Comma(left, right)
-            | ConstExpr::Index {
+            | ExprKind::Comma { left, right }
+            | ExprKind::Index {
                 base: left,
                 index: right,
-            }
-            | ConstExpr::Elvis {
-                condition: left,
-                else_value: right,
             } => {
-                self.mark_const_expr(left);
-                self.mark_const_expr(right);
+                self.mark_expr(left);
+                self.mark_expr(right);
             }
-            ConstExpr::Ternary {
+            ExprKind::Conditional {
                 condition,
                 then_value,
                 else_value,
             } => {
-                self.mark_const_expr(condition);
-                self.mark_const_expr(then_value);
-                self.mark_const_expr(else_value);
+                self.mark_expr(condition);
+                if let Some(then_value) = then_value {
+                    self.mark_expr(then_value);
+                }
+                self.mark_expr(else_value);
             }
-            ConstExpr::Call { callee, arguments } => {
-                self.mark_const_expr(callee);
+            ExprKind::Call { callee, arguments } => {
+                self.mark_expr(callee);
                 for argument in arguments {
-                    self.mark_const_expr(argument);
+                    self.mark_expr(argument);
                 }
             }
-            ConstExpr::StatementExpression(tokens) => {
-                for token in tokens {
-                    if let Token::Ident(name) = &token.value {
-                        self.mark_name(name);
-                    }
-                }
-            }
-            ConstExpr::Integer(_)
-            | ConstExpr::WideInteger(_)
-            | ConstExpr::Float(_)
-            | ConstExpr::StringLit(_)
-            | ConstExpr::Utf8StringLit(_)
-            | ConstExpr::Utf16StringLit(_)
-            | ConstExpr::Utf32StringLit(_)
-            | ConstExpr::WideStringLit(_)
-            | ConstExpr::LabelAddr(_) => {}
+            ExprKind::StatementExpression(body) => self.mark_stmts(body),
+            ExprKind::Integer(_)
+            | ExprKind::WideInteger(_)
+            | ExprKind::Float(_)
+            | ExprKind::StringLit(_)
+            | ExprKind::Utf8StringLit(_)
+            | ExprKind::Utf16StringLit(_)
+            | ExprKind::Utf32StringLit(_)
+            | ExprKind::WideStringLit(_)
+            | ExprKind::LabelAddress(_) => {}
         }
     }
 

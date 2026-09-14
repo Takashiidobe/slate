@@ -229,126 +229,141 @@ foo (A *x, A *y, A *z)
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               While {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "y",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "y",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Arrow {
-// DEFAULT-NEXT:                                   base: Ternary {
-// DEFAULT-NEXT:                                       condition: Binary {
-// DEFAULT-NEXT:                                           op: And,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: And,
-// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                               left: Member {
+// DEFAULT-NEXT:                                   base: Paren(
+// DEFAULT-NEXT:                                       Conditional {
+// DEFAULT-NEXT:                                           condition: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: And,
+// DEFAULT-NEXT:                                                   left: Binary {
+// DEFAULT-NEXT:                                                       op: And,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "y",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "t",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Member {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "y",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "t",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       field: "u",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "y",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "y",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "t",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Arrow {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "y",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "t",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "u",
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: Identifier(
+// DEFAULT-NEXT:                                               "z",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       then_value: Identifier(
-// DEFAULT-NEXT:                                           "y",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       else_value: Identifier(
-// DEFAULT-NEXT:                                           "z",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   field: "t",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Arrow {
-// DEFAULT-NEXT:                                   base: Ternary {
-// DEFAULT-NEXT:                                       condition: Binary {
-// DEFAULT-NEXT:                                           op: And,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: And,
-// DEFAULT-NEXT:                                               left: Identifier(
+// DEFAULT-NEXT:                               right: Member {
+// DEFAULT-NEXT:                                   base: Paren(
+// DEFAULT-NEXT:                                       Conditional {
+// DEFAULT-NEXT:                                           condition: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: And,
+// DEFAULT-NEXT:                                                   left: Binary {
+// DEFAULT-NEXT:                                                       op: And,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "x",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "x",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "t",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Member {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "x",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "t",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       field: "u",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "x",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "t",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Arrow {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "t",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "u",
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: Identifier(
+// DEFAULT-NEXT:                                               "z",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       then_value: Identifier(
-// DEFAULT-NEXT:                                           "x",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       else_value: Identifier(
-// DEFAULT-NEXT:                                           "z",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   field: "t",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
 // DEFAULT-NEXT:                                       "y",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Arrow {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "y",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "s",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "s",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "y",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Identifier(
+// DEFAULT-NEXT:                       "y",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "bar",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "bar",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "y",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "y",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,

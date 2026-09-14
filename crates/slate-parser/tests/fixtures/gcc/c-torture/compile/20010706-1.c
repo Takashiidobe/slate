@@ -33,10 +33,10 @@ foo(unsigned int x)
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: BitOr,
-// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: BitOr,
+// DEFAULT-NEXT:                       left: Paren(
+// DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: ShiftLeft,
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "x",
@@ -45,7 +45,9 @@ foo(unsigned int x)
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: ShiftRight,
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "x",
@@ -54,8 +56,8 @@ foo(unsigned int x)
 // DEFAULT-NEXT:                                   31,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

@@ -348,14 +348,18 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Binary {
 // DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "object",
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "object",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "Qnil",
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "Qnil",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -657,7 +661,7 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                       "data",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -1201,7 +1205,7 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Cast {
 // DEFAULT-NEXT:                                               ty: Tagged {
 // DEFAULT-NEXT:                                                   kind: Struct,
@@ -1213,52 +1217,70 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                   inner: Abstract,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Cast {
-// DEFAULT-NEXT:                                                   ty: Void,
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: BitOr,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "stream",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Binary {
-// DEFAULT-NEXT:                                                               op: Sub,
-// DEFAULT-NEXT:                                                               left: Binary {
-// DEFAULT-NEXT:                                                                   op: ShiftLeft,
-// DEFAULT-NEXT:                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                       1,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   right: Binary {
-// DEFAULT-NEXT:                                                                       op: Sub,
-// DEFAULT-NEXT:                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                           op: Mul,
-// DEFAULT-NEXT:                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                               4,
+// DEFAULT-NEXT:                                               value: Paren(
+// DEFAULT-NEXT:                                                   Cast {
+// DEFAULT-NEXT:                                                       ty: Void,
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: BitOr,
+// DEFAULT-NEXT:                                                               left: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Binary {
+// DEFAULT-NEXT:                                                                           op: BitAnd,
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "stream",
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               8,
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                           left: Integer(
+// DEFAULT-NEXT:                                                                                               1,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                                                           left: Integer(
+// DEFAULT-NEXT:                                                                                                               4,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                                               8,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                       4,
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           4,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                                   1073741824,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           1073741824,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -1268,53 +1290,47 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "cclen",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Identifier(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "cclen",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Identifier(
 // DEFAULT-NEXT:                               "len",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "zero_flag",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Identifier(
+// DEFAULT-NEXT:                       "zero_flag",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "pad",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       48,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "pad",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   48,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "pad",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               32,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "pad",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           32,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
@@ -1335,17 +1351,15 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "minlen",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Identifier(
-// DEFAULT-NEXT:                                                           "cclen",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: Sub,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "minlen",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "cclen",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -1353,246 +1367,285 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       While {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Greater,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "to_add",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: Greater,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "to_add",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Ternary {
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Conditional {
 // DEFAULT-NEXT:                                           condition: Binary {
 // DEFAULT-NEXT:                                               op: GreaterEqual,
-// DEFAULT-NEXT:                                               left: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "lstr",
+// DEFAULT-NEXT:                                               left: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "lstr",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   field: "out_buffer_ind",
+// DEFAULT-NEXT:                                                   arrow: true,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "lstr",
+// DEFAULT-NEXT:                                               right: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "lstr",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   field: "out_buffer_size",
+// DEFAULT-NEXT:                                                   arrow: true,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           then_value: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "Lstream_fputc",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "lstr",
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "Lstream_fputc",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "pad",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           else_value: Comma(
-// DEFAULT-NEXT:                                               Comma(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Index {
-// DEFAULT-NEXT:                                                           base: Arrow {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "lstr",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "out_buffer",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           index: PostIncrement(
-// DEFAULT-NEXT:                                                               Arrow {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "lstr",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "out_buffer_ind",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: Some(
-// DEFAULT-NEXT:                                                                       false,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: Identifier(
-// DEFAULT-NEXT:                                                               "pad",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   PostIncrement(
-// DEFAULT-NEXT:                                                       Arrow {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "lstr",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "byte_count",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ternary {
-// DEFAULT-NEXT:                                                   condition: Binary {
-// DEFAULT-NEXT:                                                       op: And,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Arrow {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "lstr",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "buffering",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "LSTREAM_LINE_BUFFERED",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Index {
-// DEFAULT-NEXT:                                                               base: Arrow {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "lstr",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "out_buffer",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               index: Binary {
-// DEFAULT-NEXT:                                                                   op: Sub,
-// DEFAULT-NEXT:                                                                   left: Arrow {
-// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "lstr",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "pad",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: Paren(
+// DEFAULT-NEXT:                                               Comma {
+// DEFAULT-NEXT:                                                   left: Comma {
+// DEFAULT-NEXT:                                                       left: Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Index {
+// DEFAULT-NEXT:                                                               base: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
 // DEFAULT-NEXT:                                                                           "lstr",
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "out_buffer_ind",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "out_buffer",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               index: Postfix {
+// DEFAULT-NEXT:                                                                   op: Increment,
+// DEFAULT-NEXT:                                                                   operand: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "lstr",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "out_buffer_ind",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               10,
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Cast {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Char {
+// DEFAULT-NEXT:                                                                       signed: Some(
+// DEFAULT-NEXT:                                                                           false,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "pad",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Postfix {
+// DEFAULT-NEXT:                                                           op: Increment,
+// DEFAULT-NEXT:                                                           operand: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "lstr",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "byte_count",
+// DEFAULT-NEXT:                                                               arrow: true,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   then_value: Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "Lstream_flush_out",
+// DEFAULT-NEXT:                                                   right: Conditional {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: And,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "lstr",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "buffering",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                   "LSTREAM_LINE_BUFFERED",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: Index {
+// DEFAULT-NEXT:                                                                   base: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "lstr",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "out_buffer",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   index: Binary {
+// DEFAULT-NEXT:                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                       left: Member {
+// DEFAULT-NEXT:                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "lstr",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "out_buffer_ind",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           1,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   10,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "Lstream_flush_out",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "lstr",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "lstr",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       else_value: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   else_value: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostDecrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "to_add",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Decrement,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "to_add",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: GreaterEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "maxlen",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: GreaterEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "maxlen",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "len",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Ternary {
-// DEFAULT-NEXT:                                       condition: Binary {
-// DEFAULT-NEXT:                                           op: LessEqual,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "maxlen",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "len",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Paren(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Conditional {
+// DEFAULT-NEXT:                                           condition: Paren(
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: LessEqual,
+// DEFAULT-NEXT:                                                   left: Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "maxlen",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "cclen",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "cclen",
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "maxlen",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: Paren(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "cclen",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       then_value: Identifier(
-// DEFAULT-NEXT:                                           "maxlen",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       else_value: Identifier(
-// DEFAULT-NEXT:                                           "cclen",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "Lstream_write",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "Lstream_write",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "lstr",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "lstr",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "string",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "len",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "string",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "len",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: And,
-// DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: Greater,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "minlen",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "cclen",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: And,
+// DEFAULT-NEXT:                       left: Binary {
+// DEFAULT-NEXT:                           op: Greater,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "minlen",
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "minus_flag",
+// DEFAULT-NEXT:                               "cclen",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Identifier(
+// DEFAULT-NEXT:                           "minus_flag",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Decl(
 // DEFAULT-NEXT:                           Declaration {
@@ -1611,17 +1664,15 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "minlen",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Identifier(
-// DEFAULT-NEXT:                                                           "cclen",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                                   op: Sub,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "minlen",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Identifier(
+// DEFAULT-NEXT:                                                       "cclen",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -1629,160 +1680,191 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       While {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: Greater,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "to_add",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: Greater,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "to_add",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Ternary {
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Conditional {
 // DEFAULT-NEXT:                                           condition: Binary {
 // DEFAULT-NEXT:                                               op: GreaterEqual,
-// DEFAULT-NEXT:                                               left: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "lstr",
+// DEFAULT-NEXT:                                               left: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "lstr",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   field: "out_buffer_ind",
+// DEFAULT-NEXT:                                                   arrow: true,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "lstr",
+// DEFAULT-NEXT:                                               right: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "lstr",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   field: "out_buffer_size",
+// DEFAULT-NEXT:                                                   arrow: true,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           then_value: Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "Lstream_fputc",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "lstr",
+// DEFAULT-NEXT:                                           then_value: Some(
+// DEFAULT-NEXT:                                               Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "Lstream_fputc",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "pad",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           else_value: Comma(
-// DEFAULT-NEXT:                                               Comma(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Index {
-// DEFAULT-NEXT:                                                           base: Arrow {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "lstr",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "out_buffer",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           index: PostIncrement(
-// DEFAULT-NEXT:                                                               Arrow {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "lstr",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "out_buffer_ind",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: Some(
-// DEFAULT-NEXT:                                                                       false,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: Identifier(
-// DEFAULT-NEXT:                                                               "pad",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   PostIncrement(
-// DEFAULT-NEXT:                                                       Arrow {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "lstr",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "byte_count",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ternary {
-// DEFAULT-NEXT:                                                   condition: Binary {
-// DEFAULT-NEXT:                                                       op: And,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Arrow {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "lstr",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "buffering",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "LSTREAM_LINE_BUFFERED",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Index {
-// DEFAULT-NEXT:                                                               base: Arrow {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "lstr",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "out_buffer",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               index: Binary {
-// DEFAULT-NEXT:                                                                   op: Sub,
-// DEFAULT-NEXT:                                                                   left: Arrow {
-// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "lstr",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "pad",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_value: Paren(
+// DEFAULT-NEXT:                                               Comma {
+// DEFAULT-NEXT:                                                   left: Comma {
+// DEFAULT-NEXT:                                                       left: Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Index {
+// DEFAULT-NEXT:                                                               base: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
 // DEFAULT-NEXT:                                                                           "lstr",
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "out_buffer_ind",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "out_buffer",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               index: Postfix {
+// DEFAULT-NEXT:                                                                   op: Increment,
+// DEFAULT-NEXT:                                                                   operand: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "lstr",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "out_buffer_ind",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               10,
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Cast {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Char {
+// DEFAULT-NEXT:                                                                       signed: Some(
+// DEFAULT-NEXT:                                                                           false,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Paren(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "pad",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Postfix {
+// DEFAULT-NEXT:                                                           op: Increment,
+// DEFAULT-NEXT:                                                           operand: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "lstr",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "byte_count",
+// DEFAULT-NEXT:                                                               arrow: true,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   then_value: Call {
-// DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "Lstream_flush_out",
+// DEFAULT-NEXT:                                                   right: Conditional {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: And,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "lstr",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "buffering",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                   "LSTREAM_LINE_BUFFERED",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: Index {
+// DEFAULT-NEXT:                                                                   base: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "lstr",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "out_buffer",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   index: Binary {
+// DEFAULT-NEXT:                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                       left: Member {
+// DEFAULT-NEXT:                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "lstr",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "out_buffer_ind",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           1,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   10,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Call {
+// DEFAULT-NEXT:                                                               callee: Identifier(
+// DEFAULT-NEXT:                                                                   "Lstream_flush_out",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               arguments: [
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "lstr",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       arguments: [
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "lstr",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       else_value: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   else_value: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       PostDecrement(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "to_add",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Decrement,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "to_add",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1925,10 +2007,8 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -1937,216 +2017,260 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "format_nonreloc",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "format_nonreloc",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Arrow {
-// DEFAULT-NEXT:                                   base: Cast {
-// DEFAULT-NEXT:                                       ty: Tagged {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: Some(
-// DEFAULT-NEXT:                                               "Lisp_String",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: Cast {
-// DEFAULT-NEXT:                                           ty: Void,
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Binary {
-// DEFAULT-NEXT:                                               op: BitOr,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: BitAnd,
-// DEFAULT-NEXT:                                                   left: Identifier(
-// DEFAULT-NEXT:                                                       "format_reloc",
+// DEFAULT-NEXT:                               left: Member {
+// DEFAULT-NEXT:                                   base: Paren(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Tagged {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: Some(
+// DEFAULT-NEXT:                                                       "Lisp_String",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                           left: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Binary {
-// DEFAULT-NEXT:                                                               op: Sub,
-// DEFAULT-NEXT:                                                               left: Binary {
-// DEFAULT-NEXT:                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                       4,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Paren(
+// DEFAULT-NEXT:                                                   Cast {
+// DEFAULT-NEXT:                                                       ty: Void,
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: BitOr,
+// DEFAULT-NEXT:                                                               left: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Binary {
+// DEFAULT-NEXT:                                                                           op: BitAnd,
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "format_reloc",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                           left: Integer(
+// DEFAULT-NEXT:                                                                                               1,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                                                           left: Integer(
+// DEFAULT-NEXT:                                                                                                               4,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                                               8,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                       4,
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       8,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   4,
+// DEFAULT-NEXT:                                                                   1073741824,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Integer(
-// DEFAULT-NEXT:                                                   1073741824,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   field: "_data",
+// DEFAULT-NEXT:                                   arrow: true,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Integer(
 // DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "format_length",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Arrow {
-// DEFAULT-NEXT:                               base: Cast {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "Lisp_String",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Abstract,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Cast {
-// DEFAULT-NEXT:                                       ty: Void,
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: Binary {
-// DEFAULT-NEXT:                                           op: BitOr,
-// DEFAULT-NEXT:                                           left: Binary {
-// DEFAULT-NEXT:                                               op: BitAnd,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "format_reloc",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "format_length",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Member {
+// DEFAULT-NEXT:                               base: Paren(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Cast {
+// DEFAULT-NEXT:                                           ty: Tagged {
+// DEFAULT-NEXT:                                               kind: Struct,
+// DEFAULT-NEXT:                                               name: Some(
+// DEFAULT-NEXT:                                                   "Lisp_String",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Sub,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                       left: Integer(
-// DEFAULT-NEXT:                                                           1,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Sub,
-// DEFAULT-NEXT:                                                           left: Binary {
-// DEFAULT-NEXT:                                                               op: Mul,
-// DEFAULT-NEXT:                                                               left: Integer(
-// DEFAULT-NEXT:                                                                   4,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Paren(
+// DEFAULT-NEXT:                                               Cast {
+// DEFAULT-NEXT:                                                   ty: Void,
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Paren(
+// DEFAULT-NEXT:                                                       Binary {
+// DEFAULT-NEXT:                                                           op: BitOr,
+// DEFAULT-NEXT:                                                           left: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Binary {
+// DEFAULT-NEXT:                                                                       op: BitAnd,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "format_reloc",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: Sub,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Integer(
+// DEFAULT-NEXT:                                                                                           1,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Sub,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Mul,
+// DEFAULT-NEXT:                                                                                                       left: Integer(
+// DEFAULT-NEXT:                                                                                                           4,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Integer(
+// DEFAULT-NEXT:                                                                                                   4,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Integer(
+// DEFAULT-NEXT:                                                                                   1,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   8,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               4,
+// DEFAULT-NEXT:                                                               1073741824,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       1,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               1073741824,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               field: "_size",
+// DEFAULT-NEXT:                               arrow: true,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "specs",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "specs",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "parse_doprnt_spec",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "parse_doprnt_spec",
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "format_nonreloc",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "format_nonreloc",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "format_length",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "format_length",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "specs",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "cur",
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Member {
+// DEFAULT-NEXT:                                   base: Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "specs",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "cur",
+// DEFAULT-NEXT:                                   arrow: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Decl(
@@ -2168,50 +2292,49 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "doprnt_1",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "doprnt_1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "stream",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "stream",
+// DEFAULT-NEXT:                                   Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "Bufbyte",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "Bufbyte",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "ch",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Unary {
+// DEFAULT-NEXT:                                           op: AddrOf,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "ch",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       operand: Integer(
 // DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Unary {
-// DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },

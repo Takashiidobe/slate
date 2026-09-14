@@ -1098,13 +1098,13 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Equal,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "result_type",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Cast {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: Equal,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "result_type",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Cast {
 // DEFAULT-NEXT:                               ty: Void,
 // DEFAULT-NEXT:                               declarator: Pointer {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
@@ -1114,68 +1114,72 @@ int main(void) {
 // DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "result_type",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "result_type",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "alloc_type",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "alloc_type",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   arguments: [],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "get_discrete_bounds",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "low_bound",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "get_discrete_bounds",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "low_bound",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "high_bound",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "high_bound",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Paren(
+// DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "result_type",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "length",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Mul,
-// DEFAULT-NEXT:                               left: Arrow {
-// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "length",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Mul,
+// DEFAULT-NEXT:                           left: Member {
+// DEFAULT-NEXT:                               base: Paren(
+// DEFAULT-NEXT:                                   Identifier(
 // DEFAULT-NEXT:                                       "element_type",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "length",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "length",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Add,
 // DEFAULT-NEXT:                                   left: Binary {
 // DEFAULT-NEXT:                                       op: Sub,
@@ -1190,422 +1194,570 @@ int main(void) {
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "result_type",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "nfields",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Arrow {
-// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Paren(
+// DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "result_type",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "fields",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "nfields",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Paren(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "result_type",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "fields",
+// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       value: Cast {
+// DEFAULT-NEXT:                           ty: Tagged {
+// DEFAULT-NEXT:                               kind: Struct,
+// DEFAULT-NEXT:                               name: Some(
+// DEFAULT-NEXT:                                   "field",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Cast {
-// DEFAULT-NEXT:                               ty: Tagged {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: Some(
-// DEFAULT-NEXT:                                       "field",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Abstract,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: Ternary {
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Abstract,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           value: Paren(
+// DEFAULT-NEXT:                               Conditional {
 // DEFAULT-NEXT:                                   condition: Binary {
 // DEFAULT-NEXT:                                       op: NotEqual,
-// DEFAULT-NEXT:                                       left: Arrow {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "result_type",
+// DEFAULT-NEXT:                                       left: Member {
+// DEFAULT-NEXT:                                           base: Paren(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "result_type",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "objfile",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Cast {
-// DEFAULT-NEXT:                                           ty: Void,
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                       right: Paren(
+// DEFAULT-NEXT:                                           Cast {
+// DEFAULT-NEXT:                                               ty: Void,
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Integer(
+// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_value: StatementExpression(
-// DEFAULT-NEXT:                                       [
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Struct,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "obstack",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__h",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Amp,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "result_type",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "objfile",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "type_obstack",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           LBrace,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Struct,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "obstack",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__h",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Int,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__len",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Sizeof,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Struct,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "field",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               If,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "chunk_limit",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Minus,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Less,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__len",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "_obstack_newchunk",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Comma,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__len",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           PlusEqual,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__len",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Void,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           RBrace,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           LBrace,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Struct,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "obstack",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__h",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Void,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "value",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "value",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Void,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "object_base",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               If,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           EqualEqual,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "value",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "maybe_empty_object",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Minus,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Char,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Plus,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "alignment_mask",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Amp,
-// DEFAULT-NEXT:                                           Tilde,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "alignment_mask",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Plus,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Char,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               If,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Minus,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Char,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "chunk",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Greater,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "chunk_limit",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Minus,
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Char,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Star,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "chunk",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "chunk_limit",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "object_base",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "__o1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Arrow,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "next_free",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "value",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           RBrace,
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   then_value: Some(
+// DEFAULT-NEXT:                                       StatementExpression(
+// DEFAULT-NEXT:                                           [
+// DEFAULT-NEXT:                                               Decl(
+// DEFAULT-NEXT:                                                   Declaration {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Tagged {
+// DEFAULT-NEXT:                                                               kind: Struct,
+// DEFAULT-NEXT:                                                               name: Some(
+// DEFAULT-NEXT:                                                                   "obstack",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarators: [
+// DEFAULT-NEXT:                                                           InitDeclarator {
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Name(
+// DEFAULT-NEXT:                                                                       "__h",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               initializer: Some(
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Member {
+// DEFAULT-NEXT:                                                                                   base: Member {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "result_type",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       field: "objfile",
+// DEFAULT-NEXT:                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   field: "type_obstack",
+// DEFAULT-NEXT:                                                                                   arrow: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Block(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       Decl(
+// DEFAULT-NEXT:                                                           Declaration {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Tagged {
+// DEFAULT-NEXT:                                                                       kind: Struct,
+// DEFAULT-NEXT:                                                                       name: Some(
+// DEFAULT-NEXT:                                                                           "obstack",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Name(
+// DEFAULT-NEXT:                                                                               "__o",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       initializer: Some(
+// DEFAULT-NEXT:                                                                           Expr(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                       "__h",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Decl(
+// DEFAULT-NEXT:                                                           Declaration {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               declarators: [
+// DEFAULT-NEXT:                                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                                       declarator: Name(
+// DEFAULT-NEXT:                                                                           "__len",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       initializer: Some(
+// DEFAULT-NEXT:                                                                           Expr(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       SizeOfType {
+// DEFAULT-NEXT:                                                                                           ty: Tagged {
+// DEFAULT-NEXT:                                                                                               kind: Struct,
+// DEFAULT-NEXT:                                                                                               name: Some(
+// DEFAULT-NEXT:                                                                                                   "field",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       If {
+// DEFAULT-NEXT:                                                           condition: Binary {
+// DEFAULT-NEXT:                                                               op: Less,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                   left: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "__o",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "chunk_limit",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "__o",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                   "__len",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           then_branch: [
+// DEFAULT-NEXT:                                                               Expr(
+// DEFAULT-NEXT:                                                                   Call {
+// DEFAULT-NEXT:                                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                                           "_obstack_newchunk",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       arguments: [
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "__o",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "__len",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           else_branch: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: AddAssign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "__o",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "next_free",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                   "__len",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Cast {
+// DEFAULT-NEXT:                                                               ty: Void,
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Block(
+// DEFAULT-NEXT:                                                   [],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   StatementExpression(
+// DEFAULT-NEXT:                                                       [
+// DEFAULT-NEXT:                                                           Decl(
+// DEFAULT-NEXT:                                                               Declaration {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Tagged {
+// DEFAULT-NEXT:                                                                           kind: Struct,
+// DEFAULT-NEXT:                                                                           name: Some(
+// DEFAULT-NEXT:                                                                               "obstack",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                               inner: Name(
+// DEFAULT-NEXT:                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           initializer: Some(
+// DEFAULT-NEXT:                                                                               Expr(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                           "__h",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           Decl(
+// DEFAULT-NEXT:                                                               Declaration {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                               inner: Name(
+// DEFAULT-NEXT:                                                                                   "value",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Identifier(
+// DEFAULT-NEXT:                                                                       "value",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   value: Cast {
+// DEFAULT-NEXT:                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       value: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "__o1",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "object_base",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           If {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Equal,
+// DEFAULT-NEXT:                                                                   left: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "__o1",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "value",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_branch: [
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: Assign,
+// DEFAULT-NEXT:                                                                           target: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "maybe_empty_object",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Integer(
+// DEFAULT-NEXT:                                                                               1,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               else_branch: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "__o1",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                       Binary {
+// DEFAULT-NEXT:                                                                           op: Add,
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: Add,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                       Member {
+// DEFAULT-NEXT:                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                               "__o1",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           field: "next_free",
+// DEFAULT-NEXT:                                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Cast {
+// DEFAULT-NEXT:                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                           Char {
+// DEFAULT-NEXT:                                                                                                               signed: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       value: Integer(
+// DEFAULT-NEXT:                                                                                                           0,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Member {
+// DEFAULT-NEXT:                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               field: "alignment_mask",
+// DEFAULT-NEXT:                                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Unary {
+// DEFAULT-NEXT:                                                                                       op: BitNot,
+// DEFAULT-NEXT:                                                                                       operand: Paren(
+// DEFAULT-NEXT:                                                                                           Member {
+// DEFAULT-NEXT:                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               field: "alignment_mask",
+// DEFAULT-NEXT:                                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Cast {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Char {
+// DEFAULT-NEXT:                                                                                       signed: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               value: Integer(
+// DEFAULT-NEXT:                                                                                   0,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           If {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Greater,
+// DEFAULT-NEXT:                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                       left: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "__o1",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "next_free",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Cast {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Char {
+// DEFAULT-NEXT:                                                                                   signed: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "chunk",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Binary {
+// DEFAULT-NEXT:                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                       left: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "__o1",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "chunk_limit",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Cast {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Char {
+// DEFAULT-NEXT:                                                                                   signed: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "chunk",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_branch: [
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: Assign,
+// DEFAULT-NEXT:                                                                           target: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "next_free",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "__o1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "chunk_limit",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               else_branch: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "__o1",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "object_base",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "__o1",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "value",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   else_value: Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
@@ -1624,12 +1776,12 @@ int main(void) {
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Identifier(
 // DEFAULT-NEXT:                           "result_type",
 // DEFAULT-NEXT:                       ),
@@ -1659,14 +1811,12 @@ int main(void) {
 // DEFAULT-NEXT:           name: "alloc_type",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "abort",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1702,10 +1852,8 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -1756,14 +1904,12 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "abort",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "abort",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1816,34 +1962,32 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Deref(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "lowp",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Unary {
+// DEFAULT-NEXT:                           op: Deref,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "lowp",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Deref(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "highp",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               2,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Unary {
+// DEFAULT-NEXT:                           op: Deref,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "highp",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -1905,140 +2049,130 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "memset",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "element_type",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "type",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "memset",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "result_type",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tagged {
-// DEFAULT-NEXT:                                       kind: Struct,
-// DEFAULT-NEXT:                                       name: Some(
-// DEFAULT-NEXT:                                           "type",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "memset",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
 // DEFAULT-NEXT:                                   "element_type",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "length",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                           SizeOfType {
+// DEFAULT-NEXT:                               ty: Tagged {
+// DEFAULT-NEXT:                                   kind: Struct,
+// DEFAULT-NEXT:                                   name: Some(
+// DEFAULT-NEXT:                                       "type",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "create_array_type",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "result_type",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "element_type",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Member {
-// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "memset",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
 // DEFAULT-NEXT:                                   "result_type",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "length",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               12,
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           SizeOfType {
+// DEFAULT-NEXT:                               ty: Tagged {
+// DEFAULT-NEXT:                                   kind: Struct,
+// DEFAULT-NEXT:                                   name: Some(
+// DEFAULT-NEXT:                                       "type",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "element_type",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "length",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           4,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "create_array_type",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "result_type",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Unary {
+// DEFAULT-NEXT:                               op: AddrOf,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "element_type",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               If {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "result_type",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "length",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           12,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

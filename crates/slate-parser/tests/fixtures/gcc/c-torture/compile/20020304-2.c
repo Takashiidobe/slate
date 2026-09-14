@@ -99,14 +99,15 @@ foo (void)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Binary {
 // DEFAULT-NEXT:                                               op: NotEqual,
-// DEFAULT-NEXT:                                               left: Deref(
-// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Deref,
+// DEFAULT-NEXT:                                                   operand: Identifier(
 // DEFAULT-NEXT:                                                       "a",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: Integer(
 // DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
@@ -119,10 +120,8 @@ foo (void)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "b",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "b",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

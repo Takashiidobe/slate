@@ -106,7 +106,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                                               "field",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           size: Expression(
-// DEFAULT-NEXT:                                                               IntLit(
+// DEFAULT-NEXT:                                                               Integer(
 // DEFAULT-NEXT:                                                                   6,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
@@ -134,7 +134,7 @@ int main() { return 0; }
 // DEFAULT-NEXT:                                       "slot",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -214,10 +214,8 @@ int main() { return 0; }
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -242,30 +240,28 @@ int main() { return 0; }
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Index {
-// DEFAULT-NEXT:                                               base: Member {
-// DEFAULT-NEXT:                                                   base: Index {
-// DEFAULT-NEXT:                                                       base: Member {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "s",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "slot",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       index: Integer(
-// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Index {
+// DEFAULT-NEXT:                                                   base: Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "s",
 // DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "slot",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   field: "field",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               index: Unary {
-// DEFAULT-NEXT:                                                   op: Not,
-// DEFAULT-NEXT:                                                   value: Identifier(
-// DEFAULT-NEXT:                                                       "toggle",
+// DEFAULT-NEXT:                                                   index: Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               field: "field",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           index: Unary {
+// DEFAULT-NEXT:                                               op: Not,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "toggle",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -273,10 +269,8 @@ int main() { return 0; }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "r",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "r",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -301,10 +295,8 @@ int main() { return 0; }
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

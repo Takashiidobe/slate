@@ -348,20 +348,20 @@ static inline void zend_ptr_stack_clear_multiple(void)
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "p",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Member {
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "p",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Paren(
+// DEFAULT-NEXT:                           Member {
 // DEFAULT-NEXT:                               base: Identifier(
 // DEFAULT-NEXT:                                   "executor_globals",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               field: "uninitialized_zval_ptr",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
@@ -408,23 +408,21 @@ static inline void zend_ptr_stack_clear_multiple(void)
 // DEFAULT-NEXT:           name: "zend_ptr_stack_clear_multiple",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: SubAssign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "executor_globals",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "argument_stack",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               field: "top",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: SubAssign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "executor_globals",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "argument_stack",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Integer(
-// DEFAULT-NEXT:                               2,
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "top",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Integer(
+// DEFAULT-NEXT:                           2,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

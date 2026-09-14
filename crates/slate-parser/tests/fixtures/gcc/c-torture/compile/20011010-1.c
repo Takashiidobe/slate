@@ -74,65 +74,56 @@ int foo ()
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: None,
 // DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "used",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "used",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           StatementExpression(
-// DEFAULT-NEXT:                               [
-// DEFAULT-NEXT:                                   Keyword(
-// DEFAULT-NEXT:                                       While,
+// DEFAULT-NEXT:                       StatementExpression(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               While {
+// DEFAULT-NEXT:                                   condition: Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   LParen,
-// DEFAULT-NEXT:                                   IntLit(
-// DEFAULT-NEXT:                                       "1",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   RParen,
-// DEFAULT-NEXT:                                   Keyword(
-// DEFAULT-NEXT:                                       If,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   LParen,
-// DEFAULT-NEXT:                                   Ident(
-// DEFAULT-NEXT:                                       "used",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   LParen,
-// DEFAULT-NEXT:                                   RParen,
-// DEFAULT-NEXT:                                   RParen,
-// DEFAULT-NEXT:                                   Keyword(
-// DEFAULT-NEXT:                                       Return,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   IntLit(
-// DEFAULT-NEXT:                                       "0",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Semi,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                                   body: [
+// DEFAULT-NEXT:                                       If {
+// DEFAULT-NEXT:                                           condition: Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "used",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           then_branch: [
+// DEFAULT-NEXT:                                               Return(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           else_branch: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               PostIncrement(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                           Postfix {
+// DEFAULT-NEXT:                               op: Increment,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "i",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "i",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

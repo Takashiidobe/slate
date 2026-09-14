@@ -1,61 +1,184 @@
-use crate::const_expr::{BinaryOp, ConstExpr, UnaryOp, WideInt};
+use crate::const_expr::{AssignOp, BinaryOp, FloatLiteral, PostfixOp, UnaryOp, WideInt};
 use custom_debug::Debug as CustomDebug;
 
 pub(crate) fn is_false(value: &bool) -> bool {
     !*value
 }
 
-pub type SpannedExpr = Span<Expr>;
+pub type Expr = Box<Span<ExprKind>>;
 pub type SpannedStmt = Span<Stmt>;
 pub type SpannedFieldItem = Span<FieldItem>;
 pub type SpannedDecl = Span<Decl>;
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Expr {
-    Const(Box<ConstExpr>),
-    IntLit(i64),
+#[derive(CustomDebug, Clone, PartialEq)]
+pub enum ExprKind {
+    Identifier(String),
+    Integer(i64),
+    WideInteger(WideInt),
+    Float(FloatLiteral),
     StringLit(String),
     Utf8StringLit(String),
     Utf16StringLit(String),
     Utf32StringLit(String),
     WideStringLit(String),
-    Identifier(String),
+    Paren(Expr),
     Unary {
         op: UnaryOp,
-        value: Box<SpannedExpr>,
+        operand: Expr,
+    },
+    Postfix {
+        op: PostfixOp,
+        operand: Expr,
     },
     Binary {
         op: BinaryOp,
-        left: Box<SpannedExpr>,
-        right: Box<SpannedExpr>,
+        left: Expr,
+        right: Expr,
     },
-    SizeOf(Box<SpannedExpr>),
+    Assign {
+        op: AssignOp,
+        target: Expr,
+        value: Expr,
+    },
+    Conditional {
+        condition: Expr,
+        #[debug(skip_if = Option::is_none)]
+        then_value: Option<Expr>,
+        else_value: Expr,
+    },
+    Comma {
+        left: Expr,
+        right: Expr,
+    },
+    Call {
+        callee: Expr,
+        arguments: Vec<Expr>,
+    },
+    Member {
+        base: Expr,
+        field: String,
+        #[debug(skip_if = is_false)]
+        arrow: bool,
+    },
+    Index {
+        base: Expr,
+        index: Expr,
+    },
+    Cast {
+        ty: Box<CType>,
+        declarator: Declarator,
+        value: Expr,
+    },
+    CompoundLiteral {
+        ty: Box<CType>,
+        declarator: Declarator,
+        initializer: Vec<InitializerItem>,
+    },
+    SizeOfExpr(Expr),
+    SizeOfType {
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
+    AlignOf {
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
+    OffsetOf {
+        ty: Box<CType>,
+        declarator: Declarator,
+        member: Expr,
+    },
+    Generic {
+        controlling: Expr,
+        associations: Vec<GenericAssociation>,
+    },
+    VaArg {
+        list: Expr,
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
+    TypesCompatible {
+        left_ty: Box<CType>,
+        left_declarator: Declarator,
+        right_ty: Box<CType>,
+        right_declarator: Declarator,
+    },
+    BitCast {
+        ty: Box<CType>,
+        declarator: Declarator,
+        value: Expr,
+    },
+    LabelAddress(String),
     StatementExpression(Vec<SpannedStmt>),
 }
 
-impl std::fmt::Display for Expr {
+#[derive(Debug, Clone, PartialEq)]
+pub struct GenericAssociation {
+    pub type_name: Option<String>,
+    pub expression: Expr,
+}
+
+impl std::fmt::Display for ExprKind {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Const(value) => write!(formatter, "{value}"),
-            Self::IntLit(value) => write!(formatter, "{value}"),
+            Self::Identifier(value) => formatter.write_str(value),
+            Self::Integer(value) => write!(formatter, "{value}"),
+            Self::WideInteger(value) => write!(formatter, "{value}"),
+            Self::Float(value) => write!(formatter, "{value}"),
             Self::StringLit(value) => write!(formatter, "\"{value}\""),
             Self::Utf8StringLit(value) => write!(formatter, "u8\"{value}\""),
             Self::Utf16StringLit(value) => write!(formatter, "u\"{value}\""),
             Self::Utf32StringLit(value) => write!(formatter, "U\"{value}\""),
             Self::WideStringLit(value) => write!(formatter, "L\"{value}\""),
-            Self::Identifier(value) => formatter.write_str(value),
-            Self::Unary { op, value } => write!(formatter, "{}{}", <&str>::from(*op), value),
+            Self::Paren(value) => write!(formatter, "({value})"),
+            Self::Unary { op, operand } => write!(formatter, "{}{operand}", <&str>::from(*op)),
+            Self::Postfix { op, operand } => write!(formatter, "{operand}{}", <&str>::from(*op)),
             Self::Binary { op, left, right } => {
-                write!(formatter, "({left} {} {right})", <&str>::from(*op))
+                write!(formatter, "{left} {} {right}", <&str>::from(*op))
             }
-            Self::SizeOf(value) => write!(formatter, "sizeof({value})"),
-            Self::StatementExpression(statements) => {
-                write!(
-                    formatter,
-                    "statement_expression({} statements)",
-                    statements.len()
-                )
+            Self::Assign { op, target, value } => {
+                write!(formatter, "{target} {} {value}", <&str>::from(*op))
             }
+            Self::Conditional {
+                condition,
+                then_value: Some(then_value),
+                else_value,
+            } => write!(formatter, "{condition} ? {then_value} : {else_value}"),
+            Self::Conditional {
+                condition,
+                then_value: None,
+                else_value,
+            } => write!(formatter, "{condition} ?: {else_value}"),
+            Self::Comma { left, right } => write!(formatter, "{left}, {right}"),
+            Self::Call { callee, arguments } => {
+                write!(formatter, "{callee}(")?;
+                for (index, argument) in arguments.iter().enumerate() {
+                    if index > 0 {
+                        write!(formatter, ", ")?;
+                    }
+                    write!(formatter, "{argument}")?;
+                }
+                write!(formatter, ")")
+            }
+            Self::Member { base, field, arrow } => {
+                let access = if *arrow { "->" } else { "." };
+                write!(formatter, "{base}{access}{field}")
+            }
+            Self::Index { base, index } => write!(formatter, "{base}[{index}]"),
+            Self::Cast { value, .. } => write!(formatter, "(cast){value}"),
+            Self::CompoundLiteral { .. } => write!(formatter, "(compound literal)"),
+            Self::SizeOfExpr(value) => write!(formatter, "sizeof {value}"),
+            Self::SizeOfType { .. } => write!(formatter, "sizeof(...)"),
+            Self::AlignOf { .. } => write!(formatter, "_Alignof(...)"),
+            Self::OffsetOf { member, .. } => write!(formatter, "__builtin_offsetof(..., {member})"),
+            Self::Generic { .. } => formatter.write_str("_Generic(...)"),
+            Self::VaArg { list, .. } => write!(formatter, "__builtin_va_arg({list}, ...)"),
+            Self::TypesCompatible { .. } => {
+                formatter.write_str("__builtin_types_compatible_p(...)")
+            }
+            Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
+            Self::LabelAddress(label) => write!(formatter, "&&{label}"),
+            Self::StatementExpression(_) => formatter.write_str("({ ... })"),
         }
     }
 }
@@ -84,54 +207,54 @@ pub struct InitializerItem {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Initializer {
-    Expr(SpannedExpr),
+    Expr(Expr),
     List(Vec<InitializerItem>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
     Comment(CommentGroup),
-    Return(SpannedExpr),
+    Return(Expr),
     ReturnVoid,
-    Expr(SpannedExpr),
+    Expr(Expr),
     Decl(Declaration),
     StaticAssert(StaticAssert),
     Attribute(Vec<Attribute>),
     Block(Vec<SpannedStmt>),
     If {
-        condition: SpannedExpr,
+        condition: Expr,
         then_branch: Vec<SpannedStmt>,
         else_branch: Option<Vec<SpannedStmt>>,
     },
     While {
-        condition: SpannedExpr,
+        condition: Expr,
         body: Vec<SpannedStmt>,
     },
     DoWhile {
         body: Vec<SpannedStmt>,
-        condition: SpannedExpr,
+        condition: Expr,
     },
     For {
         init: Option<Box<SpannedStmt>>,
-        condition: Option<SpannedExpr>,
-        increment: Option<SpannedExpr>,
+        condition: Option<Expr>,
+        increment: Option<Expr>,
         body: Vec<SpannedStmt>,
     },
     Switch {
-        discriminant: SpannedExpr,
+        discriminant: Expr,
         body: Vec<SpannedStmt>,
     },
-    Case(SpannedExpr),
+    Case(Expr),
     CaseRange {
-        start: SpannedExpr,
-        end: SpannedExpr,
+        start: Expr,
+        end: Expr,
     },
     Default,
     Labeled(String),
     LocalLabelDecl(Vec<String>),
     Asm(GnuAsm),
     Goto(String),
-    ComputedGoto(SpannedExpr),
+    ComputedGoto(Expr),
     NestedFunction(Box<FunctionDecl>),
     Break,
     Continue,
@@ -316,7 +439,7 @@ pub struct AsmOperand {
     #[debug(skip_if = Option::is_none)]
     pub name: Option<Span<String>>,
     pub constraint: Span<AsmConstraint>,
-    pub expr: SpannedExpr,
+    pub expr: Expr,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -375,8 +498,8 @@ pub enum X86RegisterWidth {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
-    Aligned(ConstExpr),
-    VectorSize(ConstExpr),
+    Aligned(Expr),
+    VectorSize(Expr),
     Mode(String),
     Visibility(String),
     Section(String),
@@ -394,9 +517,9 @@ pub enum Attribute {
     Alias(String),
     WeakRef(String),
     Malloc,
-    AssumeAligned(Vec<ConstExpr>),
-    AllocSize(Vec<ConstExpr>),
-    AllocAlign(ConstExpr),
+    AssumeAligned(Vec<Expr>),
+    AllocSize(Vec<Expr>),
+    AllocAlign(Expr),
     Cleanup(String),
     ReturnsNonNull,
     WarnUnusedResult,
@@ -423,7 +546,7 @@ pub enum Attribute {
     Stdcall,
     NoMips16,
     Availability(Vec<String>),
-    ExtVectorType(ConstExpr),
+    ExtVectorType(Expr),
     ScalarStorageOrder(String),
     TransparentUnion,
     Format(Vec<String>),
@@ -519,7 +642,7 @@ pub enum CType {
 pub enum IntegerType {
     Char { signed: Option<bool> },
     Ranked { rank: IntegerRank, signed: bool },
-    BitInt { width: ConstExpr, signed: bool },
+    BitInt { width: Expr, signed: bool },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -552,8 +675,8 @@ pub struct VectorType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum VectorSize {
-    Bytes(ConstExpr),
-    Lanes(ConstExpr),
+    Bytes(Expr),
+    Lanes(Expr),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -579,7 +702,7 @@ pub struct FixedPointType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TypeOfOperand {
-    Expression(Box<SpannedExpr>),
+    Expression(Expr),
     Type(Box<CType>),
 }
 
@@ -667,7 +790,7 @@ impl TryFrom<&str> for StorageClass {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArraySize {
     Unspecified,
-    Expression(Box<SpannedExpr>),
+    Expression(Expr),
     Star,
 }
 
@@ -767,7 +890,7 @@ pub struct InitDeclarator {
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct StaticAssert {
-    pub condition: SpannedExpr,
+    pub condition: Expr,
     #[debug(skip_if = Option::is_none)]
     pub message: Option<String>,
 }
@@ -820,7 +943,7 @@ pub struct FieldDecl {
 pub struct FieldDeclarator {
     pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
-    pub bit_width: Option<SpannedExpr>,
+    pub bit_width: Option<Expr>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
@@ -836,7 +959,7 @@ pub struct EnumDecl {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Enumerator {
     pub name: String,
-    pub value: Option<SpannedExpr>,
+    pub value: Option<Expr>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]

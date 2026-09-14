@@ -124,10 +124,8 @@ java_check_regular_methods (tree class_decl)
 // DEFAULT-NEXT:                                   "lang_flag_0",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -263,23 +261,23 @@ java_check_regular_methods (tree class_decl)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Member {
-// DEFAULT-NEXT:                                               base: Arrow {
+// DEFAULT-NEXT:                                       Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Member {
 // DEFAULT-NEXT:                                                   base: Member {
-// DEFAULT-NEXT:                                                       base: Arrow {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "class_decl",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "common",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       field: "type",
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "class_decl",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "common",
+// DEFAULT-NEXT:                                                       arrow: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   field: "common",
+// DEFAULT-NEXT:                                                   field: "type",
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "lang_flag_0",
+// DEFAULT-NEXT:                                               field: "common",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           field: "lang_flag_0",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -300,17 +298,16 @@ java_check_regular_methods (tree class_decl)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "class_decl",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "common",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "type",
+// DEFAULT-NEXT:                                       Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "class_decl",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "common",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           field: "type",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -323,38 +320,33 @@ java_check_regular_methods (tree class_decl)
 // DEFAULT-NEXT:                   increment: None,
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "class",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           condition: Identifier(
+// DEFAULT-NEXT:                               "class",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Const(
-// DEFAULT-NEXT:                                       Member {
-// DEFAULT-NEXT:                                           base: Arrow {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "class_decl",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "common",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "type",
+// DEFAULT-NEXT:                                   condition: Member {
+// DEFAULT-NEXT:                                       base: Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "class_decl",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "common",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       field: "type",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   then_branch: [
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Call {
-// DEFAULT-NEXT:                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                       "bar",
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "bar",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "class",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   arguments: [
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "class",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   else_branch: None,

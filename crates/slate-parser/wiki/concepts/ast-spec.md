@@ -438,7 +438,7 @@ the AST redesign epic.
 | `Decl::Record`, `Decl::Enum` emitted before a `Declaration` whose specifier is a bodiless `CType::Tagged`; `CType::Tagged { body }` inline for local tags | `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |
 | `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |
 | `FunctionDecl.parameters: []` for both `(void)` and `()` | `ParameterList::{Void, Empty, IdentifierList}` | |
-| `Expr` wrapper + unspanned `ConstExpr`; unused `Expr` variants | one spanned `Expr` | no sub-expression locations; nested `({ })` stored as raw tokens (`lh7.1.16`) |
+| `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`) | |
 | `ConstExpr::Integer(i64)` for integer and char literals; raw string spelling | `IntegerLiteral`/`CharLiteral`/`StringLiteral`/`FloatLiteral` | suffix and char kind lost (`lh7.1.13`); escapes undecoded (`lh7.1.14`) |
 | Enumerator values and array designators evaluated to `i64` in the parser | unevaluated `Expr` | `B = A + 1` loses its expression |
 | `_Generic` controlling identifier replaced by `"<type-name>"`; association types as joined strings | `GenericControl`, `TypeName` | `lh7.1.15` |

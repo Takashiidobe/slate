@@ -299,116 +299,172 @@ carg_test (void)
 // DEFAULT-NEXT:           name: "conj_test",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "check_complex",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "conj",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StatementExpression(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               Keyword(
-// DEFAULT-NEXT:                                                   Complex,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Keyword(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ident(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "check_complex",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "conj",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StatementExpression(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           Decl(
+// DEFAULT-NEXT:                                               Declaration {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Complex(
+// DEFAULT-NEXT:                                                           Floating(
+// DEFAULT-NEXT:                                                               Double,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "__retval",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__real__",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "__retval",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Paren(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__imag__",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "__retval",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Paren(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   0.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "__retval",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                               Ident(
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           StatementExpression(
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Decl(
+// DEFAULT-NEXT:                                       Declaration {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Complex(
+// DEFAULT-NEXT:                                                   Floating(
+// DEFAULT-NEXT:                                                       Double,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarators: [
+// DEFAULT-NEXT:                                               InitDeclarator {
+// DEFAULT-NEXT:                                                   declarator: Name(
+// DEFAULT-NEXT:                                                       "__retval",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Assign {
+// DEFAULT-NEXT:                                           op: Assign,
+// DEFAULT-NEXT:                                           target: Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
 // DEFAULT-NEXT:                                                   "__real__",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "__retval",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Paren(
+// DEFAULT-NEXT:                                               Float(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       value: Double(
+// DEFAULT-NEXT:                                                           0.0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Equal,
-// DEFAULT-NEXT:                                               LParen,
-// DEFAULT-NEXT:                                               FloatLit(
-// DEFAULT-NEXT:                                                   "0.0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               RParen,
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                               Ident(
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Assign {
+// DEFAULT-NEXT:                                           op: Assign,
+// DEFAULT-NEXT:                                           target: Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
 // DEFAULT-NEXT:                                                   "__imag__",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "__retval",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Paren(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "minus_zero",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Equal,
-// DEFAULT-NEXT:                                               LParen,
-// DEFAULT-NEXT:                                               FloatLit(
-// DEFAULT-NEXT:                                                   "0.0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               RParen,
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               StatementExpression(
-// DEFAULT-NEXT:                                   [
-// DEFAULT-NEXT:                                       Keyword(
-// DEFAULT-NEXT:                                           Complex,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Keyword(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Ident(
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Identifier(
 // DEFAULT-NEXT:                                           "__retval",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Semi,
-// DEFAULT-NEXT:                                       Ident(
-// DEFAULT-NEXT:                                           "__real__",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Ident(
-// DEFAULT-NEXT:                                           "__retval",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Equal,
-// DEFAULT-NEXT:                                       LParen,
-// DEFAULT-NEXT:                                       FloatLit(
-// DEFAULT-NEXT:                                           "0.0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       RParen,
-// DEFAULT-NEXT:                                       Semi,
-// DEFAULT-NEXT:                                       Ident(
-// DEFAULT-NEXT:                                           "__imag__",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Ident(
-// DEFAULT-NEXT:                                           "__retval",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Equal,
-// DEFAULT-NEXT:                                       LParen,
-// DEFAULT-NEXT:                                       Ident(
-// DEFAULT-NEXT:                                           "minus_zero",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       RParen,
-// DEFAULT-NEXT:                                       Semi,
-// DEFAULT-NEXT:                                       Ident(
-// DEFAULT-NEXT:                                           "__retval",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Semi,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -427,75 +483,100 @@ carg_test (void)
 // DEFAULT-NEXT:           name: "carg_test",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "check_float",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "carg",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "check_float",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "carg",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   StatementExpression(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           Decl(
+// DEFAULT-NEXT:                                               Declaration {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Complex(
+// DEFAULT-NEXT:                                                           Floating(
+// DEFAULT-NEXT:                                                               Double,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarators: [
+// DEFAULT-NEXT:                                                       InitDeclarator {
+// DEFAULT-NEXT:                                                           declarator: Name(
+// DEFAULT-NEXT:                                                               "__retval",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__real__",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "__retval",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Paren(
+// DEFAULT-NEXT:                                                       Float(
+// DEFAULT-NEXT:                                                           FloatLiteral {
+// DEFAULT-NEXT:                                                               value: Double(
+// DEFAULT-NEXT:                                                                   2.0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__imag__",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "__retval",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Paren(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "__retval",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StatementExpression(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               Keyword(
-// DEFAULT-NEXT:                                                   Complex,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Keyword(
-// DEFAULT-NEXT:                                                   Double,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__real__",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Equal,
-// DEFAULT-NEXT:                                               LParen,
-// DEFAULT-NEXT:                                               FloatLit(
-// DEFAULT-NEXT:                                                   "2.0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               RParen,
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__imag__",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Equal,
-// DEFAULT-NEXT:                                               LParen,
-// DEFAULT-NEXT:                                               IntLit(
-// DEFAULT-NEXT:                                                   "0",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               RParen,
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                               Ident(
-// DEFAULT-NEXT:                                                   "__retval",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Semi,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

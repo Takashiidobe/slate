@@ -114,37 +114,41 @@ char x[sizeof (1, foo) == sizeof (fp) ? 1 : -1];
 // DEFAULT-NEXT:                           "x",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Ternary {
-// DEFAULT-NEXT:                                   condition: Binary {
-// DEFAULT-NEXT:                                       op: Equal,
-// DEFAULT-NEXT:                                       left: SizeOf(
-// DEFAULT-NEXT:                                           Comma(
-// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                           Conditional {
+// DEFAULT-NEXT:                               condition: Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Comma {
+// DEFAULT-NEXT:                                               left: Integer(
 // DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                               right: Identifier(
 // DEFAULT-NEXT:                                                   "foo",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: SizeOf(
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: SizeOfExpr(
+// DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "fp",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_value: Integer(
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               then_value: Some(
+// DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   else_value: Unary {
-// DEFAULT-NEXT:                                       op: Minus,
-// DEFAULT-NEXT:                                       value: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               else_value: Unary {
+// DEFAULT-NEXT:                                   op: Minus,
+// DEFAULT-NEXT:                                   operand: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },

@@ -71,7 +71,7 @@ simple_cst_equal ()
 // DEFAULT-NEXT:           name: "attribute_list_contained",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Call {
 // DEFAULT-NEXT:                           callee: Identifier(
 // DEFAULT-NEXT:                               "simple_cst_equal",
@@ -102,7 +102,7 @@ simple_cst_equal ()
 // DEFAULT-NEXT:           name: "simple_cst_list_equal",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Call {
 // DEFAULT-NEXT:                           callee: Identifier(
 // DEFAULT-NEXT:                               "simple_cst_equal",
@@ -133,14 +133,12 @@ simple_cst_equal ()
 // DEFAULT-NEXT:           name: "simple_cst_equal",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "simple_cst_list_equal",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "simple_cst_list_equal",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

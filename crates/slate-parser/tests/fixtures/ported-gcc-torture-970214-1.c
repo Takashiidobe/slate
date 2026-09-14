@@ -51,24 +51,22 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:           name: "main",
 // GCC-NEXT:           body: [
 // GCC-NEXT:               Expr(
-// GCC-NEXT:                   Const(
-// GCC-NEXT:                       Call {
-// GCC-NEXT:                           callee: Identifier(
-// GCC-NEXT:                               "exit",
-// GCC-NEXT:                           ),
-// GCC-NEXT:                           arguments: [
-// GCC-NEXT:                               Binary {
-// GCC-NEXT:                                   op: NotEqual,
-// GCC-NEXT:                                   left: Integer(
-// GCC-NEXT:                                       49,
-// GCC-NEXT:                                   ),
-// GCC-NEXT:                                   right: Integer(
-// GCC-NEXT:                                       49,
-// GCC-NEXT:                                   ),
-// GCC-NEXT:                               },
-// GCC-NEXT:                           ],
-// GCC-NEXT:                       },
-// GCC-NEXT:                   ),
+// GCC-NEXT:                   Call {
+// GCC-NEXT:                       callee: Identifier(
+// GCC-NEXT:                           "exit",
+// GCC-NEXT:                       ),
+// GCC-NEXT:                       arguments: [
+// GCC-NEXT:                           Binary {
+// GCC-NEXT:                               op: NotEqual,
+// GCC-NEXT:                               left: Integer(
+// GCC-NEXT:                                   49,
+// GCC-NEXT:                               ),
+// GCC-NEXT:                               right: Integer(
+// GCC-NEXT:                                   49,
+// GCC-NEXT:                               ),
+// GCC-NEXT:                           },
+// GCC-NEXT:                       ],
+// GCC-NEXT:                   },
 // GCC-NEXT:               ),
 // GCC-NEXT:           ],
 // GCC-NEXT:           provenance: Provenance {

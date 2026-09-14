@@ -70,10 +70,8 @@ void f(int a, struct {int b[a];} c) {}
 // DEFAULT-NEXT:                                                       "b",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   size: Expression(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "a",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "a",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },

@@ -27,10 +27,8 @@ extern __typeof (__finite) __finite __asm__ ("" "__GI___finite");
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -51,10 +49,8 @@ extern __typeof (__finite) __finite __asm__ ("" "__GI___finite");
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: TypeOf(
 // DEFAULT-NEXT:                   Expression(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "__finite",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "__finite",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),

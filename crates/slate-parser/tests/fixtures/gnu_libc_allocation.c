@@ -905,7 +905,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       "contents",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           4,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -1389,10 +1389,8 @@ int main(void) {
 // DEFAULT-NEXT:                                   "use_extra_arg",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1427,10 +1425,8 @@ int main(void) {
 // DEFAULT-NEXT:                                   "maybe_empty_object",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1465,10 +1461,8 @@ int main(void) {
 // DEFAULT-NEXT:                                   "alloc_failed",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2068,28 +2062,29 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "reallocarray",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "reallocarray",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "nullptr",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   SizeOf(
-// DEFAULT-NEXT:                                                       Deref(
-// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   4,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               SizeOfExpr(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: Deref,
+// DEFAULT-NEXT:                                                           operand: Identifier(
 // DEFAULT-NEXT:                                                               "values",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2111,21 +2106,19 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "memalign",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "memalign",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   64,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       64,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       80,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   80,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2147,18 +2140,16 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "valloc",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "valloc",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2180,18 +2171,16 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "pvalloc",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "pvalloc",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2215,18 +2204,16 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "sysconf",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "sysconf",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   30,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       30,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2250,10 +2237,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -2280,10 +2265,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   0,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -2293,90 +2276,75 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "index",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   4,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "index",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               4,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PreIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "index",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                       Unary {
+// DEFAULT-NEXT:                           op: PreIncrement,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "index",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "values",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "index",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "index",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "values",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
+// DEFAULT-NEXT:                                       "index",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               value: Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "index",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Add,
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: Add,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "values",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "values",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Integer(
-// DEFAULT-NEXT:                                               1,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   left: Index {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "values",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       index: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Index {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "values",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       index: Integer(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           1,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
@@ -2385,315 +2353,304 @@ int main(void) {
 // DEFAULT-NEXT:                                       "values",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   index: Integer(
-// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                       2,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Index {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "values",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               index: Integer(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: GreaterEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "malloc_usable_size",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: GreaterEqual,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "malloc_usable_size",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "values",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "values",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Mul,
-// DEFAULT-NEXT:                                   left: Integer(
-// DEFAULT-NEXT:                                       4,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: SizeOf(
-// DEFAULT-NEXT:                                       Deref(
-// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Mul,
+// DEFAULT-NEXT:                               left: Integer(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: SizeOfExpr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Unary {
+// DEFAULT-NEXT:                                           op: Deref,
+// DEFAULT-NEXT:                                           operand: Identifier(
 // DEFAULT-NEXT:                                               "values",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: And,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "aligned",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "nullptr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Rem,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "uintptr_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "aligned",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           64,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: And,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "page",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "nullptr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Rem,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "uintptr_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "page",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "uintptr_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "page_size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: And,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: NotEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "rounded",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "nullptr",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Rem,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "uintptr_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "rounded",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "uintptr_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "page_size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: GreaterEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "malloc_usable_size",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "rounded",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "size_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "page_size",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: And,
+// DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "mallopt",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Unary {
-// DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               5,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "aligned",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "nullptr",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: Rem,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uintptr_t",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "aligned",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       64,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Integer(
 // DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "free",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "values",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "free",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "aligned",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "free",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "page",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "free",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "rounded",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
 // DEFAULT-NEXT:                           "total",
 // DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: And,
+// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "page",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "nullptr",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: Rem,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uintptr_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "page",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uintptr_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "page_size",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: And,
+// DEFAULT-NEXT:                           left: Binary {
+// DEFAULT-NEXT:                               op: NotEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "rounded",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "nullptr",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Equal,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: Rem,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uintptr_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "rounded",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uintptr_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "page_size",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right: Integer(
+// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: GreaterEqual,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "malloc_usable_size",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "rounded",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Cast {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "size_t",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "page_size",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "mallopt",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       operand: Integer(
+// DEFAULT-NEXT:                                           5,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "free",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "values",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "free",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "aligned",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "free",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "page",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "free",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "rounded",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Return(
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "total",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -2796,10 +2753,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Integer(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Integer(
+// DEFAULT-NEXT:                                           0,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -2808,397 +2763,476 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "_obstack_begin",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               AddrOf(
-// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "_obstack_begin",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Paren(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: AddrOf,
+// DEFAULT-NEXT:                                   operand: Identifier(
 // DEFAULT-NEXT:                                       "storage",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Cast {
-// DEFAULT-NEXT:                                   ty: Void,
-// DEFAULT-NEXT:                                   declarator: Function {
-// DEFAULT-NEXT:                                       inner: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Grouped(
-// DEFAULT-NEXT:                                               Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       parameters: [
-// DEFAULT-NEXT:                                           Parameter {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Long,
-// DEFAULT-NEXT:                                                       signed: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "malloc",
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Cast {
-// DEFAULT-NEXT:                                   ty: Void,
-// DEFAULT-NEXT:                                   declarator: Function {
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: Void,
+// DEFAULT-NEXT:                               declarator: Function {
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                       inner: Grouped(
 // DEFAULT-NEXT:                                           Pointer {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                               inner: Abstract,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       parameters: [
-// DEFAULT-NEXT:                                           Parameter {
-// DEFAULT-NEXT:                                               ty: Void,
-// DEFAULT-NEXT:                                               declarator: Some(
-// DEFAULT-NEXT:                                                   Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "free",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Parameter {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Long,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "malloc",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Cast {
+// DEFAULT-NEXT:                               ty: Void,
+// DEFAULT-NEXT:                               declarator: Function {
+// DEFAULT-NEXT:                                   inner: Grouped(
+// DEFAULT-NEXT:                                       Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Parameter {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                           declarator: Some(
+// DEFAULT-NEXT:                                               Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "free",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "first",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Comma(
-// DEFAULT-NEXT:                               Comma(
-// DEFAULT-NEXT:                                   Comma(
-// DEFAULT-NEXT:                                       Comma(
-// DEFAULT-NEXT:                                           Comma(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Member {
-// DEFAULT-NEXT:                                                       base: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "temp",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       field: "tempint",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       3,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Ternary {
-// DEFAULT-NEXT:                                                   condition: Binary {
-// DEFAULT-NEXT:                                                       op: Greater,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Add,
-// DEFAULT-NEXT:                                                           left: Binary {
-// DEFAULT-NEXT:                                                               op: Add,
-// DEFAULT-NEXT:                                                               left: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "next_free",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Member {
-// DEFAULT-NEXT:                                                                   base: Arrow {
-// DEFAULT-NEXT:                                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "first",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Comma {
+// DEFAULT-NEXT:                               left: Paren(
+// DEFAULT-NEXT:                                   Comma {
+// DEFAULT-NEXT:                                       left: Comma {
+// DEFAULT-NEXT:                                           left: Comma {
+// DEFAULT-NEXT:                                               left: Comma {
+// DEFAULT-NEXT:                                                   left: Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                                           base: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
 // DEFAULT-NEXT:                                                                               "storage",
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "temp",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   field: "tempint",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "chunk_limit",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   then_value: Comma(
-// DEFAULT-NEXT:                                                       Call {
-// DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "_obstack_newchunk",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           arguments: [
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               Binary {
+// DEFAULT-NEXT:                                                               field: "temp",
+// DEFAULT-NEXT:                                                               arrow: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           field: "tempint",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   3,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Paren(
+// DEFAULT-NEXT:                                                       Conditional {
+// DEFAULT-NEXT:                                                           condition: Binary {
+// DEFAULT-NEXT:                                                               op: Greater,
+// DEFAULT-NEXT:                                                               left: Binary {
 // DEFAULT-NEXT:                                                                   op: Add,
-// DEFAULT-NEXT:                                                                   left: Member {
-// DEFAULT-NEXT:                                                                       base: Arrow {
-// DEFAULT-NEXT:                                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                       op: Add,
+// DEFAULT-NEXT:                                                                       left: Member {
+// DEFAULT-NEXT:                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Unary {
+// DEFAULT-NEXT:                                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                           "storage",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "temp",
+// DEFAULT-NEXT:                                                                           field: "next_free",
+// DEFAULT-NEXT:                                                                           arrow: true,
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       field: "tempint",
+// DEFAULT-NEXT:                                                                       right: Member {
+// DEFAULT-NEXT:                                                                           base: Member {
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Unary {
+// DEFAULT-NEXT:                                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                                               "storage",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "temp",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           field: "tempint",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: Integer(
 // DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   else_value: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "memcpy",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "next_free",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   StringLit(
-// DEFAULT-NEXT:                                                       "gnu",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Member {
-// DEFAULT-NEXT:                                                       base: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "temp",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       field: "tempint",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: AddAssign,
-// DEFAULT-NEXT:                                           target: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "next_free",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "temp",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "tempint",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Deref(
-// DEFAULT-NEXT:                                           PostIncrement(
-// DEFAULT-NEXT:                                               Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "next_free",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Comma(
-// DEFAULT-NEXT:                                   Comma(
-// DEFAULT-NEXT:                                       Comma(
-// DEFAULT-NEXT:                                           Comma(
-// DEFAULT-NEXT:                                               Comma(
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "next_free",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "object_base",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Comma(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: Assign,
-// DEFAULT-NEXT:                                                               target: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                               right: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "maybe_empty_object",
+// DEFAULT-NEXT:                                                                   field: "chunk_limit",
+// DEFAULT-NEXT:                                                                   arrow: true,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   1,
-// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                           then_value: Some(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Comma {
+// DEFAULT-NEXT:                                                                       left: Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "_obstack_newchunk",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Unary {
+// DEFAULT-NEXT:                                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                                               "storage",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                   left: Member {
+// DEFAULT-NEXT:                                                                                       base: Member {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Unary {
+// DEFAULT-NEXT:                                                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                           "storage",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "temp",
+// DEFAULT-NEXT:                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       field: "tempint",
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           else_value: Integer(
 // DEFAULT-NEXT:                                                               0,
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "memcpy",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "next_free",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               StringLit(
+// DEFAULT-NEXT:                                                                   "gnu",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Member {
-// DEFAULT-NEXT:                                                           base: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               field: "temp",
+// DEFAULT-NEXT:                                                               arrow: true,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           field: "tempptr",
+// DEFAULT-NEXT:                                                           field: "tempint",
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Assign {
+// DEFAULT-NEXT:                                               op: AddAssign,
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
 // DEFAULT-NEXT:                                                                   "storage",
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "object_base",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "next_free",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Ternary {
-// DEFAULT-NEXT:                                                           condition: Binary {
-// DEFAULT-NEXT:                                                               op: Less,
-// DEFAULT-NEXT:                                                               left: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "ptrdiff_t",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: Void,
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           then_value: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "next_free",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Member {
+// DEFAULT-NEXT:                                                   base: Member {
+// DEFAULT-NEXT:                                                       base: Paren(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Unary {
+// DEFAULT-NEXT:                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                   operand: Identifier(
 // DEFAULT-NEXT:                                                                       "storage",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "object_base",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           else_value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "temp",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   field: "tempint",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Assign {
+// DEFAULT-NEXT:                                           op: Assign,
+// DEFAULT-NEXT:                                           target: Unary {
+// DEFAULT-NEXT:                                               op: Deref,
+// DEFAULT-NEXT:                                               operand: Postfix {
+// DEFAULT-NEXT:                                                   op: Increment,
+// DEFAULT-NEXT:                                                   operand: Paren(
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                   inner: Abstract,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "next_free",
+// DEFAULT-NEXT:                                                           arrow: true,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Binary {
-// DEFAULT-NEXT:                                                               op: Add,
-// DEFAULT-NEXT:                                                               left: Binary {
-// DEFAULT-NEXT:                                                                   op: Sub,
-// DEFAULT-NEXT:                                                                   left: Arrow {
-// DEFAULT-NEXT:                                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Comma {
+// DEFAULT-NEXT:                                       left: Comma {
+// DEFAULT-NEXT:                                           left: Comma {
+// DEFAULT-NEXT:                                               left: Comma {
+// DEFAULT-NEXT:                                                   left: Comma {
+// DEFAULT-NEXT:                                                       left: Paren(
+// DEFAULT-NEXT:                                                           Conditional {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Equal,
+// DEFAULT-NEXT:                                                                   left: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Ternary {
+// DEFAULT-NEXT:                                                                   right: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "object_base",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Comma {
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Assign {
+// DEFAULT-NEXT:                                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                                   target: Member {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                               Unary {
+// DEFAULT-NEXT:                                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       field: "maybe_empty_object",
+// DEFAULT-NEXT:                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                               0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Member {
+// DEFAULT-NEXT:                                                               base: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "temp",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               field: "tempptr",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           value: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "object_base",
+// DEFAULT-NEXT:                                                               arrow: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "next_free",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Paren(
+// DEFAULT-NEXT:                                                                   Conditional {
 // DEFAULT-NEXT:                                                                       condition: Binary {
 // DEFAULT-NEXT:                                                                           op: Less,
 // DEFAULT-NEXT:                                                                           left: SizeOfType {
@@ -3215,14 +3249,24 @@ int main(void) {
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       then_value: Arrow {
-// DEFAULT-NEXT:                                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                   "storage",
-// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                       then_value: Some(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                           Unary {
+// DEFAULT-NEXT:                                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                   "storage",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "object_base",
+// DEFAULT-NEXT:                                                                                   arrow: true,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "object_base",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       else_value: Cast {
 // DEFAULT-NEXT:                                                                           ty: Integer(
 // DEFAULT-NEXT:                                                                               Char {
@@ -3238,473 +3282,714 @@ int main(void) {
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Paren(
+// DEFAULT-NEXT:                                                                   Binary {
+// DEFAULT-NEXT:                                                                       op: BitAnd,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: Add,
+// DEFAULT-NEXT:                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                           Member {
+// DEFAULT-NEXT:                                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                                       Unary {
+// DEFAULT-NEXT:                                                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                                                               "storage",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               field: "next_free",
+// DEFAULT-NEXT:                                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                       Conditional {
+// DEFAULT-NEXT:                                                                                           condition: Binary {
+// DEFAULT-NEXT:                                                                                               op: Less,
+// DEFAULT-NEXT:                                                                                               left: SizeOfType {
+// DEFAULT-NEXT:                                                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                                                       "ptrdiff_t",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               right: SizeOfType {
+// DEFAULT-NEXT:                                                                                                   ty: Void,
+// DEFAULT-NEXT:                                                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           then_value: Some(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Member {
+// DEFAULT-NEXT:                                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                                               Unary {
+// DEFAULT-NEXT:                                                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       field: "object_base",
+// DEFAULT-NEXT:                                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           else_value: Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Char {
+// DEFAULT-NEXT:                                                                                                       signed: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               value: Integer(
+// DEFAULT-NEXT:                                                                                                   0,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Member {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Unary {
+// DEFAULT-NEXT:                                                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                           "storage",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "alignment_mask",
+// DEFAULT-NEXT:                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "alignment_mask",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Unary {
-// DEFAULT-NEXT:                                                               op: BitNot,
-// DEFAULT-NEXT:                                                               value: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "alignment_mask",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ternary {
-// DEFAULT-NEXT:                                               condition: Binary {
-// DEFAULT-NEXT:                                                   op: Greater,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                                       right: Unary {
+// DEFAULT-NEXT:                                                                           op: BitNot,
+// DEFAULT-NEXT:                                                                           operand: Paren(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Member {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                               Unary {
+// DEFAULT-NEXT:                                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       field: "alignment_mask",
+// DEFAULT-NEXT:                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "next_free",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: None,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "chunk",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "chunk_limit",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: None,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "chunk",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               then_value: Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
-// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "next_free",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "chunk_limit",
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               else_value: Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "object_base",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "next_free",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "storage",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "temp",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "tempptr",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "second",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Comma(
-// DEFAULT-NEXT:                               Comma(
-// DEFAULT-NEXT:                                   Comma(
-// DEFAULT-NEXT:                                       Comma(
-// DEFAULT-NEXT:                                           Comma(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Member {
-// DEFAULT-NEXT:                                                       base: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "temp",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       field: "tempint",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       4,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Ternary {
-// DEFAULT-NEXT:                                                   condition: Binary {
-// DEFAULT-NEXT:                                                       op: Greater,
-// DEFAULT-NEXT:                                                       left: Binary {
-// DEFAULT-NEXT:                                                           op: Add,
+// DEFAULT-NEXT:                                               right: Paren(
+// DEFAULT-NEXT:                                                   Conditional {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: Greater,
 // DEFAULT-NEXT:                                                           left: Binary {
-// DEFAULT-NEXT:                                                               op: Add,
-// DEFAULT-NEXT:                                                               left: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                               op: Sub,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   field: "next_free",
+// DEFAULT-NEXT:                                                                   arrow: true,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Member {
-// DEFAULT-NEXT:                                                                   base: Arrow {
-// DEFAULT-NEXT:                                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                               right: Cast {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "temp",
+// DEFAULT-NEXT:                                                                       field: "chunk",
+// DEFAULT-NEXT:                                                                       arrow: true,
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   field: "tempint",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               1,
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "chunk_limit",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   then_value: Comma(
-// DEFAULT-NEXT:                                                       Call {
-// DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "_obstack_newchunk",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           arguments: [
-// DEFAULT-NEXT:                                                               AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               Binary {
-// DEFAULT-NEXT:                                                                   op: Add,
-// DEFAULT-NEXT:                                                                   left: Member {
-// DEFAULT-NEXT:                                                                       base: Arrow {
-// DEFAULT-NEXT:                                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: Sub,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
 // DEFAULT-NEXT:                                                                                   "storage",
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "temp",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       field: "tempint",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       1,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   else_value: Integer(
-// DEFAULT-NEXT:                                                       0,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "memcpy",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "next_free",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   StringLit(
-// DEFAULT-NEXT:                                                       "libc",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Member {
-// DEFAULT-NEXT:                                                       base: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "temp",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       field: "tempint",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: AddAssign,
-// DEFAULT-NEXT:                                           target: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "next_free",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "temp",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "tempint",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Deref(
-// DEFAULT-NEXT:                                           PostIncrement(
-// DEFAULT-NEXT:                                               Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "next_free",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Comma(
-// DEFAULT-NEXT:                                   Comma(
-// DEFAULT-NEXT:                                       Comma(
-// DEFAULT-NEXT:                                           Comma(
-// DEFAULT-NEXT:                                               Comma(
-// DEFAULT-NEXT:                                                   Ternary {
-// DEFAULT-NEXT:                                                       condition: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "next_free",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "object_base",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       then_value: Comma(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: Assign,
-// DEFAULT-NEXT:                                                               target: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "maybe_empty_object",
+// DEFAULT-NEXT:                                                                   field: "chunk_limit",
+// DEFAULT-NEXT:                                                                   arrow: true,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   1,
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Cast {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "chunk",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           Integer(
-// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "chunk_limit",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       else_value: Integer(
 // DEFAULT-NEXT:                                                           0,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "object_base",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "next_free",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                               "storage",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "temp",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "tempptr",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "second",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Paren(
+// DEFAULT-NEXT:                           Comma {
+// DEFAULT-NEXT:                               left: Paren(
+// DEFAULT-NEXT:                                   Comma {
+// DEFAULT-NEXT:                                       left: Comma {
+// DEFAULT-NEXT:                                           left: Comma {
+// DEFAULT-NEXT:                                               left: Comma {
+// DEFAULT-NEXT:                                                   left: Assign {
 // DEFAULT-NEXT:                                                       op: Assign,
 // DEFAULT-NEXT:                                                       target: Member {
-// DEFAULT-NEXT:                                                           base: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
+// DEFAULT-NEXT:                                                           base: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               field: "temp",
+// DEFAULT-NEXT:                                                               arrow: true,
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           field: "tempptr",
+// DEFAULT-NEXT:                                                           field: "tempint",
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   4,
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "object_base",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "next_free",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Binary {
-// DEFAULT-NEXT:                                                       op: Add,
-// DEFAULT-NEXT:                                                       left: Ternary {
+// DEFAULT-NEXT:                                                   right: Paren(
+// DEFAULT-NEXT:                                                       Conditional {
 // DEFAULT-NEXT:                                                           condition: Binary {
-// DEFAULT-NEXT:                                                               op: Less,
-// DEFAULT-NEXT:                                                               left: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "ptrdiff_t",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: Void,
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                               op: Greater,
+// DEFAULT-NEXT:                                                               left: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                       op: Add,
+// DEFAULT-NEXT:                                                                       left: Member {
+// DEFAULT-NEXT:                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Unary {
+// DEFAULT-NEXT:                                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                           "storage",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "next_free",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Member {
+// DEFAULT-NEXT:                                                                           base: Member {
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Unary {
+// DEFAULT-NEXT:                                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                                               "storage",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "temp",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           field: "tempint",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       1,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "chunk_limit",
+// DEFAULT-NEXT:                                                                   arrow: true,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           then_value: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                           then_value: Some(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Comma {
+// DEFAULT-NEXT:                                                                       left: Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "_obstack_newchunk",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Unary {
+// DEFAULT-NEXT:                                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                                               "storage",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                   left: Member {
+// DEFAULT-NEXT:                                                                                       base: Member {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Unary {
+// DEFAULT-NEXT:                                                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                           "storage",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "temp",
+// DEFAULT-NEXT:                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       field: "tempint",
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           0,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           else_value: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "memcpy",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "next_free",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               StringLit(
+// DEFAULT-NEXT:                                                                   "libc",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "temp",
+// DEFAULT-NEXT:                                                               arrow: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           field: "tempint",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Assign {
+// DEFAULT-NEXT:                                               op: AddAssign,
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "next_free",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Member {
+// DEFAULT-NEXT:                                                   base: Member {
+// DEFAULT-NEXT:                                                       base: Paren(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Unary {
+// DEFAULT-NEXT:                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                   operand: Identifier(
 // DEFAULT-NEXT:                                                                       "storage",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "object_base",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           else_value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "temp",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   field: "tempint",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Assign {
+// DEFAULT-NEXT:                                           op: Assign,
+// DEFAULT-NEXT:                                           target: Unary {
+// DEFAULT-NEXT:                                               op: Deref,
+// DEFAULT-NEXT:                                               operand: Postfix {
+// DEFAULT-NEXT:                                                   op: Increment,
+// DEFAULT-NEXT:                                                   operand: Paren(
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                   inner: Abstract,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "next_free",
+// DEFAULT-NEXT:                                                           arrow: true,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                           left: Binary {
-// DEFAULT-NEXT:                                                               op: Add,
-// DEFAULT-NEXT:                                                               left: Binary {
-// DEFAULT-NEXT:                                                                   op: Sub,
-// DEFAULT-NEXT:                                                                   left: Arrow {
-// DEFAULT-NEXT:                                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Comma {
+// DEFAULT-NEXT:                                       left: Comma {
+// DEFAULT-NEXT:                                           left: Comma {
+// DEFAULT-NEXT:                                               left: Comma {
+// DEFAULT-NEXT:                                                   left: Comma {
+// DEFAULT-NEXT:                                                       left: Paren(
+// DEFAULT-NEXT:                                                           Conditional {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Equal,
+// DEFAULT-NEXT:                                                                   left: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Ternary {
+// DEFAULT-NEXT:                                                                   right: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "object_base",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Comma {
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Assign {
+// DEFAULT-NEXT:                                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                                   target: Member {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                               Unary {
+// DEFAULT-NEXT:                                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       field: "maybe_empty_object",
+// DEFAULT-NEXT:                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                               0,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               else_value: Integer(
+// DEFAULT-NEXT:                                                                   0,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Member {
+// DEFAULT-NEXT:                                                               base: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "temp",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               field: "tempptr",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           value: Member {
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "object_base",
+// DEFAULT-NEXT:                                                               arrow: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   right: Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Unary {
+// DEFAULT-NEXT:                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "next_free",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Paren(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: Add,
+// DEFAULT-NEXT:                                                               left: Paren(
+// DEFAULT-NEXT:                                                                   Conditional {
 // DEFAULT-NEXT:                                                                       condition: Binary {
 // DEFAULT-NEXT:                                                                           op: Less,
 // DEFAULT-NEXT:                                                                           left: SizeOfType {
@@ -3721,14 +4006,24 @@ int main(void) {
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       then_value: Arrow {
-// DEFAULT-NEXT:                                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                   "storage",
-// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                       then_value: Some(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                           Unary {
+// DEFAULT-NEXT:                                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                   "storage",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "object_base",
+// DEFAULT-NEXT:                                                                                   arrow: true,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "object_base",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       else_value: Cast {
 // DEFAULT-NEXT:                                                                           ty: Integer(
 // DEFAULT-NEXT:                                                                               Char {
@@ -3744,223 +4039,382 @@ int main(void) {
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Paren(
+// DEFAULT-NEXT:                                                                   Binary {
+// DEFAULT-NEXT:                                                                       op: BitAnd,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: Add,
+// DEFAULT-NEXT:                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                           Member {
+// DEFAULT-NEXT:                                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                                       Unary {
+// DEFAULT-NEXT:                                                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                                                               "storage",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               field: "next_free",
+// DEFAULT-NEXT:                                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                       Conditional {
+// DEFAULT-NEXT:                                                                                           condition: Binary {
+// DEFAULT-NEXT:                                                                                               op: Less,
+// DEFAULT-NEXT:                                                                                               left: SizeOfType {
+// DEFAULT-NEXT:                                                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                                                       "ptrdiff_t",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               right: SizeOfType {
+// DEFAULT-NEXT:                                                                                                   ty: Void,
+// DEFAULT-NEXT:                                                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           then_value: Some(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Member {
+// DEFAULT-NEXT:                                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                                               Unary {
+// DEFAULT-NEXT:                                                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       field: "object_base",
+// DEFAULT-NEXT:                                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           else_value: Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Char {
+// DEFAULT-NEXT:                                                                                                       signed: None,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               value: Integer(
+// DEFAULT-NEXT:                                                                                                   0,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Member {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Unary {
+// DEFAULT-NEXT:                                                                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                           "storage",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "alignment_mask",
+// DEFAULT-NEXT:                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Unary {
+// DEFAULT-NEXT:                                                                           op: BitNot,
+// DEFAULT-NEXT:                                                                           operand: Paren(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Member {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                               Unary {
+// DEFAULT-NEXT:                                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       field: "alignment_mask",
+// DEFAULT-NEXT:                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Paren(
+// DEFAULT-NEXT:                                                   Conditional {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: Greater,
+// DEFAULT-NEXT:                                                           left: Binary {
+// DEFAULT-NEXT:                                                               op: Sub,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "alignment_mask",
+// DEFAULT-NEXT:                                                                   field: "next_free",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               right: Cast {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "chunk",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Unary {
-// DEFAULT-NEXT:                                                               op: BitNot,
-// DEFAULT-NEXT:                                                               value: Arrow {
-// DEFAULT-NEXT:                                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "storage",
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: Sub,
+// DEFAULT-NEXT:                                                               left: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Unary {
+// DEFAULT-NEXT:                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "storage",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "alignment_mask",
+// DEFAULT-NEXT:                                                                   field: "chunk_limit",
+// DEFAULT-NEXT:                                                                   arrow: true,
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ternary {
-// DEFAULT-NEXT:                                               condition: Binary {
-// DEFAULT-NEXT:                                                   op: Greater,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "next_free",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: None,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
+// DEFAULT-NEXT:                                                               right: Cast {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: None,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "chunk",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: Sub,
-// DEFAULT-NEXT:                                                       left: Arrow {
-// DEFAULT-NEXT:                                                           base: AddrOf(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "storage",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "chunk_limit",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: None,
+// DEFAULT-NEXT:                                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "chunk",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: Arrow {
-// DEFAULT-NEXT:                                                               base: AddrOf(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "storage",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "chunk",
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               then_value: Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
+// DEFAULT-NEXT:                                                       then_value: Some(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "next_free",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Unary {
+// DEFAULT-NEXT:                                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "storage",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "chunk_limit",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "next_free",
+// DEFAULT-NEXT:                                                       else_value: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "object_base",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "next_free",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Member {
+// DEFAULT-NEXT:                                           base: Member {
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                           operand: Identifier(
 // DEFAULT-NEXT:                                                               "storage",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "chunk_limit",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               else_value: Integer(
-// DEFAULT-NEXT:                                                   0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "object_base",
+// DEFAULT-NEXT:                                               field: "temp",
+// DEFAULT-NEXT:                                               arrow: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "next_free",
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           field: "tempptr",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Member {
-// DEFAULT-NEXT:                                       base: Arrow {
-// DEFAULT-NEXT:                                           base: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "storage",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "temp",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       field: "tempptr",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "strcmp",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "first",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "gnu",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "strcmp",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "second",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "libc",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Equal,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "strcmp",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "first",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "gnu",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: AddAssign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "total",
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Equal,
+// DEFAULT-NEXT:                           left: Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "strcmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "second",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   StringLit(
+// DEFAULT-NEXT:                                       "libc",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Cast {
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Expr(
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: AddAssign,
+// DEFAULT-NEXT:                       target: Identifier(
+// DEFAULT-NEXT:                           "total",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Equal,
+// DEFAULT-NEXT:                           left: Paren(
+// DEFAULT-NEXT:                               Cast {
 // DEFAULT-NEXT:                                   ty: Integer(
 // DEFAULT-NEXT:                                       Ranked {
 // DEFAULT-NEXT:                                           rank: Int,
@@ -3968,46 +4422,60 @@ int main(void) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Binary {
-// DEFAULT-NEXT:                                       op: Sub,
-// DEFAULT-NEXT:                                       left: Arrow {
-// DEFAULT-NEXT:                                           base: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "storage",
+// DEFAULT-NEXT:                                   value: Paren(
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Sub,
+// DEFAULT-NEXT:                                           left: Member {
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Unary {
+// DEFAULT-NEXT:                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                           "storage",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "next_free",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Arrow {
-// DEFAULT-NEXT:                                           base: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "storage",
+// DEFAULT-NEXT:                                               field: "next_free",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Member {
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Unary {
+// DEFAULT-NEXT:                                                       op: AddrOf,
+// DEFAULT-NEXT:                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                           "storage",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "object_base",
+// DEFAULT-NEXT:                                               field: "object_base",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Comma(
-// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                   Paren(
+// DEFAULT-NEXT:                       Comma {
+// DEFAULT-NEXT:                           left: Assign {
 // DEFAULT-NEXT:                               op: Assign,
 // DEFAULT-NEXT:                               target: Member {
-// DEFAULT-NEXT:                                   base: Arrow {
-// DEFAULT-NEXT:                                       base: AddrOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "storage",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   base: Member {
+// DEFAULT-NEXT:                                       base: Paren(
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "storage",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       field: "temp",
+// DEFAULT-NEXT:                                       arrow: true,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   field: "tempint",
 // DEFAULT-NEXT:                               },
@@ -4023,8 +4491,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                           inner: Abstract,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
+// DEFAULT-NEXT:                                       value: Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "nullptr",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Cast {
@@ -4037,115 +4507,211 @@ int main(void) {
 // DEFAULT-NEXT:                                           qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                           inner: Abstract,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: Arrow {
-// DEFAULT-NEXT:                                           base: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "storage",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                       value: Member {
+// DEFAULT-NEXT:                                           base: Paren(
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "storage",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           field: "chunk",
+// DEFAULT-NEXT:                                           arrow: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Ternary {
-// DEFAULT-NEXT:                               condition: Binary {
-// DEFAULT-NEXT:                                   op: And,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Greater,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "temp",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "tempint",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Less,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "temp",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           field: "tempint",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Binary {
-// DEFAULT-NEXT:                                           op: Sub,
-// DEFAULT-NEXT:                                           left: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "chunk_limit",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Cast {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Char {
-// DEFAULT-NEXT:                                                       signed: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "chunk",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_value: Cast {
-// DEFAULT-NEXT:                                   ty: Void,
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Arrow {
-// DEFAULT-NEXT:                                           base: AddrOf(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "storage",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "next_free",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Arrow {
-// DEFAULT-NEXT:                                               base: AddrOf(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "storage",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "object_base",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: Member {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                           right: Paren(
+// DEFAULT-NEXT:                               Conditional {
+// DEFAULT-NEXT:                                   condition: Binary {
+// DEFAULT-NEXT:                                       op: And,
+// DEFAULT-NEXT:                                       left: Binary {
+// DEFAULT-NEXT:                                           op: Greater,
+// DEFAULT-NEXT:                                           left: Member {
+// DEFAULT-NEXT:                                               base: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                           operand: Identifier(
 // DEFAULT-NEXT:                                                               "storage",
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "temp",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               field: "tempint",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                           op: Less,
+// DEFAULT-NEXT:                                           left: Member {
+// DEFAULT-NEXT:                                               base: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                               "storage",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "temp",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               field: "tempint",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right: Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: Member {
+// DEFAULT-NEXT:                                                   base: Paren(
+// DEFAULT-NEXT:                                                       Unary {
+// DEFAULT-NEXT:                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                               "storage",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "chunk_limit",
+// DEFAULT-NEXT:                                                   arrow: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Cast {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Member {
+// DEFAULT-NEXT:                                                       base: Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "chunk",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   then_value: Some(
+// DEFAULT-NEXT:                                       Cast {
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           value: Paren(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Member {
+// DEFAULT-NEXT:                                                       base: Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "next_free",
+// DEFAULT-NEXT:                                                       arrow: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Unary {
+// DEFAULT-NEXT:                                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                       "storage",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "object_base",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Binary {
+// DEFAULT-NEXT:                                                           op: Add,
+// DEFAULT-NEXT:                                                           left: Member {
+// DEFAULT-NEXT:                                                               base: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "temp",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               field: "tempint",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Cast {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Char {
+// DEFAULT-NEXT:                                                                       signed: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Unary {
+// DEFAULT-NEXT:                                                                           op: AddrOf,
+// DEFAULT-NEXT:                                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                                               "storage",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "chunk",
+// DEFAULT-NEXT:                                                                   arrow: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   else_value: Call {
+// DEFAULT-NEXT:                                       callee: Paren(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "obstack_free",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Paren(
+// DEFAULT-NEXT:                                               Unary {
+// DEFAULT-NEXT:                                                   op: AddrOf,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "storage",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Add,
+// DEFAULT-NEXT:                                               left: Member {
+// DEFAULT-NEXT:                                                   base: Member {
+// DEFAULT-NEXT:                                                       base: Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       field: "temp",
+// DEFAULT-NEXT:                                                       arrow: true,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   field: "tempint",
 // DEFAULT-NEXT:                                               },
@@ -4159,73 +4725,30 @@ int main(void) {
 // DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                       inner: Abstract,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Arrow {
-// DEFAULT-NEXT:                                                       base: AddrOf(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "storage",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                   value: Member {
+// DEFAULT-NEXT:                                                       base: Paren(
+// DEFAULT-NEXT:                                                           Unary {
+// DEFAULT-NEXT:                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "storage",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       field: "chunk",
+// DEFAULT-NEXT:                                                       arrow: true,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               else_value: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "obstack_free",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       AddrOf(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "storage",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: Add,
-// DEFAULT-NEXT:                                           left: Member {
-// DEFAULT-NEXT:                                               base: Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "temp",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               field: "tempint",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Cast {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Char {
-// DEFAULT-NEXT:                                                       signed: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: Arrow {
-// DEFAULT-NEXT:                                                   base: AddrOf(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "storage",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   field: "chunk",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "total",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "total",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -4251,36 +4774,32 @@ int main(void) {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "printf",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "printf",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           StringLit(
+// DEFAULT-NEXT:                               "%d %d\\n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               StringLit(
-// DEFAULT-NEXT:                                   "%d %d\\n",
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "gnu_allocation_extensions",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "gnu_allocation_extensions",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "gnu_obstack_extensions",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "gnu_obstack_extensions",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

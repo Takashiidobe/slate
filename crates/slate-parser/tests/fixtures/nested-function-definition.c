@@ -61,17 +61,15 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       body: [
 // DEFAULT-NEXT:                           Return(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "x",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "x",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                       provenance: Provenance {
@@ -85,18 +83,16 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "inner",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "inner",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "n",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -157,17 +153,15 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                       ],
 // DOUBLED-NEXT:                       body: [
 // DOUBLED-NEXT:                           Return(
-// DOUBLED-NEXT:                               Const(
-// DOUBLED-NEXT:                                   Binary {
-// DOUBLED-NEXT:                                       op: Mul,
-// DOUBLED-NEXT:                                       left: Identifier(
-// DOUBLED-NEXT:                                           "x",
-// DOUBLED-NEXT:                                       ),
-// DOUBLED-NEXT:                                       right: Integer(
-// DOUBLED-NEXT:                                           2,
-// DOUBLED-NEXT:                                       ),
-// DOUBLED-NEXT:                                   },
-// DOUBLED-NEXT:                               ),
+// DOUBLED-NEXT:                               Binary {
+// DOUBLED-NEXT:                                   op: Mul,
+// DOUBLED-NEXT:                                   left: Identifier(
+// DOUBLED-NEXT:                                       "x",
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                                   right: Integer(
+// DOUBLED-NEXT:                                       2,
+// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       ],
 // DOUBLED-NEXT:                       provenance: Provenance {
@@ -181,18 +175,16 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Expr(
-// DOUBLED-NEXT:                   Const(
-// DOUBLED-NEXT:                       Call {
-// DOUBLED-NEXT:                           callee: Identifier(
-// DOUBLED-NEXT:                               "inner",
+// DOUBLED-NEXT:                   Call {
+// DOUBLED-NEXT:                       callee: Identifier(
+// DOUBLED-NEXT:                           "inner",
+// DOUBLED-NEXT:                       ),
+// DOUBLED-NEXT:                       arguments: [
+// DOUBLED-NEXT:                           Identifier(
+// DOUBLED-NEXT:                               "n",
 // DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                           arguments: [
-// DOUBLED-NEXT:                               Identifier(
-// DOUBLED-NEXT:                                   "n",
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                           ],
-// DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
+// DOUBLED-NEXT:                       ],
+// DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {

@@ -38,10 +38,8 @@ __typeof__(unsigned long) gnu_type_name_type;
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: TypeOf(
 // DEFAULT-NEXT:                   Expression(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "source_value",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "source_value",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),

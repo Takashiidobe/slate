@@ -226,7 +226,7 @@ PointAlias alias;
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "GREEN",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           3,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),

@@ -241,7 +241,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "CODE_FOR_extendqidi2",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           3,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -249,7 +249,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "CODE_FOR_nothing",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           870,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -353,7 +353,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                           "HARD_REG_SET",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -391,7 +391,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "LAST_AND_UNUSED_RTX_CODE",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           256,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -431,10 +431,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "min_align",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   8,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -463,10 +461,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "base_after_vec",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -495,10 +491,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "min_after_vec",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -527,10 +521,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "max_after_vec",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -559,10 +551,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "min_after_base",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -591,10 +581,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "max_after_base",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -623,10 +611,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "offset_unsigned",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -653,10 +639,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                       FieldDeclarator {
 // DEFAULT-NEXT:                                           declarator: Abstract,
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   2,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -685,10 +669,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "scale",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   8,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1105,10 +1087,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "code",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       16,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   16,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1137,10 +1117,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "mode",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   8,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1169,10 +1147,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "jump",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1201,10 +1177,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "call",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1233,10 +1207,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "unchanging",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1265,10 +1237,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "volatil",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1297,10 +1267,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "in_struct",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1329,10 +1297,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "used",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1361,10 +1327,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "integrated",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1393,10 +1357,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               "frame_related",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           bit_width: Some(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1423,7 +1385,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                   "fld",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               size: Expression(
-// DEFAULT-NEXT:                                                   IntLit(
+// DEFAULT-NEXT:                                                   Integer(
 // DEFAULT-NEXT:                                                       1,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
@@ -2018,10 +1980,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "optional",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2052,10 +2012,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "nocombine",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2086,10 +2044,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "secondary_p",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2120,10 +2076,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   "nongroup",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2237,7 +2191,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                           "reload_order",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               60,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -2271,7 +2225,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                           "reload_spill_index",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               60,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -2306,7 +2260,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                           "rld",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               60,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -2550,14 +2504,13 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Arrow {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "chain",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "insn",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "chain",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "insn",
+// DEFAULT-NEXT:                                           arrow: true,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2598,19 +2551,24 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Member {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "insn",
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "insn",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "fld",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           2,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "fld",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       2,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               field: "rtx",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -2634,19 +2592,24 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
+// DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Member {
-// DEFAULT-NEXT:                                               base: Index {
-// DEFAULT-NEXT:                                                   base: Arrow {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "insn",
+// DEFAULT-NEXT:                                               base: Paren(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "insn",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "fld",
+// DEFAULT-NEXT:                                                           arrow: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       index: Integer(
+// DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       field: "fld",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   index: Integer(
-// DEFAULT-NEXT:                                                       1,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               field: "rtx",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -2659,40 +2622,35 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "j",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Integer(
-// DEFAULT-NEXT:                                       0,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   condition: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
 // DEFAULT-NEXT:                                   "j",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "n_reloads",
+// DEFAULT-NEXT:                               value: Integer(
+// DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   increment: Some(
-// DEFAULT-NEXT:                       Const(
-// DEFAULT-NEXT:                           PostIncrement(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "j",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                   condition: Some(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Less,
+// DEFAULT-NEXT:                           left: Identifier(
+// DEFAULT-NEXT:                               "j",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "n_reloads",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   increment: Some(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:                               "j",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
 // DEFAULT-NEXT:                       Decl(
@@ -2713,16 +2671,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "reload_order",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Identifier(
-// DEFAULT-NEXT:                                                           "j",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "reload_order",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "j",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -2747,16 +2703,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       initializer: Some(
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "reload_spill_index",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Identifier(
-// DEFAULT-NEXT:                                                           "r",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "reload_spill_index",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "r",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -2779,48 +2733,55 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               initializer: Some(
 // DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Ternary {
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Conditional {
 // DEFAULT-NEXT:                                                               condition: Binary {
 // DEFAULT-NEXT:                                                                   op: Equal,
-// DEFAULT-NEXT:                                                                   left: Cast {
-// DEFAULT-NEXT:                                                                       ty: Tagged {
-// DEFAULT-NEXT:                                                                           kind: Enum,
-// DEFAULT-NEXT:                                                                           name: Some(
-// DEFAULT-NEXT:                                                                               "rtx_code",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: Arrow {
-// DEFAULT-NEXT:                                                                           base: Member {
-// DEFAULT-NEXT:                                                                               base: Index {
-// DEFAULT-NEXT:                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                       "rld",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Identifier(
-// DEFAULT-NEXT:                                                                                       "r",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               field: "out",
+// DEFAULT-NEXT:                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                       Cast {
+// DEFAULT-NEXT:                                                                           ty: Tagged {
+// DEFAULT-NEXT:                                                                               kind: Enum,
+// DEFAULT-NEXT:                                                                               name: Some(
+// DEFAULT-NEXT:                                                                                   "rtx_code",
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           field: "code",
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Member {
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Member {
+// DEFAULT-NEXT:                                                                                       base: Index {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                                               "r",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       field: "out",
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "code",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   right: Identifier(
 // DEFAULT-NEXT:                                                                       "REG",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               then_value: Member {
-// DEFAULT-NEXT:                                                                   base: Index {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "rld",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Identifier(
-// DEFAULT-NEXT:                                                                           "r",
-// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                   Member {
+// DEFAULT-NEXT:                                                                       base: Index {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "rld",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                               "r",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       field: "out",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   field: "out",
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               else_value: Member {
 // DEFAULT-NEXT:                                                                   base: Index {
 // DEFAULT-NEXT:                                                                       base: Identifier(
@@ -2858,19 +2819,24 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               initializer: Some(
 // DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Const(
+// DEFAULT-NEXT:                                                       Paren(
 // DEFAULT-NEXT:                                                           Member {
-// DEFAULT-NEXT:                                                               base: Index {
-// DEFAULT-NEXT:                                                                   base: Arrow {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "out",
+// DEFAULT-NEXT:                                                               base: Paren(
+// DEFAULT-NEXT:                                                                   Index {
+// DEFAULT-NEXT:                                                                       base: Member {
+// DEFAULT-NEXT:                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "out",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "fld",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       index: Integer(
+// DEFAULT-NEXT:                                                                           0,
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "fld",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               field: "rtuint",
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
@@ -2881,17 +2847,15 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Const(
-// DEFAULT-NEXT:                                       Binary {
-// DEFAULT-NEXT:                                           op: GreaterEqual,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "nregno",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Integer(
-// DEFAULT-NEXT:                                               77,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   condition: Binary {
+// DEFAULT-NEXT:                                       op: GreaterEqual,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "nregno",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: Integer(
+// DEFAULT-NEXT:                                           77,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   then_branch: [
 // DEFAULT-NEXT:                                       Decl(
 // DEFAULT-NEXT:                                           Declaration {
@@ -2912,17 +2876,15 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       initializer: Some(
 // DEFAULT-NEXT:                                                           Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Cast {
-// DEFAULT-NEXT:                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                           "rtx",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: Integer(
-// DEFAULT-NEXT:                                                                           0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               Cast {
+// DEFAULT-NEXT:                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                       "rtx",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -2930,35 +2892,33 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Index {
-// DEFAULT-NEXT:                                                       base: Identifier(
-// DEFAULT-NEXT:                                                           "reg_last_reload_reg",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       index: Identifier(
-// DEFAULT-NEXT:                                                           "nregno",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   value: Integer(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "reg_last_reload_reg",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                                       "nregno",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               value: Integer(
+// DEFAULT-NEXT:                                                   0,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       If {
-// DEFAULT-NEXT:                                           condition: Const(
-// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                                           condition: Binary {
+// DEFAULT-NEXT:                                               op: And,
+// DEFAULT-NEXT:                                               left: Binary {
 // DEFAULT-NEXT:                                                   op: And,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: And,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "src_reg",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Cast {
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "src_reg",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Binary {
+// DEFAULT-NEXT:                                                       op: Equal,
+// DEFAULT-NEXT:                                                       left: Paren(
+// DEFAULT-NEXT:                                                           Cast {
 // DEFAULT-NEXT:                                                               ty: Tagged {
 // DEFAULT-NEXT:                                                                   kind: Enum,
 // DEFAULT-NEXT:                                                                   name: Some(
@@ -2966,40 +2926,50 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                               value: Arrow {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "src_reg",
+// DEFAULT-NEXT:                                                               value: Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "src_reg",
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   field: "code",
+// DEFAULT-NEXT:                                                                   arrow: true,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Identifier(
-// DEFAULT-NEXT:                                                               "REG",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: Less,
-// DEFAULT-NEXT:                                                       left: Member {
-// DEFAULT-NEXT:                                                           base: Index {
-// DEFAULT-NEXT:                                                               base: Arrow {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "src_reg",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "fld",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               index: Integer(
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           field: "rtuint",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           77,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Identifier(
+// DEFAULT-NEXT:                                                           "REG",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                               right: Binary {
+// DEFAULT-NEXT:                                                   op: Less,
+// DEFAULT-NEXT:                                                   left: Paren(
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Paren(
+// DEFAULT-NEXT:                                                               Index {
+// DEFAULT-NEXT:                                                                   base: Member {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "src_reg",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       field: "fld",
+// DEFAULT-NEXT:                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   index: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "rtuint",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       77,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           then_branch: [
 // DEFAULT-NEXT:                                               Decl(
 // DEFAULT-NEXT:                                                   Declaration {
@@ -3018,19 +2988,24 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               initializer: Some(
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
-// DEFAULT-NEXT:                                                                               base: Index {
-// DEFAULT-NEXT:                                                                                   base: Arrow {
-// DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "src_reg",
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Index {
+// DEFAULT-NEXT:                                                                                       base: Member {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                                   "src_reg",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "fld",
+// DEFAULT-NEXT:                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       index: Integer(
+// DEFAULT-NEXT:                                                                                           0,
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       field: "fld",
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   index: Integer(
-// DEFAULT-NEXT:                                                                                       0,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               field: "rtuint",
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -3057,149 +3032,185 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               initializer: Some(
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Ternary {
-// DEFAULT-NEXT:                                                                               condition: Binary {
-// DEFAULT-NEXT:                                                                                   op: And,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: GreaterEqual,
-// DEFAULT-NEXT:                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                           "src_regno",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           32,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Binary {
-// DEFAULT-NEXT:                                                                                       op: LessEqual,
-// DEFAULT-NEXT:                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                           "src_regno",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           63,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               then_value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Div,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Conditional {
+// DEFAULT-NEXT:                                                                               condition: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: And,
 // DEFAULT-NEXT:                                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                                           op: Add,
-// DEFAULT-NEXT:                                                                                           left: Index {
-// DEFAULT-NEXT:                                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                                   "mode_size",
+// DEFAULT-NEXT:                                                                                           op: GreaterEqual,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                                   "src_regno",
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               index: Cast {
-// DEFAULT-NEXT:                                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                                           signed: true,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                   value: Member {
-// DEFAULT-NEXT:                                                                                                       base: Index {
-// DEFAULT-NEXT:                                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                                               "rld",
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                                                               "r",
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                               32,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Binary {
+// DEFAULT-NEXT:                                                                                           op: LessEqual,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                                   "src_regno",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                               63,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: Div,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                                           Index {
+// DEFAULT-NEXT:                                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "mode_size",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               index: Cast {
+// DEFAULT-NEXT:                                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                                                       Member {
+// DEFAULT-NEXT:                                                                                                                           base: Index {
+// DEFAULT-NEXT:                                                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                   "rld",
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           field: "mode",
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                       1,
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           right: Integer(
 // DEFAULT-NEXT:                                                                                               8,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           1,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       8,
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               else_value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Div,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Sub,
-// DEFAULT-NEXT:                                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                                           op: Add,
-// DEFAULT-NEXT:                                                                                           left: Index {
-// DEFAULT-NEXT:                                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                                   "mode_size",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               index: Cast {
-// DEFAULT-NEXT:                                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               else_value: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Div,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Sub,
+// DEFAULT-NEXT:                                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                       Index {
+// DEFAULT-NEXT:                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                               "mode_size",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           index: Cast {
+// DEFAULT-NEXT:                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                                   Member {
+// DEFAULT-NEXT:                                                                                                                       base: Index {
+// DEFAULT-NEXT:                                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                                                                               "r",
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                   value: Member {
-// DEFAULT-NEXT:                                                                                                       base: Index {
-// DEFAULT-NEXT:                                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                                       Conditional {
+// DEFAULT-NEXT:                                                                                                           condition: Unary {
+// DEFAULT-NEXT:                                                                                                               op: Not,
+// DEFAULT-NEXT:                                                                                                               operand: Paren(
+// DEFAULT-NEXT:                                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                                       op: BitAnd,
+// DEFAULT-NEXT:                                                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                                                           "target_flags",
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                                           32,
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           then_value: Some(
+// DEFAULT-NEXT:                                                                                                               Integer(
+// DEFAULT-NEXT:                                                                                                                   4,
+// DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                                                               "r",
+// DEFAULT-NEXT:                                                                                                           else_value: Integer(
+// DEFAULT-NEXT:                                                                                                               8,
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       field: "mode",
-// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               right: Integer(
+// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: Ternary {
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Conditional {
 // DEFAULT-NEXT:                                                                                               condition: Unary {
 // DEFAULT-NEXT:                                                                                                   op: Not,
-// DEFAULT-NEXT:                                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                                       op: BitAnd,
-// DEFAULT-NEXT:                                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                                           "target_flags",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                                           32,
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   operand: Paren(
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: BitAnd,
+// DEFAULT-NEXT:                                                                                                           left: Identifier(
+// DEFAULT-NEXT:                                                                                                               "target_flags",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                                               32,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               then_value: Integer(
-// DEFAULT-NEXT:                                                                                                   4,
+// DEFAULT-NEXT:                                                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                                                   Integer(
+// DEFAULT-NEXT:                                                                                                       4,
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                               else_value: Integer(
 // DEFAULT-NEXT:                                                                                                   8,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           1,
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Ternary {
-// DEFAULT-NEXT:                                                                                       condition: Unary {
-// DEFAULT-NEXT:                                                                                           op: Not,
-// DEFAULT-NEXT:                                                                                           value: Binary {
-// DEFAULT-NEXT:                                                                                               op: BitAnd,
-// DEFAULT-NEXT:                                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                                   "target_flags",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                                   32,
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       then_value: Integer(
-// DEFAULT-NEXT:                                                                                           4,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       else_value: Integer(
-// DEFAULT-NEXT:                                                                                           8,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
@@ -3222,10 +3233,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               initializer: Some(
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Integer(
-// DEFAULT-NEXT:                                                                               0,
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       Integer(
+// DEFAULT-NEXT:                                                                           0,
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
@@ -3234,75 +3243,33 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               While {
-// DEFAULT-NEXT:                                                   condition: Const(
-// DEFAULT-NEXT:                                                       Binary {
-// DEFAULT-NEXT:                                                           op: Greater,
-// DEFAULT-NEXT:                                                           left: PostDecrement(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "nr",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Integer(
-// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Greater,
+// DEFAULT-NEXT:                                                       left: Postfix {
+// DEFAULT-NEXT:                                                           op: Decrement,
+// DEFAULT-NEXT:                                                           operand: Identifier(
+// DEFAULT-NEXT:                                                               "nr",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                       right: Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   body: [
 // DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
+// DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Assign {
 // DEFAULT-NEXT:                                                                   op: BitAndAssign,
 // DEFAULT-NEXT:                                                                   target: Index {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "reg_reloaded_dead",
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "reg_reloaded_dead",
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       index: Binary {
 // DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                   "nr",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Unary {
-// DEFAULT-NEXT:                                                                       op: BitNot,
-// DEFAULT-NEXT:                                                                       value: Binary {
-// DEFAULT-NEXT:                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                           left: Cast {
-// DEFAULT-NEXT:                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                   "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                   1,
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Binary {
-// DEFAULT-NEXT:                                                                               op: Rem,
-// DEFAULT-NEXT:                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
 // DEFAULT-NEXT:                                                                                   op: Add,
 // DEFAULT-NEXT:                                                                                   left: Identifier(
 // DEFAULT-NEXT:                                                                                       "src_regno",
@@ -3311,7 +3278,9 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       "nr",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Cast {
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Cast {
 // DEFAULT-NEXT:                                                                                   ty: Integer(
 // DEFAULT-NEXT:                                                                                       Ranked {
 // DEFAULT-NEXT:                                                                                           rank: Int,
@@ -3319,219 +3288,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: Mul,
-// DEFAULT-NEXT:                                                                                       left: Integer(
-// DEFAULT-NEXT:                                                                                           8,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                                           8,
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: BitOrAssign,
-// DEFAULT-NEXT:                                                                   target: Index {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "reg_reloaded_valid",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                   "nr",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                       left: Cast {
-// DEFAULT-NEXT:                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                               "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: Rem,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                   "nr",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: BitOrAssign,
-// DEFAULT-NEXT:                                                                   target: Index {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "reg_is_output_reload",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                   "nr",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                       left: Cast {
-// DEFAULT-NEXT:                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                               "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: Rem,
-// DEFAULT-NEXT:                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                               op: Add,
-// DEFAULT-NEXT:                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                   "nr",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                                   left: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       If {
-// DEFAULT-NEXT:                                                           condition: Const(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "note",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           then_branch: [
-// DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Const(
-// DEFAULT-NEXT:                                                                       Assign {
-// DEFAULT-NEXT:                                                                           op: BitOrAssign,
-// DEFAULT-NEXT:                                                                           target: Index {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "reg_reloaded_died",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               index: Binary {
-// DEFAULT-NEXT:                                                                                   op: Div,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "src_regno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Cast {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: false,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       value: Binary {
+// DEFAULT-NEXT:                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                           op: Mul,
 // DEFAULT-NEXT:                                                                                           left: Integer(
 // DEFAULT-NEXT:                                                                                               8,
@@ -3540,34 +3298,107 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                               8,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                       op: BitNot,
+// DEFAULT-NEXT:                                                                       operand: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
 // DEFAULT-NEXT:                                                                               op: ShiftLeft,
-// DEFAULT-NEXT:                                                                               left: Cast {
-// DEFAULT-NEXT:                                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                                       "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Integer(
+// DEFAULT-NEXT:                                                                                               1,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Rem,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Add,
+// DEFAULT-NEXT:                                                                                               left: Identifier(
+// DEFAULT-NEXT:                                                                                                   "src_regno",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                                                   "nr",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Mul,
+// DEFAULT-NEXT:                                                                                                       left: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: BitOrAssign,
+// DEFAULT-NEXT:                                                                   target: Index {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "reg_reloaded_valid",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Binary {
+// DEFAULT-NEXT:                                                                           op: Div,
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                       "src_regno",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                       "nr",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Cast {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                       1,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Binary {
-// DEFAULT-NEXT:                                                                                   op: Rem,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "src_regno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Cast {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: false,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       value: Binary {
+// DEFAULT-NEXT:                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                           op: Mul,
 // DEFAULT-NEXT:                                                                                           left: Integer(
 // DEFAULT-NEXT:                                                                                               8,
@@ -3576,37 +3407,51 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                               8,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           else_branch: Some(
-// DEFAULT-NEXT:                                                               [
-// DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
-// DEFAULT-NEXT:                                                                           Assign {
-// DEFAULT-NEXT:                                                                               op: BitAndAssign,
-// DEFAULT-NEXT:                                                                               target: Index {
-// DEFAULT-NEXT:                                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                                       "reg_reloaded_died",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Binary {
-// DEFAULT-NEXT:                                                                                       op: Div,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Cast {
+// DEFAULT-NEXT:                                                                               ty: Named(
+// DEFAULT-NEXT:                                                                                   "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                   Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: Rem,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
 // DEFAULT-NEXT:                                                                                       left: Identifier(
 // DEFAULT-NEXT:                                                                                           "src_regno",
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Cast {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: false,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                           "nr",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
 // DEFAULT-NEXT:                                                                                               op: Mul,
 // DEFAULT-NEXT:                                                                                               left: Integer(
 // DEFAULT-NEXT:                                                                                                   8,
@@ -3615,36 +3460,152 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                   8,
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: BitOrAssign,
+// DEFAULT-NEXT:                                                                   target: Index {
+// DEFAULT-NEXT:                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "reg_is_output_reload",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Binary {
+// DEFAULT-NEXT:                                                                           op: Div,
+// DEFAULT-NEXT:                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                       "src_regno",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                       "nr",
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                   op: BitNot,
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                       left: Cast {
-// DEFAULT-NEXT:                                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                                               "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                               Cast {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                                           left: Integer(
+// DEFAULT-NEXT:                                                                                               8,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                               8,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Cast {
+// DEFAULT-NEXT:                                                                               ty: Named(
+// DEFAULT-NEXT:                                                                                   "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                   Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: Rem,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                           "nr",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Mul,
+// DEFAULT-NEXT:                                                                                               left: Integer(
+// DEFAULT-NEXT:                                                                                                   8,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Integer(
+// DEFAULT-NEXT:                                                                                                   8,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       If {
+// DEFAULT-NEXT:                                                           condition: Identifier(
+// DEFAULT-NEXT:                                                               "note",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           then_branch: [
+// DEFAULT-NEXT:                                                               Expr(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: BitOrAssign,
+// DEFAULT-NEXT:                                                                           target: Index {
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                       "reg_reloaded_died",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               index: Binary {
+// DEFAULT-NEXT:                                                                                   op: Div,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                       Cast {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           value: Integer(
-// DEFAULT-NEXT:                                                                                               1,
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                                           op: Rem,
-// DEFAULT-NEXT:                                                                                           left: Identifier(
-// DEFAULT-NEXT:                                                                                               "src_regno",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: Cast {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                               value: Binary {
+// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
 // DEFAULT-NEXT:                                                                                                   op: Mul,
 // DEFAULT-NEXT:                                                                                                   left: Integer(
 // DEFAULT-NEXT:                                                                                                       8,
@@ -3653,9 +3614,158 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                       8,
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Integer(
+// DEFAULT-NEXT:                                                                                               1,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Rem,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "src_regno",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Mul,
+// DEFAULT-NEXT:                                                                                                       left: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           else_branch: Some(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Assign {
+// DEFAULT-NEXT:                                                                               op: BitAndAssign,
+// DEFAULT-NEXT:                                                                               target: Index {
+// DEFAULT-NEXT:                                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                           "reg_reloaded_died",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   index: Binary {
+// DEFAULT-NEXT:                                                                                       op: Div,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "src_regno",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Cast {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Mul,
+// DEFAULT-NEXT:                                                                                                       left: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               value: Unary {
+// DEFAULT-NEXT:                                                                                   op: BitNot,
+// DEFAULT-NEXT:                                                                                   operand: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Cast {
+// DEFAULT-NEXT:                                                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                                                       "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                                       Integer(
+// DEFAULT-NEXT:                                                                                                           1,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Rem,
+// DEFAULT-NEXT:                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                                       Cast {
+// DEFAULT-NEXT:                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                                                                   left: Integer(
+// DEFAULT-NEXT:                                                                                                                       8,
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                                       8,
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
@@ -3666,22 +3776,20 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Assign {
-// DEFAULT-NEXT:                                                           op: Assign,
-// DEFAULT-NEXT:                                                           target: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "reg_last_reload_reg",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Identifier(
-// DEFAULT-NEXT:                                                                   "nregno",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: Identifier(
-// DEFAULT-NEXT:                                                               "src_reg",
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "reg_last_reload_reg",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Identifier(
+// DEFAULT-NEXT:                                                               "nregno",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                       value: Identifier(
+// DEFAULT-NEXT:                                                           "src_reg",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                           else_branch: None,
@@ -3706,173 +3814,219 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           initializer: Some(
 // DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Const(
-// DEFAULT-NEXT:                                                                       Ternary {
-// DEFAULT-NEXT:                                                                           condition: Binary {
-// DEFAULT-NEXT:                                                                               op: And,
-// DEFAULT-NEXT:                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                   op: GreaterEqual,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "nregno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       32,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Binary {
-// DEFAULT-NEXT:                                                                                   op: LessEqual,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "nregno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       63,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           then_value: Binary {
-// DEFAULT-NEXT:                                                                               op: Div,
-// DEFAULT-NEXT:                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Conditional {
+// DEFAULT-NEXT:                                                                           condition: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: And,
 // DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Index {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "mode_size",
+// DEFAULT-NEXT:                                                                                       op: GreaterEqual,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "nregno",
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           index: Cast {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: true,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                               value: Cast {
-// DEFAULT-NEXT:                                                                                                   ty: Tagged {
-// DEFAULT-NEXT:                                                                                                       kind: Enum,
-// DEFAULT-NEXT:                                                                                                       name: Some(
-// DEFAULT-NEXT:                                                                                                           "machine_mode",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                   value: Arrow {
-// DEFAULT-NEXT:                                                                                                       base: Member {
-// DEFAULT-NEXT:                                                                                                           base: Index {
-// DEFAULT-NEXT:                                                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                                                   "rld",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           32,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Binary {
+// DEFAULT-NEXT:                                                                                       op: LessEqual,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "nregno",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                           63,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           then_value: Some(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Div,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Sub,
+// DEFAULT-NEXT:                                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                       Index {
+// DEFAULT-NEXT:                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                               "mode_size",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           index: Cast {
+// DEFAULT-NEXT:                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               index: Identifier(
-// DEFAULT-NEXT:                                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                                                       Cast {
+// DEFAULT-NEXT:                                                                                                                           ty: Tagged {
+// DEFAULT-NEXT:                                                                                                                               kind: Enum,
+// DEFAULT-NEXT:                                                                                                                               name: Some(
+// DEFAULT-NEXT:                                                                                                                                   "machine_mode",
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                           value: Member {
+// DEFAULT-NEXT:                                                                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                                                                   Member {
+// DEFAULT-NEXT:                                                                                                                                       base: Index {
+// DEFAULT-NEXT:                                                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                               "r",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       field: "out",
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               field: "mode",
+// DEFAULT-NEXT:                                                                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           field: "out",
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       field: "mode",
-// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                       8,
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               right: Integer(
+// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       right: Integer(
 // DEFAULT-NEXT:                                                                                           8,
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       1,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Integer(
-// DEFAULT-NEXT:                                                                                   8,
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           else_value: Binary {
-// DEFAULT-NEXT:                                                                               op: Div,
-// DEFAULT-NEXT:                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                   op: Sub,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Index {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "mode_size",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           index: Cast {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           else_value: Paren(
+// DEFAULT-NEXT:                                                                               Binary {
+// DEFAULT-NEXT:                                                                                   op: Div,
+// DEFAULT-NEXT:                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: Sub,
+// DEFAULT-NEXT:                                                                                           left: Binary {
+// DEFAULT-NEXT:                                                                                               op: Add,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Index {
+// DEFAULT-NEXT:                                                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                                                           "mode_size",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       index: Cast {
+// DEFAULT-NEXT:                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                                                       ty: Tagged {
+// DEFAULT-NEXT:                                                                                                                           kind: Enum,
+// DEFAULT-NEXT:                                                                                                                           name: Some(
+// DEFAULT-NEXT:                                                                                                                               "machine_mode",
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                       value: Member {
+// DEFAULT-NEXT:                                                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                                                               Member {
+// DEFAULT-NEXT:                                                                                                                                   base: Index {
+// DEFAULT-NEXT:                                                                                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                           "rld",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                           "r",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   field: "out",
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                           field: "mode",
+// DEFAULT-NEXT:                                                                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                               value: Cast {
-// DEFAULT-NEXT:                                                                                                   ty: Tagged {
-// DEFAULT-NEXT:                                                                                                       kind: Enum,
-// DEFAULT-NEXT:                                                                                                       name: Some(
-// DEFAULT-NEXT:                                                                                                           "machine_mode",
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Conditional {
+// DEFAULT-NEXT:                                                                                                       condition: Unary {
+// DEFAULT-NEXT:                                                                                                           op: Not,
+// DEFAULT-NEXT:                                                                                                           operand: Paren(
+// DEFAULT-NEXT:                                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                                                       "target_flags",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                                                                       32,
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       then_value: Some(
+// DEFAULT-NEXT:                                                                                                           Integer(
+// DEFAULT-NEXT:                                                                                                               4,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       else_value: Integer(
+// DEFAULT-NEXT:                                                                                                           8,
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                   value: Arrow {
-// DEFAULT-NEXT:                                                                                                       base: Member {
-// DEFAULT-NEXT:                                                                                                           base: Index {
-// DEFAULT-NEXT:                                                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                                                   "rld",
-// DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               index: Identifier(
-// DEFAULT-NEXT:                                                                                                                   "r",
-// DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           field: "out",
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       field: "mode",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           right: Integer(
+// DEFAULT-NEXT:                                                                                               1,
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Ternary {
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                       Conditional {
 // DEFAULT-NEXT:                                                                                           condition: Unary {
 // DEFAULT-NEXT:                                                                                               op: Not,
-// DEFAULT-NEXT:                                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                                   op: BitAnd,
-// DEFAULT-NEXT:                                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                                       "target_flags",
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                                       32,
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               operand: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: BitAnd,
+// DEFAULT-NEXT:                                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                                           "target_flags",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                                                           32,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           then_value: Integer(
-// DEFAULT-NEXT:                                                                                               4,
+// DEFAULT-NEXT:                                                                                           then_value: Some(
+// DEFAULT-NEXT:                                                                                               Integer(
+// DEFAULT-NEXT:                                                                                                   4,
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                           else_value: Integer(
 // DEFAULT-NEXT:                                                                                               8,
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                                       1,
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               right: Ternary {
-// DEFAULT-NEXT:                                                                                   condition: Unary {
-// DEFAULT-NEXT:                                                                                       op: Not,
-// DEFAULT-NEXT:                                                                                       value: Binary {
-// DEFAULT-NEXT:                                                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                                                           left: Identifier(
-// DEFAULT-NEXT:                                                                                               "target_flags",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                                               32,
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   then_value: Integer(
-// DEFAULT-NEXT:                                                                                       4,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   else_value: Integer(
-// DEFAULT-NEXT:                                                                                       8,
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
@@ -3882,43 +4036,40 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           While {
-// DEFAULT-NEXT:                                               condition: Const(
-// DEFAULT-NEXT:                                                   Binary {
-// DEFAULT-NEXT:                                                       op: Greater,
-// DEFAULT-NEXT:                                                       left: PostDecrement(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "num_regs",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Integer(
-// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                               condition: Binary {
+// DEFAULT-NEXT:                                                   op: Greater,
+// DEFAULT-NEXT:                                                   left: Postfix {
+// DEFAULT-NEXT:                                                       op: Decrement,
+// DEFAULT-NEXT:                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                           "num_regs",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                                   right: Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               body: [
 // DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Const(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: Assign,
-// DEFAULT-NEXT:                                                               target: Index {
-// DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "reg_last_reload_reg",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   index: Binary {
-// DEFAULT-NEXT:                                                                       op: Add,
-// DEFAULT-NEXT:                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                           "nregno",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                           "num_regs",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Integer(
-// DEFAULT-NEXT:                                                                   0,
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Index {
+// DEFAULT-NEXT:                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                   "reg_last_reload_reg",
 // DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               index: Binary {
+// DEFAULT-NEXT:                                                                   op: Add,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "nregno",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                       "num_regs",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           value: Integer(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },

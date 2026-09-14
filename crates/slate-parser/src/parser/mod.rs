@@ -226,7 +226,7 @@ impl Parser {
 
     pub fn parse_declaration(&self, code: &str) -> Result<Declaration, ParseError> {
         let tokens = lex(code);
-        self.parse_declaration_tokens(code, &tokens)
+        self.parse_declaration_tokens(&tokens)
     }
 
     fn error_at(&self, loc: Loc<'_>, message: impl Into<String>) -> ParseError {

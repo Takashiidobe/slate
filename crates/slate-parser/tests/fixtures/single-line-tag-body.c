@@ -98,7 +98,7 @@ typedef struct Pair { int a; int b; } Pair;
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "CYAN",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntLit(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           3,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),

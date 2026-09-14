@@ -39,7 +39,7 @@ struct outer {
 // DEFAULT-NEXT:                                       "bits",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           16,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -200,7 +200,7 @@ struct outer {
 // EXTRA-NEXT:                                       "bits",
 // EXTRA-NEXT:                                   ),
 // EXTRA-NEXT:                                   size: Expression(
-// EXTRA-NEXT:                                       IntLit(
+// EXTRA-NEXT:                                       Integer(
 // EXTRA-NEXT:                                           16,
 // EXTRA-NEXT:                                       ),
 // EXTRA-NEXT:                                   ),

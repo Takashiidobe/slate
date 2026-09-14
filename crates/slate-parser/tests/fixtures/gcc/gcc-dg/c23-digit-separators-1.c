@@ -91,17 +91,15 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Integer(
-// DEFAULT-NEXT:                       123456,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       123456,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Integer(
+// DEFAULT-NEXT:                   123456,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   123456,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -114,17 +112,15 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[2]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Integer(
-// DEFAULT-NEXT:                       83,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       83,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Integer(
+// DEFAULT-NEXT:                   83,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   83,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -137,17 +133,15 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[3]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Integer(
-// DEFAULT-NEXT:                       291,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       291,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Integer(
+// DEFAULT-NEXT:                   291,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   291,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -160,17 +154,15 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Integer(
-// DEFAULT-NEXT:                       5,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       5,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Integer(
+// DEFAULT-NEXT:                   5,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   5,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -183,23 +175,23 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[5]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Binary {
-// DEFAULT-NEXT:                       op: Add,
-// DEFAULT-NEXT:                       left: Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Binary {
+// DEFAULT-NEXT:                   op: Add,
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   right: Paren(
+// DEFAULT-NEXT:                       Integer(
 // DEFAULT-NEXT:                           34,
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       34,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   34,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -212,23 +204,21 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[6]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Binary {
-// DEFAULT-NEXT:                       op: Sub,
-// DEFAULT-NEXT:                       left: Integer(
-// DEFAULT-NEXT:                           14,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Integer(
-// DEFAULT-NEXT:                           14,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Binary {
+// DEFAULT-NEXT:                   op: Sub,
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       14,
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                       14,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -241,23 +231,21 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[7]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Binary {
-// DEFAULT-NEXT:                       op: Sub,
-// DEFAULT-NEXT:                       left: Integer(
-// DEFAULT-NEXT:                           46,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Integer(
-// DEFAULT-NEXT:                           46,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Binary {
+// DEFAULT-NEXT:                   op: Sub,
+// DEFAULT-NEXT:                   left: Integer(
+// DEFAULT-NEXT:                       46,
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:                       46,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -270,24 +258,22 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[8]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Call {
-// DEFAULT-NEXT:                       callee: Identifier(
-// DEFAULT-NEXT:                           "c0",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Integer(
-// DEFAULT-NEXT:                               192,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       0,
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Call {
+// DEFAULT-NEXT:                   callee: Identifier(
+// DEFAULT-NEXT:                       "c0",
 // DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   arguments: [
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           192,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   0,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -369,52 +355,46 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       3.14159,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Float(
-// DEFAULT-NEXT:                               FloatLiteral {
-// DEFAULT-NEXT:                                   value: Single(
-// DEFAULT-NEXT:                                       3.14159,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Single(
+// DEFAULT-NEXT:                                   3.14159,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Float(
+// DEFAULT-NEXT:                           FloatLiteral {
+// DEFAULT-NEXT:                               value: Single(
+// DEFAULT-NEXT:                                   3.14159,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Call {
-// DEFAULT-NEXT:                           callee: Identifier(
-// DEFAULT-NEXT:                               "exit",
+// DEFAULT-NEXT:                   Call {
+// DEFAULT-NEXT:                       callee: Identifier(
+// DEFAULT-NEXT:                           "exit",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       arguments: [
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               0,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           arguments: [
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -429,17 +409,15 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[12]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Integer(
-// DEFAULT-NEXT:                       123,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       123,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Integer(
+// DEFAULT-NEXT:                   123,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   123,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
@@ -452,17 +430,15 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[13]: StaticAssert {
 // DEFAULT-NEXT:       assertion: StaticAssert {
-// DEFAULT-NEXT:           condition: Const(
-// DEFAULT-NEXT:               Binary {
-// DEFAULT-NEXT:                   op: Equal,
-// DEFAULT-NEXT:                   left: Integer(
-// DEFAULT-NEXT:                       456789,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   right: Integer(
-// DEFAULT-NEXT:                       456789,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           condition: Binary {
+// DEFAULT-NEXT:               op: Equal,
+// DEFAULT-NEXT:               left: Integer(
+// DEFAULT-NEXT:                   456789,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               right: Integer(
+// DEFAULT-NEXT:                   456789,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(

@@ -33,11 +33,13 @@ foo ()
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
+// DEFAULT-NEXT:                   Paren(
 // DEFAULT-NEXT:                       Assign {
 // DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Identifier(
-// DEFAULT-NEXT:                               "tmp",
+// DEFAULT-NEXT:                           target: Paren(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           value: Binary {
 // DEFAULT-NEXT:                               op: ShiftRight,
@@ -49,12 +51,16 @@ foo ()
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
+// DEFAULT-NEXT:                                   value: Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "tmp",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Integer(
-// DEFAULT-NEXT:                                   32,
+// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       32,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },

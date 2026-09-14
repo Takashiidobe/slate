@@ -558,42 +558,38 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "conv_u",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "i",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "conv_u",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "i",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Paren(
+// DEFAULT-NEXT:                                   Identifier(
 // DEFAULT-NEXT:                                       "arg1",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "vsrc1",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "vsrc1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "conv_u",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "conv_u",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "v",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "v",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               DoWhile {
@@ -666,42 +662,38 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "conv_u",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "i",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "conv_u",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "i",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Paren(
+// DEFAULT-NEXT:                                   Identifier(
 // DEFAULT-NEXT:                                       "arg2",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "vsrc2",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "vsrc2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "conv_u",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "conv_u",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "v",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "v",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               DoWhile {
@@ -723,42 +715,40 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Cast {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "int8_t",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "int8_t",
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "vsrc2",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                       value: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "vsrc2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "v1",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "v1",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: GreaterEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "ssize_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: SizeOf(
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: GreaterEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: Mul,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "ssize_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "vsrc1",
@@ -766,50 +756,48 @@ int main() {
 // DEFAULT-NEXT:                                                   field: "v1",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           8,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Member {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "vdest",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "v1",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "vdest",
 // DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "v1",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: Some(
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   If {
-// DEFAULT-NEXT:                                       condition: Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Less,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "tmp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Cast {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "ssize_t",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: SizeOf(
+// DEFAULT-NEXT:                                       condition: Binary {
+// DEFAULT-NEXT:                                           op: Less,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "tmp",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Binary {
+// DEFAULT-NEXT:                                               op: Mul,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: Cast {
+// DEFAULT-NEXT:                                                       ty: Named(
+// DEFAULT-NEXT:                                                           "ssize_t",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
 // DEFAULT-NEXT:                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                       "vsrc1",
@@ -817,44 +805,46 @@ int main() {
 // DEFAULT-NEXT:                                                                   field: "v1",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   8,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       then_branch: [
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "vdest",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "v1",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Binary {
+// DEFAULT-NEXT:                                                       op: ShiftRight,
+// DEFAULT-NEXT:                                                       left: Member {
 // DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "vdest",
+// DEFAULT-NEXT:                                                               "vsrc1",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           field: "v1",
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Binary {
-// DEFAULT-NEXT:                                                           op: ShiftRight,
-// DEFAULT-NEXT:                                                           left: Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "vsrc1",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "v1",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                       right: Paren(
+// DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Sub,
 // DEFAULT-NEXT:                                                               left: Binary {
 // DEFAULT-NEXT:                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                   left: SizeOf(
-// DEFAULT-NEXT:                                                                       Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v1",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vsrc1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v1",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   right: Integer(
 // DEFAULT-NEXT:                                                                       8,
@@ -864,30 +854,30 @@ int main() {
 // DEFAULT-NEXT:                                                                   1,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                       else_branch: Some(
 // DEFAULT-NEXT:                                           [
 // DEFAULT-NEXT:                                               If {
-// DEFAULT-NEXT:                                                   condition: Const(
-// DEFAULT-NEXT:                                                       Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "tmp",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Binary {
-// DEFAULT-NEXT:                                                               op: Mul,
-// DEFAULT-NEXT:                                                               left: Unary {
-// DEFAULT-NEXT:                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                   value: Cast {
-// DEFAULT-NEXT:                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                           "ssize_t",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: SizeOf(
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Equal,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "tmp",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               operand: Cast {
+// DEFAULT-NEXT:                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                       "ssize_t",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
 // DEFAULT-NEXT:                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                   "vsrc1",
@@ -895,34 +885,34 @@ int main() {
 // DEFAULT-NEXT:                                                                               field: "v1",
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   8,
-// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   then_branch: [
 // DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: Assign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v1",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Member {
 // DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
+// DEFAULT-NEXT:                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       field: "v1",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftRight,
-// DEFAULT-NEXT:                                                                       left: Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v1",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
+// DEFAULT-NEXT:                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                       Binary {
 // DEFAULT-NEXT:                                                                           op: Sub,
 // DEFAULT-NEXT:                                                                           left: Identifier(
 // DEFAULT-NEXT:                                                                               "tmp",
@@ -931,56 +921,106 @@ int main() {
 // DEFAULT-NEXT:                                                                               1,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               PostIncrement(
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v1",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: ShiftRightAssign,
-// DEFAULT-NEXT:                                                                   target: Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v1",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Postfix {
+// DEFAULT-NEXT:                                                               op: Increment,
+// DEFAULT-NEXT:                                                               operand: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v1",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: ShiftRightAssign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v1",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                                   else_branch: Some(
 // DEFAULT-NEXT:                                                       [
 // DEFAULT-NEXT:                                                           If {
-// DEFAULT-NEXT:                                                               condition: Const(
-// DEFAULT-NEXT:                                                                   Binary {
-// DEFAULT-NEXT:                                                                       op: Less,
-// DEFAULT-NEXT:                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                           "tmp",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Less,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "tmp",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               then_branch: [
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: Assign,
+// DEFAULT-NEXT:                                                                           target: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vdest",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v1",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftRight,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Member {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "vsrc1",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "v1",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                               left: Integer(
+// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                                       left: Unary {
+// DEFAULT-NEXT:                                                                                                           op: Minus,
+// DEFAULT-NEXT:                                                                                                           operand: Integer(
+// DEFAULT-NEXT:                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                                           "tmp",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Unary {
+// DEFAULT-NEXT:                                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               else_branch: Some(
+// DEFAULT-NEXT:                                                                   [
+// DEFAULT-NEXT:                                                                       Expr(
 // DEFAULT-NEXT:                                                                           Assign {
 // DEFAULT-NEXT:                                                                               op: Assign,
 // DEFAULT-NEXT:                                                                               target: Member {
@@ -990,71 +1030,18 @@ int main() {
 // DEFAULT-NEXT:                                                                                   field: "v1",
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: ShiftRight,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v1",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                               1,
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: Binary {
-// DEFAULT-NEXT:                                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                                               left: Unary {
-// DEFAULT-NEXT:                                                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                       1,
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                                   "tmp",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Unary {
-// DEFAULT-NEXT:                                                                                       op: Minus,
-// DEFAULT-NEXT:                                                                                       value: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               else_branch: Some(
-// DEFAULT-NEXT:                                                                   [
-// DEFAULT-NEXT:                                                                       Expr(
-// DEFAULT-NEXT:                                                                           Const(
-// DEFAULT-NEXT:                                                                               Assign {
-// DEFAULT-NEXT:                                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                                   target: Member {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Member {
 // DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "vdest",
+// DEFAULT-NEXT:                                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       field: "v1",
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v1",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               ),
@@ -1069,10 +1056,8 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               DoWhile {
@@ -1094,42 +1079,40 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Cast {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "int8_t",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "int8_t",
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "vsrc2",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                       value: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "vsrc2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "v2",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "v2",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: GreaterEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "ssize_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: SizeOf(
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: GreaterEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: Mul,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "ssize_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "vsrc1",
@@ -1137,50 +1120,48 @@ int main() {
 // DEFAULT-NEXT:                                                   field: "v2",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           8,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Member {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "vdest",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "v2",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "vdest",
 // DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "v2",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: Some(
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   If {
-// DEFAULT-NEXT:                                       condition: Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Less,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "tmp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Cast {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "ssize_t",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: SizeOf(
+// DEFAULT-NEXT:                                       condition: Binary {
+// DEFAULT-NEXT:                                           op: Less,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "tmp",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Binary {
+// DEFAULT-NEXT:                                               op: Mul,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: Cast {
+// DEFAULT-NEXT:                                                       ty: Named(
+// DEFAULT-NEXT:                                                           "ssize_t",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
 // DEFAULT-NEXT:                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                       "vsrc1",
@@ -1188,44 +1169,46 @@ int main() {
 // DEFAULT-NEXT:                                                                   field: "v2",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   8,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       then_branch: [
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "vdest",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "v2",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Binary {
+// DEFAULT-NEXT:                                                       op: ShiftRight,
+// DEFAULT-NEXT:                                                       left: Member {
 // DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "vdest",
+// DEFAULT-NEXT:                                                               "vsrc1",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           field: "v2",
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Binary {
-// DEFAULT-NEXT:                                                           op: ShiftRight,
-// DEFAULT-NEXT:                                                           left: Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "vsrc1",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "v2",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                       right: Paren(
+// DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Sub,
 // DEFAULT-NEXT:                                                               left: Binary {
 // DEFAULT-NEXT:                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                   left: SizeOf(
-// DEFAULT-NEXT:                                                                       Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v2",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vsrc1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v2",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   right: Integer(
 // DEFAULT-NEXT:                                                                       8,
@@ -1235,30 +1218,30 @@ int main() {
 // DEFAULT-NEXT:                                                                   1,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                       else_branch: Some(
 // DEFAULT-NEXT:                                           [
 // DEFAULT-NEXT:                                               If {
-// DEFAULT-NEXT:                                                   condition: Const(
-// DEFAULT-NEXT:                                                       Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "tmp",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Binary {
-// DEFAULT-NEXT:                                                               op: Mul,
-// DEFAULT-NEXT:                                                               left: Unary {
-// DEFAULT-NEXT:                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                   value: Cast {
-// DEFAULT-NEXT:                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                           "ssize_t",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: SizeOf(
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Equal,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "tmp",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               operand: Cast {
+// DEFAULT-NEXT:                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                       "ssize_t",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
 // DEFAULT-NEXT:                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                   "vsrc1",
@@ -1266,34 +1249,34 @@ int main() {
 // DEFAULT-NEXT:                                                                               field: "v2",
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   8,
-// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   then_branch: [
 // DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: Assign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v2",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Member {
 // DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
+// DEFAULT-NEXT:                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       field: "v2",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftRight,
-// DEFAULT-NEXT:                                                                       left: Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v2",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
+// DEFAULT-NEXT:                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                       Binary {
 // DEFAULT-NEXT:                                                                           op: Sub,
 // DEFAULT-NEXT:                                                                           left: Identifier(
 // DEFAULT-NEXT:                                                                               "tmp",
@@ -1302,56 +1285,106 @@ int main() {
 // DEFAULT-NEXT:                                                                               1,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               PostIncrement(
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v2",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: ShiftRightAssign,
-// DEFAULT-NEXT:                                                                   target: Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v2",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Postfix {
+// DEFAULT-NEXT:                                                               op: Increment,
+// DEFAULT-NEXT:                                                               operand: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v2",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: ShiftRightAssign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v2",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                                   else_branch: Some(
 // DEFAULT-NEXT:                                                       [
 // DEFAULT-NEXT:                                                           If {
-// DEFAULT-NEXT:                                                               condition: Const(
-// DEFAULT-NEXT:                                                                   Binary {
-// DEFAULT-NEXT:                                                                       op: Less,
-// DEFAULT-NEXT:                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                           "tmp",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Less,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "tmp",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               then_branch: [
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: Assign,
+// DEFAULT-NEXT:                                                                           target: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vdest",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v2",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftRight,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Member {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "vsrc1",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "v2",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                               left: Integer(
+// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                                       left: Unary {
+// DEFAULT-NEXT:                                                                                                           op: Minus,
+// DEFAULT-NEXT:                                                                                                           operand: Integer(
+// DEFAULT-NEXT:                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                                           "tmp",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Unary {
+// DEFAULT-NEXT:                                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               else_branch: Some(
+// DEFAULT-NEXT:                                                                   [
+// DEFAULT-NEXT:                                                                       Expr(
 // DEFAULT-NEXT:                                                                           Assign {
 // DEFAULT-NEXT:                                                                               op: Assign,
 // DEFAULT-NEXT:                                                                               target: Member {
@@ -1361,71 +1394,18 @@ int main() {
 // DEFAULT-NEXT:                                                                                   field: "v2",
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: ShiftRight,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v2",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                               1,
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: Binary {
-// DEFAULT-NEXT:                                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                                               left: Unary {
-// DEFAULT-NEXT:                                                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                       1,
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                                   "tmp",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Unary {
-// DEFAULT-NEXT:                                                                                       op: Minus,
-// DEFAULT-NEXT:                                                                                       value: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               else_branch: Some(
-// DEFAULT-NEXT:                                                                   [
-// DEFAULT-NEXT:                                                                       Expr(
-// DEFAULT-NEXT:                                                                           Const(
-// DEFAULT-NEXT:                                                                               Assign {
-// DEFAULT-NEXT:                                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                                   target: Member {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Member {
 // DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "vdest",
+// DEFAULT-NEXT:                                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       field: "v2",
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v2",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               ),
@@ -1440,10 +1420,8 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               DoWhile {
@@ -1465,42 +1443,40 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Cast {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "int8_t",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "int8_t",
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "vsrc2",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                       value: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "vsrc2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "v3",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "v3",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: GreaterEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "ssize_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: SizeOf(
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: GreaterEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: Mul,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "ssize_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "vsrc1",
@@ -1508,50 +1484,48 @@ int main() {
 // DEFAULT-NEXT:                                                   field: "v3",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           8,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Member {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "vdest",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "v3",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "vdest",
 // DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "v3",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: Some(
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   If {
-// DEFAULT-NEXT:                                       condition: Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Less,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "tmp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Cast {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "ssize_t",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: SizeOf(
+// DEFAULT-NEXT:                                       condition: Binary {
+// DEFAULT-NEXT:                                           op: Less,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "tmp",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Binary {
+// DEFAULT-NEXT:                                               op: Mul,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: Cast {
+// DEFAULT-NEXT:                                                       ty: Named(
+// DEFAULT-NEXT:                                                           "ssize_t",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
 // DEFAULT-NEXT:                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                       "vsrc1",
@@ -1559,44 +1533,46 @@ int main() {
 // DEFAULT-NEXT:                                                                   field: "v3",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   8,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       then_branch: [
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "vdest",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "v3",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Binary {
+// DEFAULT-NEXT:                                                       op: ShiftRight,
+// DEFAULT-NEXT:                                                       left: Member {
 // DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "vdest",
+// DEFAULT-NEXT:                                                               "vsrc1",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           field: "v3",
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Binary {
-// DEFAULT-NEXT:                                                           op: ShiftRight,
-// DEFAULT-NEXT:                                                           left: Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "vsrc1",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "v3",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                       right: Paren(
+// DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Sub,
 // DEFAULT-NEXT:                                                               left: Binary {
 // DEFAULT-NEXT:                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                   left: SizeOf(
-// DEFAULT-NEXT:                                                                       Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v3",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vsrc1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v3",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   right: Integer(
 // DEFAULT-NEXT:                                                                       8,
@@ -1606,30 +1582,30 @@ int main() {
 // DEFAULT-NEXT:                                                                   1,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                       else_branch: Some(
 // DEFAULT-NEXT:                                           [
 // DEFAULT-NEXT:                                               If {
-// DEFAULT-NEXT:                                                   condition: Const(
-// DEFAULT-NEXT:                                                       Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "tmp",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Binary {
-// DEFAULT-NEXT:                                                               op: Mul,
-// DEFAULT-NEXT:                                                               left: Unary {
-// DEFAULT-NEXT:                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                   value: Cast {
-// DEFAULT-NEXT:                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                           "ssize_t",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: SizeOf(
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Equal,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "tmp",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               operand: Cast {
+// DEFAULT-NEXT:                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                       "ssize_t",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
 // DEFAULT-NEXT:                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                   "vsrc1",
@@ -1637,34 +1613,34 @@ int main() {
 // DEFAULT-NEXT:                                                                               field: "v3",
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   8,
-// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   then_branch: [
 // DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: Assign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v3",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Member {
 // DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
+// DEFAULT-NEXT:                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       field: "v3",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftRight,
-// DEFAULT-NEXT:                                                                       left: Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v3",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
+// DEFAULT-NEXT:                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                       Binary {
 // DEFAULT-NEXT:                                                                           op: Sub,
 // DEFAULT-NEXT:                                                                           left: Identifier(
 // DEFAULT-NEXT:                                                                               "tmp",
@@ -1673,56 +1649,106 @@ int main() {
 // DEFAULT-NEXT:                                                                               1,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               PostIncrement(
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v3",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: ShiftRightAssign,
-// DEFAULT-NEXT:                                                                   target: Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v3",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Postfix {
+// DEFAULT-NEXT:                                                               op: Increment,
+// DEFAULT-NEXT:                                                               operand: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v3",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: ShiftRightAssign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v3",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                                   else_branch: Some(
 // DEFAULT-NEXT:                                                       [
 // DEFAULT-NEXT:                                                           If {
-// DEFAULT-NEXT:                                                               condition: Const(
-// DEFAULT-NEXT:                                                                   Binary {
-// DEFAULT-NEXT:                                                                       op: Less,
-// DEFAULT-NEXT:                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                           "tmp",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Less,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "tmp",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               then_branch: [
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: Assign,
+// DEFAULT-NEXT:                                                                           target: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vdest",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v3",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftRight,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Member {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "vsrc1",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "v3",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                               left: Integer(
+// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                                       left: Unary {
+// DEFAULT-NEXT:                                                                                                           op: Minus,
+// DEFAULT-NEXT:                                                                                                           operand: Integer(
+// DEFAULT-NEXT:                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                                           "tmp",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Unary {
+// DEFAULT-NEXT:                                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               else_branch: Some(
+// DEFAULT-NEXT:                                                                   [
+// DEFAULT-NEXT:                                                                       Expr(
 // DEFAULT-NEXT:                                                                           Assign {
 // DEFAULT-NEXT:                                                                               op: Assign,
 // DEFAULT-NEXT:                                                                               target: Member {
@@ -1732,71 +1758,18 @@ int main() {
 // DEFAULT-NEXT:                                                                                   field: "v3",
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: ShiftRight,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v3",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                               1,
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: Binary {
-// DEFAULT-NEXT:                                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                                               left: Unary {
-// DEFAULT-NEXT:                                                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                       1,
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                                   "tmp",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Unary {
-// DEFAULT-NEXT:                                                                                       op: Minus,
-// DEFAULT-NEXT:                                                                                       value: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               else_branch: Some(
-// DEFAULT-NEXT:                                                                   [
-// DEFAULT-NEXT:                                                                       Expr(
-// DEFAULT-NEXT:                                                                           Const(
-// DEFAULT-NEXT:                                                                               Assign {
-// DEFAULT-NEXT:                                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                                   target: Member {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Member {
 // DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "vdest",
+// DEFAULT-NEXT:                                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       field: "v3",
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v3",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               ),
@@ -1811,10 +1784,8 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               DoWhile {
@@ -1836,42 +1807,40 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Cast {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "int8_t",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "int8_t",
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "vsrc2",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
-// DEFAULT-NEXT:                                       value: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "vsrc2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "v4",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       field: "v4",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Const(
-// DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: GreaterEqual,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "tmp",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Binary {
-// DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "ssize_t",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
-// DEFAULT-NEXT:                                           value: SizeOf(
+// DEFAULT-NEXT:                           condition: Binary {
+// DEFAULT-NEXT:                               op: GreaterEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "tmp",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: Mul,
+// DEFAULT-NEXT:                                   left: Cast {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "ssize_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "vsrc1",
@@ -1879,50 +1848,48 @@ int main() {
 // DEFAULT-NEXT:                                                   field: "v4",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Integer(
-// DEFAULT-NEXT:                                           8,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Integer(
+// DEFAULT-NEXT:                                       8,
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_branch: [
 // DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Member {
-// DEFAULT-NEXT:                                               base: Identifier(
-// DEFAULT-NEXT:                                                   "vdest",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               field: "v4",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           value: Integer(
-// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Member {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "vdest",
 // DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           field: "v4",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: Some(
 // DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   If {
-// DEFAULT-NEXT:                                       condition: Const(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Less,
-// DEFAULT-NEXT:                                               left: Identifier(
-// DEFAULT-NEXT:                                                   "tmp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Unary {
-// DEFAULT-NEXT:                                                       op: Minus,
-// DEFAULT-NEXT:                                                       value: Cast {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "ssize_t",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                           value: SizeOf(
+// DEFAULT-NEXT:                                       condition: Binary {
+// DEFAULT-NEXT:                                           op: Less,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "tmp",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: Binary {
+// DEFAULT-NEXT:                                               op: Mul,
+// DEFAULT-NEXT:                                               left: Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: Cast {
+// DEFAULT-NEXT:                                                       ty: Named(
+// DEFAULT-NEXT:                                                           "ssize_t",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: SizeOfExpr(
+// DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
 // DEFAULT-NEXT:                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                       "vsrc1",
@@ -1930,44 +1897,46 @@ int main() {
 // DEFAULT-NEXT:                                                                   field: "v4",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: Integer(
-// DEFAULT-NEXT:                                                       8,
-// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   8,
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       then_branch: [
 // DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Const(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Member {
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Member {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "vdest",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       field: "v4",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Binary {
+// DEFAULT-NEXT:                                                       op: ShiftRight,
+// DEFAULT-NEXT:                                                       left: Member {
 // DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "vdest",
+// DEFAULT-NEXT:                                                               "vsrc1",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           field: "v4",
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Binary {
-// DEFAULT-NEXT:                                                           op: ShiftRight,
-// DEFAULT-NEXT:                                                           left: Member {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "vsrc1",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "v4",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                       right: Paren(
+// DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Sub,
 // DEFAULT-NEXT:                                                               left: Binary {
 // DEFAULT-NEXT:                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                   left: SizeOf(
-// DEFAULT-NEXT:                                                                       Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v4",
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   left: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vsrc1",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v4",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   right: Integer(
 // DEFAULT-NEXT:                                                                       8,
@@ -1977,30 +1946,30 @@ int main() {
 // DEFAULT-NEXT:                                                                   1,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                       else_branch: Some(
 // DEFAULT-NEXT:                                           [
 // DEFAULT-NEXT:                                               If {
-// DEFAULT-NEXT:                                                   condition: Const(
-// DEFAULT-NEXT:                                                       Binary {
-// DEFAULT-NEXT:                                                           op: Equal,
-// DEFAULT-NEXT:                                                           left: Identifier(
-// DEFAULT-NEXT:                                                               "tmp",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: Binary {
-// DEFAULT-NEXT:                                                               op: Mul,
-// DEFAULT-NEXT:                                                               left: Unary {
-// DEFAULT-NEXT:                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                   value: Cast {
-// DEFAULT-NEXT:                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                           "ssize_t",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                       value: SizeOf(
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: Equal,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "tmp",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                           op: Mul,
+// DEFAULT-NEXT:                                                           left: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               operand: Cast {
+// DEFAULT-NEXT:                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                       "ssize_t",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
 // DEFAULT-NEXT:                                                                               base: Identifier(
 // DEFAULT-NEXT:                                                                                   "vsrc1",
@@ -2008,34 +1977,34 @@ int main() {
 // DEFAULT-NEXT:                                                                               field: "v4",
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Integer(
-// DEFAULT-NEXT:                                                                   8,
-// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           right: Integer(
+// DEFAULT-NEXT:                                                               8,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   then_branch: [
 // DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                   target: Member {
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: Assign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v4",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Binary {
+// DEFAULT-NEXT:                                                                   op: ShiftRight,
+// DEFAULT-NEXT:                                                                   left: Member {
 // DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
+// DEFAULT-NEXT:                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       field: "v4",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftRight,
-// DEFAULT-NEXT:                                                                       left: Member {
-// DEFAULT-NEXT:                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "v4",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
+// DEFAULT-NEXT:                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                       Binary {
 // DEFAULT-NEXT:                                                                           op: Sub,
 // DEFAULT-NEXT:                                                                           left: Identifier(
 // DEFAULT-NEXT:                                                                               "tmp",
@@ -2044,56 +2013,106 @@ int main() {
 // DEFAULT-NEXT:                                                                               1,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               PostIncrement(
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v4",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Const(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: ShiftRightAssign,
-// DEFAULT-NEXT:                                                                   target: Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "vdest",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "v4",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                       1,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Postfix {
+// DEFAULT-NEXT:                                                               op: Increment,
+// DEFAULT-NEXT:                                                               operand: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v4",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: ShiftRightAssign,
+// DEFAULT-NEXT:                                                               target: Member {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "vdest",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "v4",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Integer(
+// DEFAULT-NEXT:                                                                   1,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                                   else_branch: Some(
 // DEFAULT-NEXT:                                                       [
 // DEFAULT-NEXT:                                                           If {
-// DEFAULT-NEXT:                                                               condition: Const(
-// DEFAULT-NEXT:                                                                   Binary {
-// DEFAULT-NEXT:                                                                       op: Less,
-// DEFAULT-NEXT:                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                           "tmp",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Less,
+// DEFAULT-NEXT:                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                       "tmp",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   right: Integer(
+// DEFAULT-NEXT:                                                                       0,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               then_branch: [
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Const(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: Assign,
+// DEFAULT-NEXT:                                                                           target: Member {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "vdest",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "v4",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           value: Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftRight,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                       left: Member {
+// DEFAULT-NEXT:                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                               "vsrc1",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "v4",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                               left: Integer(
+// DEFAULT-NEXT:                                                                                                   1,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                                       left: Unary {
+// DEFAULT-NEXT:                                                                                                           op: Minus,
+// DEFAULT-NEXT:                                                                                                           operand: Integer(
+// DEFAULT-NEXT:                                                                                                               1,
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                                           "tmp",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               right: Unary {
+// DEFAULT-NEXT:                                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               else_branch: Some(
+// DEFAULT-NEXT:                                                                   [
+// DEFAULT-NEXT:                                                                       Expr(
 // DEFAULT-NEXT:                                                                           Assign {
 // DEFAULT-NEXT:                                                                               op: Assign,
 // DEFAULT-NEXT:                                                                               target: Member {
@@ -2103,71 +2122,18 @@ int main() {
 // DEFAULT-NEXT:                                                                                   field: "v4",
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Binary {
-// DEFAULT-NEXT:                                                                                   op: ShiftRight,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v4",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                           left: Integer(
-// DEFAULT-NEXT:                                                                                               1,
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: Binary {
-// DEFAULT-NEXT:                                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                                               left: Unary {
-// DEFAULT-NEXT:                                                                                                   op: Minus,
-// DEFAULT-NEXT:                                                                                                   value: Integer(
-// DEFAULT-NEXT:                                                                                                       1,
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                                   "tmp",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Unary {
-// DEFAULT-NEXT:                                                                                       op: Minus,
-// DEFAULT-NEXT:                                                                                       value: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               else_branch: Some(
-// DEFAULT-NEXT:                                                                   [
-// DEFAULT-NEXT:                                                                       Expr(
-// DEFAULT-NEXT:                                                                           Const(
-// DEFAULT-NEXT:                                                                               Assign {
-// DEFAULT-NEXT:                                                                                   op: Assign,
-// DEFAULT-NEXT:                                                                                   target: Member {
+// DEFAULT-NEXT:                                                                                   op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                   left: Member {
 // DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "vdest",
+// DEFAULT-NEXT:                                                                                           "vsrc1",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       field: "v4",
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                                       left: Member {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "vsrc1",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "v4",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                                           "tmp",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                       "tmp",
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               ),
@@ -2182,10 +2148,8 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Block(
@@ -2261,49 +2225,43 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "conv_u",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "v",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "conv_u",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   field: "v",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Paren(
+// DEFAULT-NEXT:                                   Identifier(
 // DEFAULT-NEXT:                                       "vdest",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "res",
+// DEFAULT-NEXT:                           Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "res",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Member {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "conv_u",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "conv_u",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "i",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   field: "i",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   condition: Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "res",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "res",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -2366,21 +2324,19 @@ int main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "helper_neon_rshl_s8",
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "helper_neon_rshl_s8",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   84215045,
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       84215045,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       16843009,
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                               Integer(
+// DEFAULT-NEXT:                                                   16843009,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2388,36 +2344,30 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: NotEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "r",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Integer(
-// DEFAULT-NEXT:                               168430090,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   condition: Binary {
+// DEFAULT-NEXT:                       op: NotEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "r",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Integer(
+// DEFAULT-NEXT:                           168430090,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "abort",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Call {
+// DEFAULT-NEXT:                               callee: Identifier(
+// DEFAULT-NEXT:                                   "abort",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

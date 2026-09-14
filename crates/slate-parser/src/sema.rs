@@ -1,8 +1,7 @@
 use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
-use crate::const_expr::ConstExpr;
+use crate::const_expr::UnaryOp;
 use crate::files::{Files, decode_source_bytes, display_path};
-use crate::lexer::Token;
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
@@ -299,61 +298,57 @@ fn check_attributes(
     }
 }
 
-fn is_integer_constant_expression(expression: &ConstExpr) -> bool {
-    match expression {
-        ConstExpr::Integer(_)
-        | ConstExpr::WideInteger(_)
-        | ConstExpr::SizeOf(_)
-        | ConstExpr::SizeOfType { .. }
-        | ConstExpr::AlignOf { .. } => true,
-        ConstExpr::Unary { value, .. } | ConstExpr::Cast { value, .. } => {
+fn is_integer_constant_expression(expression: &Expr) -> bool {
+    match &expression.value {
+        ExprKind::Integer(_)
+        | ExprKind::WideInteger(_)
+        | ExprKind::SizeOfExpr(_)
+        | ExprKind::SizeOfType { .. }
+        | ExprKind::AlignOf { .. } => true,
+        ExprKind::Unary { op, operand } => {
+            matches!(
+                op,
+                UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot | UnaryOp::Not
+            ) && is_integer_constant_expression(operand)
+        }
+        ExprKind::Paren(value) | ExprKind::Cast { value, .. } => {
             is_integer_constant_expression(value)
         }
-        ConstExpr::Binary { left, right, .. } => {
+        ExprKind::Binary { left, right, .. } => {
             is_integer_constant_expression(left) && is_integer_constant_expression(right)
         }
-        ConstExpr::Ternary {
+        ExprKind::Conditional {
             condition,
             then_value,
             else_value,
         } => {
             is_integer_constant_expression(condition)
-                && is_integer_constant_expression(then_value)
+                && then_value
+                    .as_ref()
+                    .is_none_or(is_integer_constant_expression)
                 && is_integer_constant_expression(else_value)
         }
-        ConstExpr::Elvis {
-            condition,
-            else_value,
-        } => {
-            is_integer_constant_expression(condition) && is_integer_constant_expression(else_value)
-        }
-        ConstExpr::Identifier(_)
-        | ConstExpr::StringLit(_)
-        | ConstExpr::Utf8StringLit(_)
-        | ConstExpr::Utf16StringLit(_)
-        | ConstExpr::Utf32StringLit(_)
-        | ConstExpr::WideStringLit(_)
-        | ConstExpr::Generic { .. }
-        | ConstExpr::Float(_)
-        | ConstExpr::Call { .. }
-        | ConstExpr::Assign { .. }
-        | ConstExpr::Comma(..)
-        | ConstExpr::Member { .. }
-        | ConstExpr::Arrow { .. }
-        | ConstExpr::Index { .. }
-        | ConstExpr::OffsetOf { .. }
-        | ConstExpr::TypesCompatible { .. }
-        | ConstExpr::PostIncrement(_)
-        | ConstExpr::PostDecrement(_)
-        | ConstExpr::PreIncrement(_)
-        | ConstExpr::PreDecrement(_)
-        | ConstExpr::AddrOf(_)
-        | ConstExpr::Deref(_)
-        | ConstExpr::CompoundLiteral { .. }
-        | ConstExpr::BitCast { .. }
-        | ConstExpr::VaArg { .. }
-        | ConstExpr::LabelAddr(_)
-        | ConstExpr::StatementExpression(_) => false,
+        ExprKind::Identifier(_)
+        | ExprKind::StringLit(_)
+        | ExprKind::Utf8StringLit(_)
+        | ExprKind::Utf16StringLit(_)
+        | ExprKind::Utf32StringLit(_)
+        | ExprKind::WideStringLit(_)
+        | ExprKind::Generic { .. }
+        | ExprKind::Float(_)
+        | ExprKind::Call { .. }
+        | ExprKind::Assign { .. }
+        | ExprKind::Comma { .. }
+        | ExprKind::Member { .. }
+        | ExprKind::Index { .. }
+        | ExprKind::OffsetOf { .. }
+        | ExprKind::TypesCompatible { .. }
+        | ExprKind::Postfix { .. }
+        | ExprKind::CompoundLiteral { .. }
+        | ExprKind::BitCast { .. }
+        | ExprKind::VaArg { .. }
+        | ExprKind::LabelAddress(_)
+        | ExprKind::StatementExpression(_) => false,
     }
 }
 
@@ -474,7 +469,6 @@ fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaEr
 
 enum BodyNode<'a> {
     Stmt(&'a SpannedStmt),
-    Tokens(&'a [Span<Token>]),
     EnterJumpScope,
     ExitJumpScope,
 }
@@ -564,110 +558,80 @@ fn walk_initializer<'a>(initializer: &'a Initializer, visit: &mut impl FnMut(Bod
     }
 }
 
-fn walk_expr<'a>(expr: &'a SpannedExpr, visit: &mut impl FnMut(BodyNode<'a>)) {
+fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
     match &expr.value {
-        Expr::Const(value) => walk_const_expr(value, visit),
-        Expr::Unary { value, .. } | Expr::SizeOf(value) => walk_expr(value, visit),
-        Expr::Binary { left, right, .. } => {
-            walk_expr(left, visit);
-            walk_expr(right, visit);
-        }
-        Expr::StatementExpression(body) => {
+        ExprKind::StatementExpression(body) => {
             visit(BodyNode::EnterJumpScope);
             walk_stmts(body, visit);
             visit(BodyNode::ExitJumpScope);
         }
-        Expr::IntLit(_)
-        | Expr::StringLit(_)
-        | Expr::Utf8StringLit(_)
-        | Expr::Utf16StringLit(_)
-        | Expr::Utf32StringLit(_)
-        | Expr::WideStringLit(_)
-        | Expr::Identifier(_) => {}
-    }
-}
-
-fn walk_const_expr<'a>(expr: &'a ConstExpr, visit: &mut impl FnMut(BodyNode<'a>)) {
-    match expr {
-        ConstExpr::StatementExpression(tokens) => {
-            visit(BodyNode::EnterJumpScope);
-            visit(BodyNode::Tokens(tokens));
-            visit(BodyNode::ExitJumpScope);
-        }
-        ConstExpr::Generic {
+        ExprKind::Generic {
             controlling,
             associations,
         } => {
-            walk_const_expr(controlling, visit);
+            walk_expr(controlling, visit);
             for association in associations {
-                walk_const_expr(&association.expression, visit);
+                walk_expr(&association.expression, visit);
             }
         }
-        ConstExpr::SizeOf(value)
-        | ConstExpr::Unary { value, .. }
-        | ConstExpr::Cast { value, .. }
-        | ConstExpr::BitCast { value, .. }
-        | ConstExpr::Member { base: value, .. }
-        | ConstExpr::Arrow { base: value, .. }
-        | ConstExpr::PostIncrement(value)
-        | ConstExpr::PostDecrement(value)
-        | ConstExpr::PreIncrement(value)
-        | ConstExpr::PreDecrement(value)
-        | ConstExpr::AddrOf(value)
-        | ConstExpr::Deref(value)
-        | ConstExpr::VaArg { ap: value, .. } => walk_const_expr(value, visit),
-        ConstExpr::Binary { left, right, .. }
-        | ConstExpr::Assign {
+        ExprKind::Paren(value)
+        | ExprKind::SizeOfExpr(value)
+        | ExprKind::Unary { operand: value, .. }
+        | ExprKind::Postfix { operand: value, .. }
+        | ExprKind::Cast { value, .. }
+        | ExprKind::BitCast { value, .. }
+        | ExprKind::Member { base: value, .. }
+        | ExprKind::VaArg { list: value, .. } => walk_expr(value, visit),
+        ExprKind::Binary { left, right, .. }
+        | ExprKind::Assign {
             target: left,
             value: right,
             ..
         }
-        | ConstExpr::Comma(left, right)
-        | ConstExpr::Index {
+        | ExprKind::Comma { left, right }
+        | ExprKind::Index {
             base: left,
             index: right,
-        }
-        | ConstExpr::Elvis {
-            condition: left,
-            else_value: right,
         } => {
-            walk_const_expr(left, visit);
-            walk_const_expr(right, visit);
+            walk_expr(left, visit);
+            walk_expr(right, visit);
         }
-        ConstExpr::Ternary {
+        ExprKind::Conditional {
             condition,
             then_value,
             else_value,
         } => {
-            walk_const_expr(condition, visit);
-            walk_const_expr(then_value, visit);
-            walk_const_expr(else_value, visit);
+            walk_expr(condition, visit);
+            if let Some(then_value) = then_value {
+                walk_expr(then_value, visit);
+            }
+            walk_expr(else_value, visit);
         }
-        ConstExpr::Call { callee, arguments } => {
-            walk_const_expr(callee, visit);
+        ExprKind::Call { callee, arguments } => {
+            walk_expr(callee, visit);
             for argument in arguments {
-                walk_const_expr(argument, visit);
+                walk_expr(argument, visit);
             }
         }
-        ConstExpr::CompoundLiteral { initializer, .. } => {
+        ExprKind::CompoundLiteral { initializer, .. } => {
             for item in initializer {
                 walk_initializer(&item.value, visit);
             }
         }
-        ConstExpr::Integer(_)
-        | ConstExpr::WideInteger(_)
-        | ConstExpr::Float(_)
-        | ConstExpr::Identifier(_)
-        | ConstExpr::StringLit(_)
-        | ConstExpr::Utf8StringLit(_)
-        | ConstExpr::Utf16StringLit(_)
-        | ConstExpr::Utf32StringLit(_)
-        | ConstExpr::WideStringLit(_)
-        | ConstExpr::SizeOfType { .. }
-        | ConstExpr::AlignOf { .. }
-        | ConstExpr::OffsetOf { .. }
-        | ConstExpr::TypesCompatible { .. }
-        | ConstExpr::LabelAddr(_) => {}
+        ExprKind::Integer(_)
+        | ExprKind::WideInteger(_)
+        | ExprKind::Float(_)
+        | ExprKind::Identifier(_)
+        | ExprKind::StringLit(_)
+        | ExprKind::Utf8StringLit(_)
+        | ExprKind::Utf16StringLit(_)
+        | ExprKind::Utf32StringLit(_)
+        | ExprKind::WideStringLit(_)
+        | ExprKind::SizeOfType { .. }
+        | ExprKind::AlignOf { .. }
+        | ExprKind::OffsetOf { .. }
+        | ExprKind::TypesCompatible { .. }
+        | ExprKind::LabelAddress(_) => {}
     }
 }
 
@@ -679,13 +643,6 @@ fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
         BodyNode::Stmt(stmt) => {
             if let Stmt::Labeled(name) = &stmt.value {
                 labels.insert(name.as_str(), scope.clone());
-            }
-        }
-        BodyNode::Tokens(tokens) => {
-            for pair in tokens.windows(2) {
-                if let (Token::Ident(name), Token::Colon) = (&pair[0].value, &pair[1].value) {
-                    labels.insert(name.as_str(), scope.clone());
-                }
             }
         }
         BodyNode::EnterJumpScope => {
@@ -729,7 +686,6 @@ fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
         BodyNode::ExitJumpScope => {
             scope.pop();
         }
-        BodyNode::Tokens(_) => {}
     });
 }
 
@@ -780,7 +736,7 @@ fn check_asm_operands(
 
 fn asm_operand_error(operands: &AsmOperands) -> Option<(Loc, String)> {
     for output in &operands.outputs {
-        match output_lvalue(&output.expr.value) {
+        match output_lvalue(&output.expr) {
             OutputLvalue::Valid => {}
             OutputLvalue::Cast => {
                 return Some((
@@ -819,37 +775,27 @@ enum OutputLvalue {
 }
 
 fn output_lvalue(expr: &Expr) -> OutputLvalue {
-    match expr {
-        Expr::Const(value) => const_output_lvalue(value),
-        Expr::Identifier(_)
-        | Expr::StringLit(_)
-        | Expr::Utf8StringLit(_)
-        | Expr::Utf16StringLit(_)
-        | Expr::Utf32StringLit(_)
-        | Expr::WideStringLit(_) => OutputLvalue::Valid,
-        _ => OutputLvalue::Invalid,
-    }
-}
-
-fn const_output_lvalue(expr: &ConstExpr) -> OutputLvalue {
-    match expr {
-        ConstExpr::Identifier(_)
-        | ConstExpr::StringLit(_)
-        | ConstExpr::Utf8StringLit(_)
-        | ConstExpr::Utf16StringLit(_)
-        | ConstExpr::Utf32StringLit(_)
-        | ConstExpr::WideStringLit(_)
-        | ConstExpr::Deref(_)
-        | ConstExpr::Index { .. }
-        | ConstExpr::Arrow { .. }
-        | ConstExpr::CompoundLiteral { .. }
-        | ConstExpr::Generic { .. } => OutputLvalue::Valid,
-        ConstExpr::Member { base, .. } => match const_output_lvalue(base) {
+    match &expr.value {
+        ExprKind::Identifier(_)
+        | ExprKind::StringLit(_)
+        | ExprKind::Utf8StringLit(_)
+        | ExprKind::Utf16StringLit(_)
+        | ExprKind::Utf32StringLit(_)
+        | ExprKind::WideStringLit(_)
+        | ExprKind::Unary {
+            op: UnaryOp::Deref, ..
+        }
+        | ExprKind::Index { .. }
+        | ExprKind::Member { arrow: true, .. }
+        | ExprKind::CompoundLiteral { .. }
+        | ExprKind::Generic { .. } => OutputLvalue::Valid,
+        ExprKind::Paren(inner) => output_lvalue(inner),
+        ExprKind::Member { base, .. } => match output_lvalue(base) {
             OutputLvalue::Valid => OutputLvalue::Valid,
             OutputLvalue::Cast | OutputLvalue::Invalid => OutputLvalue::Invalid,
         },
-        ConstExpr::Cast { value, .. } | ConstExpr::BitCast { value, .. } => {
-            match const_output_lvalue(value) {
+        ExprKind::Cast { value, .. } | ExprKind::BitCast { value, .. } => {
+            match output_lvalue(value) {
                 OutputLvalue::Invalid => OutputLvalue::Invalid,
                 OutputLvalue::Valid | OutputLvalue::Cast => OutputLvalue::Cast,
             }

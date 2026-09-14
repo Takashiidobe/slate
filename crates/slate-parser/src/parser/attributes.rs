@@ -204,14 +204,14 @@ pub(super) fn parse_attribute(
     match canonical_name {
         "packed" if arguments.is_empty() => Ok(Attribute::Packed),
         "aligned" => Ok(match single_int() {
-            Some(value) => Attribute::Aligned(const_expr::ConstExpr::Integer(value)),
+            Some(value) => Attribute::Aligned(integer_argument(value, arguments)),
             None if arguments.is_empty() => {
-                Attribute::Aligned(const_expr::ConstExpr::Integer(biggest_alignment))
+                Attribute::Aligned(integer_argument(biggest_alignment, arguments))
             }
             None => Attribute::Aligned(parse_attribute_expression(arguments)?),
         }),
         "vector_size" => Ok(match single_int() {
-            Some(value) => Attribute::VectorSize(const_expr::ConstExpr::Integer(value)),
+            Some(value) => Attribute::VectorSize(integer_argument(value, arguments)),
             None if !arguments.is_empty() => {
                 Attribute::VectorSize(parse_attribute_expression(arguments)?)
             }
@@ -397,9 +397,11 @@ pub(super) fn attribute_arguments(arguments: &[Span<Token>]) -> Vec<String> {
         .collect()
 }
 
-pub(super) fn parse_attribute_expression(
-    arguments: &[Span<Token>],
-) -> Result<const_expr::ConstExpr, String> {
+fn integer_argument(value: i64, arguments: &[Span<Token>]) -> Expr {
+    Box::new(Span::cover(ExprKind::Integer(value), arguments))
+}
+
+pub(super) fn parse_attribute_expression(arguments: &[Span<Token>]) -> Result<Expr, String> {
     const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
 }
 

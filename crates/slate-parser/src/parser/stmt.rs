@@ -88,6 +88,7 @@ impl Parser {
                 pos: index,
                 typedef_names: &self.typedef_names,
                 biggest_alignment: self.biggest_alignment,
+                statements: Some(self),
             };
             let mut ret_type = return_type_parser
                 .parse_base_type()
@@ -165,6 +166,7 @@ impl Parser {
                 pos: name_index + 1,
                 typedef_names: &self.typedef_names,
                 biggest_alignment: self.biggest_alignment,
+                statements: Some(self),
             };
             let (parameters, variadic) = declarator_parser
                 .parse_parameters()
@@ -271,6 +273,7 @@ impl Parser {
                 pos,
                 typedef_names: &self.typedef_names,
                 biggest_alignment: self.biggest_alignment,
+                statements: Some(self),
             };
             parser.matches(Token::Keyword(Keyword::Register));
             let base_ty = parser
@@ -393,6 +396,13 @@ impl Parser {
             stmts.push(span_tokens(stmt, &tokens[start..position]));
         }
         Ok(stmts)
+    }
+
+    pub(crate) fn parse_statement_expression_body(
+        &self,
+        tokens: &[Span<Token>],
+    ) -> Result<Vec<SpannedStmt>, ParseError> {
+        self.parse_stmts_from_tokens("", tokens)
     }
 
     pub(super) fn parse_body(
@@ -556,7 +566,6 @@ impl Parser {
     pub(super) fn parse_one_stmt(&self, fragment: &mut Fragment) -> Result<Stmt, ParseError> {
         let code = fragment.code;
         let tokens = fragment.tokens;
-        let stmt_start = fragment.pos;
 
         if tokens.value_at(fragment.pos) == Some(&Token::Semi) {
             fragment.pos += 1;
@@ -570,25 +579,6 @@ impl Parser {
             let assertion = self.parse_static_assert(code, &tokens[fragment.pos..=end])?;
             fragment.pos = end + 1;
             return Ok(Stmt::StaticAssert(assertion));
-        }
-
-        if tokens.value_at(fragment.pos) == Some(&Token::LParen)
-            && tokens.value_at(fragment.pos + 1) == Some(&Token::LBrace)
-        {
-            let close = matching_brace(tokens, fragment.pos + 1)
-                .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
-            if tokens.value_at(close + 1) != Some(&Token::RParen) {
-                return Err(self.error_at(Loc::whole(code), "expected `)`"));
-            }
-            let body = self.parse_stmts_from_tokens(code, &tokens[fragment.pos + 2..close])?;
-            fragment.pos = close + 2;
-            if tokens.value_at(fragment.pos) == Some(&Token::Semi) {
-                fragment.pos += 1;
-            }
-            return Ok(Stmt::Expr(span_tokens(
-                Expr::StatementExpression(body),
-                &tokens[stmt_start..fragment.pos],
-            )));
         }
 
         if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
@@ -658,7 +648,7 @@ impl Parser {
             let end = top_level_semi(&tokens[fragment.pos..])
                 .map(|position| fragment.pos + position)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-            let declaration = self.parse_declaration_tokens(code, &tokens[fragment.pos..=end])?;
+            let declaration = self.parse_declaration_tokens(&tokens[fragment.pos..=end])?;
             fragment.pos = end + 1;
             return Ok(Stmt::Decl(declaration));
         }
@@ -806,7 +796,7 @@ impl Parser {
                     let mut decl_tokens = init_tokens.to_vec();
                     decl_tokens.push(synthetic(Token::Semi));
                     Some(Box::new(span_tokens(
-                        Stmt::Decl(self.parse_declaration_tokens(code, &decl_tokens)?),
+                        Stmt::Decl(self.parse_declaration_tokens(&decl_tokens)?),
                         init_tokens,
                     )))
                 } else {
@@ -861,18 +851,12 @@ impl Parser {
         &self,
         code: &str,
         tokens: &[Span<Token>],
-    ) -> Result<SpannedExpr, ParseError> {
+    ) -> Result<Expr, ParseError> {
         if tokens.is_empty() {
             return Err(self.error_at(Loc::whole(code), "expected expression"));
         }
-        if let [single] = tokens
-            && let Some(expression) = const_expr::string_literal_expr(Some(&single.value))
-        {
-            return Ok(single.clone().with_value(expression));
-        }
         let tokens = coalesce_string_literals(tokens);
-        const_expr::Parser::parse_expression(&tokens, &self.typedef_names)
-            .map(|expression| span_tokens(Expr::Const(Box::new(expression)), &tokens))
+        const_expr::Parser::parse_expression(&tokens, &self.typedef_names, Some(self))
             .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))
     }
 }

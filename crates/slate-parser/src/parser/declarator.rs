@@ -1,6 +1,6 @@
 use super::attributes::{apply_vector_attributes, parse_attribute_groups};
 use super::decl::{evaluate_enum_expression, record_enum_value, specifiers_with_type};
-use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, coalesce_string_literals, span_tokens};
+use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, coalesce_string_literals, span_tokens};
 use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
@@ -43,6 +43,7 @@ pub(crate) struct DeclaratorParser<'a> {
     pub(super) pos: usize,
     pub(super) typedef_names: &'a HashSet<String>,
     pub(super) biggest_alignment: i64,
+    pub(super) statements: Option<&'a Parser>,
 }
 
 impl<'a> DeclaratorParser<'a> {
@@ -65,7 +66,13 @@ impl<'a> DeclaratorParser<'a> {
             pos,
             typedef_names,
             biggest_alignment,
+            statements: None,
         }
+    }
+
+    pub(crate) fn with_statements(mut self, statements: Option<&'a Parser>) -> Self {
+        self.statements = statements;
+        self
     }
 
     pub(crate) fn position(&self) -> usize {
@@ -473,14 +480,15 @@ impl<'a> DeclaratorParser<'a> {
                 };
                 let bit_width = if self.matches(Token::Colon) {
                     let start = self.pos;
-                    let (expression, end) =
-                        const_expr::Parser::parse_one(self.tokens, start, self.typedef_names)
-                            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
+                    let (expression, end) = const_expr::Parser::parse_one(
+                        self.tokens,
+                        start,
+                        self.typedef_names,
+                        self.statements,
+                    )
+                    .map_err(|error| DeclaratorError::Other(error.to_string()))?;
                     self.pos = end;
-                    Some(span_tokens(
-                        Expr::Const(Box::new(expression)),
-                        &self.tokens[start..self.pos],
-                    ))
+                    Some(expression)
                 } else {
                     None
                 };
@@ -522,6 +530,7 @@ impl<'a> DeclaratorParser<'a> {
                 return Err(DeclaratorError::ExpectedEnumerator);
             };
             self.pos += 1;
+            let start_of_value = self.pos + 1;
             let value = if self.matches(Token::Equal) {
                 let start = self.pos;
                 while !matches!(
@@ -532,16 +541,16 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 let value = evaluate_enum_expression(&self.tokens[start..self.pos], &values)
                     .map_err(|error| error.to_string())?;
-                Some(span_tokens(
-                    Expr::IntLit(value),
-                    &self.tokens[start..self.pos],
-                ))
+                Some(value)
             } else {
                 None
             };
-            let explicit_value = value.as_ref().map(|value| match value.value {
-                Expr::IntLit(value) => value,
-                _ => unreachable!(),
+            let explicit_value = value;
+            let value = explicit_value.map(|value| {
+                Box::new(span_tokens(
+                    ExprKind::Integer(value),
+                    &self.tokens[start_of_value..self.pos],
+                ))
             });
             record_enum_value(&mut values, &mut next_value, &name, explicit_value);
             enumerators.push(Enumerator { name, value });
@@ -635,20 +644,11 @@ impl<'a> DeclaratorParser<'a> {
         if tokens.is_empty() {
             return Err(DeclaratorError::UnsupportedTypeofExpression);
         }
-        if let [single] = tokens
-            && let Some(expression) = const_expr::string_literal_expr(Some(&single.value))
-        {
-            return Ok(TypeOfOperand::Expression(Box::new(
-                single.clone().with_value(expression),
-            )));
-        }
         let tokens = coalesce_string_literals(tokens);
-        let expression = const_expr::Parser::parse_expression(&tokens, self.typedef_names)
-            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
-        Ok(TypeOfOperand::Expression(Box::new(span_tokens(
-            Expr::Const(Box::new(expression)),
-            &tokens,
-        ))))
+        let expression =
+            const_expr::Parser::parse_expression(&tokens, self.typedef_names, self.statements)
+                .map_err(|error| DeclaratorError::Other(error.to_string()))?;
+        Ok(TypeOfOperand::Expression(expression))
     }
 
     pub(super) fn typeof_type_start(&self) -> bool {
@@ -757,27 +757,15 @@ impl<'a> DeclaratorParser<'a> {
                 }
             }
             Ok(Initializer::List(items))
-        } else if let Some(expression) = const_expr::string_literal_expr(self.peek())
-            && matches!(
-                self.tokens.value_at(self.pos + 1),
-                Some(&Token::Comma) | Some(&Token::RBrace)
-            )
-        {
-            let start = self.pos;
-            self.pos += 1;
-            Ok(Initializer::Expr(span_tokens(
-                expression,
-                &self.tokens[start..self.pos],
-            )))
         } else {
-            let start = self.pos;
-            let (expression, end) =
-                const_expr::Parser::parse_one(self.tokens, self.pos, typedef_names)?;
+            let (expression, end) = const_expr::Parser::parse_one(
+                self.tokens,
+                self.pos,
+                typedef_names,
+                self.statements,
+            )?;
             self.pos = end;
-            Ok(Initializer::Expr(span_tokens(
-                Expr::Const(Box::new(expression)),
-                &self.tokens[start..end],
-            )))
+            Ok(Initializer::Expr(expression))
         }
     }
 
@@ -862,14 +850,17 @@ impl<'a> DeclaratorParser<'a> {
                         }
                         let bound_tokens = &self.tokens[start..self.pos];
                         let size = match const_expr::Parser::evaluate(bound_tokens) {
-                            Ok(value) => Expr::IntLit(value),
-                            Err(_) => {
-                                let expression = const_expr::Parser::parse(bound_tokens)
-                                    .unwrap_or_else(|error| panic!("invalid array bound: {error}"));
-                                Expr::Const(Box::new(expression))
+                            Ok(value) => {
+                                Box::new(span_tokens(ExprKind::Integer(value), bound_tokens))
                             }
+                            Err(_) => const_expr::Parser::parse_expression(
+                                bound_tokens,
+                                self.typedef_names,
+                                self.statements,
+                            )
+                            .unwrap_or_else(|error| panic!("invalid array bound: {error}")),
                         };
-                        ArraySize::Expression(Box::new(span_tokens(size, bound_tokens)))
+                        ArraySize::Expression(size)
                     };
                     assert!(
                         self.matches(Token::RBracket),

@@ -29,7 +29,7 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                           "nested",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -63,7 +63,7 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:                           "wrapped",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -99,7 +99,7 @@ int wrapped[WRAP(1)];
 // A-NEXT:                           "nested",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               2,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -133,7 +133,7 @@ int wrapped[WRAP(1)];
 // A-NEXT:                           "wrapped",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               3,
 // A-NEXT:                           ),
 // A-NEXT:                       ),

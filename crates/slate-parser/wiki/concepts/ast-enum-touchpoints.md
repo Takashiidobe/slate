@@ -2,8 +2,7 @@
 
 _created 2026-09-12_
 
-`Stmt`, `Expr`, `ConstExpr`, `CType`, and `ArraySize` (all in `src/ast.rs` /
-`src/const_expr.rs`) are each matched exhaustively, by variant name, in
+`Stmt`, `ExprKind`, `CType`, and `ArraySize` (all in `src/ast.rs`) are each matched exhaustively, by variant name, in
 several unrelated files. The compiler will refuse to build until every one
 of these is updated, but nothing points at them up front — you either grep
 every constructor name across the crate or read the files end to end. This
@@ -16,7 +15,7 @@ enums is added or removed.
 
 Parsed nodes are stored as `Span<T>`: translation-unit declarations are
 `Span<Decl>`, function bodies contain `Span<Stmt>`, expression-bearing
-fields contain `Span<Expr>`, and preprocessor output uses
+fields contain `Expr = Box<Span<ExprKind>>`, and preprocessor output uses
 `Span<PPNodeKind>`. Exhaustive matches over these collections must match
 the wrapper's `.value`.
 
@@ -49,83 +48,32 @@ the wrapper's `.value`.
   or expressions must recurse so clang-flavor asm checks see nested
   `asm`, register locals, and labels.
 
-## Adding an `Expr` variant
+## Adding an `ExprKind` variant
 
-- `src/ast.rs` — `impl Display for Expr`: exhaustive, needs an arm.
-- `src/sema.rs` — `walk_expr` is exhaustive; recurse into sub-expressions.
+There is one expression type. `const_expr::Parser` builds it for every
+context (statements, initializers, array bounds, bit widths, `typeof`,
+attributes, `#if`), and wraps each node in a `Span` covering its tokens.
+
+- `src/ast.rs` — `impl Display for ExprKind`: exhaustive.
+- `src/const_expr.rs` — `Parser::evaluate_expr`: exhaustive; decide whether
+  the construct folds to `i64` or returns `ConstExprError::NotConstant`.
+  `evaluate_wide` and `contains_wide` only need touching for new
+  arithmetic forms.
+- `src/sema.rs` — `is_integer_constant_expression` and `walk_expr` are
+  exhaustive; `walk_expr` must recurse so asm/label checks see nested
+  statement expressions.
 - `src/reachability.rs` — `Reachability::mark_expr` is exhaustive; mark
-  identifiers and recurse so referenced header declarations are kept.
-- No other file matches `ast::Expr` exhaustively outside the above (checked via
-  `grep -rn "Expr::" src/*.rs tests/*.rs`). `tests/filecheck.rs` matches on
-  it in two places (`summarize_evaluated_decl`'s `Return` scan,
-  `array_size`) but both are exhaustive over `Expr` too — see below,
-  they'll fail to compile and tell you.
+  identifiers and embedded type names so referenced header declarations
+  survive filtering.
+- `tests/filecheck.rs` — `summarize_evaluated_decl` and `array_size` use
+  wildcards; no touch needed.
 
-Note: most _general_ expressions never construct `ast::Expr` directly —
-they go through `const_expr::Parser` and get wrapped once as
-`Expr::Const(Box<ConstExpr>)` by `Parser::parse_expression` in
-`src/parser/stmt.rs`. Only bare string literals are built as an `Expr` variant
-directly, bypassing `const_expr`. When in doubt, a new expression-level
-construct belongs in `ConstExpr`, not `Expr`.
-
-GNU statement expressions `({ ... })` are split across both: when the
-_entire_ statement is `({ ... });` (or the whole initializer is
-`= ({ ... })`), `src/parser/`'s statement/initializer parsing special-cases
-it directly into `ast::Expr::StatementExpression(Vec<SpannedStmt>)` with
-real parsed statements (see `parse_one_stmt` and the initializer path in
-`parse_declaration_tokens`). But when `({ ... })` appears nested inside a
-larger expression (a call argument, a binary operand — see
-slate-parser-wf8.3.8), it has to go through `const_expr::Parser`, which
-has no way to call back into `src/parser/stmt.rs`'s statement grammar (that needs
-`&Parser` for diagnostics, typedef names, and recursion). So
-`const_expr::Parser::parse_primary` instead captures the raw token span
-as `ConstExpr::StatementExpression(Vec<Span<Token>>)` — unparsed — when it
-sees `(` `{`. The two `StatementExpression` variants (one on `ast::Expr`
-holding parsed statements, one on `ConstExpr` holding raw tokens) are
-_not_ the same shape; don't assume parity between them without checking
-which parser produced the node.
-
-`_Generic` used to be one of those bypassing special forms (its own
-`Expr::Generic` variant, parsed by a hand-rolled paren/comma scanner in
-`parser.rs::parse_expression`, now `src/parser/stmt.rs`), removed in slate-parser-wf8.2.4: that
-scanner only matched when the _entire_ expression span was exactly
-`_Generic(...)`, so `_Generic(x, int: 1) != 1` (a `_Generic` embedded as
-a primary expression inside a larger expression) hit "expected `)` after
-`_Generic`". `const_expr::Parser::parse_primary` already had a correct,
-depth-aware `_Generic` implementation (`ConstExpr::Generic`, used for
-`#if`), so the fix was to delete the duplicate top-level special case
-entirely and let `_Generic` always flow through `const_expr`, like any
-other primary expression. Fixing this also exposed a real, independent
-bug it happened to route around: `const_expr::Parser::try_parse_type_name`
-speculatively tries the `_Generic` controlling operand as a type name and
-is supposed to fail safely (`.ok()?`) when it isn't one, but the shared
-`DeclaratorParser::parse_declarator`'s grouped-declarator case used
-`assert!` for a mismatched `)` instead of returning `Err`, so a
-speculative parse of a call expression like `ckd_add(&a, 1, 1)` as the
-controlling operand could panic instead of falling through. That `assert!`
-is now `Err(DeclaratorError::ExpectedToken(..))`.
-
-## Adding a `ConstExpr` variant
-
-- `src/const_expr.rs` — `impl Display for ConstExpr`: exhaustive.
-- `src/const_expr.rs` — `Parser::evaluate_expr`: exhaustive, must decide
-  whether the new construct is foldable to `i64` or returns
-  `ConstExprError::NotConstant(...)`.
-- `src/sema.rs` — `is_integer_constant_expression`: exhaustive, decide
-  `true`/`false` for the new construct (almost always `false` unless it's
-  provably a compile-time integer constant).
-- `src/sema.rs` — `walk_const_expr` is exhaustive; recurse into
-  sub-expressions (it finds raw statement-expression tokens for label
-  lookup).
-- `src/reachability.rs` — `Reachability::mark_const_expr` is exhaustive;
-  mark identifiers and embedded type names (casts, `sizeof`, compound
-  literals) so the header declarations they name survive filtering.
-- `ConstExpr::Elvis` is the GNU omitted-middle conditional form; preserve its
-  single evaluation of the condition in evaluators and lowering.
-- `tests/filecheck.rs` — only reachable through the two `Expr`-level
-  matches above (`Expr::Const(_)` catches it as an opaque case there), so
-  usually no separate touch needed unless the test wants to unwrap and
-  inspect the new `ConstExpr` shape specifically.
+`({ ... })` is parsed by `const_expr::Parser::parse_statement_expression`,
+which calls back into `parser::Parser::parse_statement_expression_body`.
+The callback is the `statements: Option<&parser::Parser>` threaded through
+`const_expr::Parser` and `DeclaratorParser`. It is `None` for `#if`,
+attribute arguments and `_BitInt` widths, where a statement expression is
+an error.
 
 ## Adding an `ArraySize` variant
 

@@ -89,176 +89,169 @@ int foo(int x)
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Integer(
-// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Add,
+// DEFAULT-NEXT:                       left: Integer(
+// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "bar",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "bar",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StatementExpression(
-// DEFAULT-NEXT:                                       [
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Int,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Switch,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           LParen,
-// DEFAULT-NEXT:                                           Ident(
+// DEFAULT-NEXT:                           arguments: [
+// DEFAULT-NEXT:                               StatementExpression(
+// DEFAULT-NEXT:                                   [
+// DEFAULT-NEXT:                                       Decl(
+// DEFAULT-NEXT:                                           Declaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclarator {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Switch {
+// DEFAULT-NEXT:                                           discriminant: Identifier(
 // DEFAULT-NEXT:                                               "x",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           RParen,
-// DEFAULT-NEXT:                                           LBrace,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Case,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "0",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                           body: [
+// DEFAULT-NEXT:                                               Case(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Case,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "1",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                               Case(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Case,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "2",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                               Case(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           3,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Case,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "3",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                               Case(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       3,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           4,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Case,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "4",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "5",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                               Case(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       4,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           5,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
-// DEFAULT-NEXT:                                               Case,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "5",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "6",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                               Case(
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       5,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           6,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
 // DEFAULT-NEXT:                                               Default,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Colon,
-// DEFAULT-NEXT:                                           Ident(
-// DEFAULT-NEXT:                                               "y",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Equal,
-// DEFAULT-NEXT:                                           IntLit(
-// DEFAULT-NEXT:                                               "7",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           Keyword(
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "y",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: Integer(
+// DEFAULT-NEXT:                                                           7,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               Break,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                           RBrace,
-// DEFAULT-NEXT:                                           Ident(
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Identifier(
 // DEFAULT-NEXT:                                               "y",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Semi,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

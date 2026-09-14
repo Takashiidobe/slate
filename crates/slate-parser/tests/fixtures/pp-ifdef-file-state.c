@@ -36,7 +36,7 @@ int x_missing[4];
 // DEFAULT-NEXT:                           "x_undefined",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -70,7 +70,7 @@ int x_missing[4];
 // DEFAULT-NEXT:                           "x_missing",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
-// DEFAULT-NEXT:                           IntLit(
+// DEFAULT-NEXT:                           Integer(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
@@ -106,7 +106,7 @@ int x_missing[4];
 // A-NEXT:                           "x_defined",
 // A-NEXT:                       ),
 // A-NEXT:                       size: Expression(
-// A-NEXT:                           IntLit(
+// A-NEXT:                           Integer(
 // A-NEXT:                               1,
 // A-NEXT:                           ),
 // A-NEXT:                       ),
@@ -142,7 +142,7 @@ int x_missing[4];
 // FLAG-NEXT:                           "x_undefined",
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                       size: Expression(
-// FLAG-NEXT:                           IntLit(
+// FLAG-NEXT:                           Integer(
 // FLAG-NEXT:                               2,
 // FLAG-NEXT:                           ),
 // FLAG-NEXT:                       ),
@@ -176,7 +176,7 @@ int x_missing[4];
 // FLAG-NEXT:                           "flag_without_x",
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                       size: Expression(
-// FLAG-NEXT:                           IntLit(
+// FLAG-NEXT:                           Integer(
 // FLAG-NEXT:                               3,
 // FLAG-NEXT:                           ),
 // FLAG-NEXT:                       ),
@@ -210,7 +210,7 @@ int x_missing[4];
 // FLAG-NEXT:                           "x_missing",
 // FLAG-NEXT:                       ),
 // FLAG-NEXT:                       size: Expression(
-// FLAG-NEXT:                           IntLit(
+// FLAG-NEXT:                           Integer(
 // FLAG-NEXT:                               4,
 // FLAG-NEXT:                           ),
 // FLAG-NEXT:                       ),
@@ -246,7 +246,7 @@ int x_missing[4];
 // X-NEXT:                           "x_defined",
 // X-NEXT:                       ),
 // X-NEXT:                       size: Expression(
-// X-NEXT:                           IntLit(
+// X-NEXT:                           Integer(
 // X-NEXT:                               1,
 // X-NEXT:                           ),
 // X-NEXT:                       ),

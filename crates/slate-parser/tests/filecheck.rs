@@ -448,22 +448,9 @@ fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
                 .iter()
                 .filter_map(|stmt| match &stmt.value {
                     Stmt::Return(expression) => match &expression.value {
-                        Expr::IntLit(value) => Some(*value),
-                        Expr::StringLit(_)
-                        | Expr::Utf8StringLit(_)
-                        | Expr::Utf16StringLit(_)
-                        | Expr::Utf32StringLit(_)
-                        | Expr::WideStringLit(_) => {
-                            panic!("clang return was not an integer")
-                        }
-                        Expr::StatementExpression(_) => None,
-                        Expr::Identifier(_)
-                        | Expr::Const(_)
-                        | Expr::Unary { .. }
-                        | Expr::Binary { .. }
-                        | Expr::SizeOf(_) => {
-                            panic!("clang return was not an integer")
-                        }
+                        ExprKind::Integer(value) => Some(*value),
+                        ExprKind::StatementExpression(_) => None,
+                        _ => panic!("clang return was not an integer"),
                     },
                     Stmt::ReturnVoid => None,
                     Stmt::Comment(_)
@@ -852,20 +839,8 @@ fn array_size(size: &ArraySize) -> String {
         ArraySize::Unspecified => "".into(),
         ArraySize::Star => "*".into(),
         ArraySize::Expression(expression) => match &expression.value {
-            Expr::IntLit(value) => value.to_string(),
-            Expr::StringLit(_)
-            | Expr::Utf8StringLit(_)
-            | Expr::Utf16StringLit(_)
-            | Expr::Utf32StringLit(_)
-            | Expr::WideStringLit(_) => panic!("array bound was not an integer"),
-            Expr::Identifier(_)
-            | Expr::Const(_)
-            | Expr::Unary { .. }
-            | Expr::Binary { .. }
-            | Expr::SizeOf(_) => panic!("array bound was not an integer"),
-            Expr::StatementExpression(_) => {
-                panic!("array bound was not an integer")
-            }
+            ExprKind::Integer(value) => value.to_string(),
+            _ => panic!("array bound was not an integer"),
         },
     }
 }

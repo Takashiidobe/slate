@@ -170,7 +170,7 @@ struct gdt gdt_table[2]=
 // DEFAULT-NEXT:                                       "gdt_table",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           2,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -185,51 +185,62 @@ struct gdt gdt_table[2]=
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
-// DEFAULT-NEXT:                                                                   Integer(
-// DEFAULT-NEXT:                                                                       0,
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               Integer(
+// DEFAULT-NEXT:                                                                   0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
 // DEFAULT-NEXT:                                                           value: Expr(
-// DEFAULT-NEXT:                                                               Const(
+// DEFAULT-NEXT:                                                               Paren(
 // DEFAULT-NEXT:                                                                   Binary {
 // DEFAULT-NEXT:                                                                       op: BitAnd,
-// DEFAULT-NEXT:                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                           left: Cast {
-// DEFAULT-NEXT:                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                           Unary {
+// DEFAULT-NEXT:                                                                                               op: AddrOf,
+// DEFAULT-NEXT:                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                   "x",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                               value: AddrOf(
-// DEFAULT-NEXT:                                                                                   Identifier(
-// DEFAULT-NEXT:                                                                                       "x",
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Integer(
+// DEFAULT-NEXT:                                                                                       24,
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               24,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: ShiftLeft,
-// DEFAULT-NEXT:                                                                           left: Unary {
-// DEFAULT-NEXT:                                                                               op: Minus,
-// DEFAULT-NEXT:                                                                               value: Integer(
-// DEFAULT-NEXT:                                                                                   1,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                           Binary {
+// DEFAULT-NEXT:                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                               left: Unary {
+// DEFAULT-NEXT:                                                                                   op: Minus,
+// DEFAULT-NEXT:                                                                                   operand: Integer(
+// DEFAULT-NEXT:                                                                                       1,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                   Integer(
+// DEFAULT-NEXT:                                                                                       8,
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               8,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),

@@ -41,10 +41,8 @@ redeclaration_error_message (olddecl)
 // DEFAULT-NEXT:                                   "in_system_header_flag",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               bit_width: Some(
-// DEFAULT-NEXT:                                   Const(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   Integer(
+// DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -169,22 +167,22 @@ redeclaration_error_message (olddecl)
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Const(
-// DEFAULT-NEXT:                       Member {
-// DEFAULT-NEXT:                           base: Arrow {
-// DEFAULT-NEXT:                               base: StatementExpression(
-// DEFAULT-NEXT:                                   [
-// DEFAULT-NEXT:                                       Ident(
+// DEFAULT-NEXT:                   condition: Member {
+// DEFAULT-NEXT:                       base: Member {
+// DEFAULT-NEXT:                           base: StatementExpression(
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Expr(
+// DEFAULT-NEXT:                                       Identifier(
 // DEFAULT-NEXT:                                           "olddecl",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Semi,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "decl",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           field: "in_system_header_flag",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "decl",
+// DEFAULT-NEXT:                           arrow: true,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       field: "in_system_header_flag",
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Block(
 // DEFAULT-NEXT:                           [],

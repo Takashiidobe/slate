@@ -50,16 +50,14 @@ int foo (int n, char m[1][n])
 // DEFAULT-NEXT:                                               "m",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           size: Expression(
-// DEFAULT-NEXT:                                               IntLit(
+// DEFAULT-NEXT:                                               Integer(
 // DEFAULT-NEXT:                                                   1,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           Const(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "n",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "n",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
@@ -115,16 +113,14 @@ int foo (int n, char m[1][n])
 // DEFAULT-NEXT:                                   "m",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               size: Expression(
-// DEFAULT-NEXT:                                   IntLit(
+// DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "n",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "n",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },

@@ -244,7 +244,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       "words",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           2,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -304,7 +304,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                               "significand",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           size: Expression(
-// DEFAULT-NEXT:                                                               IntLit(
+// DEFAULT-NEXT:                                                               Integer(
 // DEFAULT-NEXT:                                                                   4,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
@@ -321,7 +321,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                               "padding",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           size: Expression(
-// DEFAULT-NEXT:                                                               IntLit(
+// DEFAULT-NEXT:                                                               Integer(
 // DEFAULT-NEXT:                                                                   3,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
@@ -401,10 +401,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -436,10 +434,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           0,
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       0,
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -451,139 +447,129 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "fields",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "c8",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           2.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       imaginary: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "fields",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "c8",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       2.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   imaginary: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "fields",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "u16",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           4.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       imaginary: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "fields",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "u16",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Integer(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       4.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   imaginary: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "fields",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "f32",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Single(
-// DEFAULT-NEXT:                                           5.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Single(
-// DEFAULT-NEXT:                                           6.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       imaginary: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "fields",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "f32",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Single(
+// DEFAULT-NEXT:                                       5.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Single(
+// DEFAULT-NEXT:                                       6.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   imaginary: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "fields",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "f64",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Binary {
-// DEFAULT-NEXT:                               op: Add,
-// DEFAULT-NEXT:                               left: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           7.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Float(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       value: Double(
-// DEFAULT-NEXT:                                           8.0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       imaginary: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "fields",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "f64",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Binary {
+// DEFAULT-NEXT:                           op: Add,
+// DEFAULT-NEXT:                           left: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       7.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Float(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   value: Double(
+// DEFAULT-NEXT:                                       8.0,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   imaginary: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Assign {
-// DEFAULT-NEXT:                           op: Assign,
-// DEFAULT-NEXT:                           target: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "overlay",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "value",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           value: Member {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "fields",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               field: "f64",
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   Assign {
+// DEFAULT-NEXT:                       op: Assign,
+// DEFAULT-NEXT:                       target: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "overlay",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "value",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       value: Member {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "fields",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           field: "f64",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
@@ -602,8 +588,9 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Or,
+// DEFAULT-NEXT:                                           left: Binary {
 // DEFAULT-NEXT:                                               op: Or,
 // DEFAULT-NEXT:                                               left: Binary {
 // DEFAULT-NEXT:                                                   op: Or,
@@ -616,47 +603,6 @@ int main(void) {
 // DEFAULT-NEXT:                                                               left: Binary {
 // DEFAULT-NEXT:                                                                   op: Or,
 // DEFAULT-NEXT:                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                       op: Or,
-// DEFAULT-NEXT:                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                           op: NotEqual,
-// DEFAULT-NEXT:                                                                           left: Call {
-// DEFAULT-NEXT:                                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                                   "__real__",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               arguments: [
-// DEFAULT-NEXT:                                                                                   Member {
-// DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "fields",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       field: "c8",
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ],
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                           op: NotEqual,
-// DEFAULT-NEXT:                                                                           left: Call {
-// DEFAULT-NEXT:                                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                                   "__imag__",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               arguments: [
-// DEFAULT-NEXT:                                                                                   Member {
-// DEFAULT-NEXT:                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                           "fields",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       field: "c8",
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ],
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           right: Integer(
-// DEFAULT-NEXT:                                                                               2,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   right: Binary {
 // DEFAULT-NEXT:                                                                       op: NotEqual,
 // DEFAULT-NEXT:                                                                       left: Call {
 // DEFAULT-NEXT:                                                                           callee: Identifier(
@@ -667,12 +613,31 @@ int main(void) {
 // DEFAULT-NEXT:                                                                                   base: Identifier(
 // DEFAULT-NEXT:                                                                                       "fields",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   field: "u16",
+// DEFAULT-NEXT:                                                                                   field: "c8",
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ],
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       right: Integer(
-// DEFAULT-NEXT:                                                                           3,
+// DEFAULT-NEXT:                                                                           1,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: Binary {
+// DEFAULT-NEXT:                                                                       op: NotEqual,
+// DEFAULT-NEXT:                                                                       left: Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "__imag__",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                       "fields",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "c8",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       right: Integer(
+// DEFAULT-NEXT:                                                                           2,
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
@@ -680,7 +645,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   op: NotEqual,
 // DEFAULT-NEXT:                                                                   left: Call {
 // DEFAULT-NEXT:                                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                                           "__imag__",
+// DEFAULT-NEXT:                                                                           "__real__",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       arguments: [
 // DEFAULT-NEXT:                                                                           Member {
@@ -692,7 +657,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                                       ],
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: Integer(
-// DEFAULT-NEXT:                                                                       4,
+// DEFAULT-NEXT:                                                                       3,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
@@ -700,23 +665,19 @@ int main(void) {
 // DEFAULT-NEXT:                                                               op: NotEqual,
 // DEFAULT-NEXT:                                                               left: Call {
 // DEFAULT-NEXT:                                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                                       "__real__",
+// DEFAULT-NEXT:                                                                       "__imag__",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   arguments: [
 // DEFAULT-NEXT:                                                                       Member {
 // DEFAULT-NEXT:                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                               "fields",
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "f32",
+// DEFAULT-NEXT:                                                                           field: "u16",
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               right: Float(
-// DEFAULT-NEXT:                                                                   FloatLiteral {
-// DEFAULT-NEXT:                                                                       value: Single(
-// DEFAULT-NEXT:                                                                           5.0,
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               right: Integer(
+// DEFAULT-NEXT:                                                                   4,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
@@ -724,7 +685,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                           op: NotEqual,
 // DEFAULT-NEXT:                                                           left: Call {
 // DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "__imag__",
+// DEFAULT-NEXT:                                                                   "__real__",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               arguments: [
 // DEFAULT-NEXT:                                                                   Member {
@@ -738,7 +699,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                           right: Float(
 // DEFAULT-NEXT:                                                               FloatLiteral {
 // DEFAULT-NEXT:                                                                   value: Single(
-// DEFAULT-NEXT:                                                                       6.0,
+// DEFAULT-NEXT:                                                                       5.0,
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
@@ -748,21 +709,21 @@ int main(void) {
 // DEFAULT-NEXT:                                                       op: NotEqual,
 // DEFAULT-NEXT:                                                       left: Call {
 // DEFAULT-NEXT:                                                           callee: Identifier(
-// DEFAULT-NEXT:                                                               "__real__",
+// DEFAULT-NEXT:                                                               "__imag__",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           arguments: [
 // DEFAULT-NEXT:                                                               Member {
 // DEFAULT-NEXT:                                                                   base: Identifier(
-// DEFAULT-NEXT:                                                                       "overlay",
+// DEFAULT-NEXT:                                                                       "fields",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "value",
+// DEFAULT-NEXT:                                                                   field: "f32",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       right: Float(
 // DEFAULT-NEXT:                                                           FloatLiteral {
-// DEFAULT-NEXT:                                                               value: Double(
-// DEFAULT-NEXT:                                                                   7.0,
+// DEFAULT-NEXT:                                                               value: Single(
+// DEFAULT-NEXT:                                                                   6.0,
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
@@ -772,7 +733,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   op: NotEqual,
 // DEFAULT-NEXT:                                                   left: Call {
 // DEFAULT-NEXT:                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                           "__imag__",
+// DEFAULT-NEXT:                                                           "__real__",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       arguments: [
 // DEFAULT-NEXT:                                                           Member {
@@ -786,13 +747,36 @@ int main(void) {
 // DEFAULT-NEXT:                                                   right: Float(
 // DEFAULT-NEXT:                                                       FloatLiteral {
 // DEFAULT-NEXT:                                                           value: Double(
-// DEFAULT-NEXT:                                                               8.0,
+// DEFAULT-NEXT:                                                               7.0,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           right: Binary {
+// DEFAULT-NEXT:                                               op: NotEqual,
+// DEFAULT-NEXT:                                               left: Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "__imag__",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [
+// DEFAULT-NEXT:                                                       Member {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "overlay",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           field: "value",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right: Float(
+// DEFAULT-NEXT:                                                   FloatLiteral {
+// DEFAULT-NEXT:                                                       value: Double(
+// DEFAULT-NEXT:                                                           8.0,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -800,10 +784,8 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Identifier(
-// DEFAULT-NEXT:                           "failed",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Identifier(
+// DEFAULT-NEXT:                       "failed",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],

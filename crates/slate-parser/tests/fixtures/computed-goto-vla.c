@@ -65,7 +65,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntLit(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           2,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -76,20 +76,16 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       LabelAddr(
-// DEFAULT-NEXT:                                                           "L0",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   LabelAddress(
+// DEFAULT-NEXT:                                                       "L0",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Const(
-// DEFAULT-NEXT:                                                       LabelAddr(
-// DEFAULT-NEXT:                                                           "L1",
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   LabelAddress(
+// DEFAULT-NEXT:                                                       "L1",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -107,20 +103,16 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                   "L0",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           0,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       0,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Labeled(
 // DEFAULT-NEXT:                   "L1",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           1,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       1,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -170,10 +162,8 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                               "arr",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           size: Expression(
-// DEFAULT-NEXT:                               Const(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "n",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "n",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
@@ -198,10 +188,8 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                                       "local",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Const(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "n",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "n",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -210,27 +198,25 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Index {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "local",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Index {
-// DEFAULT-NEXT:                               base: Identifier(
-// DEFAULT-NEXT:                                   "arr",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               index: Integer(
-// DEFAULT-NEXT:                                   0,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Add,
+// DEFAULT-NEXT:                       left: Index {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "local",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                       right: Index {
+// DEFAULT-NEXT:                           base: Identifier(
+// DEFAULT-NEXT:                               "arr",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           index: Integer(
+// DEFAULT-NEXT:                               0,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
@@ -285,7 +271,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                                       ),
 // COMPUTED-NEXT:                                   },
 // COMPUTED-NEXT:                                   size: Expression(
-// COMPUTED-NEXT:                                       IntLit(
+// COMPUTED-NEXT:                                       Integer(
 // COMPUTED-NEXT:                                           2,
 // COMPUTED-NEXT:                                       ),
 // COMPUTED-NEXT:                                   ),
@@ -296,20 +282,16 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                                           InitializerItem {
 // COMPUTED-NEXT:                                               designators: [],
 // COMPUTED-NEXT:                                               value: Expr(
-// COMPUTED-NEXT:                                                   Const(
-// COMPUTED-NEXT:                                                       LabelAddr(
-// COMPUTED-NEXT:                                                           "L0",
-// COMPUTED-NEXT:                                                       ),
+// COMPUTED-NEXT:                                                   LabelAddress(
+// COMPUTED-NEXT:                                                       "L0",
 // COMPUTED-NEXT:                                                   ),
 // COMPUTED-NEXT:                                               ),
 // COMPUTED-NEXT:                                           },
 // COMPUTED-NEXT:                                           InitializerItem {
 // COMPUTED-NEXT:                                               designators: [],
 // COMPUTED-NEXT:                                               value: Expr(
-// COMPUTED-NEXT:                                                   Const(
-// COMPUTED-NEXT:                                                       LabelAddr(
-// COMPUTED-NEXT:                                                           "L1",
-// COMPUTED-NEXT:                                                       ),
+// COMPUTED-NEXT:                                                   LabelAddress(
+// COMPUTED-NEXT:                                                       "L1",
 // COMPUTED-NEXT:                                                   ),
 // COMPUTED-NEXT:                                               ),
 // COMPUTED-NEXT:                                           },
@@ -321,35 +303,29 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               ComputedGoto(
-// COMPUTED-NEXT:                   Const(
-// COMPUTED-NEXT:                       Index {
-// COMPUTED-NEXT:                           base: Identifier(
-// COMPUTED-NEXT:                               "labels",
-// COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                           index: Identifier(
-// COMPUTED-NEXT:                               "n",
-// COMPUTED-NEXT:                           ),
-// COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                   ),
+// COMPUTED-NEXT:                   Index {
+// COMPUTED-NEXT:                       base: Identifier(
+// COMPUTED-NEXT:                           "labels",
+// COMPUTED-NEXT:                       ),
+// COMPUTED-NEXT:                       index: Identifier(
+// COMPUTED-NEXT:                           "n",
+// COMPUTED-NEXT:                       ),
+// COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Labeled(
 // COMPUTED-NEXT:                   "L0",
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   Const(
-// COMPUTED-NEXT:                       Integer(
-// COMPUTED-NEXT:                           0,
-// COMPUTED-NEXT:                       ),
+// COMPUTED-NEXT:                   Integer(
+// COMPUTED-NEXT:                       0,
 // COMPUTED-NEXT:                   ),
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Labeled(
 // COMPUTED-NEXT:                   "L1",
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   Const(
-// COMPUTED-NEXT:                       Integer(
-// COMPUTED-NEXT:                           1,
-// COMPUTED-NEXT:                       ),
+// COMPUTED-NEXT:                   Integer(
+// COMPUTED-NEXT:                       1,
 // COMPUTED-NEXT:                   ),
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:           ],
@@ -399,10 +375,8 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                               "arr",
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                           size: Expression(
-// COMPUTED-NEXT:                               Const(
-// COMPUTED-NEXT:                                   Identifier(
-// COMPUTED-NEXT:                                       "n",
-// COMPUTED-NEXT:                                   ),
+// COMPUTED-NEXT:                               Identifier(
+// COMPUTED-NEXT:                                   "n",
 // COMPUTED-NEXT:                               ),
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
@@ -427,10 +401,8 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                                       "local",
 // COMPUTED-NEXT:                                   ),
 // COMPUTED-NEXT:                                   size: Expression(
-// COMPUTED-NEXT:                                       Const(
-// COMPUTED-NEXT:                                           Identifier(
-// COMPUTED-NEXT:                                               "n",
-// COMPUTED-NEXT:                                           ),
+// COMPUTED-NEXT:                                       Identifier(
+// COMPUTED-NEXT:                                           "n",
 // COMPUTED-NEXT:                                       ),
 // COMPUTED-NEXT:                                   ),
 // COMPUTED-NEXT:                               },
@@ -439,27 +411,25 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   Const(
-// COMPUTED-NEXT:                       Binary {
-// COMPUTED-NEXT:                           op: Add,
-// COMPUTED-NEXT:                           left: Index {
-// COMPUTED-NEXT:                               base: Identifier(
-// COMPUTED-NEXT:                                   "local",
-// COMPUTED-NEXT:                               ),
-// COMPUTED-NEXT:                               index: Integer(
-// COMPUTED-NEXT:                                   0,
-// COMPUTED-NEXT:                               ),
-// COMPUTED-NEXT:                           },
-// COMPUTED-NEXT:                           right: Index {
-// COMPUTED-NEXT:                               base: Identifier(
-// COMPUTED-NEXT:                                   "arr",
-// COMPUTED-NEXT:                               ),
-// COMPUTED-NEXT:                               index: Integer(
-// COMPUTED-NEXT:                                   0,
-// COMPUTED-NEXT:                               ),
-// COMPUTED-NEXT:                           },
+// COMPUTED-NEXT:                   Binary {
+// COMPUTED-NEXT:                       op: Add,
+// COMPUTED-NEXT:                       left: Index {
+// COMPUTED-NEXT:                           base: Identifier(
+// COMPUTED-NEXT:                               "local",
+// COMPUTED-NEXT:                           ),
+// COMPUTED-NEXT:                           index: Integer(
+// COMPUTED-NEXT:                               0,
+// COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                   ),
+// COMPUTED-NEXT:                       right: Index {
+// COMPUTED-NEXT:                           base: Identifier(
+// COMPUTED-NEXT:                               "arr",
+// COMPUTED-NEXT:                           ),
+// COMPUTED-NEXT:                           index: Integer(
+// COMPUTED-NEXT:                               0,
+// COMPUTED-NEXT:                           ),
+// COMPUTED-NEXT:                       },
+// COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:           provenance: Provenance {
@@ -514,7 +484,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                                       ),
 // DOUBLED-NEXT:                                   },
 // DOUBLED-NEXT:                                   size: Expression(
-// DOUBLED-NEXT:                                       IntLit(
+// DOUBLED-NEXT:                                       Integer(
 // DOUBLED-NEXT:                                           2,
 // DOUBLED-NEXT:                                       ),
 // DOUBLED-NEXT:                                   ),
@@ -525,20 +495,16 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                                           InitializerItem {
 // DOUBLED-NEXT:                                               designators: [],
 // DOUBLED-NEXT:                                               value: Expr(
-// DOUBLED-NEXT:                                                   Const(
-// DOUBLED-NEXT:                                                       LabelAddr(
-// DOUBLED-NEXT:                                                           "L0",
-// DOUBLED-NEXT:                                                       ),
+// DOUBLED-NEXT:                                                   LabelAddress(
+// DOUBLED-NEXT:                                                       "L0",
 // DOUBLED-NEXT:                                                   ),
 // DOUBLED-NEXT:                                               ),
 // DOUBLED-NEXT:                                           },
 // DOUBLED-NEXT:                                           InitializerItem {
 // DOUBLED-NEXT:                                               designators: [],
 // DOUBLED-NEXT:                                               value: Expr(
-// DOUBLED-NEXT:                                                   Const(
-// DOUBLED-NEXT:                                                       LabelAddr(
-// DOUBLED-NEXT:                                                           "L1",
-// DOUBLED-NEXT:                                                       ),
+// DOUBLED-NEXT:                                                   LabelAddress(
+// DOUBLED-NEXT:                                                       "L1",
 // DOUBLED-NEXT:                                                   ),
 // DOUBLED-NEXT:                                               ),
 // DOUBLED-NEXT:                                           },
@@ -556,20 +522,16 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                   "L0",
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   Const(
-// DOUBLED-NEXT:                       Integer(
-// DOUBLED-NEXT:                           0,
-// DOUBLED-NEXT:                       ),
+// DOUBLED-NEXT:                   Integer(
+// DOUBLED-NEXT:                       0,
 // DOUBLED-NEXT:                   ),
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Labeled(
 // DOUBLED-NEXT:                   "L1",
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   Const(
-// DOUBLED-NEXT:                       Integer(
-// DOUBLED-NEXT:                           1,
-// DOUBLED-NEXT:                       ),
+// DOUBLED-NEXT:                   Integer(
+// DOUBLED-NEXT:                       1,
 // DOUBLED-NEXT:                   ),
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:           ],
@@ -619,10 +581,8 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                               "arr",
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                           size: Expression(
-// DOUBLED-NEXT:                               Const(
-// DOUBLED-NEXT:                                   Identifier(
-// DOUBLED-NEXT:                                       "n",
-// DOUBLED-NEXT:                                   ),
+// DOUBLED-NEXT:                               Identifier(
+// DOUBLED-NEXT:                                   "n",
 // DOUBLED-NEXT:                               ),
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
@@ -647,17 +607,15 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                                       "local",
 // DOUBLED-NEXT:                                   ),
 // DOUBLED-NEXT:                                   size: Expression(
-// DOUBLED-NEXT:                                       Const(
-// DOUBLED-NEXT:                                           Binary {
-// DOUBLED-NEXT:                                               op: Mul,
-// DOUBLED-NEXT:                                               left: Identifier(
-// DOUBLED-NEXT:                                                   "n",
-// DOUBLED-NEXT:                                               ),
-// DOUBLED-NEXT:                                               right: Integer(
-// DOUBLED-NEXT:                                                   2,
-// DOUBLED-NEXT:                                               ),
-// DOUBLED-NEXT:                                           },
-// DOUBLED-NEXT:                                       ),
+// DOUBLED-NEXT:                                       Binary {
+// DOUBLED-NEXT:                                           op: Mul,
+// DOUBLED-NEXT:                                           left: Identifier(
+// DOUBLED-NEXT:                                               "n",
+// DOUBLED-NEXT:                                           ),
+// DOUBLED-NEXT:                                           right: Integer(
+// DOUBLED-NEXT:                                               2,
+// DOUBLED-NEXT:                                           ),
+// DOUBLED-NEXT:                                       },
 // DOUBLED-NEXT:                                   ),
 // DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           },
@@ -665,27 +623,25 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   Const(
-// DOUBLED-NEXT:                       Binary {
-// DOUBLED-NEXT:                           op: Add,
-// DOUBLED-NEXT:                           left: Index {
-// DOUBLED-NEXT:                               base: Identifier(
-// DOUBLED-NEXT:                                   "local",
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                               index: Integer(
-// DOUBLED-NEXT:                                   0,
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                           },
-// DOUBLED-NEXT:                           right: Index {
-// DOUBLED-NEXT:                               base: Identifier(
-// DOUBLED-NEXT:                                   "arr",
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                               index: Integer(
-// DOUBLED-NEXT:                                   0,
-// DOUBLED-NEXT:                               ),
-// DOUBLED-NEXT:                           },
+// DOUBLED-NEXT:                   Binary {
+// DOUBLED-NEXT:                       op: Add,
+// DOUBLED-NEXT:                       left: Index {
+// DOUBLED-NEXT:                           base: Identifier(
+// DOUBLED-NEXT:                               "local",
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                           index: Integer(
+// DOUBLED-NEXT:                               0,
+// DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                   ),
+// DOUBLED-NEXT:                       right: Index {
+// DOUBLED-NEXT:                           base: Identifier(
+// DOUBLED-NEXT:                               "arr",
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                           index: Integer(
+// DOUBLED-NEXT:                               0,
+// DOUBLED-NEXT:                           ),
+// DOUBLED-NEXT:                       },
+// DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {

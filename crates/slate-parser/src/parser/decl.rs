@@ -13,12 +13,11 @@ use std::collections::{HashMap, HashSet};
 impl Parser {
     pub(super) fn parse_declaration_tokens(
         &self,
-        code: &str,
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
         let mut specifiers = self.parse_declaration_specifiers(&mut parser)?;
-        let declarators = self.parse_declarator_list(code, &mut parser, &mut specifiers, false)?;
+        let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
         Ok(Declaration {
             specifiers,
             declarators: declarators
@@ -30,12 +29,11 @@ impl Parser {
 
     pub(super) fn parse_field_declaration_tokens(
         &self,
-        code: &str,
         tokens: &[Span<Token>],
     ) -> Result<(DeclarationSpecifiers, Vec<FieldDeclarator>), ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
         let mut specifiers = self.parse_declaration_specifiers(&mut parser)?;
-        let declarators = self.parse_declarator_list(code, &mut parser, &mut specifiers, true)?;
+        let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, true)?;
         Ok((
             specifiers,
             declarators
@@ -59,6 +57,7 @@ impl Parser {
             pos,
             typedef_names: &self.typedef_names,
             biggest_alignment: self.biggest_alignment,
+            statements: Some(self),
         }
     }
 
@@ -165,7 +164,6 @@ impl Parser {
 
     fn parse_declarator_list(
         &self,
-        code: &str,
         parser: &mut DeclaratorParser,
         specifiers: &mut DeclarationSpecifiers,
         is_field: bool,
@@ -174,7 +172,7 @@ impl Parser {
         let mut declarators = Vec::new();
         if parser.peek() != Some(&Token::Semi) {
             loop {
-                declarators.push(self.parse_one_declarator(code, parser, specifiers, is_field)?);
+                declarators.push(self.parse_one_declarator(parser, specifiers, is_field)?);
                 if !parser.matches(Token::Comma) {
                     break;
                 }
@@ -203,7 +201,6 @@ impl Parser {
 
     fn parse_one_declarator(
         &self,
-        code: &str,
         parser: &mut DeclaratorParser,
         specifiers: &DeclarationSpecifiers,
         is_field: bool,
@@ -228,13 +225,11 @@ impl Parser {
         };
         let bit_width = if is_field && parser.matches(Token::Colon) {
             let start = parser.pos;
-            let (width, end) = const_expr::Parser::parse_one(tokens, start, &self.typedef_names)
-                .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
+            let (width, end) =
+                const_expr::Parser::parse_one(tokens, start, &self.typedef_names, Some(self))
+                    .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
             parser.pos = end;
-            Some(span_tokens(
-                Expr::Const(Box::new(width)),
-                &tokens[start..end],
-            ))
+            Some(width)
         } else {
             None
         };
@@ -254,7 +249,7 @@ impl Parser {
         parser.pos = position;
         attributes.extend(trailing_attributes);
         let initializer = if parser.matches(Token::Equal) {
-            Some(self.parse_declaration_initializer(code, parser)?)
+            Some(self.parse_declaration_initializer(parser)?)
         } else {
             None
         };
@@ -269,29 +264,12 @@ impl Parser {
 
     fn parse_declaration_initializer(
         &self,
-        code: &str,
         parser: &mut DeclaratorParser,
     ) -> Result<Initializer, ParseError> {
         let tokens = parser.tokens;
-        if parser.peek() != Some(&Token::LParen)
-            || tokens.value_at(parser.pos + 1) != Some(&Token::LBrace)
-        {
-            return parser
-                .parse_initializer(&self.typedef_names)
-                .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()));
-        }
-        let close = matching_brace(tokens, parser.pos + 1)
-            .ok_or_else(|| self.error_at_tokens(tokens, parser.pos, "expected `}`"))?;
-        if tokens.value_at(close + 1) != Some(&Token::RParen) {
-            return Err(self.error_at_tokens(tokens, close, "expected `)`"));
-        }
-        let body = self.parse_stmts_from_tokens(code, &tokens[parser.pos + 2..close])?;
-        let start = parser.pos;
-        parser.pos = close + 2;
-        Ok(Initializer::Expr(span_tokens(
-            Expr::StatementExpression(body),
-            &tokens[start..parser.pos],
-        )))
+        parser
+            .parse_initializer(&self.typedef_names)
+            .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))
     }
 
     pub(super) fn parse_static_assert(
@@ -421,11 +399,6 @@ impl Parser {
                         .map(|result| span_decl_result(result, nodes));
                 }
                 let span = declaration_node_span(nodes);
-                let typedef_text = if span == 1 {
-                    text.to_string()
-                } else {
-                    join_node_text(&nodes[..span])
-                };
                 let typedef_tokens = self.nodes_tokens(&nodes[..span]);
                 let Some(semi) = typedef_tokens
                     .last()
@@ -445,8 +418,7 @@ impl Parser {
                     }
                     statement_tokens.push(semi.clone());
                     let typedef = Decl::Declaration {
-                        declaration: self
-                            .parse_declaration_tokens(&typedef_text, &statement_tokens)?,
+                        declaration: self.parse_declaration_tokens(&statement_tokens)?,
                         provenance: *provenance,
                     };
                     typedefs.push(span_pp_nodes(typedef, &nodes[..span]));
@@ -558,12 +530,10 @@ impl Parser {
                 } else {
                     1
                 };
-                let joined_item_text;
-                let (item_text, item_tokens): (&str, Vec<Span<Token>>) = if item_span == 1 {
-                    (self.node_text(&nodes[0]), tokens)
+                let item_tokens = if item_span == 1 {
+                    tokens
                 } else {
-                    joined_item_text = join_node_text(&nodes[..item_span]);
-                    (&joined_item_text, self.nodes_tokens(&nodes[..item_span]))
+                    self.nodes_tokens(&nodes[..item_span])
                 };
                 let first_lbrace = top_level_token(&item_tokens, &Token::LBrace).or_else(|| {
                     (paren_depth(&item_tokens) > 0)
@@ -589,8 +559,7 @@ impl Parser {
                         declaration_tokens.push(synthetic(Token::Semi));
                     }
                     let declaration = Decl::Declaration {
-                        declaration: self
-                            .parse_declaration_tokens(item_text, &declaration_tokens)?,
+                        declaration: self.parse_declaration_tokens(&declaration_tokens)?,
                         provenance: self.node_provenance(&nodes[0]),
                     };
                     return Ok((
@@ -675,7 +644,6 @@ impl Parser {
             attributes.extend(trailing_attributes);
             let provenance = self.node_provenance(&nodes[0]);
             let declaration = self.parse_tag_declaration(
-                code,
                 &all_tokens[..node0_offset],
                 CType::Tagged {
                     kind,
@@ -722,8 +690,9 @@ impl Parser {
                     );
                     enumerators.push(Enumerator {
                         name: enumerator_name.clone(),
-                        value: explicit_value
-                            .map(|value| span_tokens(Expr::IntLit(value), &segment[2..])),
+                        value: explicit_value.map(|value| {
+                            Box::new(span_tokens(ExprKind::Integer(value), &segment[2..]))
+                        }),
                     });
                 }
                 Decl::Enum(EnumDecl {
@@ -739,7 +708,7 @@ impl Parser {
                     }
                     segment.push(synthetic(Token::Semi));
                     let (specifiers, declarators) =
-                        self.parse_field_declaration_tokens(code, &segment)?;
+                        self.parse_field_declaration_tokens(&segment)?;
                     fields.push(span_tokens(
                         FieldItem::Field(FieldDecl {
                             specifiers,
@@ -811,7 +780,6 @@ impl Parser {
         };
         let provenance = self.node_provenance(&nodes[0]);
         let declaration = self.parse_tag_declaration(
-            code,
             &all_tokens[..node0_offset],
             CType::Tagged {
                 kind,
@@ -857,8 +825,9 @@ impl Parser {
                 );
                 enumerators.push(Enumerator {
                     name: enumerator_name.clone(),
-                    value: explicit_value
-                        .map(|value| span_tokens(Expr::IntLit(value), &segment[2..])),
+                    value: explicit_value.map(|value| {
+                        Box::new(span_tokens(ExprKind::Integer(value), &segment[2..]))
+                    }),
                 });
             }
             Decl::Enum(EnumDecl {
@@ -884,7 +853,6 @@ impl Parser {
 
     fn parse_tag_declaration(
         &self,
-        code: &str,
         prefix: &[Span<Token>],
         ty: CType,
         trailing: &[Span<Token>],
@@ -900,7 +868,7 @@ impl Parser {
         while let Some(qualifier) = parser.take_qualifier() {
             set_qualifier(&mut specifiers.qualifiers, qualifier);
         }
-        let declarators = self.parse_declarator_list(code, &mut parser, &mut specifiers, false)?;
+        let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
         Ok(Some(Decl::Declaration {
             declaration: Declaration {
                 specifiers,
@@ -997,7 +965,7 @@ impl Parser {
                         }
                         declaration_tokens.push(synthetic(Token::Semi));
                         let (specifiers, declarators) =
-                            self.parse_field_declaration_tokens(&joined, &declaration_tokens)?;
+                            self.parse_field_declaration_tokens(&declaration_tokens)?;
                         fields.push(span_pp_nodes(
                             FieldItem::Field(FieldDecl {
                                 specifiers,
@@ -1029,7 +997,7 @@ impl Parser {
 
 struct ParsedDeclarator {
     declarator: Declarator,
-    bit_width: Option<SpannedExpr>,
+    bit_width: Option<Expr>,
     asm_label: Option<Span<AsmLabel>>,
     attributes: Vec<Attribute>,
     initializer: Option<Initializer>,

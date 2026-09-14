@@ -27,10 +27,8 @@ int main() {
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           2,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   Integer(
+// DEFAULT-NEXT:                       2,
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -57,10 +55,8 @@ int main() {
 // INNER-NEXT:           name: "main",
 // INNER-NEXT:           body: [
 // INNER-NEXT:               Return(
-// INNER-NEXT:                   Const(
-// INNER-NEXT:                       Integer(
-// INNER-NEXT:                           1,
-// INNER-NEXT:                       ),
+// INNER-NEXT:                   Integer(
+// INNER-NEXT:                       1,
 // INNER-NEXT:                   ),
 // INNER-NEXT:               ),
 // INNER-NEXT:           ],

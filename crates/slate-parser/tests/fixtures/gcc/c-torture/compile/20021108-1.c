@@ -50,17 +50,15 @@ l2:;
 // DEFAULT-NEXT:                   "l1",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Const(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Sub,
-// DEFAULT-NEXT:                           left: LabelAddr(
-// DEFAULT-NEXT:                               "l1",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: LabelAddr(
-// DEFAULT-NEXT:                               "l2",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   Binary {
+// DEFAULT-NEXT:                       op: Sub,
+// DEFAULT-NEXT:                       left: LabelAddress(
+// DEFAULT-NEXT:                           "l1",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: LabelAddress(
+// DEFAULT-NEXT:                           "l2",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Labeled(
 // DEFAULT-NEXT:                   "l2",

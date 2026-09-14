@@ -51,10 +51,8 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   1,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -87,10 +85,8 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   2,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               2,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -123,10 +119,8 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Const(
-// DEFAULT-NEXT:                               Integer(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -161,10 +155,8 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   ),
 // FEATURE-NEXT:                   initializer: Some(
 // FEATURE-NEXT:                       Expr(
-// FEATURE-NEXT:                           Const(
-// FEATURE-NEXT:                               Integer(
-// FEATURE-NEXT:                                   1,
-// FEATURE-NEXT:                               ),
+// FEATURE-NEXT:                           Integer(
+// FEATURE-NEXT:                               1,
 // FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
@@ -197,10 +189,8 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   ),
 // FEATURE-NEXT:                   initializer: Some(
 // FEATURE-NEXT:                       Expr(
-// FEATURE-NEXT:                           Const(
-// FEATURE-NEXT:                               Integer(
-// FEATURE-NEXT:                                   1,
-// FEATURE-NEXT:                               ),
+// FEATURE-NEXT:                           Integer(
+// FEATURE-NEXT:                               1,
 // FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
@@ -233,10 +223,8 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:                   ),
 // FEATURE-NEXT:                   initializer: Some(
 // FEATURE-NEXT:                       Expr(
-// FEATURE-NEXT:                           Const(
-// FEATURE-NEXT:                               Integer(
-// FEATURE-NEXT:                                   3,
-// FEATURE-NEXT:                               ),
+// FEATURE-NEXT:                           Integer(
+// FEATURE-NEXT:                               3,
 // FEATURE-NEXT:                           ),
 // FEATURE-NEXT:                       ),
 // FEATURE-NEXT:                   ),
