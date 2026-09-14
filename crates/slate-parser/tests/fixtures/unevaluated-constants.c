@@ -23,8 +23,8 @@ int select_type(void) {
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "flags",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "A",
@@ -154,7 +154,7 @@ int select_type(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,

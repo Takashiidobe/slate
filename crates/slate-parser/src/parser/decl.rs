@@ -424,6 +424,10 @@ impl Parser {
                             tag_keyword_index + 1
                         };
                         tokens.len() == after_name_index
+                            || tokens.value_at(tag_keyword_index)
+                                == Some(&Token::Keyword(Keyword::Enum))
+                                && tokens.value_at(after_name_index) == Some(&Token::Colon)
+                                && !tokens.contains_value(&Token::Semi)
                     }
                     && nodes.get(1).is_some_and(|node| {
                         self.node_tokens(node).value_at(0) == Some(&Token::LBrace)
@@ -506,6 +510,30 @@ impl Parser {
         }
     }
 
+    fn parse_enum_fixed_type(
+        &self,
+        tokens: &[Span<Token>],
+        colon: usize,
+        header_end: usize,
+    ) -> Result<Option<TypeName>, ParseError> {
+        if tokens.value_at(colon) != Some(&Token::Colon) {
+            return Ok(None);
+        }
+        let header = &tokens[..header_end];
+        let mut parser = self.declarator_parser(header, colon + 1);
+        let type_name = parser
+            .parse_type_name()
+            .map_err(|error| self.error_at_tokens(header, parser.pos, error.to_string()))?;
+        if parser.pos != header_end {
+            return Err(self.error_at_tokens(
+                header,
+                parser.pos,
+                "expected `{` after enum underlying type",
+            ));
+        }
+        Ok(Some(type_name))
+    }
+
     pub(super) fn parse_tag_definition(
         &self,
         nodes: &[PPNode],
@@ -555,8 +583,15 @@ impl Parser {
         let name = match tokens.value_at(name_index) {
             Some(Token::Ident(name)) => Some(name.clone()),
             Some(Token::LBrace) => None,
+            Some(Token::Colon) if kind == TagKind::Enum => None,
             _ => return Err(self.error_at(Loc::whole(code), "expected tag name or `{`")),
         };
+        let fixed_type_index = name_index + usize::from(name.is_some());
+        let header_end = tokens[name_index..]
+            .values()
+            .position(|token| *token == Token::LBrace)
+            .map_or(tokens.len(), |position| name_index + position);
+        let fixed_type = self.parse_enum_fixed_type(tokens, fixed_type_index, header_end)?;
 
         if let Some(open_brace_idx) = tokens[name_index..]
             .values()
@@ -574,7 +609,10 @@ impl Parser {
             attributes.extend(trailing_attributes);
             let provenance = self.node_provenance(&nodes[0]);
             let body = if kind == TagKind::Enum {
-                TagBody::Enum(self.parse_enumerators(code, body_tokens)?)
+                TagBody::Enum {
+                    fixed_type,
+                    enumerators: self.parse_enumerators(code, body_tokens)?,
+                }
             } else {
                 let mut fields = Vec::new();
                 for mut segment in split_top_level(body_tokens, &Token::Semi) {
@@ -664,7 +702,10 @@ impl Parser {
         };
         let provenance = self.node_provenance(&nodes[0]);
         let body = if kind == TagKind::Enum {
-            TagBody::Enum(self.parse_enum_items(&nodes[body_start..close])?)
+            TagBody::Enum {
+                fixed_type,
+                enumerators: self.parse_enum_items(&nodes[body_start..close])?,
+            }
         } else {
             TagBody::Record(self.parse_field_items(&nodes[body_start..close])?)
         };

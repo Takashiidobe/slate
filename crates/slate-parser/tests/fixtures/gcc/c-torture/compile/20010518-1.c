@@ -215,8 +215,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "insn_code",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "CODE_FOR_extendqidi2",
@@ -270,7 +270,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -288,8 +288,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "machine_mode",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "VOIDmode",
@@ -319,7 +319,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -337,8 +337,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "rtx_code",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "UNKNOWN",
@@ -408,7 +408,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,
@@ -1628,8 +1628,8 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "reload_type",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "RELOAD_FOR_INPUT",
@@ -1785,7 +1785,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,

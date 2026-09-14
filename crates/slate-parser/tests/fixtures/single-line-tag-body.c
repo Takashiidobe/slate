@@ -88,8 +88,8 @@ typedef struct Pair { int a; int b; } Pair;
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "Color",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "RED",
@@ -157,7 +157,7 @@ typedef struct Pair { int a; int b; } Pair;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,

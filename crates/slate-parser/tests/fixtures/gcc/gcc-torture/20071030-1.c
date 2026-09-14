@@ -294,8 +294,8 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Enum,
 // DEFAULT-NEXT:       name: None,
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "cs_free",
@@ -367,7 +367,7 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,

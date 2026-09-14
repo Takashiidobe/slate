@@ -40,8 +40,8 @@ static void y(int x) { abort(); }
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "X",
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       body: Enum(
-// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:       body: Enum {
+// DEFAULT-NEXT:           enumerators: [
 // DEFAULT-NEXT:               Enumerator(
 // DEFAULT-NEXT:                   Enumerator {
 // DEFAULT-NEXT:                       name: "X1",
@@ -111,7 +111,7 @@ static void y(int x) { abort(); }
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:       provenance: Provenance {
 // DEFAULT-NEXT:           file: FileId(
 // DEFAULT-NEXT:               3,

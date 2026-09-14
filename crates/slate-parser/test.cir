@@ -1,0 +1,22 @@
+!s32i = !cir.int<s, 32>
+module @"/home/takashi/Projects/slate-parser/test.c" attributes {cir.default_tls_model = #cir.tls_model<tls_dyn>, cir.int_type_width = 32 : i32, cir.lang = #cir.lang<c>, cir.module_asm = [], cir.size_type_width = 64 : i32, cir.triple = "x86_64-unknown-linux-gnu", dlti.dl_spec = #dlti.dl_spec<!llvm.ptr<270> = dense<32> : vector<4xi64>, !llvm.ptr<271> = dense<32> : vector<4xi64>, !llvm.ptr<272> = dense<64> : vector<4xi64>, i64 = dense<64> : vector<2xi64>, i128 = dense<128> : vector<2xi64>, f80 = dense<128> : vector<2xi64>, !llvm.ptr = dense<64> : vector<4xi64>, i1 = dense<8> : vector<2xi64>, i8 = dense<8> : vector<2xi64>, i16 = dense<16> : vector<2xi64>, i32 = dense<32> : vector<2xi64>, f16 = dense<16> : vector<2xi64>, f64 = dense<64> : vector<2xi64>, f128 = dense<128> : vector<2xi64>, "dlti.endianness" = "little", "dlti.mangling_mode" = "e", "dlti.legal_int_widths" = array<i32: 8, 16, 32, 64>, "dlti.stack_alignment" = 128 : i64, !cir.ptr<!cir.void> = #cir.ptr_spec<size = 64, abi = 64, preferred = 64, index = 64>>} {
+  cir.func no_inline no_proto dso_local @main() -> !s32i attributes {"cir.target-cpu" = "x86-64", "cir.target-features" = "+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87", "cir.tune-cpu" = "generic", nothrow} {
+    %0 = cir.alloca "__retval" align(4) : !cir.ptr<!s32i> loc(#loc2)
+    %1 = cir.const #cir.int<0> : !s32i loc(#loc3)
+    cir.store %1, %0 : !s32i, !cir.ptr<!s32i> loc(#loc3)
+    %2 = cir.const #cir.int<4> : !s32i loc(#loc8)
+    cir.store %2, %0 : !s32i, !cir.ptr<!s32i> loc(#loc9)
+    %3 = cir.load %0 : !cir.ptr<!s32i>, !s32i loc(#loc9)
+    cir.return %3 : !s32i loc(#loc9)
+  } loc(#loc7)
+} loc(#loc)
+#loc = loc("/home/takashi/Projects/slate-parser/test.c":0:0)
+#loc1 = loc("test.c":1:1)
+#loc2 = loc("test.c":1:34)
+#loc3 = loc("test.c":1:12)
+#loc4 = loc("test.c":1:21)
+#loc5 = loc("test.c":1:31)
+#loc6 = loc("test.c":1:14)
+#loc7 = loc(fused[#loc1, #loc2])
+#loc8 = loc(fused[#loc4, #loc5])
+#loc9 = loc(fused[#loc6, #loc5])

@@ -481,16 +481,20 @@ impl<'a> DeclaratorParser<'a> {
             }
             _ => None,
         };
+        let mut fixed_type = None;
         if self.peek() == Some(&Token::Colon) {
             let checkpoint = self.pos;
             self.pos += 1;
-            self.take_qualifiers();
-            if self.parse_base_type().is_err() {
-                self.pos = checkpoint;
+            match self.parse_type_name() {
+                Ok(type_name) => fixed_type = Some(type_name),
+                Err(_) => self.pos = checkpoint,
             }
         }
         if self.peek() == Some(&Token::LBrace) {
-            let body = TagBody::Enum(self.parse_enumerator_list()?);
+            let body = TagBody::Enum {
+                fixed_type,
+                enumerators: self.parse_enumerator_list()?,
+            };
             return self.define_tag(TagKind::Enum, name, body, start);
         }
         tag_reference(TagKind::Enum, name)

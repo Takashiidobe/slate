@@ -373,8 +373,14 @@ fn check_tag_definition(
     errors: &mut Vec<SemaError>,
 ) {
     check_attributes(&tag.attributes, tag.provenance, loc, errors);
-    let TagBody::Record(fields) = &tag.body else {
-        return;
+    let fields = match &tag.body {
+        TagBody::Record(fields) => fields,
+        TagBody::Enum { fixed_type, .. } => {
+            if let Some(fixed_type) = fixed_type {
+                check_type_name(fixed_type, typedefs, tags, tag.provenance, loc, errors);
+            }
+            return;
+        }
     };
     for field_item in fields {
         let FieldItem::Field(field) = &field_item.value else {

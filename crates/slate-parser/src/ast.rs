@@ -1087,10 +1087,14 @@ pub struct TagDefinition {
     pub provenance: Provenance,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum TagBody {
     Record(Vec<SpannedFieldItem>),
-    Enum(Vec<SpannedEnumItem>),
+    Enum {
+        #[debug(skip_if = Option::is_none)]
+        fixed_type: Option<TypeName>,
+        enumerators: Vec<SpannedEnumItem>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]

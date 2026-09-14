@@ -106,7 +106,9 @@ fn strip_tag_comments(tag: &mut TagDefinition) {
         TagBody::Record(fields) => {
             fields.retain(|field| !matches!(field.value, FieldItem::Comment(_)))
         }
-        TagBody::Enum(items) => items.retain(|item| !matches!(item.value, EnumItem::Comment(_))),
+        TagBody::Enum { enumerators, .. } => {
+            enumerators.retain(|item| !matches!(item.value, EnumItem::Comment(_)))
+        }
     }
 }
 

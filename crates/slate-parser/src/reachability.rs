@@ -51,8 +51,8 @@ impl<'a> Reachability<'a> {
             if let Some(name) = &tag.value.name {
                 symbols.entry(name.clone()).or_default().push(id);
             }
-            if let TagBody::Enum(items) = &tag.value.body {
-                for item in items {
+            if let TagBody::Enum { enumerators, .. } = &tag.value.body {
+                for item in enumerators {
                     if let EnumItem::Enumerator(enumerator) = &item.value {
                         symbols.entry(enumerator.name.clone()).or_default().push(id);
                     }
@@ -110,8 +110,14 @@ impl<'a> Reachability<'a> {
                     }
                 }
             }
-            TagBody::Enum(items) => {
-                for value in items.iter().filter_map(|item| match &item.value {
+            TagBody::Enum {
+                fixed_type,
+                enumerators,
+            } => {
+                if let Some(fixed_type) = fixed_type {
+                    self.mark_type_name(fixed_type);
+                }
+                for value in enumerators.iter().filter_map(|item| match &item.value {
                     EnumItem::Enumerator(enumerator) => enumerator.value.as_ref(),
                     EnumItem::Comment(_) => None,
                 }) {
