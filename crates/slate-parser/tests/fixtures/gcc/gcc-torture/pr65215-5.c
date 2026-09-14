@@ -137,22 +137,22 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: Some(
-// DEFAULT-NEXT:                                       false,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "p",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: Some(
+// DEFAULT-NEXT:                                           false,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -169,13 +169,17 @@ int main() {
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: false,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Index {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "p",
@@ -321,22 +325,22 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: Some(
-// DEFAULT-NEXT:                                       false,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "p",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: Some(
+// DEFAULT-NEXT:                                           false,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -353,13 +357,17 @@ int main() {
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: false,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Index {
 // DEFAULT-NEXT:                                               base: Identifier(
 // DEFAULT-NEXT:                                                   "p",
@@ -682,13 +690,17 @@ int main() {
 // DEFAULT-NEXT:                       right: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: SizeOfType {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: IntegerLiteral(
 // DEFAULT-NEXT:                               IntegerLiteral {

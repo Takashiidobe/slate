@@ -139,25 +139,23 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Qualified {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                           is_const: true,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                       ty: Integer(
 // DEFAULT-NEXT:                                           Char {
 // DEFAULT-NEXT:                                               signed: None,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                               is_restrict: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_const: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_restrict: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           variadic: true,
@@ -193,17 +191,17 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Name(
-// DEFAULT-NEXT:                                           "status",
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Name(
+// DEFAULT-NEXT:                                       "status",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -310,53 +308,51 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Qualified {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_const: true,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Char {
 // DEFAULT-NEXT:                                       signed: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                   is_const: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "tcase",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "tcase",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "n",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 11,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "11",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 11,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           spelling: "11",
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -547,17 +543,17 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -752,13 +748,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -829,30 +829,30 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1071,13 +1071,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -1148,43 +1152,43 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1427,13 +1431,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -1504,56 +1512,56 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1820,13 +1828,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -1897,69 +1909,69 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q4",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -2250,13 +2262,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -2327,82 +2343,82 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q4",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q5",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -2717,13 +2733,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -2794,95 +2814,95 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q4",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q5",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q6",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -3221,13 +3241,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -3298,108 +3322,108 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q4",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q5",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q6",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q7",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q7",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -3762,13 +3786,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -3839,121 +3867,121 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q4",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q5",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q6",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q7",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q7",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q8",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q8",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -4340,13 +4368,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -4417,134 +4449,134 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q0",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q0",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q3",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q3",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q4",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q4",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q5",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q5",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q6",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q6",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q7",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q7",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q8",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q8",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "q9",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "q9",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -4955,13 +4987,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),

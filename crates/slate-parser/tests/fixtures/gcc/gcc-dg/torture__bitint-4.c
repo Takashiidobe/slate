@@ -174,112 +174,112 @@ main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 125,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   BitInt {
+// DEFAULT-NEXT:                                       width: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 125,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "125",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "125",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "a",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "a",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 127,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   BitInt {
+// DEFAULT-NEXT:                                       width: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 127,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "127",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "127",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "b",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "b",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 125,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   BitInt {
+// DEFAULT-NEXT:                                       width: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 125,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "125",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "125",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "p",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 127,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "127",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "q",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Floating(
-// DEFAULT-NEXT:                               Float,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   BitInt {
+// DEFAULT-NEXT:                                       width: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 127,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "127",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "q",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Floating(
+// DEFAULT-NEXT:                                   Float,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "c",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -354,23 +354,27 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: Cast {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 125,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "125",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       BitInt {
+// DEFAULT-NEXT:                                           width: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 125,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "125",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           signed: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Identifier(
 // DEFAULT-NEXT:                               "a",
 // DEFAULT-NEXT:                           ),
@@ -397,23 +401,27 @@ main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: Cast {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 73,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "73",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       BitInt {
+// DEFAULT-NEXT:                                           width: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 73,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "73",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           signed: true,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: true,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Identifier(
 // DEFAULT-NEXT:                               "a",
 // DEFAULT-NEXT:                           ),

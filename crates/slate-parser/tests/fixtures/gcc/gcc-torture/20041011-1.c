@@ -100,13 +100,16 @@ int main() {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -236,27 +239,27 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "ull",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "ull",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "x",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1928,14 +1931,14 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "ull",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "ull",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "x",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],

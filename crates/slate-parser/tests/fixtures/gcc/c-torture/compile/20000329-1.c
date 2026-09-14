@@ -81,33 +81,33 @@ main (int ac, char *av[])
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Long,
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Long,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "i",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "buf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "buf",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -124,15 +124,19 @@ main (int ac, char *av[])
 // DEFAULT-NEXT:                               target: Unary {
 // DEFAULT-NEXT:                                   op: Deref,
 // DEFAULT-NEXT:                                   operand: Cast {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Long,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Identifier(
 // DEFAULT-NEXT:                                           "buf",
@@ -344,17 +348,17 @@ main (int ac, char *av[])
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Long,
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "l",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Long,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "l",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -537,36 +541,36 @@ main (int ac, char *av[])
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "ac",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "ac",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "av",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   size: Unspecified,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "av",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Unspecified,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },

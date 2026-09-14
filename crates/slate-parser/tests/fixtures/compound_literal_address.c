@@ -127,25 +127,23 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Qualified {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                           is_const: true,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                       ty: Integer(
 // DEFAULT-NEXT:                                           Char {
 // DEFAULT-NEXT:                                               signed: None,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                               is_restrict: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_const: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_restrict: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           variadic: true,
@@ -208,53 +206,51 @@ int main(void) {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Tag(
-// DEFAULT-NEXT:                               Reference {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: "Slice",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "result",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Tag(
+// DEFAULT-NEXT:                                   Reference {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: "Slice",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "result",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Qualified {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_const: true,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Char {
 // DEFAULT-NEXT:                                       signed: None,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                   is_const: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "data",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Long,
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "length",
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "data",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Long,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "length",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -352,13 +348,17 @@ int main(void) {
 // DEFAULT-NEXT:                                                       Unary {
 // DEFAULT-NEXT:                                                           op: AddrOf,
 // DEFAULT-NEXT:                                                           operand: CompoundLiteral {
-// DEFAULT-NEXT:                                                               ty: Tag(
-// DEFAULT-NEXT:                                                                   Reference {
-// DEFAULT-NEXT:                                                                       kind: Struct,
-// DEFAULT-NEXT:                                                                       name: "Slice",
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Tag(
+// DEFAULT-NEXT:                                                                           Reference {
+// DEFAULT-NEXT:                                                                               kind: Struct,
+// DEFAULT-NEXT:                                                                               name: "Slice",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               initializer: [],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
@@ -448,13 +448,17 @@ int main(void) {
 // DEFAULT-NEXT:                                                       Unary {
 // DEFAULT-NEXT:                                                           op: AddrOf,
 // DEFAULT-NEXT:                                                           operand: CompoundLiteral {
-// DEFAULT-NEXT:                                                               ty: Tag(
-// DEFAULT-NEXT:                                                                   Reference {
-// DEFAULT-NEXT:                                                                       kind: Struct,
-// DEFAULT-NEXT:                                                                       name: "Slice",
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Tag(
+// DEFAULT-NEXT:                                                                           Reference {
+// DEFAULT-NEXT:                                                                               kind: Struct,
+// DEFAULT-NEXT:                                                                               name: "Slice",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               initializer: [],
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },

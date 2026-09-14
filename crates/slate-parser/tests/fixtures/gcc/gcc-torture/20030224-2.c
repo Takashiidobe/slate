@@ -342,10 +342,14 @@ int main() {
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               value: Expr(
 // DEFAULT-NEXT:                                                   CompoundLiteral {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "jint16_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "jint16_t",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       initializer: [
 // DEFAULT-NEXT:                                                           InitializerItem {
 // DEFAULT-NEXT:                                                               designators: [],
@@ -375,10 +379,14 @@ int main() {
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               value: Expr(
 // DEFAULT-NEXT:                                                   CompoundLiteral {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "jint16_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "jint16_t",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       initializer: [
 // DEFAULT-NEXT:                                                           InitializerItem {
 // DEFAULT-NEXT:                                                               designators: [],

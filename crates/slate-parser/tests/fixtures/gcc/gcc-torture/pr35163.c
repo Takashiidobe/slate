@@ -142,13 +142,17 @@ int main() {
 // DEFAULT-NEXT:                           "a",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: Cast {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Short,
-// DEFAULT-NEXT:                                   signed: false,
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Short,
+// DEFAULT-NEXT:                                           signed: false,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Identifier(
 // DEFAULT-NEXT:                               "b",
 // DEFAULT-NEXT:                           ),

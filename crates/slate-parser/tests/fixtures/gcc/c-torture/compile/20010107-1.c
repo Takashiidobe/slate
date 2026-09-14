@@ -68,15 +68,19 @@ void foo(void)
 // DEFAULT-NEXT:                   Call {
 // DEFAULT-NEXT:                       callee: Paren(
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Function {
-// DEFAULT-NEXT:                                   inner: Grouped(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   parameters: Empty,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Function {
+// DEFAULT-NEXT:                                       inner: Grouped(
+// DEFAULT-NEXT:                                           Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       parameters: Empty,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Paren(
 // DEFAULT-NEXT:                                   Binary {

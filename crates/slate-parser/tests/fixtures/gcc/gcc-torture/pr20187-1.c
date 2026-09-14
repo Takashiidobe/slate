@@ -117,22 +117,30 @@ int main(void) { return 1 - test(); }
 // DEFAULT-NEXT:                       Conditional {
 // DEFAULT-NEXT:                           condition: Paren(
 // DEFAULT-NEXT:                               Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Char {
-// DEFAULT-NEXT:                                           signed: Some(
-// DEFAULT-NEXT:                                               false,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: Some(
+// DEFAULT-NEXT:                                                       false,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
-// DEFAULT-NEXT:                                   value: Cast {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: LongLong,
-// DEFAULT-NEXT:                                               signed: false,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: Cast {
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           Binary {
 // DEFAULT-NEXT:                                               op: BitAnd,

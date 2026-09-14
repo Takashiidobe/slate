@@ -30,6 +30,10 @@ pub(crate) enum DeclaratorError {
     ExpectedDeclarator,
     #[error("tag definition is not allowed here")]
     TagDefinitionNotAllowed,
+    #[error("multiple storage classes")]
+    MultipleStorageClasses,
+    #[error("duplicate `_Thread_local`")]
+    DuplicateThreadLocal,
     #[error("{0}")]
     Other(String),
 }
@@ -115,43 +119,49 @@ impl<'a> DeclaratorParser<'a> {
         }
     }
 
-    pub(crate) fn parse_base_type(&mut self) -> Result<CType, DeclaratorError> {
+    pub(crate) fn parse_base_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
         let Some(token) = self.peek().cloned() else {
             return Err(DeclaratorError::ExpectedDeclarationType);
         };
         self.pos += 1;
         Ok(match token {
-            Token::Keyword(Keyword::Bool) => CType::Bool,
-            Token::Keyword(Keyword::BFloat16) => CType::Floating(FloatingType::BFloat16),
-            Token::Keyword(Keyword::Char) => CType::Integer(IntegerType::Char { signed: None }),
+            Token::Keyword(Keyword::Bool) => TypeSpecifier::Bool,
+            Token::Keyword(Keyword::BFloat16) => TypeSpecifier::Floating(FloatingType::BFloat16),
+            Token::Keyword(Keyword::Char) => {
+                TypeSpecifier::Integer(IntegerType::Char { signed: None })
+            }
             Token::Keyword(Keyword::Double) => {
                 if self.matches(Token::Keyword(Keyword::Complex)) {
-                    CType::Complex(Box::new(CType::Floating(FloatingType::Double)))
+                    TypeSpecifier::Complex(Box::new(TypeSpecifier::Floating(FloatingType::Double)))
                 } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
-                    CType::Imaginary(Box::new(CType::Floating(FloatingType::Double)))
+                    TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(
+                        FloatingType::Double,
+                    )))
                 } else {
-                    CType::Floating(FloatingType::Double)
+                    TypeSpecifier::Floating(FloatingType::Double)
                 }
             }
             Token::Keyword(Keyword::Float) => {
                 if self.matches(Token::Keyword(Keyword::Complex)) {
-                    CType::Complex(Box::new(CType::Floating(FloatingType::Float)))
+                    TypeSpecifier::Complex(Box::new(TypeSpecifier::Floating(FloatingType::Float)))
                 } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
-                    CType::Imaginary(Box::new(CType::Floating(FloatingType::Float)))
+                    TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(FloatingType::Float)))
                 } else {
-                    CType::Floating(FloatingType::Float)
+                    TypeSpecifier::Floating(FloatingType::Float)
                 }
             }
-            Token::Keyword(Keyword::Float16) => CType::Floating(FloatingType::Float16),
-            Token::Keyword(Keyword::Fp16) => CType::Floating(FloatingType::Fp16),
-            Token::Keyword(Keyword::Float64x) => CType::Floating(FloatingType::Float64x),
-            Token::Keyword(Keyword::Float128) => CType::Floating(FloatingType::Float128),
-            Token::Keyword(Keyword::Float128Ext) => CType::Floating(FloatingType::Float128Ext),
-            Token::Keyword(Keyword::Int) => CType::Integer(IntegerType::Ranked {
+            Token::Keyword(Keyword::Float16) => TypeSpecifier::Floating(FloatingType::Float16),
+            Token::Keyword(Keyword::Fp16) => TypeSpecifier::Floating(FloatingType::Fp16),
+            Token::Keyword(Keyword::Float64x) => TypeSpecifier::Floating(FloatingType::Float64x),
+            Token::Keyword(Keyword::Float128) => TypeSpecifier::Floating(FloatingType::Float128),
+            Token::Keyword(Keyword::Float128Ext) => {
+                TypeSpecifier::Floating(FloatingType::Float128Ext)
+            }
+            Token::Keyword(Keyword::Int) => TypeSpecifier::Integer(IntegerType::Ranked {
                 rank: IntegerRank::Int,
                 signed: true,
             }),
-            Token::Keyword(Keyword::Int128) => CType::Integer(IntegerType::Ranked {
+            Token::Keyword(Keyword::Int128) => TypeSpecifier::Integer(IntegerType::Ranked {
                 rank: IntegerRank::Int128,
                 signed: true,
             }),
@@ -174,17 +184,21 @@ impl<'a> DeclaratorParser<'a> {
                         self.matches(Token::Keyword(Keyword::Signed));
                     }
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::LongLong,
                         signed,
                     })
                 } else if self.matches(Token::Keyword(Keyword::Double)) {
                     if self.matches(Token::Keyword(Keyword::Complex)) {
-                        CType::Complex(Box::new(CType::Floating(FloatingType::LongDouble)))
+                        TypeSpecifier::Complex(Box::new(TypeSpecifier::Floating(
+                            FloatingType::LongDouble,
+                        )))
                     } else if self.matches(Token::Keyword(Keyword::Imaginary)) {
-                        CType::Imaginary(Box::new(CType::Floating(FloatingType::LongDouble)))
+                        TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(
+                            FloatingType::LongDouble,
+                        )))
                     } else {
-                        CType::Floating(FloatingType::LongDouble)
+                        TypeSpecifier::Floating(FloatingType::LongDouble)
                     }
                 } else {
                     let signed = !self.matches(Token::Keyword(Keyword::Unsigned));
@@ -192,7 +206,7 @@ impl<'a> DeclaratorParser<'a> {
                         self.matches(Token::Keyword(Keyword::Signed));
                     }
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Long,
                         signed,
                     })
@@ -210,7 +224,7 @@ impl<'a> DeclaratorParser<'a> {
                     self.matches(Token::Keyword(Keyword::Signed));
                 }
                 self.matches(Token::Keyword(Keyword::Int));
-                CType::Integer(IntegerType::Ranked {
+                TypeSpecifier::Integer(IntegerType::Ranked {
                     rank: IntegerRank::Short,
                     signed,
                 })
@@ -218,12 +232,12 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Signed) => match self.peek() {
                 Some(Token::Keyword(Keyword::Char)) => {
                     self.pos += 1;
-                    CType::Integer(IntegerType::Char { signed: Some(true) })
+                    TypeSpecifier::Integer(IntegerType::Char { signed: Some(true) })
                 }
                 Some(Token::Keyword(Keyword::Short)) => {
                     self.pos += 1;
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Short,
                         signed: true,
                     })
@@ -232,13 +246,13 @@ impl<'a> DeclaratorParser<'a> {
                     self.pos += 1;
                     if self.matches(Token::Keyword(Keyword::Long)) {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::Integer(IntegerType::Ranked {
+                        TypeSpecifier::Integer(IntegerType::Ranked {
                             rank: IntegerRank::LongLong,
                             signed: true,
                         })
                     } else {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::Integer(IntegerType::Ranked {
+                        TypeSpecifier::Integer(IntegerType::Ranked {
                             rank: IntegerRank::Long,
                             signed: true,
                         })
@@ -246,7 +260,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Int128)) => {
                     self.pos += 1;
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Int128,
                         signed: true,
                     })
@@ -257,12 +271,12 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Int)) => {
                     self.pos += 1;
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Int,
                         signed: true,
                     })
                 }
-                _ => CType::Integer(IntegerType::Ranked {
+                _ => TypeSpecifier::Integer(IntegerType::Ranked {
                     rank: IntegerRank::Int,
                     signed: true,
                 }),
@@ -270,14 +284,14 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Unsigned) => match self.peek() {
                 Some(Token::Keyword(Keyword::Char)) => {
                     self.pos += 1;
-                    CType::Integer(IntegerType::Char {
+                    TypeSpecifier::Integer(IntegerType::Char {
                         signed: Some(false),
                     })
                 }
                 Some(Token::Keyword(Keyword::Short)) => {
                     self.pos += 1;
                     self.matches(Token::Keyword(Keyword::Int));
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Short,
                         signed: false,
                     })
@@ -286,13 +300,13 @@ impl<'a> DeclaratorParser<'a> {
                     self.pos += 1;
                     if self.matches(Token::Keyword(Keyword::Long)) {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::Integer(IntegerType::Ranked {
+                        TypeSpecifier::Integer(IntegerType::Ranked {
                             rank: IntegerRank::LongLong,
                             signed: false,
                         })
                     } else {
                         self.matches(Token::Keyword(Keyword::Int));
-                        CType::Integer(IntegerType::Ranked {
+                        TypeSpecifier::Integer(IntegerType::Ranked {
                             rank: IntegerRank::Long,
                             signed: false,
                         })
@@ -300,7 +314,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Int128)) => {
                     self.pos += 1;
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Int128,
                         signed: false,
                     })
@@ -311,17 +325,17 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::Int)) => {
                     self.pos += 1;
-                    CType::Integer(IntegerType::Ranked {
+                    TypeSpecifier::Integer(IntegerType::Ranked {
                         rank: IntegerRank::Int,
                         signed: false,
                     })
                 }
-                _ => CType::Integer(IntegerType::Ranked {
+                _ => TypeSpecifier::Integer(IntegerType::Ranked {
                     rank: IntegerRank::Int,
                     signed: false,
                 }),
             },
-            Token::Keyword(Keyword::Void) => CType::Void,
+            Token::Keyword(Keyword::Void) => TypeSpecifier::Void,
             Token::Keyword(Keyword::Saturated) => {
                 let rank = if self.matches(Token::Keyword(Keyword::Short)) {
                     FixedPointRank::Short
@@ -341,28 +355,12 @@ impl<'a> DeclaratorParser<'a> {
                     Token::LParen,
                     DeclaratorError::ExpectedToken(Token::LParen, "after `_Atomic`"),
                 )?;
-                let leading_qualifiers = self.take_qualifiers();
-                let mut ty = self.parse_base_type()?;
-                let trailing_qualifiers = self.take_qualifiers();
-                let qualifiers = Qualifiers {
-                    is_const: leading_qualifiers.is_const || trailing_qualifiers.is_const,
-                    is_volatile: leading_qualifiers.is_volatile || trailing_qualifiers.is_volatile,
-                    is_restrict: leading_qualifiers.is_restrict || trailing_qualifiers.is_restrict,
-                    is_atomic: leading_qualifiers.is_atomic || trailing_qualifiers.is_atomic,
-                };
-                if qualifiers != Qualifiers::default() {
-                    ty = CType::Qualified {
-                        qualifiers,
-                        ty: Box::new(ty),
-                    };
-                }
-                let declarator = self.parse_declarator(true)?;
-                ty = apply_abstract_declarator(ty, declarator);
+                let ty = self.parse_type_name()?;
                 self.expect(
                     Token::RParen,
                     DeclaratorError::ExpectedToken(Token::RParen, "after `_Atomic` type"),
                 )?;
-                CType::Atomic(Box::new(ty))
+                TypeSpecifier::Atomic(Box::new(ty))
             }
             Token::Keyword(Keyword::Complex) => {
                 let element = if matches!(
@@ -384,17 +382,17 @@ impl<'a> DeclaratorParser<'a> {
                 ) {
                     self.parse_base_type()?
                 } else {
-                    CType::Floating(FloatingType::Double)
+                    TypeSpecifier::Floating(FloatingType::Double)
                 };
-                CType::Complex(Box::new(element))
+                TypeSpecifier::Complex(Box::new(element))
             }
             Token::Keyword(Keyword::Imaginary) => {
-                CType::Imaginary(Box::new(CType::Floating(FloatingType::Double)))
+                TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(FloatingType::Double)))
             }
             Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false),
             Token::Keyword(Keyword::Typeof) => self.parse_typeof()?,
             Token::Keyword(Keyword::TypeofUnqual) => {
-                CType::TypeOfUnqual(self.parse_typeof_operand()?)
+                TypeSpecifier::TypeOfUnqual(self.parse_typeof_operand()?)
             }
             Token::Keyword(Keyword::Fract) => {
                 self.fixed_point(FixedPointKind::Fract, false, FixedPointRank::Default)
@@ -405,21 +403,30 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Struct) => self.parse_record_type(TagKind::Struct)?,
             Token::Keyword(Keyword::Union) => self.parse_record_type(TagKind::Union)?,
             Token::Keyword(Keyword::Enum) => self.parse_enum_type()?,
-            Token::Ident(name) if name == "__int128_t" => CType::Integer(IntegerType::Ranked {
-                rank: IntegerRank::Int128,
-                signed: true,
-            }),
-            Token::Ident(name) if name == "__uint128_t" => CType::Integer(IntegerType::Ranked {
-                rank: IntegerRank::Int128,
-                signed: false,
-            }),
-            Token::Ident(name) if is_target_builtin_name(&name) => CType::TargetBuiltin(name),
-            Token::Ident(name) => CType::Named(name),
+            Token::Ident(name) if name == "__int128_t" => {
+                TypeSpecifier::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Int128,
+                    signed: true,
+                })
+            }
+            Token::Ident(name) if name == "__uint128_t" => {
+                TypeSpecifier::Integer(IntegerType::Ranked {
+                    rank: IntegerRank::Int128,
+                    signed: false,
+                })
+            }
+            Token::Ident(name) if is_target_builtin_name(&name) => {
+                TypeSpecifier::TargetBuiltin(name)
+            }
+            Token::Ident(name) => TypeSpecifier::Named(name),
             other => return Err(DeclaratorError::UnexpectedToken(other)),
         })
     }
 
-    pub(super) fn parse_record_type(&mut self, kind: TagKind) -> Result<CType, DeclaratorError> {
+    pub(super) fn parse_record_type(
+        &mut self,
+        kind: TagKind,
+    ) -> Result<TypeSpecifier, DeclaratorError> {
         let start = self.pos - 1;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
@@ -442,7 +449,7 @@ impl<'a> DeclaratorParser<'a> {
         name: Option<String>,
         body: TagBody,
         start: usize,
-    ) -> Result<CType, DeclaratorError> {
+    ) -> Result<TypeSpecifier, DeclaratorError> {
         let parser = self
             .statements
             .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
@@ -455,7 +462,7 @@ impl<'a> DeclaratorParser<'a> {
             provenance: parser.token_provenance(&self.tokens[start]),
         };
         let id = parser.define_tag(span_tokens(definition, &self.tokens[start..self.pos]));
-        Ok(CType::Tag(TagSpecifier::Definition(id)))
+        Ok(TypeSpecifier::Tag(TagSpecifier::Definition(id)))
     }
 
     fn provenance_at(&self, index: usize) -> Provenance {
@@ -464,7 +471,7 @@ impl<'a> DeclaratorParser<'a> {
         })
     }
 
-    pub(super) fn parse_enum_type(&mut self) -> Result<CType, DeclaratorError> {
+    pub(super) fn parse_enum_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
         let start = self.pos - 1;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
@@ -607,7 +614,7 @@ impl<'a> DeclaratorParser<'a> {
         &mut self,
         rank: FixedPointRank,
         saturated: bool,
-    ) -> Result<CType, DeclaratorError> {
+    ) -> Result<TypeSpecifier, DeclaratorError> {
         let kind = match self.peek() {
             Some(Token::Keyword(Keyword::Fract)) => FixedPointKind::Fract,
             Some(Token::Keyword(Keyword::Accum)) => FixedPointKind::Accum,
@@ -622,15 +629,15 @@ impl<'a> DeclaratorParser<'a> {
         kind: FixedPointKind,
         saturated: bool,
         rank: FixedPointRank,
-    ) -> CType {
-        CType::FixedPoint(FixedPointType {
+    ) -> TypeSpecifier {
+        TypeSpecifier::FixedPoint(FixedPointType {
             kind,
             rank,
             saturated,
         })
     }
 
-    pub(super) fn parse_bit_int(&mut self, is_unsigned: bool) -> CType {
+    pub(super) fn parse_bit_int(&mut self, is_unsigned: bool) -> TypeSpecifier {
         assert!(self.matches(Token::LParen), "expected `(` after _BitInt");
         let start = self.pos;
         while self.peek() != Some(&Token::RParen) {
@@ -640,14 +647,14 @@ impl<'a> DeclaratorParser<'a> {
         let width = const_expr::Parser::parse(&self.tokens[start..self.pos])
             .expect("invalid _BitInt width expression");
         self.pos += 1;
-        CType::Integer(IntegerType::BitInt {
+        TypeSpecifier::Integer(IntegerType::BitInt {
             width,
             signed: !is_unsigned,
         })
     }
 
-    pub(super) fn parse_typeof(&mut self) -> Result<CType, DeclaratorError> {
-        self.parse_typeof_operand().map(CType::TypeOf)
+    pub(super) fn parse_typeof(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
+        self.parse_typeof_operand().map(TypeSpecifier::TypeOf)
     }
 
     pub(super) fn parse_typeof_operand(&mut self) -> Result<TypeOfOperand, DeclaratorError> {
@@ -656,7 +663,7 @@ impl<'a> DeclaratorParser<'a> {
             DeclaratorError::ExpectedToken(Token::LParen, "after `typeof`"),
         )?;
         if self.typeof_type_start() {
-            let ty = self.parse_base_type()?;
+            let ty = self.parse_type_name()?;
             self.expect(
                 Token::RParen,
                 DeclaratorError::ExpectedToken(Token::RParen, "after typeof type-name"),
@@ -909,6 +916,111 @@ impl<'a> DeclaratorParser<'a> {
         Ok(declarator)
     }
 
+    pub(crate) fn parse_specifiers(
+        &mut self,
+        implicit_int_function: bool,
+    ) -> Result<DeclarationSpecifiers, DeclaratorError> {
+        let mut specifiers = specifiers_with_type(TypeSpecifier::Void);
+        while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
+            self.pos += 1;
+        }
+        specifiers.attributes = self.parse_attributes()?;
+        let gnu_auto_type = self.matches(Token::Ident("__auto_type".into()));
+        self.parse_specifier_keywords(&mut specifiers)?;
+        let c23_auto_inference = self
+            .statements
+            .is_some_and(|parser| parser.standard().is_c23_or_later())
+            && specifiers.storage == StorageClass::Auto
+            && matches!(self.peek(), Some(Token::Ident(_)));
+        if c23_auto_inference {
+            specifiers.storage = StorageClass::None;
+        }
+        let implicit_int = implicit_int_function
+            && matches!(
+                (self.peek(), self.tokens.value_at(self.pos + 1)),
+                (Some(Token::Ident(name)), Some(Token::LParen)) if !self.typedef_names.contains(name)
+            );
+        specifiers.ty = if gnu_auto_type || c23_auto_inference {
+            TypeSpecifier::TargetBuiltin("__auto_type".into())
+        } else if implicit_int {
+            TypeSpecifier::Integer(IntegerType::Ranked {
+                rank: IntegerRank::Int,
+                signed: true,
+            })
+        } else {
+            self.parse_base_type()?
+        };
+        self.parse_specifier_keywords(&mut specifiers)?;
+        Ok(specifiers)
+    }
+
+    pub(crate) fn parse_specifier_keywords(
+        &mut self,
+        specifiers: &mut DeclarationSpecifiers,
+    ) -> Result<(), DeclaratorError> {
+        loop {
+            while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
+                self.pos += 1;
+            }
+            let start = self.pos;
+            let attributes = self.parse_attributes()?;
+            if self.pos != start {
+                specifiers.attributes.extend(attributes);
+                continue;
+            }
+            if let Some(qualifier) = self.take_qualifier() {
+                set_qualifier(&mut specifiers.qualifiers, qualifier);
+                continue;
+            }
+            if self.matches(Token::Keyword(Keyword::Inline)) {
+                specifiers.is_inline = true;
+                continue;
+            }
+            if self.matches(Token::Keyword(Keyword::Noreturn)) {
+                specifiers.is_noreturn = true;
+                continue;
+            }
+            if self.matches(Token::Keyword(Keyword::Constexpr)) {
+                specifiers.is_constexpr = true;
+                continue;
+            }
+            if self.matches(Token::Keyword(Keyword::ThreadLocal)) {
+                if specifiers.is_thread_local {
+                    return Err(DeclaratorError::DuplicateThreadLocal);
+                }
+                specifiers.is_thread_local = true;
+                continue;
+            }
+            let Some(Token::Keyword(keyword)) = self.peek() else {
+                return Ok(());
+            };
+            let storage = match *keyword {
+                Keyword::Typedef => StorageClass::Typedef,
+                Keyword::Extern => StorageClass::Extern,
+                Keyword::Static => StorageClass::Static,
+                Keyword::Auto => StorageClass::Auto,
+                Keyword::Register => StorageClass::Register,
+                _ => return Ok(()),
+            };
+            if specifiers.storage != StorageClass::None {
+                return Err(DeclaratorError::MultipleStorageClasses);
+            }
+            specifiers.storage = storage;
+            self.pos += 1;
+        }
+    }
+
+    pub(crate) fn parse_type_name(&mut self) -> Result<TypeName, DeclaratorError> {
+        let mut specifiers = self.parse_specifiers(false)?;
+        let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
+        specifiers.ty = apply_vector_attributes(ty, &specifiers.attributes);
+        let declarator = self.parse_declarator(true)?;
+        Ok(TypeName {
+            specifiers,
+            declarator,
+        })
+    }
+
     fn parse_pointer_qualifiers(
         &mut self,
     ) -> Result<(Qualifiers, Vec<Attribute>), DeclaratorError> {
@@ -1019,35 +1131,24 @@ impl<'a> DeclaratorParser<'a> {
                 variadic = true;
                 break;
             }
-            let mut attributes = self.parse_attributes()?;
-            self.matches(Token::Keyword(Keyword::Register));
-            let leading_qualifiers = self.take_qualifiers();
-            self.matches(Token::Keyword(Keyword::Register));
-            let base_ty = self.parse_base_type()?;
-            let trailing_qualifiers = self.take_qualifiers();
-            let qualifiers = Qualifiers {
-                is_const: leading_qualifiers.is_const || trailing_qualifiers.is_const,
-                is_volatile: leading_qualifiers.is_volatile || trailing_qualifiers.is_volatile,
-                is_restrict: leading_qualifiers.is_restrict || trailing_qualifiers.is_restrict,
-                is_atomic: leading_qualifiers.is_atomic || trailing_qualifiers.is_atomic,
-            };
-            let ty = if qualifiers == Qualifiers::default() {
-                base_ty
-            } else {
-                CType::Qualified {
-                    qualifiers,
-                    ty: Box::new(base_ty),
-                }
-            };
+            let mut specifiers = self.parse_specifiers(false)?;
             let declarator = match self.peek() {
-                Some(Token::Comma) | Some(Token::RParen) => None,
-                _ => Some(self.parse_declarator(true)?),
+                Some(Token::Comma) | Some(Token::RParen) => Declarator::Abstract,
+                _ => self.parse_declarator(true)?,
             };
-            attributes.extend(self.parse_attributes()?);
-            parameters.push(Parameter {
-                ty: apply_vector_attributes(ty, &attributes),
-                declared_ty: None,
+            let attributes = self.parse_attributes()?;
+            let vector_attributes = specifiers
+                .attributes
+                .iter()
+                .chain(&attributes)
+                .cloned()
+                .collect::<Vec<_>>();
+            let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
+            specifiers.ty = apply_vector_attributes(ty, &vector_attributes);
+            parameters.push(ParameterDeclaration {
+                specifiers,
                 declarator,
+                declared_specifiers: None,
                 attributes,
             });
             if self.matches(Token::RParen) {
@@ -1074,46 +1175,6 @@ impl<'a> DeclaratorParser<'a> {
         } else {
             Err(err)
         }
-    }
-}
-
-pub fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
-    match declarator {
-        Declarator::Abstract | Declarator::Name(_) => ty,
-        Declarator::Grouped(inner) => apply_abstract_declarator(ty, *inner),
-        Declarator::Attributed { inner, .. } => apply_abstract_declarator(ty, *inner),
-        Declarator::Pointer {
-            qualifiers, inner, ..
-        } => CType::Pointer {
-            qualifiers,
-            pointee: Box::new(apply_abstract_declarator(ty, *inner)),
-        },
-        Declarator::Array { inner, size, .. } => match *inner {
-            Declarator::Grouped(grouped) => apply_abstract_declarator(
-                CType::Array {
-                    element: Box::new(ty),
-                    size,
-                },
-                *grouped,
-            ),
-            inner => CType::Array {
-                element: Box::new(apply_abstract_declarator(ty, inner)),
-                size,
-            },
-        },
-        Declarator::Function { inner, parameters } => match *inner {
-            Declarator::Grouped(grouped) => apply_abstract_declarator(
-                CType::Function {
-                    return_type: Box::new(ty),
-                    parameters,
-                },
-                *grouped,
-            ),
-            inner => CType::Function {
-                return_type: Box::new(apply_abstract_declarator(ty, inner)),
-                parameters,
-            },
-        },
     }
 }
 
@@ -1152,7 +1213,7 @@ pub(crate) fn is_target_builtin_name(name: &str) -> bool {
     )
 }
 
-fn tag_reference(kind: TagKind, name: Option<String>) -> Result<CType, DeclaratorError> {
+fn tag_reference(kind: TagKind, name: Option<String>) -> Result<TypeSpecifier, DeclaratorError> {
     let name = name.ok_or(DeclaratorError::ExpectedTagNameOrBrace)?;
-    Ok(CType::Tag(TagSpecifier::Reference { kind, name }))
+    Ok(TypeSpecifier::Tag(TagSpecifier::Reference { kind, name }))
 }

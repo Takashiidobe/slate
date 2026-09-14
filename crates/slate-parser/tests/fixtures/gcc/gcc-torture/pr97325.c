@@ -30,17 +30,17 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: LongLong,
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: LongLong,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "c",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -61,13 +61,17 @@ int main() {
 // DEFAULT-NEXT:                                   Unary {
 // DEFAULT-NEXT:                                       op: Minus,
 // DEFAULT-NEXT:                                       operand: Cast {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Short,
-// DEFAULT-NEXT:                                                   signed: false,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Short,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Identifier(
 // DEFAULT-NEXT:                                               "c",
 // DEFAULT-NEXT:                                           ),

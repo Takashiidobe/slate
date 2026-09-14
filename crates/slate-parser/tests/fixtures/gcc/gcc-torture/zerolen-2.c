@@ -206,19 +206,27 @@ int main() {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
 // DEFAULT-NEXT:                       left: SizeOfType {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "word",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "word",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: SizeOfType {
-// DEFAULT-NEXT:                           ty: Tag(
-// DEFAULT-NEXT:                               Reference {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: "foo",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Tag(
+// DEFAULT-NEXT:                                       Reference {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: "foo",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
@@ -237,19 +245,27 @@ int main() {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
 // DEFAULT-NEXT:                       left: AlignOf {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "word",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "word",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: AlignOf {
-// DEFAULT-NEXT:                           ty: Tag(
-// DEFAULT-NEXT:                               Reference {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: "foo",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Tag(
+// DEFAULT-NEXT:                                       Reference {
+// DEFAULT-NEXT:                                           kind: Struct,
+// DEFAULT-NEXT:                                           name: "foo",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [

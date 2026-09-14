@@ -61,13 +61,17 @@ int main(void) {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               right: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Long,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Long,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -90,13 +94,17 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           right: SizeOfType {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Long,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Long,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),

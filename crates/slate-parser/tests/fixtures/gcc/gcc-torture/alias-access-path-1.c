@@ -295,10 +295,14 @@ int main(void) {
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Abstract,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Unary {
 // DEFAULT-NEXT:                                   op: AddrOf,

@@ -185,10 +185,14 @@ int zip(void)
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "uch",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "uch",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Paren(
 // DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: StringLiteral(
@@ -271,10 +275,14 @@ int zip(void)
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "uch",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "uch",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Paren(
 // DEFAULT-NEXT:                                       Index {
 // DEFAULT-NEXT:                                           base: StringLiteral(

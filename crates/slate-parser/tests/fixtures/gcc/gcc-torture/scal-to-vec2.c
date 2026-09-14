@@ -95,13 +95,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Cast {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Long,
-// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                       ty: TypeName {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Long,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
 // DEFAULT-NEXT:                               value: 42,
@@ -148,13 +152,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Cast {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                       ty: TypeName {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
 // DEFAULT-NEXT:                               value: 43,
@@ -201,13 +209,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Cast {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Short,
-// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                       ty: TypeName {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Short,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
 // DEFAULT-NEXT:                               value: 42,
@@ -253,12 +265,16 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Cast {
-// DEFAULT-NEXT:                       ty: Integer(
-// DEFAULT-NEXT:                           Char {
-// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                       ty: TypeName {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       declarator: Abstract,
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
 // DEFAULT-NEXT:                               value: 42,
@@ -299,36 +315,36 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "argc",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "argc",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "argv",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   size: Unspecified,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "argv",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Unspecified,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -361,12 +377,16 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Char {
-// DEFAULT-NEXT:                                                       signed: None,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -390,12 +410,16 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Char {
-// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -683,12 +707,16 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Char {
-// DEFAULT-NEXT:                                                       signed: None,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -712,12 +740,16 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Char {
-// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -760,13 +792,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Short,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Short,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -790,13 +826,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Short,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Short,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -965,13 +1005,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Short,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Short,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -995,13 +1039,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Short,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Short,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -1044,13 +1092,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -1074,13 +1126,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -1185,13 +1241,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -1215,13 +1275,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -1264,13 +1328,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Long,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -1294,13 +1362,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Long,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Long,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -1373,13 +1445,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Long,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -1403,13 +1479,17 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Long,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Long,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -1525,14 +1605,18 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Char {
-// DEFAULT-NEXT:                                                                   signed: None,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -1566,14 +1650,18 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Char {
-// DEFAULT-NEXT:                                                                           signed: None,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Char {
+// DEFAULT-NEXT:                                                                                   signed: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -1722,15 +1810,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Short,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Short,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -1764,15 +1856,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Short,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Short,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -1921,15 +2017,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Short,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Short,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -1963,15 +2063,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Short,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Short,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -2120,15 +2224,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -2162,15 +2270,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -2319,15 +2431,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -2361,15 +2477,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -2518,15 +2638,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -2560,15 +2684,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -2717,15 +2845,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -2759,15 +2891,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Long,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -2916,15 +3052,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -2958,15 +3098,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Long,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -3115,15 +3259,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -3157,15 +3305,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Long,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,
@@ -3314,15 +3466,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: Add,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
@@ -3356,15 +3512,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                           Binary {
 // DEFAULT-NEXT:                                                               op: Add,
 // DEFAULT-NEXT:                                                               left: Cast {
-// DEFAULT-NEXT:                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                       Ranked {
-// DEFAULT-NEXT:                                                                           rank: Long,
-// DEFAULT-NEXT:                                                                           signed: true,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: Unary {
 // DEFAULT-NEXT:                                                                       op: AddrOf,

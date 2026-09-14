@@ -123,14 +123,14 @@ main (void)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Floating(
-// DEFAULT-NEXT:                               Double,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "__x",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Floating(
+// DEFAULT-NEXT:                                   Double,
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "__x",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -152,14 +152,18 @@ main (void)
 // DEFAULT-NEXT:                                                   base: Member {
 // DEFAULT-NEXT:                                                       base: Paren(
 // DEFAULT-NEXT:                                                           CompoundLiteral {
-// DEFAULT-NEXT:                                                               ty: Tag(
-// DEFAULT-NEXT:                                                                   Definition(
-// DEFAULT-NEXT:                                                                       TagId(
-// DEFAULT-NEXT:                                                                           1,
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Tag(
+// DEFAULT-NEXT:                                                                           Definition(
+// DEFAULT-NEXT:                                                                               TagId(
+// DEFAULT-NEXT:                                                                                   1,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               initializer: [
 // DEFAULT-NEXT:                                                                   InitializerItem {
 // DEFAULT-NEXT:                                                                       designators: [

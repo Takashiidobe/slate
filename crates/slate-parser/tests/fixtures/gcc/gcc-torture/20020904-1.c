@@ -89,14 +89,14 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "u8",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "u8",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "y",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -121,10 +121,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           op: Div,
 // DEFAULT-NEXT:                                           left: Paren(
 // DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "u8",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "u8",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   value: IntegerLiteral(
 // DEFAULT-NEXT:                                                       IntegerLiteral {
 // DEFAULT-NEXT:                                                           value: 255,
@@ -190,10 +194,14 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           arguments: [
 // DEFAULT-NEXT:                               Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "u8",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "u8",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: IntegerLiteral(
 // DEFAULT-NEXT:                                       IntegerLiteral {
 // DEFAULT-NEXT:                                           value: 2,

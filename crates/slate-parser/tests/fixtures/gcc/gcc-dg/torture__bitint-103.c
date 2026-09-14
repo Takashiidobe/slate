@@ -43,27 +43,27 @@ main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 4,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   BitInt {
+// DEFAULT-NEXT:                                       width: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 4,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "4",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "4",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -170,27 +170,27 @@ main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               BitInt {
-// DEFAULT-NEXT:                                   width: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 4,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   BitInt {
+// DEFAULT-NEXT:                                       width: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 4,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "4",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "4",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   signed: false,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],

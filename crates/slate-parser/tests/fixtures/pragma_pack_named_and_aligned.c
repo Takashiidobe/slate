@@ -480,25 +480,23 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Qualified {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                           is_const: true,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                       ty: Integer(
 // DEFAULT-NEXT:                                           Char {
 // DEFAULT-NEXT:                                               signed: None,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                               is_restrict: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_const: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_restrict: true,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           variadic: true,
@@ -680,129 +678,185 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "IgnoredBadAlign",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: SizeOfType {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "IgnoredBadAlign",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "NamedPushed",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: SizeOfType {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "NamedPushed",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "AfterNamedPop",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: SizeOfType {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "AfterNamedPop",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "AfterExtraPop",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: SizeOfType {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "AfterExtraPop",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: SizeOfType {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "PackedButAligned",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: SizeOfType {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "PackedButAligned",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: AlignOf {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "PackedButAligned",
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "PackedButAligned",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                               value: OffsetOf {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "PackedButAligned",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: OffsetOf {
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Tag(
+// DEFAULT-NEXT:                                               Reference {
+// DEFAULT-NEXT:                                                   kind: Struct,
+// DEFAULT-NEXT:                                                   name: "PackedButAligned",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   member: Identifier(
 // DEFAULT-NEXT:                                       "b",
 // DEFAULT-NEXT:                                   ),

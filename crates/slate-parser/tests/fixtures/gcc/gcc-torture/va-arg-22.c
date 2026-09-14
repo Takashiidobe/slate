@@ -1429,13 +1429,16 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1463,30 +1466,30 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "c",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1627,12 +1630,16 @@ int main(void) {
 // DEFAULT-NEXT:                           "c",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: Cast {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Paren(
 // DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: BitXor,
@@ -2313,17 +2320,17 @@ int main(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "size",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "size",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -2757,14 +2764,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a0",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a0",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -2861,14 +2872,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a1",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a1",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -2965,14 +2980,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a2",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a2",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3069,14 +3088,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a3",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a3",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3173,14 +3196,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a4",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a4",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3277,14 +3304,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a5",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a5",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3381,14 +3412,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a6",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a6",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3485,14 +3520,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a7",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a7",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3589,14 +3628,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a8",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a8",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3693,14 +3736,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a9",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a9",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3797,14 +3844,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a10",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a10",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3901,14 +3952,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a11",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a11",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4005,14 +4060,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a12",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a12",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4109,14 +4168,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a13",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a13",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4213,14 +4276,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a14",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a14",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4317,14 +4384,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a15",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a15",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4421,14 +4492,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a16",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a16",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4525,14 +4600,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a31",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a31",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4629,14 +4708,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a32",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a32",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4733,14 +4816,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a35",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a35",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4837,14 +4924,18 @@ int main(void) {
 // DEFAULT-NEXT:                           list: Identifier(
 // DEFAULT-NEXT:                               "ap",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "a72",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "a72",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),

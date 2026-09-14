@@ -569,24 +569,24 @@ int main() {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "uint32_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Name(
-// DEFAULT-NEXT:                                           "arg1",
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uint32_t",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Name(
+// DEFAULT-NEXT:                                       "arg1",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "uint32_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Name(
-// DEFAULT-NEXT:                                           "arg2",
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uint32_t",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Name(
+// DEFAULT-NEXT:                                       "arg2",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
@@ -617,24 +617,24 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "uint32_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "arg1",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "uint32_t",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "arg1",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "uint32_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "arg2",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "uint32_t",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "arg2",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -860,10 +860,14 @@ int main() {
 // DEFAULT-NEXT:                                   "tmp",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "int8_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "int8_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "vsrc2",
@@ -882,10 +886,14 @@ int main() {
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "ssize_t",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "ssize_t",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
@@ -947,10 +955,14 @@ int main() {
 // DEFAULT-NEXT:                                               left: Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
 // DEFAULT-NEXT:                                                   operand: Cast {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "ssize_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "ssize_t",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
@@ -1051,10 +1063,14 @@ int main() {
 // DEFAULT-NEXT:                                                           left: Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               operand: Cast {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "ssize_t",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                               "ssize_t",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: SizeOfExpr(
 // DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
@@ -1320,10 +1336,14 @@ int main() {
 // DEFAULT-NEXT:                                   "tmp",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "int8_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "int8_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "vsrc2",
@@ -1342,10 +1362,14 @@ int main() {
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "ssize_t",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "ssize_t",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
@@ -1407,10 +1431,14 @@ int main() {
 // DEFAULT-NEXT:                                               left: Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
 // DEFAULT-NEXT:                                                   operand: Cast {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "ssize_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "ssize_t",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
@@ -1511,10 +1539,14 @@ int main() {
 // DEFAULT-NEXT:                                                           left: Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               operand: Cast {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "ssize_t",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                               "ssize_t",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: SizeOfExpr(
 // DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
@@ -1780,10 +1812,14 @@ int main() {
 // DEFAULT-NEXT:                                   "tmp",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "int8_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "int8_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "vsrc2",
@@ -1802,10 +1838,14 @@ int main() {
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "ssize_t",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "ssize_t",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
@@ -1867,10 +1907,14 @@ int main() {
 // DEFAULT-NEXT:                                               left: Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
 // DEFAULT-NEXT:                                                   operand: Cast {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "ssize_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "ssize_t",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
@@ -1971,10 +2015,14 @@ int main() {
 // DEFAULT-NEXT:                                                           left: Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               operand: Cast {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "ssize_t",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                               "ssize_t",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: SizeOfExpr(
 // DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {
@@ -2240,10 +2288,14 @@ int main() {
 // DEFAULT-NEXT:                                   "tmp",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "int8_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "int8_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Member {
 // DEFAULT-NEXT:                                       base: Identifier(
 // DEFAULT-NEXT:                                           "vsrc2",
@@ -2262,10 +2314,14 @@ int main() {
 // DEFAULT-NEXT:                               right: Binary {
 // DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "ssize_t",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "ssize_t",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                           Paren(
 // DEFAULT-NEXT:                                               Member {
@@ -2327,10 +2383,14 @@ int main() {
 // DEFAULT-NEXT:                                               left: Unary {
 // DEFAULT-NEXT:                                                   op: Minus,
 // DEFAULT-NEXT:                                                   operand: Cast {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "ssize_t",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "ssize_t",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: SizeOfExpr(
 // DEFAULT-NEXT:                                                           Paren(
 // DEFAULT-NEXT:                                                               Member {
@@ -2431,10 +2491,14 @@ int main() {
 // DEFAULT-NEXT:                                                           left: Unary {
 // DEFAULT-NEXT:                                                               op: Minus,
 // DEFAULT-NEXT:                                                               operand: Cast {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "ssize_t",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                               "ssize_t",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: SizeOfExpr(
 // DEFAULT-NEXT:                                                                       Paren(
 // DEFAULT-NEXT:                                                                           Member {

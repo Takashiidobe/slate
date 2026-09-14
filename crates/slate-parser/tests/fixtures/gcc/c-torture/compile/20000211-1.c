@@ -745,14 +745,14 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Lisp_Object",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "object",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Lisp_Object",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "object",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1028,27 +1028,30 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "lstream",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tag(
+// DEFAULT-NEXT:                                           Reference {
+// DEFAULT-NEXT:                                               kind: Struct,
+// DEFAULT-NEXT:                                               name: "lstream",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1079,40 +1082,41 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "lstream",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tag(
+// DEFAULT-NEXT:                                           Reference {
+// DEFAULT-NEXT:                                               kind: Struct,
+// DEFAULT-NEXT:                                               name: "lstream",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Qualified {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                           is_const: true,
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                       ty: Named(
 // DEFAULT-NEXT:                                           "Bufbyte",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                           is_const: true,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "Bytecount",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "Bytecount",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1143,19 +1147,19 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "lstream",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tag(
+// DEFAULT-NEXT:                                           Reference {
+// DEFAULT-NEXT:                                               kind: Struct,
+// DEFAULT-NEXT:                                               name: "lstream",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1191,21 +1195,24 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "Bufbyte",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "Bufbyte",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "Bytecount",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "Bytecount",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -1234,88 +1241,86 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Lisp_Object",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "stream",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Lisp_Object",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "stream",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Qualified {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_const: true,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Named(
 // DEFAULT-NEXT:                                   "Bufbyte",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                   is_const: true,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "string",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "string",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Bytecount",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "len",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Bytecount",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "len",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Charcount",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "minlen",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Charcount",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "minlen",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Charcount",
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "maxlen",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Charcount",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "maxlen",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "minus_flag",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "minus_flag",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "zero_flag",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "zero_flag",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1373,22 +1378,30 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: Tag(
-// DEFAULT-NEXT:                                                   Reference {
-// DEFAULT-NEXT:                                                       kind: Struct,
-// DEFAULT-NEXT:                                                       name: "lstream",
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Tag(
+// DEFAULT-NEXT:                                                           Reference {
+// DEFAULT-NEXT:                                                               kind: Struct,
+// DEFAULT-NEXT:                                                               name: "lstream",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               value: Paren(
 // DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Void,
-// DEFAULT-NEXT:                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Void,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: Paren(
 // DEFAULT-NEXT:                                                           Binary {
@@ -1679,14 +1692,18 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Char {
+// DEFAULT-NEXT:                                                                               signed: Some(
+// DEFAULT-NEXT:                                                                                   false,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: Paren(
 // DEFAULT-NEXT:                                                                   Identifier(
 // DEFAULT-NEXT:                                                                       "pad",
@@ -2030,14 +2047,18 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Cast {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Char {
-// DEFAULT-NEXT:                                                                       signed: Some(
-// DEFAULT-NEXT:                                                                           false,
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Char {
+// DEFAULT-NEXT:                                                                               signed: Some(
+// DEFAULT-NEXT:                                                                                   false,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: Paren(
 // DEFAULT-NEXT:                                                                   Identifier(
 // DEFAULT-NEXT:                                                                       "pad",
@@ -2190,84 +2211,80 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Lisp_Object",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "stream",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Qualified {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_const: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "Bufbyte",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "format_nonreloc",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Lisp_Object",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "format_reloc",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "Bytecount",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "format_length",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "nargs",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Qualified {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                   is_const: true,
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Named(
 // DEFAULT-NEXT:                                   "Lisp_Object",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "largs",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "stream",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Bufbyte",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                   is_const: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "format_nonreloc",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Lisp_Object",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "format_reloc",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Bytecount",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "format_length",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "nargs",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Named(
+// DEFAULT-NEXT:                                   "Lisp_Object",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                   is_const: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "largs",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -2339,22 +2356,30 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                   base: Paren(
 // DEFAULT-NEXT:                                       Paren(
 // DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: Tag(
-// DEFAULT-NEXT:                                                   Reference {
-// DEFAULT-NEXT:                                                       kind: Struct,
-// DEFAULT-NEXT:                                                       name: "Lisp_String",
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Tag(
+// DEFAULT-NEXT:                                                           Reference {
+// DEFAULT-NEXT:                                                               kind: Struct,
+// DEFAULT-NEXT:                                                               name: "Lisp_String",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               value: Paren(
 // DEFAULT-NEXT:                                                   Cast {
-// DEFAULT-NEXT:                                                       ty: Void,
-// DEFAULT-NEXT:                                                       declarator: Pointer {
-// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Void,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: Paren(
 // DEFAULT-NEXT:                                                           Binary {
@@ -2493,22 +2518,30 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                               base: Paren(
 // DEFAULT-NEXT:                                   Paren(
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Tag(
-// DEFAULT-NEXT:                                               Reference {
-// DEFAULT-NEXT:                                                   kind: Struct,
-// DEFAULT-NEXT:                                                   name: "Lisp_String",
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tag(
+// DEFAULT-NEXT:                                                       Reference {
+// DEFAULT-NEXT:                                                           kind: Struct,
+// DEFAULT-NEXT:                                                           name: "Lisp_String",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Void,
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Void,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   value: Paren(
 // DEFAULT-NEXT:                                                       Binary {
@@ -2723,12 +2756,16 @@ emacs_doprnt_1 (Lisp_Object stream, const  Bufbyte *format_nonreloc,
 // DEFAULT-NEXT:                                       "stream",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "Bufbyte",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "Bufbyte",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Unary {
 // DEFAULT-NEXT:                                           op: AddrOf,

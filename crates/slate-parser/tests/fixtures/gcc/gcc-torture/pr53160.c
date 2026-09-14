@@ -322,8 +322,12 @@ int main() {
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Void,
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Void,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Identifier(
 // DEFAULT-NEXT:                                   "b",
 // DEFAULT-NEXT:                               ),

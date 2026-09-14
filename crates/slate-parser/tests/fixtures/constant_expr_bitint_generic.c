@@ -24,23 +24,27 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
 // DEFAULT-NEXT:                           SizeOfType {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   BitInt {
-// DEFAULT-NEXT:                                       width: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 9,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "9",
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           BitInt {
+// DEFAULT-NEXT:                                               width: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 9,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "9",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               signed: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       signed: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -74,23 +78,27 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
 // DEFAULT-NEXT:                           SizeOfType {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   BitInt {
-// DEFAULT-NEXT:                                       width: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 65,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "65",
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           BitInt {
+// DEFAULT-NEXT:                                               width: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 65,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "65",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               signed: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       signed: true,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -126,23 +134,27 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: Add,
 // DEFAULT-NEXT:                               left: Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       BitInt {
-// DEFAULT-NEXT:                                           width: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 65,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "65",
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               BitInt {
+// DEFAULT-NEXT:                                                   width: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 65,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "65",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   signed: false,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           signed: false,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Unary {
 // DEFAULT-NEXT:                                       op: Minus,
 // DEFAULT-NEXT:                                       operand: IntegerLiteral(
@@ -159,23 +171,27 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       BitInt {
-// DEFAULT-NEXT:                                           width: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 65,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "65",
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               BitInt {
+// DEFAULT-NEXT:                                                   width: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 65,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "65",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   signed: false,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           signed: false,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: IntegerLiteral(
 // DEFAULT-NEXT:                                       IntegerLiteral {
 // DEFAULT-NEXT:                                           value: 2,
@@ -223,13 +239,17 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:                           Generic {
 // DEFAULT-NEXT:                               controlling: Expr(
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
 // DEFAULT-NEXT:                                               value: 0,
@@ -245,13 +265,17 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
 // DEFAULT-NEXT:                                   Type {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
 // DEFAULT-NEXT:                                               value: 7,

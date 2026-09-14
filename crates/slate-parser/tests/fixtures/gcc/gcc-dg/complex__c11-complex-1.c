@@ -85,13 +85,16 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -133,10 +136,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Float,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -152,10 +159,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Float,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -211,10 +222,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Float,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -230,10 +245,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Float,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Float,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           Call {
 // DEFAULT-NEXT:                                               callee: Identifier(
@@ -301,10 +320,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Float,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -320,10 +343,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Float,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -346,10 +373,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Float,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -365,10 +396,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Float,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Float,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               Call {
 // DEFAULT-NEXT:                                                   callee: Identifier(
@@ -430,10 +465,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -449,10 +488,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -508,10 +551,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -527,10 +574,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           Call {
 // DEFAULT-NEXT:                                               callee: Identifier(
@@ -598,10 +649,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -617,10 +672,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -643,10 +702,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -662,10 +725,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               Call {
 // DEFAULT-NEXT:                                                   callee: Identifier(
@@ -727,10 +794,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           LongDouble,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -746,10 +817,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           LongDouble,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -805,10 +880,14 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               arguments: [
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           LongDouble,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -824,10 +903,14 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   Cast {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           LongDouble,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   LongDouble,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           Call {
 // DEFAULT-NEXT:                                               callee: Identifier(
@@ -895,10 +978,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       LongDouble,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -914,10 +1001,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       LongDouble,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -940,10 +1031,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       LongDouble,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
@@ -959,10 +1054,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       LongDouble,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Paren(
 // DEFAULT-NEXT:                                               Call {
 // DEFAULT-NEXT:                                                   callee: Identifier(

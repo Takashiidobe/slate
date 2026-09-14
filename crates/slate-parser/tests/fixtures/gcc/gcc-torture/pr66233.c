@@ -160,10 +160,14 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Cast {
-// DEFAULT-NEXT:                                   ty: Floating(
-// DEFAULT-NEXT:                                       Float,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Float,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Identifier(
 // DEFAULT-NEXT:                                       "i",
 // DEFAULT-NEXT:                                   ),

@@ -50,13 +50,17 @@ static __SIZE_TYPE__ x = (__SIZE_TYPE__) &_text - 0x10000000L - 1;
 // DEFAULT-NEXT:                               left: Binary {
 // DEFAULT-NEXT:                                   op: Sub,
 // DEFAULT-NEXT:                                   left: Cast {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Long,
-// DEFAULT-NEXT:                                               signed: false,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Long,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Unary {
 // DEFAULT-NEXT:                                           op: AddrOf,
 // DEFAULT-NEXT:                                           operand: Identifier(

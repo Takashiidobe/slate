@@ -2,7 +2,7 @@
 
 _created 2026-09-12_
 
-`Stmt`, `ExprKind`, `CType`, and `ArraySize` (all in `src/ast.rs`) are each matched exhaustively, by variant name, in
+`Stmt`, `ExprKind`, `TypeSpecifier`, and `ArraySize` (all in `src/ast.rs`) are each matched exhaustively, by variant name, in
 several unrelated files. The compiler will refuse to build until every one
 of these is updated, but nothing points at them up front — you either grep
 every constructor name across the crate or read the files end to end. This
@@ -86,23 +86,23 @@ an error.
 
 ## Adding an `ArraySize` variant
 
-- `src/const_expr.rs` — `declarator_size` and `ctype_size`: both match
-  exhaustively (used for `sizeof`/layout constant-folding); decide whether
-  the new size kind can ever be a compile-time constant, or is always
-  `ConstExprError::UnsupportedTypeSize`.
 - `tests/filecheck.rs` — `array_size`: exhaustive, used only for the
   clang-oracle comparison path; needs a string rendering.
 - `src/parser/declarator.rs` — wherever `ArraySize` is _constructed_
   (`DeclaratorParser::parse_declarator`'s `[` handling) — not a match
   site, but the natural place to add parsing for a new array-size form.
 
-## Adding a `CType` variant
+## Adding a `TypeSpecifier` variant
 
-- `src/const_expr.rs` — `ctype_size` is exhaustive and must decide whether
-  the type has a compile-time size.
-- `src/sema.rs` — `check_type` is exhaustive and must traverse nested types.
+`TypeSpecifier` never holds pointers, arrays or functions; those live in
+`Declarator`. A variant that embeds a `TypeName` (`Atomic`, `TypeOf`) must
+walk its declarator too.
+
+- `src/sema.rs` — `check_type` and `collect_tag_names` are exhaustive and
+  must traverse nested types; `is_register_scalar_type` classifies it.
 - `src/reachability.rs` — `Marker::mark_type` is exhaustive and must mark
   declarations referenced through the type.
+- `tests/filecheck.rs` — `type_spelling` renders it for declaration summaries.
 
 ## Process note
 

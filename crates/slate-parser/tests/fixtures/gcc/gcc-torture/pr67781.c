@@ -331,10 +331,14 @@ int main() {
 // DEFAULT-NEXT:                       left: Binary {
 // DEFAULT-NEXT:                           op: Mul,
 // DEFAULT-NEXT:                           left: SizeOfType {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "uint32_t",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "uint32_t",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: IntegerLiteral(
 // DEFAULT-NEXT:                               IntegerLiteral {

@@ -67,7 +67,7 @@ impl TranslationUnit {
                         .function_parameters()
                         .map_or(&[][..], ParameterList::parameters)
                     {
-                        collect_tag_names(&parameter.ty, &mut tags);
+                        collect_tag_names(&parameter.specifiers.ty, &mut tags);
                     }
                 }
                 Decl::Declaration { declaration, .. } => {
@@ -112,7 +112,7 @@ impl TranslationUnit {
                     provenance,
                 } => {
                     let specifiers = &declaration.specifiers;
-                    if let CType::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
+                    if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
                         && let Some(tag) = self.tag(*id)
                     {
                         check_tag_definition(
@@ -140,7 +140,7 @@ impl TranslationUnit {
                     check_declaration_literals(declaration, &self.target, *provenance, &mut errors);
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
-                        if matches!(specifiers.ty, CType::Void)
+                        if matches!(specifiers.ty, TypeSpecifier::Void)
                             && !matches!(
                                 specifiers.storage,
                                 StorageClass::Extern | StorageClass::Typedef
@@ -234,11 +234,23 @@ fn check_declarator(
         } => {
             check_declarator(inner, typedefs, tags, provenance, loc, errors);
             for parameter in parameters.parameters() {
-                check_type(&parameter.ty, typedefs, tags, provenance, loc, errors);
+                check_type(
+                    &parameter.specifiers.ty,
+                    typedefs,
+                    tags,
+                    provenance,
+                    loc,
+                    errors,
+                );
                 check_attributes(&parameter.attributes, provenance, loc, errors);
-                if let Some(declarator) = &parameter.declarator {
-                    check_declarator(declarator, typedefs, tags, provenance, loc, errors);
-                }
+                check_declarator(
+                    &parameter.declarator,
+                    typedefs,
+                    tags,
+                    provenance,
+                    loc,
+                    errors,
+                );
             }
         }
         Declarator::Attributed { inner, attributes } => {
@@ -391,47 +403,33 @@ fn check_tag_definition(
     }
 }
 
-fn collect_tag_names(ty: &CType, tags: &mut HashSet<String>) {
+fn collect_tag_names(ty: &TypeSpecifier, tags: &mut HashSet<String>) {
     match ty {
-        CType::Tag(TagSpecifier::Reference { name, .. }) => {
+        TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) => {
             tags.insert(name.clone());
         }
-        CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => {
-            collect_tag_names(ty, tags)
+        TypeSpecifier::Complex(ty) | TypeSpecifier::Imaginary(ty) => collect_tag_names(ty, tags),
+        TypeSpecifier::Atomic(ty) => collect_tag_names(&ty.specifiers.ty, tags),
+        TypeSpecifier::Vector(vector) => collect_tag_names(&vector.element, tags),
+        TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+            collect_tag_names(&ty.specifiers.ty, tags)
         }
-        CType::Atomic(ty) | CType::Complex(ty) | CType::Imaginary(ty) => {
-            collect_tag_names(ty, tags)
-        }
-        CType::Vector(vector) => collect_tag_names(&vector.element, tags),
-        CType::TypeOf(TypeOfOperand::Type(ty)) | CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
-            collect_tag_names(ty, tags)
-        }
-        CType::Array { element, .. } => collect_tag_names(element, tags),
-        CType::Function {
-            return_type,
-            parameters,
-            ..
-        } => {
-            collect_tag_names(return_type, tags);
-            for parameter in parameters.parameters() {
-                collect_tag_names(&parameter.ty, tags);
-            }
-        }
-        CType::Void
-        | CType::Bool
-        | CType::Integer(_)
-        | CType::Floating(_)
-        | CType::FixedPoint(_)
-        | CType::TypeOf(TypeOfOperand::Expression(_))
-        | CType::TypeOfUnqual(TypeOfOperand::Expression(_))
-        | CType::TargetBuiltin(_)
-        | CType::Named(_)
-        | CType::Tag(TagSpecifier::Definition(_)) => {}
+        TypeSpecifier::Void
+        | TypeSpecifier::Bool
+        | TypeSpecifier::Integer(_)
+        | TypeSpecifier::Floating(_)
+        | TypeSpecifier::FixedPoint(_)
+        | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
+        | TypeSpecifier::TargetBuiltin(_)
+        | TypeSpecifier::Named(_)
+        | TypeSpecifier::Tag(TagSpecifier::Definition(_)) => {}
     }
 }
 
 fn check_type(
-    ty: &CType,
+    ty: &TypeSpecifier,
     typedefs: &HashSet<String>,
     tags: &HashSet<String>,
     provenance: Provenance,
@@ -439,50 +437,61 @@ fn check_type(
     errors: &mut Vec<SemaError>,
 ) {
     match ty {
-        CType::Named(name) if !typedefs.contains(name) => errors.push(error(
+        TypeSpecifier::Named(name) if !typedefs.contains(name) => errors.push(error(
             provenance,
             loc,
             format!("unknown type name `{name}`"),
         )),
-        CType::Tag(TagSpecifier::Reference { name, .. }) if !tags.contains(name) => {
+        TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) if !tags.contains(name) => {
             errors.push(error(provenance, loc, format!("unknown tag `{name}`")))
         }
-        CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => {
-            check_type(ty, typedefs, tags, provenance, loc, errors)
-        }
-        CType::Atomic(ty) => check_type(ty, typedefs, tags, provenance, loc, errors),
-        CType::Vector(vector) => {
+        TypeSpecifier::Atomic(ty) => check_type_name(ty, typedefs, tags, provenance, loc, errors),
+        TypeSpecifier::Vector(vector) => {
             check_type(&vector.element, typedefs, tags, provenance, loc, errors)
         }
-        CType::TypeOf(TypeOfOperand::Type(ty)) | CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
-            check_type(ty, typedefs, tags, provenance, loc, errors)
+        TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+            check_type_name(ty, typedefs, tags, provenance, loc, errors)
         }
-        CType::Imaginary(ty) => check_type(ty, typedefs, tags, provenance, loc, errors),
-        CType::Array { element, .. } => {
-            check_type(element, typedefs, tags, provenance, loc, errors)
-        }
-        CType::Function {
-            return_type,
-            parameters,
-            ..
-        } => {
-            check_type(return_type, typedefs, tags, provenance, loc, errors);
-            for parameter in parameters.parameters() {
-                check_type(&parameter.ty, typedefs, tags, provenance, loc, errors);
-            }
-        }
-        CType::Void
-        | CType::Bool
-        | CType::Integer(_)
-        | CType::Floating(_)
-        | CType::Complex(_)
-        | CType::FixedPoint(_)
-        | CType::TypeOf(TypeOfOperand::Expression(_))
-        | CType::TypeOfUnqual(TypeOfOperand::Expression(_))
-        | CType::TargetBuiltin(_)
-        | CType::Named(_)
-        | CType::Tag(_) => {}
+        TypeSpecifier::Imaginary(ty) => check_type(ty, typedefs, tags, provenance, loc, errors),
+        TypeSpecifier::Void
+        | TypeSpecifier::Bool
+        | TypeSpecifier::Integer(_)
+        | TypeSpecifier::Floating(_)
+        | TypeSpecifier::Complex(_)
+        | TypeSpecifier::FixedPoint(_)
+        | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
+        | TypeSpecifier::TargetBuiltin(_)
+        | TypeSpecifier::Named(_)
+        | TypeSpecifier::Tag(_) => {}
     }
+}
+
+fn check_type_name(
+    type_name: &TypeName,
+    typedefs: &HashSet<String>,
+    tags: &HashSet<String>,
+    provenance: Provenance,
+    loc: Loc,
+    errors: &mut Vec<SemaError>,
+) {
+    check_type(
+        &type_name.specifiers.ty,
+        typedefs,
+        tags,
+        provenance,
+        loc,
+        errors,
+    );
+    check_declarator(
+        &type_name.declarator,
+        typedefs,
+        tags,
+        provenance,
+        loc,
+        errors,
+    );
 }
 
 fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaError {
@@ -1054,22 +1063,22 @@ fn is_register_variable_type(
     }
 }
 
-fn is_register_scalar_type(ty: &CType, unit: &TranslationUnit) -> bool {
+fn is_register_scalar_type(ty: &TypeSpecifier, unit: &TranslationUnit) -> bool {
     match ty {
-        CType::Qualified { ty, .. } | CType::Atomic(ty) => is_register_scalar_type(ty, unit),
-        CType::Void
-        | CType::Floating(_)
-        | CType::Complex(_)
-        | CType::Imaginary(_)
-        | CType::FixedPoint(_)
-        | CType::Vector(_)
-        | CType::Array { .. }
-        | CType::Function { .. }
-        | CType::Tag(TagSpecifier::Reference {
+        TypeSpecifier::Atomic(ty) => {
+            is_register_variable_type(unit, &ty.specifiers, &ty.declarator)
+        }
+        TypeSpecifier::Void
+        | TypeSpecifier::Floating(_)
+        | TypeSpecifier::Complex(_)
+        | TypeSpecifier::Imaginary(_)
+        | TypeSpecifier::FixedPoint(_)
+        | TypeSpecifier::Vector(_)
+        | TypeSpecifier::Tag(TagSpecifier::Reference {
             kind: TagKind::Struct | TagKind::Union,
             ..
         }) => false,
-        CType::Tag(TagSpecifier::Definition(id)) => unit
+        TypeSpecifier::Tag(TagSpecifier::Definition(id)) => unit
             .tag(*id)
             .is_none_or(|tag| tag.value.kind == TagKind::Enum),
         _ => true,

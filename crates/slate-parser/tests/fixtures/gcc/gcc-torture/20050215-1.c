@@ -262,27 +262,39 @@ int main(void) {
 // DEFAULT-NEXT:                               Binary {
 // DEFAULT-NEXT:                                   op: Rem,
 // DEFAULT-NEXT:                                   left: Cast {
-// DEFAULT-NEXT:                                       ty: Named(
-// DEFAULT-NEXT:                                           "size_t",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "size_t",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
 // DEFAULT-NEXT:                                           Cast {
-// DEFAULT-NEXT:                                               ty: Floating(
-// DEFAULT-NEXT:                                                   Float,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Floating(
+// DEFAULT-NEXT:                                                           Float,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               value: Paren(
 // DEFAULT-NEXT:                                                   Binary {
 // DEFAULT-NEXT:                                                       op: BitAnd,
 // DEFAULT-NEXT:                                                       left: Cast {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "size_t",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                       "size_t",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: Identifier(
 // DEFAULT-NEXT:                                                               "w",
 // DEFAULT-NEXT:                                                           ),
@@ -290,10 +302,14 @@ int main(void) {
 // DEFAULT-NEXT:                                                       right: Unary {
 // DEFAULT-NEXT:                                                           op: BitNot,
 // DEFAULT-NEXT:                                                           operand: Cast {
-// DEFAULT-NEXT:                                                               ty: Named(
-// DEFAULT-NEXT:                                                                   "size_t",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                           "size_t",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: IntegerLiteral(
 // DEFAULT-NEXT:                                                                   IntegerLiteral {
 // DEFAULT-NEXT:                                                                       value: 3,
@@ -341,10 +357,14 @@ int main(void) {
 // DEFAULT-NEXT:                           Binary {
 // DEFAULT-NEXT:                               op: BitAnd,
 // DEFAULT-NEXT:                               left: Cast {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "size_t",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "size_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Identifier(
 // DEFAULT-NEXT:                                       "w",
 // DEFAULT-NEXT:                                   ),

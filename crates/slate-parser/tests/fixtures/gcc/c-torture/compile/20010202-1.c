@@ -25,52 +25,52 @@ int foo (int n, char m[1][n])
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Name(
-// DEFAULT-NEXT:                                           "n",
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Name(
+// DEFAULT-NEXT:                                       "n",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Char {
-// DEFAULT-NEXT:                                           signed: None,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Array {
-// DEFAULT-NEXT:                                           inner: Array {
-// DEFAULT-NEXT:                                               inner: Name(
-// DEFAULT-NEXT:                                                   "m",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               size: Expression(
-// DEFAULT-NEXT:                                                   IntegerLiteral(
-// DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 1,
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                               unsigned: false,
-// DEFAULT-NEXT:                                                               size: None,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "1",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Char {
+// DEFAULT-NEXT:                                               signed: None,
 // DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Array {
+// DEFAULT-NEXT:                                       inner: Array {
+// DEFAULT-NEXT:                                           inner: Name(
+// DEFAULT-NEXT:                                               "m",
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           size: Expression(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "n",
+// DEFAULT-NEXT:                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "1",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       size: Expression(
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "n",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -103,52 +103,52 @@ int foo (int n, char m[1][n])
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "n",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Array {
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "m",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 1,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "1",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "m",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "n",
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 1,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "1",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "n",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },

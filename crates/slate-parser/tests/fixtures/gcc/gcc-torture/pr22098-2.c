@@ -55,13 +55,16 @@ int                      main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -202,10 +205,14 @@ int                      main(void) {
 // DEFAULT-NEXT:                           "b",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       value: Cast {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "uintptr_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "uintptr_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Paren(
 // DEFAULT-NEXT:                               Assign {
 // DEFAULT-NEXT:                                   op: Assign,
@@ -216,15 +223,19 @@ int                      main(void) {
 // DEFAULT-NEXT:                                       op: AddrOf,
 // DEFAULT-NEXT:                                       operand: Index {
 // DEFAULT-NEXT:                                           base: CompoundLiteral {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Array {
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                                   size: Unspecified,
+// DEFAULT-NEXT:                                                   declarator: Array {
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                       size: Unspecified,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               initializer: [
 // DEFAULT-NEXT:                                                   InitializerItem {
@@ -323,15 +334,19 @@ int                      main(void) {
 // DEFAULT-NEXT:                           left: Unary {
 // DEFAULT-NEXT:                               op: Deref,
 // DEFAULT-NEXT:                               operand: Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Identifier(
 // DEFAULT-NEXT:                                       "b",

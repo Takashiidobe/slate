@@ -136,10 +136,14 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // DEFAULT-NEXT:                   Binary {
 // DEFAULT-NEXT:                       op: Greater,
 // DEFAULT-NEXT:                       left: Cast {
-// DEFAULT-NEXT:                           ty: Named(
-// DEFAULT-NEXT:                               "uintptr_t",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Named(
+// DEFAULT-NEXT:                                       "uintptr_t",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Identifier(
 // DEFAULT-NEXT:                               "fp",
 // DEFAULT-NEXT:                           ),

@@ -121,7 +121,7 @@ pub(super) fn parse_attribute_groups(
                 typedef_names,
                 statements,
             ) {
-                Some((ty, declarator)) => AlignAsOperand::Type { ty, declarator },
+                Some(ty) => AlignAsOperand::Type { ty },
                 None => AlignAsOperand::Expr(parse_attribute_expression(&arguments)?),
             };
             attributes.push(Attribute::AlignAs(operand));
@@ -379,14 +379,17 @@ pub(super) fn parse_attribute(
     }
 }
 
-pub(crate) fn apply_vector_attributes(mut ty: CType, attributes: &[Attribute]) -> CType {
+pub(crate) fn apply_vector_attributes(
+    mut ty: TypeSpecifier,
+    attributes: &[Attribute],
+) -> TypeSpecifier {
     for attribute in attributes {
         let size = match attribute {
             Attribute::VectorSize(size) => VectorSize::Bytes(size.clone()),
             Attribute::ExtVectorType(size) => VectorSize::Lanes(size.clone()),
             _ => continue,
         };
-        ty = CType::Vector(VectorType {
+        ty = TypeSpecifier::Vector(VectorType {
             element: Box::new(ty),
             size,
         });

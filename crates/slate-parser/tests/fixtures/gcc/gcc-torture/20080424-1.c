@@ -141,33 +141,20 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Array {
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "x",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 3,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "3",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "x",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
 // DEFAULT-NEXT:                                       IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
@@ -182,35 +169,35 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 3,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "3",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Array {
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "y",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 3,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "3",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "y",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
 // DEFAULT-NEXT:                                       IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
@@ -225,7 +212,20 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 3,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "3",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -339,35 +339,22 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Array {
 // DEFAULT-NEXT:                                   inner: Array {
-// DEFAULT-NEXT:                                       inner: Array {
-// DEFAULT-NEXT:                                           inner: Name(
-// DEFAULT-NEXT:                                               "x",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           size: Unspecified,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 3,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "3",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       inner: Name(
+// DEFAULT-NEXT:                                           "x",
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       size: Unspecified,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   size: Expression(
 // DEFAULT-NEXT:                                       IntegerLiteral(
@@ -383,7 +370,20 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 3,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "3",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },

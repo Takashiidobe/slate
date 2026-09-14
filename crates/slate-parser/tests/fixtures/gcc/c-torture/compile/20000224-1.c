@@ -470,10 +470,13 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "Lisp_Object",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "Lisp_Object",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -501,21 +504,21 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "d",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "d",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -551,13 +554,17 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                           "tdevice",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       value: CompoundLiteral {
-// DEFAULT-NEXT:                                           ty: Tag(
-// DEFAULT-NEXT:                                               Reference {
-// DEFAULT-NEXT:                                                   kind: Union,
-// DEFAULT-NEXT:                                                   name: "Lisp_Object",
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tag(
+// DEFAULT-NEXT:                                                       Reference {
+// DEFAULT-NEXT:                                                           kind: Union,
+// DEFAULT-NEXT:                                                           name: "Lisp_Object",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           initializer: [
 // DEFAULT-NEXT:                                               InitializerItem {
 // DEFAULT-NEXT:                                                   designators: [
@@ -608,13 +615,17 @@ init_device_faces (int *d)
 // DEFAULT-NEXT:                                                               value: Expr(
 // DEFAULT-NEXT:                                                                   Paren(
 // DEFAULT-NEXT:                                                                       Cast {
-// DEFAULT-NEXT:                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                   rank: Long,
-// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                               "d",
 // DEFAULT-NEXT:                                                                           ),

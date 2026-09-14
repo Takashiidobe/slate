@@ -79,28 +79,23 @@ pub enum ExprKind {
         index: Expr,
     },
     Cast {
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
         value: Expr,
     },
     CompoundLiteral {
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
         initializer: Vec<InitializerItem>,
     },
     SizeOfExpr(Expr),
     SizeOfType {
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
     },
     AlignOf {
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
     },
     AlignOfExpr(Expr),
     OffsetOf {
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
         member: Expr,
     },
     Generic {
@@ -109,18 +104,14 @@ pub enum ExprKind {
     },
     VaArg {
         list: Expr,
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
     },
     TypesCompatible {
-        left_ty: Box<CType>,
-        left_declarator: Declarator,
-        right_ty: Box<CType>,
-        right_declarator: Declarator,
+        left_ty: Box<TypeName>,
+        right_ty: Box<TypeName>,
     },
     BitCast {
-        ty: Box<CType>,
-        declarator: Declarator,
+        ty: Box<TypeName>,
         value: Expr,
     },
     LabelAddress(Span<String>),
@@ -132,19 +123,12 @@ pub enum ExprKind {
 #[derive(Debug, Clone, PartialEq)]
 pub enum GenericControl {
     Expr(Expr),
-    Type {
-        ty: Box<CType>,
-        declarator: Declarator,
-    },
+    Type { ty: Box<TypeName> },
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum GenericAssociation {
-    Type {
-        ty: Box<CType>,
-        declarator: Declarator,
-        value: Expr,
-    },
+    Type { ty: Box<TypeName>, value: Expr },
     Default(Expr),
 }
 
@@ -608,10 +592,7 @@ pub enum X86RegisterWidth {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AlignAsOperand {
-    Type {
-        ty: Box<CType>,
-        declarator: Declarator,
-    },
+    Type { ty: Box<TypeName> },
     Expr(Expr),
 }
 
@@ -704,13 +685,13 @@ pub struct FunctionDefinition {
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
-pub enum CType {
+pub enum TypeSpecifier {
     Void,
     Bool,
     Integer(IntegerType),
     Floating(FloatingType),
     Complex(Box<Self>),
-    Atomic(Box<Self>),
+    Atomic(Box<TypeName>),
     Vector(VectorType),
     FixedPoint(FixedPointType),
     TypeOf(TypeOfOperand),
@@ -719,24 +700,12 @@ pub enum CType {
     TargetBuiltin(String),
     Named(String),
     Tag(TagSpecifier),
-    Qualified {
-        #[debug(skip_if = Qualifiers::is_default)]
-        qualifiers: Qualifiers,
-        ty: Box<CType>,
-    },
-    Pointer {
-        #[debug(skip_if = Qualifiers::is_default)]
-        qualifiers: Qualifiers,
-        pointee: Box<CType>,
-    },
-    Array {
-        element: Box<CType>,
-        size: ArraySize,
-    },
-    Function {
-        return_type: Box<CType>,
-        parameters: ParameterList,
-    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct TypeName {
+    pub specifiers: DeclarationSpecifiers,
+    pub declarator: Declarator,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -770,7 +739,7 @@ pub enum FloatingType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct VectorType {
-    pub element: Box<CType>,
+    pub element: Box<TypeSpecifier>,
     pub size: VectorSize,
 }
 
@@ -804,10 +773,8 @@ pub struct FixedPointType {
 #[derive(Debug, Clone, PartialEq)]
 pub enum TypeOfOperand {
     Expression(Expr),
-    Type(Box<CType>),
+    Type(Box<TypeName>),
 }
-
-pub type Type = CType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TagKind {
@@ -938,6 +905,10 @@ impl Declarator {
         }
     }
 
+    pub fn is_derived(&self) -> bool {
+        self.outermost_derivation().is_some()
+    }
+
     pub fn function_parameters(&self) -> Option<&ParameterList> {
         let mut layer = self;
         for _ in 0..self.outermost_derivation()?.depth {
@@ -1013,7 +984,7 @@ impl Declarator {
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum ParameterList {
     Prototype {
-        parameters: Vec<Parameter>,
+        parameters: Vec<ParameterDeclaration>,
         #[debug(skip_if = is_false)]
         variadic: bool,
     },
@@ -1022,7 +993,7 @@ pub enum ParameterList {
 }
 
 impl ParameterList {
-    pub fn parameters(&self) -> &[Parameter] {
+    pub fn parameters(&self) -> &[ParameterDeclaration] {
         match self {
             Self::Prototype { parameters, .. } => parameters,
             Self::Void | Self::Empty => &[],
@@ -1035,19 +1006,18 @@ impl ParameterList {
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
-pub struct Parameter {
-    pub ty: CType,
+pub struct ParameterDeclaration {
+    pub specifiers: DeclarationSpecifiers,
+    pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
-    pub declared_ty: Option<CType>,
-    #[debug(skip_if = Option::is_none)]
-    pub declarator: Option<Declarator>,
+    pub declared_specifiers: Option<DeclarationSpecifiers>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct DeclarationSpecifiers {
-    pub ty: CType,
+    pub ty: TypeSpecifier,
     #[debug(skip_if = Qualifiers::is_default)]
     pub qualifiers: Qualifiers,
     #[debug(skip_if = StorageClass::is_none)]

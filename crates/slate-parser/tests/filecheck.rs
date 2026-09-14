@@ -4,7 +4,7 @@ use slate_parser::ast::*;
 use slate_parser::compiler_args::CompilerFlavor;
 use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
-use slate_parser::parser::{Parser, apply_abstract_declarator};
+use slate_parser::parser::Parser;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -546,7 +546,7 @@ fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
         }],
         Decl::Declaration { declaration, .. } => {
             let mut summaries = Vec::new();
-            if let CType::Tag(TagSpecifier::Definition(id)) = &declaration.specifiers.ty {
+            if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &declaration.specifiers.ty {
                 let (kind, name) = defined_tag(*id);
                 let name = name.unwrap_or_else(|| "<anonymous>".into());
                 summaries.push(if kind == TagKind::Enum {
@@ -580,18 +580,12 @@ fn summarize_declarator(
 ) -> DeclSummary {
     let name = declarator_identifier(declarator);
     if specifiers.storage == StorageClass::Typedef {
-        let base = if specifiers.qualifiers == Qualifiers::default() {
-            specifiers.ty.clone()
-        } else {
-            CType::Qualified {
-                qualifiers: specifiers.qualifiers,
-                ty: Box::new(specifiers.ty.clone()),
-            }
-        };
-        let ty = apply_abstract_declarator(base, declarator.clone());
         DeclSummary::Typedef {
             name,
-            type_name: normalize_type(&type_spelling(&ty)),
+            type_name: normalize_type(&declarator_spelling(
+                specifiers_spelling(specifiers),
+                declarator,
+            )),
         }
     } else if matches!(declarator, Declarator::Function { .. }) {
         DeclSummary::Function {
@@ -672,15 +666,15 @@ fn collect_returns_into(node: &ClangNode, returns: &mut Vec<i64>) {
     }
 }
 
-fn type_spelling(ty: &CType) -> String {
+fn type_spelling(ty: &TypeSpecifier) -> String {
     match ty {
-        CType::Bool => "_Bool".into(),
-        CType::Integer(IntegerType::Char { signed }) => match signed {
+        TypeSpecifier::Bool => "_Bool".into(),
+        TypeSpecifier::Integer(IntegerType::Char { signed }) => match signed {
             None => "char".into(),
             Some(true) => "signed char".into(),
             Some(false) => "unsigned char".into(),
         },
-        CType::Integer(IntegerType::Ranked { rank, signed }) => {
+        TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
             let prefix = if *signed { "" } else { "unsigned " };
             let name = match rank {
                 IntegerRank::Short => "short",
@@ -691,11 +685,11 @@ fn type_spelling(ty: &CType) -> String {
             };
             format!("{prefix}{name}")
         }
-        CType::Integer(IntegerType::BitInt { width, signed }) => {
+        TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
             format!("{} _BitInt({width})", if *signed { "" } else { "unsigned" })
         }
-        CType::Void => "void".into(),
-        CType::Floating(kind) => match kind {
+        TypeSpecifier::Void => "void".into(),
+        TypeSpecifier::Floating(kind) => match kind {
             FloatingType::BFloat16 => "__bf16".into(),
             FloatingType::Float => "float".into(),
             FloatingType::Float16 => "_Float16".into(),
@@ -706,9 +700,9 @@ fn type_spelling(ty: &CType) -> String {
             FloatingType::Float128 => "_Float128".into(),
             FloatingType::Float128Ext => "__float128".into(),
         },
-        CType::Complex(element) => format!("_Complex {}", type_spelling(element)),
-        CType::Atomic(element) => format!("_Atomic({})", type_spelling(element)),
-        CType::Vector(vector) => match &vector.size {
+        TypeSpecifier::Complex(element) => format!("_Complex {}", type_spelling(element)),
+        TypeSpecifier::Atomic(element) => format!("_Atomic({})", type_name_spelling(element)),
+        TypeSpecifier::Vector(vector) => match &vector.size {
             VectorSize::Bytes(size) => {
                 format!("{} vector_size({size})", type_spelling(&vector.element))
             }
@@ -716,7 +710,7 @@ fn type_spelling(ty: &CType) -> String {
                 format!("{} ext_vector_type({size})", type_spelling(&vector.element))
             }
         },
-        CType::FixedPoint(fixed) => format!(
+        TypeSpecifier::FixedPoint(fixed) => format!(
             "{}{}_{}",
             if fixed.saturated { "_Sat " } else { "" },
             match fixed.rank {
@@ -730,23 +724,25 @@ fn type_spelling(ty: &CType) -> String {
                 FixedPointKind::Accum => "Accum",
             }
         ),
-        CType::TypeOf(TypeOfOperand::Expression(expression)) => {
+        TypeSpecifier::TypeOf(TypeOfOperand::Expression(expression)) => {
             format!("typeof({expression})")
         }
-        CType::TypeOf(TypeOfOperand::Type(ty)) => format!("typeof({})", type_spelling(ty)),
-        CType::TypeOfUnqual(TypeOfOperand::Expression(expression)) => {
+        TypeSpecifier::TypeOf(TypeOfOperand::Type(ty)) => {
+            format!("typeof({})", type_name_spelling(ty))
+        }
+        TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(expression)) => {
             format!("typeof_unqual({expression})")
         }
-        CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
-            format!("typeof_unqual({})", type_spelling(ty))
+        TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+            format!("typeof_unqual({})", type_name_spelling(ty))
         }
-        CType::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
-        CType::TargetBuiltin(name) => name.clone(),
-        CType::Named(name) => name.clone(),
-        CType::Tag(TagSpecifier::Reference { kind, name }) => {
+        TypeSpecifier::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
+        TypeSpecifier::TargetBuiltin(name) => name.clone(),
+        TypeSpecifier::Named(name) => name.clone(),
+        TypeSpecifier::Tag(TagSpecifier::Reference { kind, name }) => {
             format!("{} {name}", tag_name(*kind))
         }
-        CType::Tag(TagSpecifier::Definition(id)) => {
+        TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
             let (kind, name) = defined_tag(*id);
             format!(
                 "{} {}",
@@ -754,24 +750,10 @@ fn type_spelling(ty: &CType) -> String {
                 name.as_deref().unwrap_or("<anonymous>")
             )
         }
-        CType::Qualified { qualifiers, ty } => {
-            let name = type_spelling(ty);
-            let prefix = qualifier_spelling(*qualifiers);
-            if qualifiers.is_atomic {
-                format!("_Atomic({name})")
-            } else {
-                format!("{prefix}{name}")
-            }
-        }
-        CType::Pointer { pointee, .. } => format!("{} *", type_spelling(pointee)),
-        CType::Array { element, size } => {
-            format!("{}[{}]", type_spelling(element), array_size(size))
-        }
-        CType::Function { return_type, .. } => format!("{} ()", type_spelling(return_type)),
     }
 }
 
-fn function_facts(base: &CType, declarator: &Declarator) -> String {
+fn function_facts(base: &TypeSpecifier, declarator: &Declarator) -> String {
     let Declarator::Function { inner, parameters } = declarator else {
         panic!("expected function declarator")
     };
@@ -791,11 +773,11 @@ fn function_facts(base: &CType, declarator: &Declarator) -> String {
     )
 }
 
-fn parameter_fact(parameter: &Parameter) -> String {
-    let pointer = matches!(parameter.declarator, Some(Declarator::Pointer { .. }));
+fn parameter_fact(parameter: &ParameterDeclaration) -> String {
+    let pointer = matches!(parameter.declarator, Declarator::Pointer { .. });
     format!(
         "{}{}",
-        normalize_type(&type_spelling(&parameter.ty)),
+        normalize_type(&specifiers_spelling(&parameter.specifiers)),
         if pointer { "*" } else { "" }
     )
 }
@@ -808,13 +790,7 @@ fn object_facts(specifiers: &DeclarationSpecifiers, declarator: &Declarator) -> 
         current = inner;
     }
     dimensions.reverse();
-    let mut base = type_spelling(&specifiers.ty);
-    let qualifiers = qualifier_spelling(specifiers.qualifiers);
-    if specifiers.qualifiers.is_atomic {
-        base = format!("_Atomic({base})");
-    } else if !qualifiers.is_empty() {
-        base = format!("{qualifiers}{base}");
-    }
+    let mut base = specifiers_spelling(specifiers);
     if let Declarator::Pointer { qualifiers, .. } = current {
         let pointer_qualifiers = qualifier_spelling(*qualifiers);
         if !pointer_qualifiers.is_empty() {
@@ -828,6 +804,48 @@ fn object_facts(specifiers: &DeclarationSpecifiers, declarator: &Declarator) -> 
         normalize_type(&base),
         dimensions.join(",")
     )
+}
+
+fn specifiers_spelling(specifiers: &DeclarationSpecifiers) -> String {
+    let base = type_spelling(&specifiers.ty);
+    if specifiers.qualifiers.is_atomic {
+        format!("_Atomic({base})")
+    } else {
+        format!("{}{base}", qualifier_spelling(specifiers.qualifiers))
+    }
+}
+
+fn type_name_spelling(type_name: &TypeName) -> String {
+    declarator_spelling(
+        specifiers_spelling(&type_name.specifiers),
+        &type_name.declarator,
+    )
+}
+
+fn declarator_spelling(base: String, declarator: &Declarator) -> String {
+    match declarator {
+        Declarator::Name(_) | Declarator::Abstract => base,
+        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
+            declarator_spelling(base, inner)
+        }
+        Declarator::Pointer { inner, .. } => declarator_spelling(format!("{base} *"), inner),
+        Declarator::Array { inner, size, .. } => {
+            let (base, core) = pointer_prefix_spelling(base, inner);
+            declarator_spelling(format!("{base}[{}]", array_size(size)), core)
+        }
+        Declarator::Function { inner, .. } => {
+            let (base, core) = pointer_prefix_spelling(base, inner);
+            declarator_spelling(format!("{base} ()"), core)
+        }
+    }
+}
+
+fn pointer_prefix_spelling(mut base: String, mut declarator: &Declarator) -> (String, &Declarator) {
+    while let Declarator::Pointer { inner, .. } = declarator {
+        base.push_str(" *");
+        declarator = inner;
+    }
+    (base, declarator)
 }
 
 fn qualifier_spelling(qualifiers: Qualifiers) -> String {

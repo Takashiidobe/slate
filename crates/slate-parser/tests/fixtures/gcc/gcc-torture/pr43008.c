@@ -171,13 +171,17 @@ int         main() {
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
 // DEFAULT-NEXT:                                               SizeOfType {
-// DEFAULT-NEXT:                                                   ty: Tag(
-// DEFAULT-NEXT:                                                       Reference {
-// DEFAULT-NEXT:                                                           kind: Struct,
-// DEFAULT-NEXT:                                                           name: "X",
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Tag(
+// DEFAULT-NEXT:                                                               Reference {
+// DEFAULT-NEXT:                                                                   kind: Struct,
+// DEFAULT-NEXT:                                                                   name: "X",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },

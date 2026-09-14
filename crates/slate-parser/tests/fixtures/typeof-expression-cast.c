@@ -148,27 +148,31 @@ void convert(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       value: Cast {
-// DEFAULT-NEXT:                           ty: TypeOf(
-// DEFAULT-NEXT:                               Expression(
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "values",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 0,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "0",
+// DEFAULT-NEXT:                           ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: TypeOf(
+// DEFAULT-NEXT:                                       Expression(
+// DEFAULT-NEXT:                                           Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "values",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 0,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "0",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           value: Index {
 // DEFAULT-NEXT:                               base: Identifier(
 // DEFAULT-NEXT:                                   "source",

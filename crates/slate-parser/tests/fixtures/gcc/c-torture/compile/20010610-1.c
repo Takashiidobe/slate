@@ -52,8 +52,12 @@ main(void)
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
 // DEFAULT-NEXT:                                       Cast {
-// DEFAULT-NEXT:                                           ty: Bool,
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Bool,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
 // DEFAULT-NEXT:                                                   value: 1,

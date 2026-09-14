@@ -214,13 +214,16 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -303,21 +306,29 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       size: Expression(
 // DEFAULT-NEXT:                           TypesCompatible {
-// DEFAULT-NEXT:                               left_ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               left_declarator: Abstract,
-// DEFAULT-NEXT:                               right_ty: TypeOf(
-// DEFAULT-NEXT:                                   Expression(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                               left_ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right_declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right_ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: TypeOf(
+// DEFAULT-NEXT:                                           Expression(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -501,107 +512,145 @@ int main(void) {
 // DEFAULT-NEXT:                                       left: Binary {
 // DEFAULT-NEXT:                                           op: And,
 // DEFAULT-NEXT:                                           left: TypesCompatible {
-// DEFAULT-NEXT:                                               left_ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               left_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               left_declarator: Abstract,
-// DEFAULT-NEXT:                                               right_ty: Qualified {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                                       is_const: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right_declarator: Abstract,
+// DEFAULT-NEXT:                                               right_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                           is_const: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: TypesCompatible {
-// DEFAULT-NEXT:                                               left_ty: TypeOf(
-// DEFAULT-NEXT:                                                   Expression(
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "hot",
+// DEFAULT-NEXT:                                               left_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: TypeOf(
+// DEFAULT-NEXT:                                                           Expression(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "hot",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               left_declarator: Abstract,
-// DEFAULT-NEXT:                                               right_ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right_declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               right_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: TypesCompatible {
-// DEFAULT-NEXT:                                           left_ty: TypeOf(
-// DEFAULT-NEXT:                                               Expression(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "hot",
+// DEFAULT-NEXT:                                           left_ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: TypeOf(
+// DEFAULT-NEXT:                                                       Expression(
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "hot",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           left_declarator: Abstract,
-// DEFAULT-NEXT:                                           right_ty: TypeOf(
-// DEFAULT-NEXT:                                               Expression(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "laura",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right_ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: TypeOf(
+// DEFAULT-NEXT:                                                       Expression(
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "laura",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right_declarator: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: TypesCompatible {
-// DEFAULT-NEXT:                                       left_ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: true,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       left_declarator: Array {
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                           size: Expression(
-// DEFAULT-NEXT:                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 5,
-// DEFAULT-NEXT:                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "5",
+// DEFAULT-NEXT:                                       left_ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right_ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: true,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right_declarator: Array {
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                           size: Unspecified,
+// DEFAULT-NEXT:                                           declarator: Array {
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                               size: Expression(
+// DEFAULT-NEXT:                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 5,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "5",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right_ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Array {
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                               size: Unspecified,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: TypesCompatible {
-// DEFAULT-NEXT:                                   left_ty: Named(
-// DEFAULT-NEXT:                                       "same1",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   left_declarator: Abstract,
-// DEFAULT-NEXT:                                   right_ty: Named(
-// DEFAULT-NEXT:                                       "same2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right_declarator: Abstract,
+// DEFAULT-NEXT:                                   left_ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "same1",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right_ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "same2",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
@@ -632,134 +681,188 @@ int main(void) {
 // DEFAULT-NEXT:                                       left: Binary {
 // DEFAULT-NEXT:                                           op: Or,
 // DEFAULT-NEXT:                                           left: TypesCompatible {
-// DEFAULT-NEXT:                                               left_ty: Integer(
-// DEFAULT-NEXT:                                                   Char {
-// DEFAULT-NEXT:                                                       signed: None,
+// DEFAULT-NEXT:                                               left_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               left_declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right_ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Int,
-// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                               right_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right_declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: TypesCompatible {
-// DEFAULT-NEXT:                                               left_ty: Integer(
-// DEFAULT-NEXT:                                                   Char {
-// DEFAULT-NEXT:                                                       signed: None,
+// DEFAULT-NEXT:                                               left_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               left_declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right_ty: Qualified {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                                       is_const: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Char {
-// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                               right_ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                           is_const: true,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right_declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: TypesCompatible {
-// DEFAULT-NEXT:                                           left_ty: Floating(
-// DEFAULT-NEXT:                                               LongDouble,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           left_declarator: Abstract,
-// DEFAULT-NEXT:                                           right_ty: Floating(
-// DEFAULT-NEXT:                                               Double,
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right_declarator: Abstract,
+// DEFAULT-NEXT:                                           left_ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       LongDouble,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           right_ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: TypesCompatible {
-// DEFAULT-NEXT:                                       left_ty: TypeOf(
-// DEFAULT-NEXT:                                           Expression(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                       left_ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: TypeOf(
+// DEFAULT-NEXT:                                                   Expression(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "i",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       left_declarator: Abstract,
-// DEFAULT-NEXT:                                       right_ty: TypeOf(
-// DEFAULT-NEXT:                                           Expression(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "d",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       right_ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: TypeOf(
+// DEFAULT-NEXT:                                                   Expression(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "d",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right_declarator: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: TypesCompatible {
-// DEFAULT-NEXT:                                   left_ty: TypeOf(
-// DEFAULT-NEXT:                                       Expression(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "dingos",
+// DEFAULT-NEXT:                                   left_ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: TypeOf(
+// DEFAULT-NEXT:                                               Expression(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "dingos",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   left_declarator: Abstract,
-// DEFAULT-NEXT:                                   right_ty: TypeOf(
-// DEFAULT-NEXT:                                       Expression(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "cranberry",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right_ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: TypeOf(
+// DEFAULT-NEXT:                                               Expression(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "cranberry",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right_declarator: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: TypesCompatible {
-// DEFAULT-NEXT:                               left_ty: Integer(
-// DEFAULT-NEXT:                                   Char {
-// DEFAULT-NEXT:                                       signed: None,
+// DEFAULT-NEXT:                               left_ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Char {
+// DEFAULT-NEXT:                                               signed: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               left_declarator: Abstract,
-// DEFAULT-NEXT:                               right_ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               right_ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right_declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: TypesCompatible {
-// DEFAULT-NEXT:                           left_ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
+// DEFAULT-NEXT:                           left_ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           left_declarator: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right_ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right_declarator: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Pointer {
+// DEFAULT-NEXT:                               declarator: Pointer {
 // DEFAULT-NEXT:                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                   inner: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right_ty: TypeName {
+// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Char {
+// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },

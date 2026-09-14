@@ -19,13 +19,16 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:                       ),
 // GCC-NEXT:                       parameters: Prototype {
 // GCC-NEXT:                           parameters: [
-// GCC-NEXT:                               Parameter {
-// GCC-NEXT:                                   ty: Integer(
-// GCC-NEXT:                                       Ranked {
-// GCC-NEXT:                                           rank: Int,
-// GCC-NEXT:                                           signed: true,
-// GCC-NEXT:                                       },
-// GCC-NEXT:                                   ),
+// GCC-NEXT:                               ParameterDeclaration {
+// GCC-NEXT:                                   specifiers: DeclarationSpecifiers {
+// GCC-NEXT:                                       ty: Integer(
+// GCC-NEXT:                                           Ranked {
+// GCC-NEXT:                                               rank: Int,
+// GCC-NEXT:                                               signed: true,
+// GCC-NEXT:                                           },
+// GCC-NEXT:                                       ),
+// GCC-NEXT:                                   },
+// GCC-NEXT:                                   declarator: Abstract,
 // GCC-NEXT:                               },
 // GCC-NEXT:                           ],
 // GCC-NEXT:                       },

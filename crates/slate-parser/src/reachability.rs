@@ -41,7 +41,8 @@ impl<'a> Reachability<'a> {
             let Decl::Declaration { declaration, .. } = &decl.value else {
                 continue;
             };
-            let CType::Tag(TagSpecifier::Definition(tag_id)) = &declaration.specifiers.ty else {
+            let TypeSpecifier::Tag(TagSpecifier::Definition(tag_id)) = &declaration.specifiers.ty
+            else {
                 continue;
             };
             let Some(tag) = tu.tag(*tag_id) else {
@@ -126,11 +127,9 @@ impl<'a> Reachability<'a> {
         self.mark_stmts(&function.body);
     }
 
-    fn mark_parameter(&mut self, parameter: &Parameter) {
-        self.mark_type(&parameter.ty);
-        if let Some(declarator) = &parameter.declarator {
-            self.mark_declarator(declarator);
-        }
+    fn mark_parameter(&mut self, parameter: &ParameterDeclaration) {
+        self.mark_type(&parameter.specifiers.ty);
+        self.mark_declarator(&parameter.declarator);
     }
 
     fn mark_declaration(&mut self, declaration: &Declaration) {
@@ -143,9 +142,9 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn mark_type_name(&mut self, ty: &CType, declarator: &Declarator) {
-        self.mark_type(ty);
-        self.mark_declarator(declarator);
+    fn mark_type_name(&mut self, ty: &TypeName) {
+        self.mark_type(&ty.specifiers.ty);
+        self.mark_declarator(&ty.declarator);
     }
 
     fn mark_initializer(&mut self, initializer: &Initializer) {
@@ -250,66 +249,35 @@ impl<'a> Reachability<'a> {
             } => {
                 match controlling {
                     GenericControl::Expr(controlling) => self.mark_expr(controlling),
-                    GenericControl::Type { ty, declarator } => self.mark_type_name(ty, declarator),
+                    GenericControl::Type { ty } => self.mark_type_name(ty),
                 }
                 for association in associations {
                     match association {
-                        GenericAssociation::Type {
-                            ty,
-                            declarator,
-                            value,
-                        } => {
-                            self.mark_type_name(ty, declarator);
+                        GenericAssociation::Type { ty, value } => {
+                            self.mark_type_name(ty);
                             self.mark_expr(value);
                         }
                         GenericAssociation::Default(value) => self.mark_expr(value),
                     }
                 }
             }
-            ExprKind::SizeOfType { ty, declarator } | ExprKind::AlignOf { ty, declarator } => {
-                self.mark_type_name(ty, declarator)
-            }
-            ExprKind::OffsetOf {
-                ty,
-                declarator,
-                member,
-            } => {
-                self.mark_type_name(ty, declarator);
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self.mark_type_name(ty),
+            ExprKind::OffsetOf { ty, member } => {
+                self.mark_type_name(ty);
                 self.mark_expr(member);
             }
-            ExprKind::TypesCompatible {
-                left_ty,
-                left_declarator,
-                right_ty,
-                right_declarator,
-            } => {
-                self.mark_type_name(left_ty, left_declarator);
-                self.mark_type_name(right_ty, right_declarator);
+            ExprKind::TypesCompatible { left_ty, right_ty } => {
+                self.mark_type_name(left_ty);
+                self.mark_type_name(right_ty);
             }
-            ExprKind::Cast {
-                ty,
-                declarator,
-                value,
-            }
-            | ExprKind::BitCast {
-                ty,
-                declarator,
-                value,
-            }
-            | ExprKind::VaArg {
-                list: value,
-                ty,
-                declarator,
-            } => {
-                self.mark_type_name(ty, declarator);
+            ExprKind::Cast { ty, value }
+            | ExprKind::BitCast { ty, value }
+            | ExprKind::VaArg { list: value, ty } => {
+                self.mark_type_name(ty);
                 self.mark_expr(value);
             }
-            ExprKind::CompoundLiteral {
-                ty,
-                declarator,
-                initializer,
-            } => {
-                self.mark_type_name(ty, declarator);
+            ExprKind::CompoundLiteral { ty, initializer } => {
+                self.mark_type_name(ty);
                 for item in initializer {
                     self.mark_initializer(&item.value);
                 }
@@ -369,37 +337,25 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn mark_type(&mut self, ty: &CType) {
+    fn mark_type(&mut self, ty: &TypeSpecifier) {
         match ty {
-            CType::Named(name) => self.mark_name(name),
-            CType::Tag(TagSpecifier::Reference { name, .. }) => self.mark_name(name),
-            CType::Tag(TagSpecifier::Definition(id)) => self.mark_tag(*id),
-            CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => self.mark_type(ty),
-            CType::Atomic(ty) => self.mark_type(ty),
-            CType::Vector(vector) => self.mark_type(&vector.element),
-            CType::TypeOf(TypeOfOperand::Type(ty))
-            | CType::TypeOfUnqual(TypeOfOperand::Type(ty)) => self.mark_type(ty),
-            CType::Imaginary(ty) => self.mark_type(ty),
-            CType::Array { element, .. } => self.mark_type(element),
-            CType::Function {
-                return_type,
-                parameters,
-                ..
-            } => {
-                self.mark_type(return_type);
-                for parameter in parameters.parameters() {
-                    self.mark_type(&parameter.ty);
-                }
-            }
-            CType::Void
-            | CType::Bool
-            | CType::Integer(_)
-            | CType::Floating(_)
-            | CType::Complex(_) => {}
-            CType::FixedPoint(_) => {}
-            CType::TypeOf(TypeOfOperand::Expression(expr))
-            | CType::TypeOfUnqual(TypeOfOperand::Expression(expr)) => self.mark_expr(expr),
-            CType::TargetBuiltin(_) => {}
+            TypeSpecifier::Named(name) => self.mark_name(name),
+            TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) => self.mark_name(name),
+            TypeSpecifier::Tag(TagSpecifier::Definition(id)) => self.mark_tag(*id),
+            TypeSpecifier::Atomic(ty) => self.mark_type_name(ty),
+            TypeSpecifier::Vector(vector) => self.mark_type(&vector.element),
+            TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => self.mark_type_name(ty),
+            TypeSpecifier::Imaginary(ty) => self.mark_type(ty),
+            TypeSpecifier::Void
+            | TypeSpecifier::Bool
+            | TypeSpecifier::Integer(_)
+            | TypeSpecifier::Floating(_)
+            | TypeSpecifier::Complex(_) => {}
+            TypeSpecifier::FixedPoint(_) => {}
+            TypeSpecifier::TypeOf(TypeOfOperand::Expression(expr))
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(expr)) => self.mark_expr(expr),
+            TypeSpecifier::TargetBuiltin(_) => {}
         }
     }
 

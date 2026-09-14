@@ -134,10 +134,14 @@ int main(void) {
 // DEFAULT-NEXT:                                               Binary {
 // DEFAULT-NEXT:                                                   op: LessEqual,
 // DEFAULT-NEXT:                                                   left: CompoundLiteral {
-// DEFAULT-NEXT:                                                       ty: Named(
-// DEFAULT-NEXT:                                                           "V",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Named(
+// DEFAULT-NEXT:                                                                   "V",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       initializer: [],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: IntegerLiteral(

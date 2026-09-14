@@ -460,22 +460,25 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   parameters: Prototype {
 // DEFAULT-NEXT:                                       parameters: [
-// DEFAULT-NEXT:                                           Parameter {
-// DEFAULT-NEXT:                                               ty: Void,
-// DEFAULT-NEXT:                                               declarator: Some(
-// DEFAULT-NEXT:                                                   Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ParameterDeclaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Void,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Parameter {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Long,
-// DEFAULT-NEXT:                                                       signed: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ParameterDeclaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Long,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
@@ -510,28 +513,28 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   parameters: Prototype {
 // DEFAULT-NEXT:                                       parameters: [
-// DEFAULT-NEXT:                                           Parameter {
-// DEFAULT-NEXT:                                               ty: Void,
-// DEFAULT-NEXT:                                               declarator: Some(
-// DEFAULT-NEXT:                                                   Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ParameterDeclaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Void,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Parameter {
-// DEFAULT-NEXT:                                               ty: Tag(
-// DEFAULT-NEXT:                                                   Reference {
-// DEFAULT-NEXT:                                                       kind: Struct,
-// DEFAULT-NEXT:                                                       name: "_obstack_chunk",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Some(
-// DEFAULT-NEXT:                                                   Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ParameterDeclaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tag(
+// DEFAULT-NEXT:                                                       Reference {
+// DEFAULT-NEXT:                                                           kind: Struct,
+// DEFAULT-NEXT:                                                           name: "_obstack_chunk",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
@@ -903,27 +906,30 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Struct,
-// DEFAULT-NEXT:                                           name: "obstack",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Some(
-// DEFAULT-NEXT:                                       Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Abstract,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tag(
+// DEFAULT-NEXT:                                           Reference {
+// DEFAULT-NEXT:                                               kind: Struct,
+// DEFAULT-NEXT:                                               name: "obstack",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Pointer {
+// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -993,33 +999,33 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Tag(
-// DEFAULT-NEXT:                               Reference {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: "obstack",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "h",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Name(
-// DEFAULT-NEXT:                                   "length",
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Tag(
+// DEFAULT-NEXT:                                   Reference {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: "obstack",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "h",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Name(
+// DEFAULT-NEXT:                               "length",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
@@ -1329,33 +1335,40 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                       Unary {
 // DEFAULT-NEXT:                                           op: Deref,
 // DEFAULT-NEXT:                                           operand: Cast {
-// DEFAULT-NEXT:                                               ty: Tag(
-// DEFAULT-NEXT:                                                   Reference {
-// DEFAULT-NEXT:                                                       kind: Struct,
-// DEFAULT-NEXT:                                                       name: "_obstack_chunk",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Function {
-// DEFAULT-NEXT:                                                   inner: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Grouped(
-// DEFAULT-NEXT:                                                           Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Tag(
+// DEFAULT-NEXT:                                                           Reference {
+// DEFAULT-NEXT:                                                               kind: Struct,
+// DEFAULT-NEXT:                                                               name: "_obstack_chunk",
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   parameters: Prototype {
-// DEFAULT-NEXT:                                                       parameters: [
-// DEFAULT-NEXT:                                                           Parameter {
-// DEFAULT-NEXT:                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                   Ranked {
-// DEFAULT-NEXT:                                                                       rank: Long,
-// DEFAULT-NEXT:                                                                       signed: true,
+// DEFAULT-NEXT:                                                   declarator: Function {
+// DEFAULT-NEXT:                                                       inner: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Grouped(
+// DEFAULT-NEXT:                                                               Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       parameters: Prototype {
+// DEFAULT-NEXT:                                                           parameters: [
+// DEFAULT-NEXT:                                                               ParameterDeclaration {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Long,
+// DEFAULT-NEXT:                                                                               signed: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               value: Member {
@@ -1434,14 +1447,18 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                           value: Binary {
 // DEFAULT-NEXT:                               op: Add,
 // DEFAULT-NEXT:                               left: Cast {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Char {
-// DEFAULT-NEXT:                                           signed: None,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   value: Identifier(
 // DEFAULT-NEXT:                                       "new_chunk",
@@ -1480,40 +1497,52 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Paren(
 // DEFAULT-NEXT:                           Cast {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Long,
-// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Long,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: Paren(
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Sub,
 // DEFAULT-NEXT:                                       left: Cast {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Char {
-// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: Unary {
 // DEFAULT-NEXT:                                               op: AddrOf,
 // DEFAULT-NEXT:                                               operand: Member {
 // DEFAULT-NEXT:                                                   base: Paren(
 // DEFAULT-NEXT:                                                       Cast {
-// DEFAULT-NEXT:                                                           ty: Tag(
-// DEFAULT-NEXT:                                                               Reference {
-// DEFAULT-NEXT:                                                                   kind: Struct,
-// DEFAULT-NEXT:                                                                   name: "fooalign",
+// DEFAULT-NEXT:                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                   ty: Tag(
+// DEFAULT-NEXT:                                                                       Reference {
+// DEFAULT-NEXT:                                                                           kind: Struct,
+// DEFAULT-NEXT:                                                                           name: "fooalign",
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           declarator: Pointer {
-// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                   inner: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           value: IntegerLiteral(
 // DEFAULT-NEXT:                                                               IntegerLiteral {
@@ -1534,14 +1563,18 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Cast {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Char {
-// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Pointer {
-// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           value: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
@@ -1577,13 +1610,17 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                                   "obj_size",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               right: SizeOfType {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: IntegerLiteral(
@@ -1635,15 +1672,19 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                       target: Index {
 // DEFAULT-NEXT:                                           base: Paren(
 // DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   value: Member {
 // DEFAULT-NEXT:                                                       base: Identifier(
@@ -1661,15 +1702,19 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                       value: Index {
 // DEFAULT-NEXT:                                           base: Paren(
 // DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Ranked {
-// DEFAULT-NEXT:                                                           rank: Int,
-// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   value: Member {
 // DEFAULT-NEXT:                                                       base: Identifier(
@@ -1702,23 +1747,31 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                           "obj_size",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: SizeOfType {
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Ranked {
-// DEFAULT-NEXT:                                               rank: Int,
-// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -1920,26 +1973,30 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:                                                       Unary {
 // DEFAULT-NEXT:                                                           op: Deref,
 // DEFAULT-NEXT:                                                           operand: Cast {
-// DEFAULT-NEXT:                                                               ty: Void,
-// DEFAULT-NEXT:                                                               declarator: Function {
-// DEFAULT-NEXT:                                                                   inner: Grouped(
-// DEFAULT-NEXT:                                                                       Pointer {
-// DEFAULT-NEXT:                                                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                                           inner: Abstract,
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   parameters: Prototype {
-// DEFAULT-NEXT:                                                                       parameters: [
-// DEFAULT-NEXT:                                                                           Parameter {
-// DEFAULT-NEXT:                                                                               ty: Void,
-// DEFAULT-NEXT:                                                                               declarator: Some(
-// DEFAULT-NEXT:                                                                                   Pointer {
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarator: Function {
+// DEFAULT-NEXT:                                                                       inner: Grouped(
+// DEFAULT-NEXT:                                                                           Pointer {
+// DEFAULT-NEXT:                                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       parameters: Prototype {
+// DEFAULT-NEXT:                                                                           parameters: [
+// DEFAULT-NEXT:                                                                               ParameterDeclaration {
+// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                       ty: Void,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   declarator: Pointer {
 // DEFAULT-NEXT:                                                                                       qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                                                       inner: Abstract,
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ],
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: Member {

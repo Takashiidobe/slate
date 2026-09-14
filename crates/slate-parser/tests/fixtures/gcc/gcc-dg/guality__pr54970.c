@@ -324,27 +324,31 @@ main() {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           CompoundLiteral {
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Int,
-// DEFAULT-NEXT:                                       signed: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Abstract,
-// DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 3,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "3",
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Array {
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                       size: Expression(
+// DEFAULT-NEXT:                                           IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 3,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "3",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: [
 // DEFAULT-NEXT:                                   InitializerItem {

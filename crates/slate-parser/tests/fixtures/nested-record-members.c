@@ -128,13 +128,17 @@ struct outer {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           right: SizeOfType {
-// DEFAULT-NEXT:                                               ty: Integer(
-// DEFAULT-NEXT:                                                   Ranked {
-// DEFAULT-NEXT:                                                       rank: Long,
-// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -353,13 +357,17 @@ struct outer {
 // EXTRA-NEXT:                                               },
 // EXTRA-NEXT:                                           ),
 // EXTRA-NEXT:                                           right: SizeOfType {
-// EXTRA-NEXT:                                               ty: Integer(
-// EXTRA-NEXT:                                                   Ranked {
-// EXTRA-NEXT:                                                       rank: Long,
-// EXTRA-NEXT:                                                       signed: false,
+// EXTRA-NEXT:                                               ty: TypeName {
+// EXTRA-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// EXTRA-NEXT:                                                       ty: Integer(
+// EXTRA-NEXT:                                                           Ranked {
+// EXTRA-NEXT:                                                               rank: Long,
+// EXTRA-NEXT:                                                               signed: false,
+// EXTRA-NEXT:                                                           },
+// EXTRA-NEXT:                                                       ),
 // EXTRA-NEXT:                                                   },
-// EXTRA-NEXT:                                               ),
-// EXTRA-NEXT:                                               declarator: Abstract,
+// EXTRA-NEXT:                                                   declarator: Abstract,
+// EXTRA-NEXT:                                               },
 // EXTRA-NEXT:                                           },
 // EXTRA-NEXT:                                       },
 // EXTRA-NEXT:                                   ),

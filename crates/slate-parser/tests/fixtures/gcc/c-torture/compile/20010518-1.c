@@ -3343,21 +3343,21 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Tag(
-// DEFAULT-NEXT:                               Reference {
-// DEFAULT-NEXT:                                   kind: Struct,
-// DEFAULT-NEXT:                                   name: "insn_chain",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "chain",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Tag(
+// DEFAULT-NEXT:                                   Reference {
+// DEFAULT-NEXT:                                       kind: Struct,
+// DEFAULT-NEXT:                                       name: "insn_chain",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Name(
+// DEFAULT-NEXT:                                   "chain",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
@@ -3636,13 +3636,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                   op: Equal,
 // DEFAULT-NEXT:                                                                   left: Paren(
 // DEFAULT-NEXT:                                                                       Cast {
-// DEFAULT-NEXT:                                                                           ty: Tag(
-// DEFAULT-NEXT:                                                                               Reference {
-// DEFAULT-NEXT:                                                                                   kind: Enum,
-// DEFAULT-NEXT:                                                                                   name: "rtx_code",
+// DEFAULT-NEXT:                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                   ty: Tag(
+// DEFAULT-NEXT:                                                                                       Reference {
+// DEFAULT-NEXT:                                                                                           kind: Enum,
+// DEFAULT-NEXT:                                                                                           name: "rtx_code",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                           value: Member {
 // DEFAULT-NEXT:                                                                               base: Paren(
 // DEFAULT-NEXT:                                                                                   Member {
@@ -3790,10 +3794,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                       initializer: Some(
 // DEFAULT-NEXT:                                                           Expr(
 // DEFAULT-NEXT:                                                               Cast {
-// DEFAULT-NEXT:                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                       "rtx",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                               "rtx",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   value: IntegerLiteral(
 // DEFAULT-NEXT:                                                                       IntegerLiteral {
 // DEFAULT-NEXT:                                                                           value: 0,
@@ -3848,13 +3856,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                       op: Equal,
 // DEFAULT-NEXT:                                                       left: Paren(
 // DEFAULT-NEXT:                                                           Cast {
-// DEFAULT-NEXT:                                                               ty: Tag(
-// DEFAULT-NEXT:                                                                   Reference {
-// DEFAULT-NEXT:                                                                       kind: Enum,
-// DEFAULT-NEXT:                                                                       name: "rtx_code",
+// DEFAULT-NEXT:                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Tag(
+// DEFAULT-NEXT:                                                                           Reference {
+// DEFAULT-NEXT:                                                                               kind: Enum,
+// DEFAULT-NEXT:                                                                               name: "rtx_code",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               value: Member {
 // DEFAULT-NEXT:                                                                   base: Paren(
 // DEFAULT-NEXT:                                                                       Identifier(
@@ -4045,13 +4057,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                                   "mode_size",
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                               index: Cast {
-// DEFAULT-NEXT:                                                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                   value: Paren(
 // DEFAULT-NEXT:                                                                                                                       Member {
 // DEFAULT-NEXT:                                                                                                                           base: Index {
@@ -4121,13 +4137,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                               "mode_size",
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           index: Cast {
-// DEFAULT-NEXT:                                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                                               signed: true,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                                                   Member {
 // DEFAULT-NEXT:                                                                                                                       base: Index {
@@ -4346,13 +4366,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                           right: Paren(
 // DEFAULT-NEXT:                                                                               Cast {
-// DEFAULT-NEXT:                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   value: Paren(
 // DEFAULT-NEXT:                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                           op: Mul,
@@ -4391,10 +4415,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                               op: ShiftLeft,
 // DEFAULT-NEXT:                                                                               left: Paren(
 // DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                               ty: Named(
+// DEFAULT-NEXT:                                                                                                   "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                       value: Paren(
 // DEFAULT-NEXT:                                                                                           IntegerLiteral(
 // DEFAULT-NEXT:                                                                                               IntegerLiteral {
@@ -4426,13 +4454,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       right: Paren(
 // DEFAULT-NEXT:                                                                                           Cast {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                                   Binary {
 // DEFAULT-NEXT:                                                                                                       op: Mul,
@@ -4495,13 +4527,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                           right: Paren(
 // DEFAULT-NEXT:                                                                               Cast {
-// DEFAULT-NEXT:                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   value: Paren(
 // DEFAULT-NEXT:                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                           op: Mul,
@@ -4537,10 +4573,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                                                       left: Paren(
 // DEFAULT-NEXT:                                                                           Cast {
-// DEFAULT-NEXT:                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                   "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                   IntegerLiteral(
 // DEFAULT-NEXT:                                                                                       IntegerLiteral {
@@ -4572,13 +4612,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               right: Paren(
 // DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                       value: Paren(
 // DEFAULT-NEXT:                                                                                           Binary {
 // DEFAULT-NEXT:                                                                                               op: Mul,
@@ -4639,13 +4683,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                           right: Paren(
 // DEFAULT-NEXT:                                                                               Cast {
-// DEFAULT-NEXT:                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   value: Paren(
 // DEFAULT-NEXT:                                                                                       Binary {
 // DEFAULT-NEXT:                                                                                           op: Mul,
@@ -4681,10 +4729,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                                                       left: Paren(
 // DEFAULT-NEXT:                                                                           Cast {
-// DEFAULT-NEXT:                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                   "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                   IntegerLiteral(
 // DEFAULT-NEXT:                                                                                       IntegerLiteral {
@@ -4716,13 +4768,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               right: Paren(
 // DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                       value: Paren(
 // DEFAULT-NEXT:                                                                                           Binary {
 // DEFAULT-NEXT:                                                                                               op: Mul,
@@ -4782,13 +4838,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   right: Paren(
 // DEFAULT-NEXT:                                                                                       Cast {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                           value: Paren(
 // DEFAULT-NEXT:                                                                                               Binary {
 // DEFAULT-NEXT:                                                                                                   op: Mul,
@@ -4824,10 +4884,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                               op: ShiftLeft,
 // DEFAULT-NEXT:                                                                               left: Paren(
 // DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                               ty: Named(
+// DEFAULT-NEXT:                                                                                                   "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                       value: Paren(
 // DEFAULT-NEXT:                                                                                           IntegerLiteral(
 // DEFAULT-NEXT:                                                                                               IntegerLiteral {
@@ -4853,13 +4917,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       right: Paren(
 // DEFAULT-NEXT:                                                                                           Cast {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                                   Binary {
 // DEFAULT-NEXT:                                                                                                       op: Mul,
@@ -4917,13 +4985,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       right: Paren(
 // DEFAULT-NEXT:                                                                                           Cast {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                                   Binary {
 // DEFAULT-NEXT:                                                                                                       op: Mul,
@@ -4962,10 +5034,14 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                           op: ShiftLeft,
 // DEFAULT-NEXT:                                                                                           left: Paren(
 // DEFAULT-NEXT:                                                                                               Cast {
-// DEFAULT-NEXT:                                                                                                   ty: Named(
-// DEFAULT-NEXT:                                                                                                       "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                                                               "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                                   value: Paren(
 // DEFAULT-NEXT:                                                                                                       IntegerLiteral(
 // DEFAULT-NEXT:                                                                                                           IntegerLiteral {
@@ -4991,13 +5067,17 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                   right: Paren(
 // DEFAULT-NEXT:                                                                                                       Cast {
-// DEFAULT-NEXT:                                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                           value: Paren(
 // DEFAULT-NEXT:                                                                                                               Binary {
 // DEFAULT-NEXT:                                                                                                                   op: Mul,
@@ -5139,23 +5219,31 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                               "mode_size",
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                           index: Cast {
-// DEFAULT-NEXT:                                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                                               signed: true,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                                                   Paren(
 // DEFAULT-NEXT:                                                                                                                       Cast {
-// DEFAULT-NEXT:                                                                                                                           ty: Tag(
-// DEFAULT-NEXT:                                                                                                                               Reference {
-// DEFAULT-NEXT:                                                                                                                                   kind: Enum,
-// DEFAULT-NEXT:                                                                                                                                   name: "machine_mode",
+// DEFAULT-NEXT:                                                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                                   ty: Tag(
+// DEFAULT-NEXT:                                                                                                                                       Reference {
+// DEFAULT-NEXT:                                                                                                                                           kind: Enum,
+// DEFAULT-NEXT:                                                                                                                                           name: "machine_mode",
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                           value: Member {
 // DEFAULT-NEXT:                                                                                                                               base: Paren(
 // DEFAULT-NEXT:                                                                                                                                   Member {
@@ -5232,23 +5320,31 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                           "mode_size",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                       index: Cast {
-// DEFAULT-NEXT:                                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                           value: Paren(
 // DEFAULT-NEXT:                                                                                                               Paren(
 // DEFAULT-NEXT:                                                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                                                       ty: Tag(
-// DEFAULT-NEXT:                                                                                                                           Reference {
-// DEFAULT-NEXT:                                                                                                                               kind: Enum,
-// DEFAULT-NEXT:                                                                                                                               name: "machine_mode",
+// DEFAULT-NEXT:                                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                               ty: Tag(
+// DEFAULT-NEXT:                                                                                                                                   Reference {
+// DEFAULT-NEXT:                                                                                                                                       kind: Enum,
+// DEFAULT-NEXT:                                                                                                                                       name: "machine_mode",
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                       value: Member {
 // DEFAULT-NEXT:                                                                                                                           base: Paren(
 // DEFAULT-NEXT:                                                                                                                               Member {

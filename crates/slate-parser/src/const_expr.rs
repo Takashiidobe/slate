@@ -1,6 +1,6 @@
 use crate::ast::{
-    ArraySize, CType, Declarator, Designator, Expr, ExprKind, FloatingType, GenericAssociation,
-    GenericControl, Initializer, InitializerItem, IntegerRank, IntegerType, Span,
+    Designator, Expr, ExprKind, GenericAssociation, GenericControl, Initializer, InitializerItem,
+    IntegerType, Span, TypeName, TypeSpecifier,
 };
 use crate::compiler_args::LanguageStandard;
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
@@ -270,8 +270,6 @@ pub enum ConstExprError {
     UnsupportedIdentifier(String),
     #[error("sizeof is not supported here")]
     UnsupportedSizeOf,
-    #[error("cannot compute size of this type")]
-    UnsupportedTypeSize,
     #[error("_Alignof is not supported here")]
     UnsupportedAlignOf,
     #[error("integer overflow")]
@@ -740,9 +738,7 @@ impl<'a> Parser<'a> {
             },
             ExprKind::Paren(inner) => Self::evaluate_expr(inner, is_defined),
             ExprKind::SizeOfExpr(_) => Err(ConstExprError::UnsupportedSizeOf),
-            ExprKind::SizeOfType { ty, declarator } => {
-                declarator_size(ty, declarator).map(|size| size as i64)
-            }
+            ExprKind::SizeOfType { .. } => Err(ConstExprError::UnsupportedSizeOf),
             ExprKind::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
             ExprKind::AlignOfExpr(_) => Err(ConstExprError::UnsupportedAlignOf),
             ExprKind::OffsetOf { .. } => Err(ConstExprError::NotConstant("offsetof")),
@@ -1133,20 +1129,13 @@ impl<'a> Parser<'a> {
         if self.peek() == Some(&Token::LParen)
             && let Some(next) = self.peek_at(1)
             && starts_type_name(next, &self.typedef_names)
-            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 1)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 1)
             && self.token_at(end) == Some(&Token::RParen)
             && self.token_at(end + 1) != Some(&Token::LBrace)
         {
             self.position = end + 1;
             let value = self.parse_cast()?;
-            return Ok(self.node(
-                ExprKind::Cast {
-                    ty,
-                    declarator,
-                    value,
-                },
-                start,
-            ));
+            return Ok(self.node(ExprKind::Cast { ty, value }, start));
         }
         self.parse_unary()
     }
@@ -1162,7 +1151,7 @@ impl<'a> Parser<'a> {
         if !starts_type_name(next, &self.typedef_names) {
             return Ok(None);
         }
-        let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 1) else {
+        let Some((ty, end)) = self.try_parse_type_name(self.position + 1) else {
             return Ok(None);
         };
         if self.token_at(end) != Some(&Token::RParen)
@@ -1173,11 +1162,7 @@ impl<'a> Parser<'a> {
         self.position = end + 1;
         let initializer = self.parse_initializer_list()?;
         Ok(Some(self.node(
-            ExprKind::CompoundLiteral {
-                ty,
-                declarator,
-                initializer,
-            },
+            ExprKind::CompoundLiteral { ty, initializer },
             start,
         )))
     }
@@ -1238,45 +1223,25 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn try_parse_type_name(&self, start: usize) -> Option<(Box<CType>, Declarator, usize)> {
+    fn try_parse_type_name(&self, start: usize) -> Option<(Box<TypeName>, usize)> {
         let mut declarator_parser = DeclaratorParser::new(&self.tokens, start, &self.typedef_names)
             .with_statements(self.statements);
-        let mut leading_attributes = declarator_parser.parse_attributes().ok()?;
-        let leading = declarator_parser.take_qualifiers();
-        leading_attributes.extend(declarator_parser.parse_attributes().ok()?);
-        let mut ty = declarator_parser.parse_base_type().ok()?;
-        let trailing = declarator_parser.take_qualifiers();
-        let qualifiers = crate::ast::Qualifiers {
-            is_const: leading.is_const || trailing.is_const,
-            is_volatile: leading.is_volatile || trailing.is_volatile,
-            is_restrict: leading.is_restrict || trailing.is_restrict,
-            is_atomic: leading.is_atomic || trailing.is_atomic,
-        };
-        if qualifiers != crate::ast::Qualifiers::default() {
-            ty = CType::Qualified {
-                qualifiers,
-                ty: Box::new(ty),
-            };
-        }
-        let mut attributes = leading_attributes;
-        attributes.extend(declarator_parser.parse_attributes().ok()?);
-        ty = crate::parser::apply_vector_attributes(ty, &attributes);
-        let declarator = declarator_parser.parse_declarator(true).ok()?;
-        Some((Box::new(ty), declarator, declarator_parser.position()))
+        let type_name = declarator_parser.parse_type_name().ok()?;
+        Some((Box::new(type_name), declarator_parser.position()))
     }
 
     pub(crate) fn try_parse_full_type_name(
         tokens: &[Span<Token>],
         typedef_names: &HashSet<String>,
         statements: Option<&'a crate::parser::Parser>,
-    ) -> Option<(Box<CType>, Declarator)> {
+    ) -> Option<Box<TypeName>> {
         let first = &tokens.first()?.value;
         if !starts_type_name(first, typedef_names) {
             return None;
         }
         let parser = Self::new(tokens, typedef_names, statements);
-        let (ty, declarator, end) = parser.try_parse_type_name(0)?;
-        (end == tokens.len()).then_some((ty, declarator))
+        let (ty, end) = parser.try_parse_type_name(0)?;
+        (end == tokens.len()).then_some(ty)
     }
 
     fn parse_unary(&mut self) -> Result<Expr, ConstExprError> {
@@ -1291,12 +1256,12 @@ impl<'a> Parser<'a> {
             && self.peek_at(1) == Some(&Token::LParen)
             && let Some(next) = self.peek_at(2)
             && starts_type_name(next, &self.typedef_names)
-            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 2)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2)
             && self.token_at(end) == Some(&Token::RParen)
             && self.token_at(end + 1) != Some(&Token::LBrace)
         {
             self.position = end + 1;
-            return Ok(self.node(ExprKind::SizeOfType { ty, declarator }, start));
+            return Ok(self.node(ExprKind::SizeOfType { ty }, start));
         }
         if self.consume(&Token::Sizeof) {
             let operand = self.parse_unary()?;
@@ -1306,11 +1271,11 @@ impl<'a> Parser<'a> {
             && self.peek_at(1) == Some(&Token::LParen)
             && let Some(next) = self.peek_at(2)
             && starts_type_name(next, &self.typedef_names)
-            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position + 2)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2)
             && self.token_at(end) == Some(&Token::RParen)
         {
             self.position = end + 1;
-            return Ok(self.node(ExprKind::AlignOf { ty, declarator }, start));
+            return Ok(self.node(ExprKind::AlignOf { ty }, start));
         }
         if self.consume(&Token::Alignof) {
             let operand = self.parse_unary()?;
@@ -1560,11 +1525,11 @@ impl<'a> Parser<'a> {
         self.expect(Token::LParen)?;
         let controlling = if let Some(next) = self.peek()
             && starts_type_name(next, &self.typedef_names)
-            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position)
             && self.token_at(end) == Some(&Token::Comma)
         {
             self.position = end;
-            GenericControl::Type { ty, declarator }
+            GenericControl::Type { ty }
         } else {
             GenericControl::Expr(self.parse_assignment()?)
         };
@@ -1575,14 +1540,13 @@ impl<'a> Parser<'a> {
                 self.expect(Token::Colon)?;
                 associations.push(GenericAssociation::Default(self.parse_assignment()?));
             } else {
-                let Some((ty, declarator, end)) = self.try_parse_type_name(self.position) else {
+                let Some((ty, end)) = self.try_parse_type_name(self.position) else {
                     return Err(ConstExprError::ExpectedTypeName);
                 };
                 self.position = end;
                 self.expect(Token::Colon)?;
                 associations.push(GenericAssociation::Type {
                     ty,
-                    declarator,
                     value: self.parse_assignment()?,
                 });
             }
@@ -1625,7 +1589,7 @@ impl<'a> Parser<'a> {
 
     fn parse_offsetof(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
-        let (ty, declarator, end) = self
+        let (ty, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
@@ -1657,75 +1621,46 @@ impl<'a> Parser<'a> {
             member = self.node(kind, member_start);
         }
         self.expect(Token::RParen)?;
-        Ok(self.node(
-            ExprKind::OffsetOf {
-                ty,
-                declarator,
-                member,
-            },
-            start,
-        ))
+        Ok(self.node(ExprKind::OffsetOf { ty, member }, start))
     }
 
     fn parse_bit_cast(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
-        let (ty, declarator, end) = self
+        let (ty, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::Comma)?;
         let value = self.parse_assignment()?;
         self.expect(Token::RParen)?;
-        Ok(self.node(
-            ExprKind::BitCast {
-                ty,
-                declarator,
-                value,
-            },
-            start,
-        ))
+        Ok(self.node(ExprKind::BitCast { ty, value }, start))
     }
 
     fn parse_va_arg(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let list = self.parse_assignment()?;
         self.expect(Token::Comma)?;
-        let (ty, declarator, end) = self
+        let (ty, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::RParen)?;
-        Ok(self.node(
-            ExprKind::VaArg {
-                list,
-                ty,
-                declarator,
-            },
-            start,
-        ))
+        Ok(self.node(ExprKind::VaArg { list, ty }, start))
     }
 
     fn parse_types_compatible(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
-        let (left_ty, left_declarator, end) = self
+        let (left_ty, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::Comma)?;
-        let (right_ty, right_declarator, end) = self
+        let (right_ty, end) = self
             .try_parse_type_name(self.position)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::RParen)?;
-        Ok(self.node(
-            ExprKind::TypesCompatible {
-                left_ty,
-                left_declarator,
-                right_ty,
-                right_declarator,
-            },
-            start,
-        ))
+        Ok(self.node(ExprKind::TypesCompatible { left_ty, right_ty }, start))
     }
 
     fn binary_operator(&self) -> Option<(BinaryOp, u8)> {
@@ -1753,89 +1688,11 @@ impl<'a> Parser<'a> {
     }
 }
 
-fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExprError> {
-    match declarator {
-        Declarator::Abstract | Declarator::Name(_) => ctype_size(ty),
-        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
-            declarator_size(ty, inner)
-        }
-        Declarator::Pointer { .. } => Ok(8),
-        Declarator::Array { inner, size, .. } => {
-            let element = declarator_size(ty, inner)?;
-            let count = match size {
-                ArraySize::Expression(expr) => Parser::evaluate_expr(expr, None)? as u64,
-                ArraySize::Unspecified | ArraySize::Star => {
-                    return Err(ConstExprError::UnsupportedTypeSize);
-                }
-            };
-            Ok(element * count)
-        }
-        Declarator::Function { .. } => Err(ConstExprError::UnsupportedTypeSize),
+fn bit_int_width(ty: &TypeName) -> Option<(u32, bool)> {
+    if ty.declarator.is_derived() {
+        return None;
     }
-}
-
-fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
-    match ty {
-        CType::Void => Ok(1),
-        CType::Bool => Ok(1),
-        CType::Pointer { .. } => Ok(8),
-        CType::Integer(IntegerType::Char { .. }) => Ok(1),
-        CType::Integer(IntegerType::Ranked { rank, .. }) => Ok(match rank {
-            IntegerRank::Short => 2,
-            IntegerRank::Int => 4,
-            IntegerRank::Long => 8,
-            IntegerRank::LongLong => 8,
-            IntegerRank::Int128 => 16,
-        }),
-        CType::Integer(IntegerType::BitInt { width, .. }) => {
-            let width = Parser::evaluate_expr(width, None)?;
-            let width = u64::try_from(width).map_err(|_| ConstExprError::UnsupportedTypeSize)?;
-            let bytes = width
-                .checked_add(7)
-                .and_then(|width| width.checked_div(8))
-                .ok_or(ConstExprError::UnsupportedTypeSize)?;
-            if bytes <= 16 {
-                Ok(bytes.next_power_of_two())
-            } else {
-                bytes
-                    .checked_add(7)
-                    .map(|bytes| bytes / 8 * 8)
-                    .ok_or(ConstExprError::UnsupportedTypeSize)
-            }
-        }
-        CType::Floating(kind) => Ok(match kind {
-            FloatingType::BFloat16 | FloatingType::Float16 | FloatingType::Fp16 => 2,
-            FloatingType::Float => 4,
-            FloatingType::Double | FloatingType::Float64x => 8,
-            FloatingType::LongDouble | FloatingType::Float128 | FloatingType::Float128Ext => 16,
-        }),
-        CType::Complex(inner) => Ok(ctype_size(inner)? * 2),
-        CType::Imaginary(inner) => ctype_size(inner),
-        CType::Qualified { ty, .. } => ctype_size(ty),
-        CType::Atomic(inner) => ctype_size(inner),
-        CType::Array { element, size } => {
-            let element_size = ctype_size(element)?;
-            let count = match size {
-                ArraySize::Expression(expr) => Parser::evaluate_expr(expr, None)? as u64,
-                ArraySize::Unspecified | ArraySize::Star => {
-                    return Err(ConstExprError::UnsupportedTypeSize);
-                }
-            };
-            Ok(element_size * count)
-        }
-        CType::TypeOf(_)
-        | CType::TypeOfUnqual(_)
-        | CType::TargetBuiltin(_)
-        | CType::Named(_)
-        | CType::Tag(_)
-        | CType::Function { .. }
-        | CType::Vector(_)
-        | CType::FixedPoint(_) => Err(ConstExprError::UnsupportedTypeSize),
-    }
-}
-
-fn bit_int_width(ty: &CType) -> Option<(u32, bool)> {
-    let CType::Integer(IntegerType::BitInt { width, signed }) = ty else {
+    let TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) = &ty.specifiers.ty else {
         return None;
     };
     let width = Parser::evaluate_expr(width, None).ok()?;

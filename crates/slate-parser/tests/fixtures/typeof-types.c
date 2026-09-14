@@ -66,12 +66,17 @@ __typeof__(unsigned long) gnu_type_name_type;
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: TypeOf(
 // DEFAULT-NEXT:                   Type(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Int,
-// DEFAULT-NEXT:                               signed: true,
+// DEFAULT-NEXT:                       TypeName {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
@@ -97,12 +102,17 @@ __typeof__(unsigned long) gnu_type_name_type;
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: TypeOf(
 // DEFAULT-NEXT:                   Type(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           Ranked {
-// DEFAULT-NEXT:                               rank: Long,
-// DEFAULT-NEXT:                               signed: false,
+// DEFAULT-NEXT:                       TypeName {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Long,
+// DEFAULT-NEXT:                                       signed: false,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           declarator: Abstract,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },

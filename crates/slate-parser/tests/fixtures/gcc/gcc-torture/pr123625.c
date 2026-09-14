@@ -1194,37 +1194,66 @@ int main(void) {
 // DEFAULT-NEXT:                                           "BS_VAR_3",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       value: CompoundLiteral {
-// DEFAULT-NEXT:                                           ty: Vector(
-// DEFAULT-NEXT:                                               VectorType {
-// DEFAULT-NEXT:                                                   element: Named(
-// DEFAULT-NEXT:                                                       "int64_t",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   size: Bytes(
-// DEFAULT-NEXT:                                                       Binary {
-// DEFAULT-NEXT:                                                           op: Mul,
-// DEFAULT-NEXT:                                                           left: IntegerLiteral(
-// DEFAULT-NEXT:                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                   value: 16,
-// DEFAULT-NEXT:                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                       size: None,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   spelling: "16",
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Vector(
+// DEFAULT-NEXT:                                                       VectorType {
+// DEFAULT-NEXT:                                                           element: Named(
+// DEFAULT-NEXT:                                                               "int64_t",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           right: SizeOfExpr(
-// DEFAULT-NEXT:                                                               Paren(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "int64_t",
+// DEFAULT-NEXT:                                                           size: Bytes(
+// DEFAULT-NEXT:                                                               Binary {
+// DEFAULT-NEXT:                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 16,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "16",
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                                   right: SizeOfExpr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "int64_t",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   attributes: [
+// DEFAULT-NEXT:                                                       VectorSize(
+// DEFAULT-NEXT:                                                           Binary {
+// DEFAULT-NEXT:                                                               op: Mul,
+// DEFAULT-NEXT:                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 16,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "16",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: SizeOfExpr(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "int64_t",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           initializer: [],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },

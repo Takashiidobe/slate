@@ -383,13 +383,17 @@ int main(void) {
 // DEFAULT-NEXT:                                       Unary {
 // DEFAULT-NEXT:                                           op: AddrOf,
 // DEFAULT-NEXT:                                           operand: CompoundLiteral {
-// DEFAULT-NEXT:                                               ty: Tag(
-// DEFAULT-NEXT:                                                   Reference {
-// DEFAULT-NEXT:                                                       kind: Struct,
-// DEFAULT-NEXT:                                                       name: "B",
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Tag(
+// DEFAULT-NEXT:                                                           Reference {
+// DEFAULT-NEXT:                                                               kind: Struct,
+// DEFAULT-NEXT:                                                               name: "B",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               initializer: [
 // DEFAULT-NEXT:                                                   InitializerItem {
 // DEFAULT-NEXT:                                                       designators: [],
@@ -397,13 +401,17 @@ int main(void) {
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
 // DEFAULT-NEXT:                                                               operand: CompoundLiteral {
-// DEFAULT-NEXT:                                                                   ty: Tag(
-// DEFAULT-NEXT:                                                                       Reference {
-// DEFAULT-NEXT:                                                                           kind: Struct,
-// DEFAULT-NEXT:                                                                           name: "A",
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Tag(
+// DEFAULT-NEXT:                                                                               Reference {
+// DEFAULT-NEXT:                                                                                   kind: Struct,
+// DEFAULT-NEXT:                                                                                   name: "A",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   initializer: [
 // DEFAULT-NEXT:                                                                       InitializerItem {
 // DEFAULT-NEXT:                                                                           designators: [],
@@ -448,13 +456,17 @@ int main(void) {
 // DEFAULT-NEXT:                                                           Unary {
 // DEFAULT-NEXT:                                                               op: AddrOf,
 // DEFAULT-NEXT:                                                               operand: CompoundLiteral {
-// DEFAULT-NEXT:                                                                   ty: Tag(
-// DEFAULT-NEXT:                                                                       Reference {
-// DEFAULT-NEXT:                                                                           kind: Struct,
-// DEFAULT-NEXT:                                                                           name: "A",
+// DEFAULT-NEXT:                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                           ty: Tag(
+// DEFAULT-NEXT:                                                                               Reference {
+// DEFAULT-NEXT:                                                                                   kind: Struct,
+// DEFAULT-NEXT:                                                                                   name: "A",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   initializer: [
 // DEFAULT-NEXT:                                                                       InitializerItem {
 // DEFAULT-NEXT:                                                                           designators: [],
@@ -504,13 +516,17 @@ int main(void) {
 // DEFAULT-NEXT:                                       Unary {
 // DEFAULT-NEXT:                                           op: AddrOf,
 // DEFAULT-NEXT:                                           operand: CompoundLiteral {
-// DEFAULT-NEXT:                                               ty: Tag(
-// DEFAULT-NEXT:                                                   Reference {
-// DEFAULT-NEXT:                                                       kind: Struct,
-// DEFAULT-NEXT:                                                       name: "A",
+// DEFAULT-NEXT:                                               ty: TypeName {
+// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                       ty: Tag(
+// DEFAULT-NEXT:                                                           Reference {
+// DEFAULT-NEXT:                                                               kind: Struct,
+// DEFAULT-NEXT:                                                               name: "A",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               initializer: [
 // DEFAULT-NEXT:                                                   InitializerItem {
 // DEFAULT-NEXT:                                                       designators: [],

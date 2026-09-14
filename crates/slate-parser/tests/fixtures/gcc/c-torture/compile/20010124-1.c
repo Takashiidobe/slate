@@ -130,13 +130,17 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:                                       left: Paren(
 // DEFAULT-NEXT:                                           SizeOfExpr(
 // DEFAULT-NEXT:                                               CompoundLiteral {
-// DEFAULT-NEXT:                                                   ty: Tag(
-// DEFAULT-NEXT:                                                       Reference {
-// DEFAULT-NEXT:                                                           kind: Struct,
-// DEFAULT-NEXT:                                                           name: "s",
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Tag(
+// DEFAULT-NEXT:                                                               Reference {
+// DEFAULT-NEXT:                                                                   kind: Struct,
+// DEFAULT-NEXT:                                                                   name: "s",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   initializer: [
 // DEFAULT-NEXT:                                                       InitializerItem {
 // DEFAULT-NEXT:                                                           designators: [],
@@ -175,13 +179,17 @@ char x[((sizeof (struct s){ 1, 2 }) == sizeof (struct s)) ? 1 : -1];
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: SizeOfType {
-// DEFAULT-NEXT:                                           ty: Tag(
-// DEFAULT-NEXT:                                               Reference {
-// DEFAULT-NEXT:                                                   kind: Struct,
-// DEFAULT-NEXT:                                                   name: "s",
+// DEFAULT-NEXT:                                           ty: TypeName {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tag(
+// DEFAULT-NEXT:                                                       Reference {
+// DEFAULT-NEXT:                                                           kind: Struct,
+// DEFAULT-NEXT:                                                           name: "s",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),

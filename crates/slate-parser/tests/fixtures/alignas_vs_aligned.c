@@ -33,10 +33,14 @@ struct s {
 // DEFAULT-NEXT:                           attributes: [
 // DEFAULT-NEXT:                               AlignAs(
 // DEFAULT-NEXT:                                   Type {
-// DEFAULT-NEXT:                                       ty: Floating(
-// DEFAULT-NEXT:                                           Double,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       ty: TypeName {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Floating(
+// DEFAULT-NEXT:                                                   Double,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],

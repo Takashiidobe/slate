@@ -20,13 +20,16 @@ int         main(void) { exit(0); }
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               Parameter {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
@@ -85,47 +88,47 @@ int         main(void) { exit(0); }
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       Parameter {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Char {
-// DEFAULT-NEXT:                                   signed: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           declarator: Some(
-// DEFAULT-NEXT:                               Array {
-// DEFAULT-NEXT:                                   inner: Array {
-// DEFAULT-NEXT:                                       inner: Name(
-// DEFAULT-NEXT:                                           "a",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       size: Expression(
-// DEFAULT-NEXT:                                           IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 2,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "2",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Char {
+// DEFAULT-NEXT:                                       signed: None,
 // DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           declarator: Array {
+// DEFAULT-NEXT:                               inner: Array {
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   size: Expression(
-// DEFAULT-NEXT:                                       Postfix {
-// DEFAULT-NEXT:                                           op: Increment,
-// DEFAULT-NEXT:                                           operand: Paren(
-// DEFAULT-NEXT:                                               Unary {
-// DEFAULT-NEXT:                                                   op: Deref,
-// DEFAULT-NEXT:                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                       "x",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 2,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                               spelling: "2",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                               size: Expression(
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Paren(
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: Deref,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "x",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },

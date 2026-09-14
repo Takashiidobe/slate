@@ -122,10 +122,14 @@ main() {
 // DEFAULT-NEXT:                                           op: Sub,
 // DEFAULT-NEXT:                                           left: Paren(
 // DEFAULT-NEXT:                                               Cast {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "u128",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "u128",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   value: Unary {
 // DEFAULT-NEXT:                                                       op: BitNot,
 // DEFAULT-NEXT:                                                       operand: IntegerLiteral(

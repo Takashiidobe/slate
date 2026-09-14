@@ -302,12 +302,16 @@ int main() {
 // DEFAULT-NEXT:                               "f",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           CompoundLiteral {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "S",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Array {
-// DEFAULT-NEXT:                                   inner: Abstract,
-// DEFAULT-NEXT:                                   size: Unspecified,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "S",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Array {
+// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                       size: Unspecified,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: [
 // DEFAULT-NEXT:                                   InitializerItem {
@@ -400,10 +404,14 @@ int main() {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           SizeOfType {
-// DEFAULT-NEXT:                               ty: Named(
-// DEFAULT-NEXT:                                   "S",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               ty: TypeName {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Named(
+// DEFAULT-NEXT:                                           "S",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },

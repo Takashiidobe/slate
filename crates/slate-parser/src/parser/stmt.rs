@@ -1,6 +1,6 @@
 use super::decl::{
-    join_node_text, matching_brace, matching_paren, signature_node_span, split_top_level,
-    top_level_semi,
+    join_node_text, matching_brace, matching_paren, signature_node_span, specifiers_with_type,
+    split_top_level, top_level_semi,
 };
 use super::declarator::IdentifierList;
 use super::{
@@ -134,13 +134,12 @@ impl Parser {
         tokens: &[Span<Token>],
         mut pos: usize,
         names: &[String],
-    ) -> Result<(Vec<Parameter>, usize), ParseError> {
-        let mut declared: HashMap<String, (CType, Declarator)> = HashMap::new();
+    ) -> Result<(Vec<ParameterDeclaration>, usize), ParseError> {
+        let mut declared: HashMap<String, (DeclarationSpecifiers, Declarator)> = HashMap::new();
         while tokens.value_at(pos) != Some(&Token::LBrace) {
             let mut parser = self.declarator_parser(tokens, pos);
-            parser.matches(Token::Keyword(Keyword::Register));
-            let base_ty = parser
-                .parse_base_type()
+            let specifiers = parser
+                .parse_specifiers(false)
                 .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
             loop {
                 let declarator = parser
@@ -158,7 +157,7 @@ impl Parser {
                         format!("`{name}` is not a parameter of this function"),
                     ));
                 }
-                declared.insert(name.to_string(), (base_ty.clone(), declarator));
+                declared.insert(name.to_string(), (specifiers.clone(), declarator));
                 if !parser.matches(Token::Comma) {
                     break;
                 }
@@ -173,27 +172,40 @@ impl Parser {
         }
         let parameters = names
             .iter()
-            .map(|name| {
-                if let Some((declared_ty, declarator)) = declared.remove(name) {
-                    let promoted_ty = default_argument_promotion(&declared_ty);
-                    let declared_ty = (promoted_ty != declared_ty).then_some(declared_ty);
-                    Parameter {
-                        ty: promoted_ty,
-                        declared_ty,
-                        declarator: Some(declarator),
-                        attributes: Vec::new(),
-                    }
-                } else {
-                    Parameter {
-                        ty: CType::Integer(IntegerType::Ranked {
-                            rank: IntegerRank::Int,
-                            signed: true,
-                        }),
-                        declared_ty: None,
-                        declarator: Some(Declarator::Name(name.clone())),
-                        attributes: Vec::new(),
+            .map(|name| match declared.remove(name) {
+                Some((written, declarator)) => {
+                    let promoted = if declarator.is_derived() {
+                        None
+                    } else {
+                        default_argument_promotion(&written.ty)
+                    };
+                    match promoted {
+                        Some(ty) => ParameterDeclaration {
+                            specifiers: DeclarationSpecifiers {
+                                ty,
+                                ..written.clone()
+                            },
+                            declarator,
+                            declared_specifiers: Some(written),
+                            attributes: Vec::new(),
+                        },
+                        None => ParameterDeclaration {
+                            specifiers: written,
+                            declarator,
+                            declared_specifiers: None,
+                            attributes: Vec::new(),
+                        },
                     }
                 }
+                None => ParameterDeclaration {
+                    specifiers: specifiers_with_type(TypeSpecifier::Integer(IntegerType::Ranked {
+                        rank: IntegerRank::Int,
+                        signed: true,
+                    })),
+                    declarator: Declarator::Name(name.clone()),
+                    declared_specifiers: None,
+                    attributes: Vec::new(),
+                },
             })
             .collect();
         Ok((parameters, pos))
@@ -691,19 +703,22 @@ impl Parser {
     }
 }
 
-fn default_argument_promotion(ty: &CType) -> CType {
-    let promoted_int = CType::Integer(IntegerType::Ranked {
-        rank: IntegerRank::Int,
-        signed: true,
-    });
+fn default_argument_promotion(ty: &TypeSpecifier) -> Option<TypeSpecifier> {
     match ty {
-        CType::Bool => promoted_int,
-        CType::Integer(IntegerType::Char { .. }) => promoted_int,
-        CType::Integer(IntegerType::Ranked {
-            rank: IntegerRank::Short,
-            ..
-        }) => promoted_int,
-        CType::Floating(FloatingType::Float) => CType::Floating(FloatingType::Double),
-        _ => ty.clone(),
+        TypeSpecifier::Bool
+        | TypeSpecifier::Integer(
+            IntegerType::Char { .. }
+            | IntegerType::Ranked {
+                rank: IntegerRank::Short,
+                ..
+            },
+        ) => Some(TypeSpecifier::Integer(IntegerType::Ranked {
+            rank: IntegerRank::Int,
+            signed: true,
+        })),
+        TypeSpecifier::Floating(FloatingType::Float) => {
+            Some(TypeSpecifier::Floating(FloatingType::Double))
+        }
+        _ => None,
     }
 }

@@ -67,63 +67,9 @@ impl Parser {
         parser: &mut DeclaratorParser,
         specifiers: &mut DeclarationSpecifiers,
     ) -> Result<(), ParseError> {
-        let tokens = parser.tokens;
-        loop {
-            while parser.peek() == Some(&Token::Ident("__extension__".to_string())) {
-                parser.pos += 1;
-            }
-            let (attributes, position) = self
-                .parse_attribute_groups(tokens, parser.pos)
-                .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
-            if position != parser.pos {
-                specifiers.attributes.extend(attributes);
-                parser.pos = position;
-                continue;
-            }
-            if let Some(qualifier) = parser.take_qualifier() {
-                set_qualifier(&mut specifiers.qualifiers, qualifier);
-                continue;
-            }
-            if parser.matches(Token::Keyword(Keyword::Inline)) {
-                specifiers.is_inline = true;
-                continue;
-            }
-            if parser.matches(Token::Keyword(Keyword::Noreturn)) {
-                specifiers.is_noreturn = true;
-                continue;
-            }
-            if parser.matches(Token::Keyword(Keyword::Constexpr)) {
-                specifiers.is_constexpr = true;
-                continue;
-            }
-            if parser.matches(Token::Keyword(Keyword::ThreadLocal)) {
-                if specifiers.is_thread_local {
-                    return Err(self.error_at_tokens(
-                        tokens,
-                        parser.pos - 1,
-                        "duplicate `_Thread_local`",
-                    ));
-                }
-                specifiers.is_thread_local = true;
-                continue;
-            }
-            let Some(Token::Keyword(keyword)) = parser.peek() else {
-                return Ok(());
-            };
-            let storage = match *keyword {
-                Keyword::Typedef => StorageClass::Typedef,
-                Keyword::Extern => StorageClass::Extern,
-                Keyword::Static => StorageClass::Static,
-                Keyword::Auto => StorageClass::Auto,
-                Keyword::Register => StorageClass::Register,
-                _ => return Ok(()),
-            };
-            if specifiers.storage != StorageClass::None {
-                return Err(self.error_at_tokens(tokens, parser.pos, "multiple storage classes"));
-            }
-            specifiers.storage = storage;
-            parser.pos += 1;
-        }
+        parser
+            .parse_specifier_keywords(specifiers)
+            .map_err(|error| self.error_at_tokens(parser.tokens, parser.pos, error.to_string()))
     }
 
     pub(super) fn parse_declaration_specifiers(
@@ -131,43 +77,9 @@ impl Parser {
         parser: &mut DeclaratorParser,
         implicit_int_function: bool,
     ) -> Result<DeclarationSpecifiers, ParseError> {
-        let tokens = parser.tokens;
-        let mut specifiers = specifiers_with_type(CType::Void);
-        while parser.peek() == Some(&Token::Ident("__extension__".to_string())) {
-            parser.pos += 1;
-        }
-        let (attributes, position) = self
-            .parse_attribute_groups(tokens, parser.pos)
-            .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
-        specifiers.attributes = attributes;
-        parser.pos = position;
-        let gnu_auto_type = parser.matches(Token::Ident("__auto_type".into()));
-        self.parse_specifier_keywords(parser, &mut specifiers)?;
-        let c23_auto_inference = self.standard().is_c23_or_later()
-            && specifiers.storage == StorageClass::Auto
-            && matches!(parser.peek(), Some(Token::Ident(_)));
-        if c23_auto_inference {
-            specifiers.storage = StorageClass::None;
-        }
-        let implicit_int = implicit_int_function
-            && matches!(
-                (parser.peek(), tokens.value_at(parser.pos + 1)),
-                (Some(Token::Ident(name)), Some(Token::LParen)) if !self.typedef_names.contains(name)
-            );
-        specifiers.ty = if gnu_auto_type || c23_auto_inference {
-            CType::TargetBuiltin("__auto_type".into())
-        } else if implicit_int {
-            CType::Integer(IntegerType::Ranked {
-                rank: IntegerRank::Int,
-                signed: true,
-            })
-        } else {
-            parser
-                .parse_base_type()
-                .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
-        };
-        self.parse_specifier_keywords(parser, &mut specifiers)?;
-        Ok(specifiers)
+        parser
+            .parse_specifiers(implicit_int_function)
+            .map_err(|error| self.error_at_tokens(parser.tokens, parser.pos, error.to_string()))
     }
 
     fn parse_declarator_list(
@@ -696,7 +608,7 @@ impl Parser {
             ));
             let declaration = self.parse_tag_declaration(
                 &all_tokens[..node0_offset],
-                CType::Tag(TagSpecifier::Definition(id)),
+                TypeSpecifier::Tag(TagSpecifier::Definition(id)),
                 &trailing_tokens,
                 declarators_position,
                 provenance,
@@ -769,7 +681,7 @@ impl Parser {
         ));
         let declaration = self.parse_tag_declaration(
             &all_tokens[..node0_offset],
-            CType::Tag(TagSpecifier::Definition(id)),
+            TypeSpecifier::Tag(TagSpecifier::Definition(id)),
             &trailing_tokens,
             position,
             provenance,
@@ -848,7 +760,7 @@ impl Parser {
     fn parse_tag_declaration(
         &self,
         prefix: &[Span<Token>],
-        ty: CType,
+        ty: TypeSpecifier,
         trailing: &[Span<Token>],
         position: usize,
         provenance: Provenance,
@@ -1009,7 +921,7 @@ impl ParsedDeclarator {
     }
 }
 
-pub(super) fn specifiers_with_type(ty: CType) -> DeclarationSpecifiers {
+pub(super) fn specifiers_with_type(ty: TypeSpecifier) -> DeclarationSpecifiers {
     DeclarationSpecifiers {
         ty,
         qualifiers: Qualifiers::default(),
@@ -1061,8 +973,8 @@ pub(super) fn signature_node_span(nodes: &[PPNode], typedef_names: &HashSet<Stri
                 Token::RParen => {
                     depth -= 1;
                     if depth == 0 {
-                        kr_style =
-                            bare_identifier_names(paren_group.iter(), typedef_names).is_some();
+                        kr_style = kr_style
+                            || bare_identifier_names(paren_group.iter(), typedef_names).is_some();
                     } else {
                         paren_group.push(Token::RParen);
                     }

@@ -499,10 +499,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   field: "v",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: CompoundLiteral {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "v4hi",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "v4hi",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   initializer: [
 // DEFAULT-NEXT:                                       InitializerItem {
 // DEFAULT-NEXT:                                           designators: [],
@@ -602,10 +606,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   field: "v",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               value: CompoundLiteral {
-// DEFAULT-NEXT:                                   ty: Named(
-// DEFAULT-NEXT:                                       "v4sf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   ty: TypeName {
+// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "v4sf",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   initializer: [
 // DEFAULT-NEXT:                                       InitializerItem {
 // DEFAULT-NEXT:                                           designators: [],
