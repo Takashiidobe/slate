@@ -49,54 +49,106 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "MODE_OFF",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 0,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "0",
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/** disable processing */",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 47,
+// DEFAULT-NEXT:                               length: 25,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 3,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 2,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "MODE_ON",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 1,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "MODE_OFF",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "1",
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 5,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 3,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Comment(
+// DEFAULT-NEXT:                   CommentGroup {
+// DEFAULT-NEXT:                       comment: Comment {
+// DEFAULT-NEXT:                           text: [
+// DEFAULT-NEXT:                               "/// enable processing",
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                           loc: Loc {
+// DEFAULT-NEXT:                               file: FileId(
+// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               offset: 91,
+// DEFAULT-NEXT:                               length: 21,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "MODE_ON",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 5,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

@@ -75,54 +75,62 @@ int main() {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "none",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 16,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "none",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 16,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "low",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 16,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "low",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 16,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "moderate",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 16,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "moderate",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 16,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "high",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 16,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "high",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 16,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -144,42 +152,48 @@ int main() {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "read",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 17,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "read",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 17,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "write",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 17,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "write",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 17,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "read_shared",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 17,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "read_shared",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 17,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

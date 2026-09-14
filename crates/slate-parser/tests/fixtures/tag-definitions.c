@@ -124,48 +124,52 @@ void takes(struct inner *p, pair q);
 // DEFAULT-NEXT:       name: None,
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "RED",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 4,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "GREEN",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: Add,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "RED",
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "RED",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 4,
-// DEFAULT-NEXT:                       header: None,
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "GREEN",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: Add,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "RED",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 2,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "2",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {
@@ -385,30 +389,34 @@ void takes(struct inner *p, pair q);
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "OFF",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 14,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "OFF",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 14,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "ON",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 14,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "ON",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 14,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

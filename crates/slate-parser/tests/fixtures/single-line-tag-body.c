@@ -90,64 +90,72 @@ typedef struct Pair { int a; int b; } Pair;
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "RED",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 1,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "GREEN",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 1,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "BLUE",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 1,
-// DEFAULT-NEXT:                       header: None,
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "CYAN",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       Binary {
-// DEFAULT-NEXT:                           op: BitOr,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "GREEN",
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "RED",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "BLUE",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 1,
+// DEFAULT-NEXT:                           header: None,
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 1,
-// DEFAULT-NEXT:                       header: None,
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "GREEN",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 1,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "BLUE",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 1,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "CYAN",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           Binary {
+// DEFAULT-NEXT:                               op: BitOr,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "GREEN",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "BLUE",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 1,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

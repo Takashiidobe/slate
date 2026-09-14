@@ -216,78 +216,84 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "C89_RED",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 3,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "C89_RED",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 3,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "3",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "3",
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 18,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 18,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "C89_GREEN",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 5,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "C89_GREEN",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 5,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "5",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "5",
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 18,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 18,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "C89_BLUE",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       IntegerLiteral(
-// DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 7,
-// DEFAULT-NEXT:                               radix: Decimal,
-// DEFAULT-NEXT:                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                   unsigned: false,
-// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "C89_BLUE",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 7,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "7",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "7",
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 18,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 18,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

@@ -113,150 +113,168 @@ int main(void) {
 // DEFAULT-NEXT:       name: None,
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_INT",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 47,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_INT",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 47,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_CHAR",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 48,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_CHAR",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 48,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_WCHAR",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 49,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_WCHAR",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 49,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_STRING",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 50,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_STRING",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 50,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_WSTRING",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 51,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_WSTRING",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 51,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_POINTER",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 52,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_POINTER",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 52,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_FLOAT",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 53,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_FLOAT",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 53,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_DOUBLE",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 54,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_DOUBLE",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 54,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "PA_LAST",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           4,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 55,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "PA_LAST",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 55,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   4,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

@@ -746,8 +746,7 @@ impl Parser {
         };
         let provenance = self.node_provenance(&nodes[0]);
         let body = if kind == TagKind::Enum {
-            let body_tokens = self.nodes_tokens(&nodes[body_start..close]);
-            TagBody::Enum(self.parse_enumerators(code, &body_tokens)?)
+            TagBody::Enum(self.parse_enum_items(&nodes[body_start..close])?)
         } else {
             TagBody::Record(self.parse_field_items(&nodes[body_start..close])?)
         };
@@ -776,12 +775,13 @@ impl Parser {
         &self,
         code: &str,
         body_tokens: &[Span<Token>],
-    ) -> Result<Vec<Enumerator>, ParseError> {
-        let mut enumerators = Vec::new();
-        for segment in split_top_level(body_tokens, &Token::Comma) {
-            let segment = segment
-                .into_iter()
+    ) -> Result<Vec<SpannedEnumItem>, ParseError> {
+        let mut items = Vec::new();
+        for raw_segment in split_top_level(body_tokens, &Token::Comma) {
+            let segment = raw_segment
+                .iter()
                 .filter(|token| !matches!(token.value, Token::Comment(_)))
+                .cloned()
                 .collect::<Vec<_>>();
             if segment.is_empty() {
                 continue;
@@ -796,13 +796,42 @@ impl Parser {
                     return Err(self.error_at(Loc::whole(code), "expected enumerator value"));
                 }
             };
-            enumerators.push(Enumerator {
-                name: name.clone(),
-                value,
-                provenance: self.token_provenance(&segment[0]),
-            });
+            items.push(span_tokens(
+                EnumItem::Enumerator(Enumerator {
+                    name: name.clone(),
+                    value,
+                    provenance: self.token_provenance(&segment[0]),
+                }),
+                &raw_segment,
+            ));
         }
-        Ok(enumerators)
+        Ok(items)
+    }
+
+    fn parse_enum_items(&self, nodes: &[PPNode]) -> Result<Vec<SpannedEnumItem>, ParseError> {
+        let mut items = Vec::new();
+        let mut index = 0;
+        while index < nodes.len() {
+            match &nodes[index].value {
+                PPNodeKind::Comment { provenance, .. } => {
+                    let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
+                    items.push(group.map(EnumItem::Comment));
+                    index += consumed;
+                }
+                PPNodeKind::Code { .. } => {
+                    let start = index;
+                    while index < nodes.len()
+                        && matches!(nodes[index].value, PPNodeKind::Code { .. })
+                    {
+                        index += 1;
+                    }
+                    let code = self.node_text(&nodes[start]);
+                    let chunk_tokens = self.nodes_tokens(&nodes[start..index]);
+                    items.extend(self.parse_enumerators(code, &chunk_tokens)?);
+                }
+            }
+        }
+        Ok(items)
     }
 
     fn parse_enumerator_value(&self, tokens: &[Span<Token>]) -> Result<Expr, ParseError> {

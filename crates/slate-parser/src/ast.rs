@@ -22,6 +22,7 @@ fn encoding_prefix(encoding: crate::const_expr::Encoding, string: bool) -> &'sta
 pub type Expr = Box<Span<ExprKind>>;
 pub type SpannedStmt = Span<Stmt>;
 pub type SpannedFieldItem = Span<FieldItem>;
+pub type SpannedEnumItem = Span<EnumItem>;
 pub type SpannedDecl = Span<Decl>;
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -928,13 +929,19 @@ pub struct TagDefinition {
 #[derive(Debug, Clone, PartialEq)]
 pub enum TagBody {
     Record(Vec<SpannedFieldItem>),
-    Enum(Vec<Enumerator>),
+    Enum(Vec<SpannedEnumItem>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum FieldItem {
     Comment(CommentGroup),
     Field(FieldDecl),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EnumItem {
+    Comment(CommentGroup),
+    Enumerator(Enumerator),
 }
 
 #[derive(Debug, Clone, PartialEq)]

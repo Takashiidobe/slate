@@ -1469,38 +1469,42 @@ int main(void) {
 // DEFAULT-NEXT:       name: None,
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "FIND",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           16,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 8,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "FIND",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               16,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 8,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   16,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "ENTER",
-// DEFAULT-NEXT:                   value: None,
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           16,
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: System,
-// DEFAULT-NEXT:                       line: 8,
-// DEFAULT-NEXT:                       header: Some(
-// DEFAULT-NEXT:                           FileId(
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "ENTER",
+// DEFAULT-NEXT:                       value: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
 // DEFAULT-NEXT:                               16,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: 8,
+// DEFAULT-NEXT:                           header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   16,
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

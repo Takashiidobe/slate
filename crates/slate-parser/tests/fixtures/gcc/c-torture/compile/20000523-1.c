@@ -15,26 +15,28 @@ int i = sizeof(void *);
 // DEFAULT-NEXT:       name: None,
 // DEFAULT-NEXT:       body: Enum(
 // DEFAULT-NEXT:           [
-// DEFAULT-NEXT:               Enumerator {
-// DEFAULT-NEXT:                   name: "foo",
-// DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       SizeOfType {
-// DEFAULT-NEXT:                           ty: Void,
-// DEFAULT-NEXT:                           declarator: Pointer {
-// DEFAULT-NEXT:                               qualifiers: Qualifiers,
-// DEFAULT-NEXT:                               inner: Abstract,
+// DEFAULT-NEXT:               Enumerator(
+// DEFAULT-NEXT:                   Enumerator {
+// DEFAULT-NEXT:                       name: "foo",
+// DEFAULT-NEXT:                       value: Some(
+// DEFAULT-NEXT:                           SizeOfType {
+// DEFAULT-NEXT:                               ty: Void,
+// DEFAULT-NEXT:                               declarator: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Abstract,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   provenance: Provenance {
-// DEFAULT-NEXT:                       file: FileId(
-// DEFAULT-NEXT:                           3,
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       kind: User,
-// DEFAULT-NEXT:                       line: 4,
-// DEFAULT-NEXT:                       header: None,
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       provenance: Provenance {

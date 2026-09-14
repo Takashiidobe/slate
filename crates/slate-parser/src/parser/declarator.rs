@@ -542,13 +542,16 @@ impl<'a> DeclaratorParser<'a> {
         Ok(fields)
     }
 
-    pub(super) fn parse_enumerator_list(&mut self) -> Result<Vec<Enumerator>, DeclaratorError> {
+    pub(super) fn parse_enumerator_list(
+        &mut self,
+    ) -> Result<Vec<SpannedEnumItem>, DeclaratorError> {
         self.pos += 1;
-        let mut enumerators = Vec::new();
+        let mut items = Vec::new();
         loop {
             if self.matches(Token::RBrace) {
                 break;
             }
+            let start = self.pos;
             let Some(Token::Ident(name)) = self.peek().cloned() else {
                 return Err(DeclaratorError::ExpectedEnumerator);
             };
@@ -567,11 +570,14 @@ impl<'a> DeclaratorParser<'a> {
             } else {
                 None
             };
-            enumerators.push(Enumerator {
-                name,
-                value,
-                provenance,
-            });
+            items.push(span_tokens(
+                EnumItem::Enumerator(Enumerator {
+                    name,
+                    value,
+                    provenance,
+                }),
+                &self.tokens[start..self.pos],
+            ));
             if self.matches(Token::Comma) {
                 continue;
             }
@@ -580,7 +586,7 @@ impl<'a> DeclaratorParser<'a> {
             }
             return Err(DeclaratorError::ExpectedCommaOrRBrace);
         }
-        Ok(enumerators)
+        Ok(items)
     }
 
     pub(super) fn parse_fixed_point(
