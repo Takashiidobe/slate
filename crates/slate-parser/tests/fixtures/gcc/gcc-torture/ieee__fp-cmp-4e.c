@@ -43,14 +43,6 @@ int main() { return 0; }
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 5,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

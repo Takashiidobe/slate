@@ -25,7 +25,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
 
 struct Reachability<'a> {
     tu: &'a TranslationUnit,
-    nodes: &'a [SpannedDecl],
+    nodes: &'a [Decl],
     symbols: HashMap<String, Vec<usize>>,
     reachable: HashSet<usize>,
     reachable_tags: HashSet<TagId>,
@@ -38,7 +38,7 @@ impl<'a> Reachability<'a> {
             for name in decl.names() {
                 symbols.entry(name.to_string()).or_default().push(id);
             }
-            let Decl::Declaration { declaration, .. } = &decl.value else {
+            let DeclKind::Declaration(declaration) = &decl.value else {
                 continue;
             };
             let TypeSpecifier::Tag(TagSpecifier::Definition(tag_id)) = &declaration.specifiers.ty
@@ -53,7 +53,7 @@ impl<'a> Reachability<'a> {
             }
             if let TagBody::Enum { enumerators, .. } = &tag.value.body {
                 for item in enumerators {
-                    if let EnumItem::Enumerator(enumerator) = &item.value {
+                    if let EnumItemKind::Enumerator(enumerator) = &item.value {
                         symbols.entry(enumerator.name.clone()).or_default().push(id);
                     }
                 }
@@ -73,7 +73,7 @@ impl<'a> Reachability<'a> {
             .nodes
             .iter()
             .enumerate()
-            .filter_map(|(id, decl)| (decl.provenance() == root_file).then_some(id))
+            .filter_map(|(id, decl)| (decl.provenance.file == root_file).then_some(id))
             .collect::<Vec<_>>();
         for id in roots {
             self.mark(id);
@@ -85,9 +85,9 @@ impl<'a> Reachability<'a> {
             return;
         }
         match &self.nodes[id].value {
-            Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
-            Decl::Function(function) => self.mark_function(function),
-            Decl::Declaration { declaration, .. } => self.mark_declaration(declaration),
+            DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => {}
+            DeclKind::Function(function) => self.mark_function(function),
+            DeclKind::Declaration(declaration) => self.mark_declaration(declaration),
         }
     }
 
@@ -102,7 +102,7 @@ impl<'a> Reachability<'a> {
         match &tag.value.body {
             TagBody::Record(fields) => {
                 for field in fields {
-                    if let FieldItem::Field(field) = &field.value {
+                    if let FieldItemKind::Field(field) = &field.value {
                         self.mark_type(&field.specifiers.ty);
                         for declarator in &field.declarators {
                             self.mark_declarator(&declarator.declarator);
@@ -118,8 +118,8 @@ impl<'a> Reachability<'a> {
                     self.mark_type_name(fixed_type);
                 }
                 for value in enumerators.iter().filter_map(|item| match &item.value {
-                    EnumItem::Enumerator(enumerator) => enumerator.value.as_ref(),
-                    EnumItem::Comment(_) => None,
+                    EnumItemKind::Enumerator(enumerator) => enumerator.value.as_ref(),
+                    EnumItemKind::Comment(_) => None,
                 }) {
                     self.mark_expr(value);
                 }
@@ -174,19 +174,19 @@ impl<'a> Reachability<'a> {
         }
     }
 
-    fn mark_stmts(&mut self, stmts: &[SpannedStmt]) {
+    fn mark_stmts(&mut self, stmts: &[Stmt]) {
         for stmt in stmts {
             self.mark_stmt(stmt);
         }
     }
 
-    fn mark_stmt(&mut self, stmt: &SpannedStmt) {
+    fn mark_stmt(&mut self, stmt: &Stmt) {
         match &stmt.value {
-            Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::ComputedGoto(expr) => {
+            StmtKind::Return(expr) | StmtKind::Expr(expr) | StmtKind::ComputedGoto(expr) => {
                 self.mark_expr(expr)
             }
-            Stmt::Labeled { body, .. } => self.mark_stmt(body),
-            Stmt::SwitchLabel { label, body } => {
+            StmtKind::Labeled { body, .. } => self.mark_stmt(body),
+            StmtKind::SwitchLabel { label, body } => {
                 match label {
                     SwitchLabel::Case(expr) => self.mark_expr(expr),
                     SwitchLabel::CaseRange { start, end } => {
@@ -197,9 +197,9 @@ impl<'a> Reachability<'a> {
                 }
                 self.mark_stmt(body);
             }
-            Stmt::Decl(declaration) => self.mark_declaration(declaration),
-            Stmt::Block(body) => self.mark_stmts(body),
-            Stmt::If {
+            StmtKind::Decl(declaration) => self.mark_declaration(declaration),
+            StmtKind::Block(body) => self.mark_stmts(body),
+            StmtKind::If {
                 condition,
                 then_branch,
                 else_branch,
@@ -210,16 +210,16 @@ impl<'a> Reachability<'a> {
                     self.mark_stmts(else_branch);
                 }
             }
-            Stmt::While { condition, body }
-            | Stmt::DoWhile { body, condition }
-            | Stmt::Switch {
+            StmtKind::While { condition, body }
+            | StmtKind::DoWhile { body, condition }
+            | StmtKind::Switch {
                 discriminant: condition,
                 body,
             } => {
                 self.mark_expr(condition);
                 self.mark_stmts(body);
             }
-            Stmt::For {
+            StmtKind::For {
                 init,
                 condition,
                 increment,
@@ -233,16 +233,16 @@ impl<'a> Reachability<'a> {
                 }
                 self.mark_stmts(body);
             }
-            Stmt::NestedFunction(function) => self.mark_function(function),
-            Stmt::Comment(_)
-            | Stmt::ReturnVoid
-            | Stmt::StaticAssert(_)
-            | Stmt::Attribute(_)
-            | Stmt::LocalLabelDecl(_)
-            | Stmt::Asm(_)
-            | Stmt::Goto(_)
-            | Stmt::Break
-            | Stmt::Continue => {}
+            StmtKind::NestedFunction(function) => self.mark_function(function),
+            StmtKind::Comment(_)
+            | StmtKind::ReturnVoid
+            | StmtKind::StaticAssert(_)
+            | StmtKind::Attribute(_)
+            | StmtKind::LocalLabelDecl(_)
+            | StmtKind::Asm(_)
+            | StmtKind::Goto(_)
+            | StmtKind::Break
+            | StmtKind::Continue => {}
         }
     }
 

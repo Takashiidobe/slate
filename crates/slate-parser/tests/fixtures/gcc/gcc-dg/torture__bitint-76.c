@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   BitInt {
@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:                               "x",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   BitInt {
@@ -135,14 +135,6 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 4,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
@@ -222,14 +214,6 @@ int main() {
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 10,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

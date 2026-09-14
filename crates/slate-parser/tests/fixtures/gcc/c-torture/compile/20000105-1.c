@@ -44,7 +44,7 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Ranked {
@@ -57,7 +57,7 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:                               "na",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Char {
@@ -90,7 +90,7 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                           InitDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "wflg",
 // DEFAULT-NEXT:                               ),
@@ -110,7 +110,7 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                           InitDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "tflg",
 // DEFAULT-NEXT:                               ),
@@ -144,7 +144,7 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                           InitDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "dflg",
 // DEFAULT-NEXT:                               ),
@@ -384,14 +384,6 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 1,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT

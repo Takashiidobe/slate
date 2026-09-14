@@ -13,15 +13,15 @@ static void temp() {}
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
 // DEFAULT-NEXT:               storage: Static,
 // DEFAULT-NEXT:               is_inline: true,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Function {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "temp",
@@ -31,15 +31,7 @@ static void temp() {}
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 4,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
@@ -79,14 +71,6 @@ static void temp() {}
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 5,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
@@ -100,14 +84,6 @@ static void temp() {}
 // DEFAULT-NEXT:                   "temp",
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Empty,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 9,
-// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )

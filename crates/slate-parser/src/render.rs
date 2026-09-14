@@ -1,6 +1,6 @@
 use crate::ast::{
-    Decl, EnumItem, FieldItem, FunctionDefinition, SpannedStmt, Stmt, TagBody, TagDefinition,
-    TranslationUnit,
+    DeclKind, EnumItemKind, FieldItemKind, FunctionDefinition, Stmt, StmtKind, TagBody,
+    TagDefinition, TranslationUnit,
 };
 use std::fmt::Debug;
 use std::io::{self, Write};
@@ -46,7 +46,7 @@ impl<W: Write> Renderer<W> {
             } else {
                 format!("tag[{}]", tag.value.id.0)
             };
-            self.render_debug(&label, &tag.value)?;
+            self.render_debug(&label, tag)?;
         }
         for (index, decl) in ast.decls.iter().enumerate() {
             let label = if self.show_ids {
@@ -54,7 +54,7 @@ impl<W: Write> Renderer<W> {
             } else {
                 format!("decl[{index}]")
             };
-            self.render_debug(&label, &decl.value)?;
+            self.render_debug(&label, decl)?;
         }
         Ok(())
     }
@@ -82,7 +82,7 @@ impl<W: Write> Renderer<W> {
 
 fn strip_comments(unit: &mut TranslationUnit) {
     unit.decls
-        .retain(|decl| !matches!(decl.value, Decl::Comment(_)));
+        .retain(|decl| !matches!(decl.value, DeclKind::Comment(_)));
     for decl in &mut unit.decls {
         strip_decl_comments(&mut decl.value);
     }
@@ -91,8 +91,8 @@ fn strip_comments(unit: &mut TranslationUnit) {
     }
 }
 
-fn strip_decl_comments(decl: &mut Decl) {
-    if let Decl::Function(function) = decl {
+fn strip_decl_comments(decl: &mut DeclKind) {
+    if let DeclKind::Function(function) = decl {
         strip_function_comments(function);
     }
 }
@@ -104,28 +104,28 @@ fn strip_function_comments(function: &mut FunctionDefinition) {
 fn strip_tag_comments(tag: &mut TagDefinition) {
     match &mut tag.body {
         TagBody::Record(fields) => {
-            fields.retain(|field| !matches!(field.value, FieldItem::Comment(_)))
+            fields.retain(|field| !matches!(field.value, FieldItemKind::Comment(_)))
         }
         TagBody::Enum { enumerators, .. } => {
-            enumerators.retain(|item| !matches!(item.value, EnumItem::Comment(_)))
+            enumerators.retain(|item| !matches!(item.value, EnumItemKind::Comment(_)))
         }
     }
 }
 
-fn strip_stmt_comments(stmts: &mut Vec<SpannedStmt>) {
-    stmts.retain(|stmt| !matches!(stmt.value, Stmt::Comment(_)));
+fn strip_stmt_comments(stmts: &mut Vec<Stmt>) {
+    stmts.retain(|stmt| !matches!(stmt.value, StmtKind::Comment(_)));
     for stmt in stmts {
         strip_stmt_children(&mut stmt.value);
     }
 }
 
-fn strip_stmt_children(stmt: &mut Stmt) {
+fn strip_stmt_children(stmt: &mut StmtKind) {
     match stmt {
-        Stmt::Block(body)
-        | Stmt::While { body, .. }
-        | Stmt::DoWhile { body, .. }
-        | Stmt::Switch { body, .. } => strip_stmt_comments(body),
-        Stmt::If {
+        StmtKind::Block(body)
+        | StmtKind::While { body, .. }
+        | StmtKind::DoWhile { body, .. }
+        | StmtKind::Switch { body, .. } => strip_stmt_comments(body),
+        StmtKind::If {
             then_branch,
             else_branch,
             ..
@@ -135,16 +135,16 @@ fn strip_stmt_children(stmt: &mut Stmt) {
                 strip_stmt_comments(else_branch);
             }
         }
-        Stmt::For { init, body, .. } => {
+        StmtKind::For { init, body, .. } => {
             if let Some(init) = init {
                 strip_stmt_children(&mut init.value);
             }
             strip_stmt_comments(body);
         }
-        Stmt::Labeled { body, .. } | Stmt::SwitchLabel { body, .. } => {
+        StmtKind::Labeled { body, .. } | StmtKind::SwitchLabel { body, .. } => {
             strip_stmt_children(&mut body.value);
         }
-        Stmt::NestedFunction(function) => strip_function_comments(function),
+        StmtKind::NestedFunction(function) => strip_function_comments(function),
         _ => {}
     }
 }

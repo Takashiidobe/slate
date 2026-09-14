@@ -27,8 +27,8 @@ int picked(void) {
 // SLATE-FILECHECK-DEFINES SELECT SELECT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -38,7 +38,7 @@ int picked(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "selected",
 // DEFAULT-NEXT:                   ),
@@ -60,17 +60,9 @@ int picked(void) {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 18,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Char {
@@ -79,22 +71,14 @@ int picked(void) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "typed",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 19,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
@@ -126,20 +110,12 @@ int picked(void) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 21,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN SELECT
-// SELECT: decl[0]: Declaration {
-// SELECT-NEXT:       declaration: Declaration {
+// SELECT: decl[0]: Declaration(
+// SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
 // SELECT-NEXT:                   Ranked {
@@ -149,7 +125,7 @@ int picked(void) {
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarators: [
-// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:               InitDeclaratorKind {
 // SELECT-NEXT:                   declarator: Name(
 // SELECT-NEXT:                       "selected",
 // SELECT-NEXT:                   ),
@@ -171,17 +147,9 @@ int picked(void) {
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
-// SELECT-NEXT:       provenance: Provenance {
-// SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               3,
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           kind: User,
-// SELECT-NEXT:           line: 18,
-// SELECT-NEXT:           header: None,
-// SELECT-NEXT:       },
-// SELECT-NEXT:   }
-// SELECT-NEXT: decl[1]: Declaration {
-// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:   )
+// SELECT-NEXT: decl[1]: Declaration(
+// SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
 // SELECT-NEXT:                   Ranked {
@@ -191,22 +159,14 @@ int picked(void) {
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarators: [
-// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:               InitDeclaratorKind {
 // SELECT-NEXT:                   declarator: Name(
 // SELECT-NEXT:                       "typed",
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
-// SELECT-NEXT:       provenance: Provenance {
-// SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               3,
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           kind: User,
-// SELECT-NEXT:           line: 19,
-// SELECT-NEXT:           header: None,
-// SELECT-NEXT:       },
-// SELECT-NEXT:   }
+// SELECT-NEXT:   )
 // SELECT-NEXT: decl[2]: Function(
 // SELECT-NEXT:       FunctionDefinition {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
@@ -238,14 +198,6 @@ int picked(void) {
 // SELECT-NEXT:                   ),
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           ],
-// SELECT-NEXT:           provenance: Provenance {
-// SELECT-NEXT:               file: FileId(
-// SELECT-NEXT:                   3,
-// SELECT-NEXT:               ),
-// SELECT-NEXT:               kind: User,
-// SELECT-NEXT:               line: 21,
-// SELECT-NEXT:               header: None,
-// SELECT-NEXT:           },
 // SELECT-NEXT:       },
 // SELECT-NEXT:   )
 // SLATE-FILECHECK-END SELECT

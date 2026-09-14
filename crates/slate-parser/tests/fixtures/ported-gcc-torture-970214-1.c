@@ -6,20 +6,20 @@ int main(void) { exit(L'1' != L'1'); }
 // SLATE-FILECHECK-DEFINES GCC
 
 // SLATE-FILECHECK-BEGIN GCC
-// GCC: decl[0]: Declaration {
-// GCC-NEXT:       declaration: Declaration {
+// GCC: decl[0]: Declaration(
+// GCC-NEXT:       Declaration {
 // GCC-NEXT:           specifiers: DeclarationSpecifiers {
 // GCC-NEXT:               ty: Void,
 // GCC-NEXT:           },
 // GCC-NEXT:           declarators: [
-// GCC-NEXT:               InitDeclarator {
+// GCC-NEXT:               InitDeclaratorKind {
 // GCC-NEXT:                   declarator: Function {
 // GCC-NEXT:                       inner: Name(
 // GCC-NEXT:                           "exit",
 // GCC-NEXT:                       ),
 // GCC-NEXT:                       parameters: Prototype {
 // GCC-NEXT:                           parameters: [
-// GCC-NEXT:                               ParameterDeclaration {
+// GCC-NEXT:                               ParameterDeclarationKind {
 // GCC-NEXT:                                   specifiers: DeclarationSpecifiers {
 // GCC-NEXT:                                       ty: Integer(
 // GCC-NEXT:                                           Ranked {
@@ -36,15 +36,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:               },
 // GCC-NEXT:           ],
 // GCC-NEXT:       },
-// GCC-NEXT:       provenance: Provenance {
-// GCC-NEXT:           file: FileId(
-// GCC-NEXT:               3,
-// GCC-NEXT:           ),
-// GCC-NEXT:           kind: User,
-// GCC-NEXT:           line: 0,
-// GCC-NEXT:           header: None,
-// GCC-NEXT:       },
-// GCC-NEXT:   }
+// GCC-NEXT:   )
 // GCC-NEXT: decl[1]: Function(
 // GCC-NEXT:       FunctionDefinition {
 // GCC-NEXT:           specifiers: DeclarationSpecifiers {
@@ -93,14 +85,6 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:                   },
 // GCC-NEXT:               ),
 // GCC-NEXT:           ],
-// GCC-NEXT:           provenance: Provenance {
-// GCC-NEXT:               file: FileId(
-// GCC-NEXT:                   3,
-// GCC-NEXT:               ),
-// GCC-NEXT:               kind: User,
-// GCC-NEXT:               line: 3,
-// GCC-NEXT:               header: None,
-// GCC-NEXT:           },
 // GCC-NEXT:       },
 // GCC-NEXT:   )
 // SLATE-FILECHECK-END GCC

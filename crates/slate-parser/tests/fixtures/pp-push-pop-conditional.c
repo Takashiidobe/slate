@@ -30,8 +30,8 @@ int second_pop[Y];
 // SLATE-FILECHECK-DEFINES A A
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -41,7 +41,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "popped_in_branch",
@@ -63,17 +63,9 @@ int second_pop[Y];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 7,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -83,7 +75,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "unreachable_pop",
@@ -105,17 +97,9 @@ int second_pop[Y];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 17,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -125,7 +109,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "partial_push",
@@ -147,17 +131,9 @@ int second_pop[Y];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 24,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -167,7 +143,7 @@ int second_pop[Y];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "second_pop",
@@ -189,19 +165,11 @@ int second_pop[Y];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 26,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A: decl[0]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -211,7 +179,7 @@ int second_pop[Y];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "popped_in_branch",
@@ -233,17 +201,9 @@ int second_pop[Y];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 7,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
-// A-NEXT: decl[1]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A-NEXT:   )
+// A-NEXT: decl[1]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -253,7 +213,7 @@ int second_pop[Y];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "unreachable_pop",
@@ -275,17 +235,9 @@ int second_pop[Y];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 17,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
-// A-NEXT: decl[2]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A-NEXT:   )
+// A-NEXT: decl[2]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -295,7 +247,7 @@ int second_pop[Y];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "partial_push",
@@ -317,17 +269,9 @@ int second_pop[Y];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 24,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
-// A-NEXT: decl[3]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A-NEXT:   )
+// A-NEXT: decl[3]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -337,7 +281,7 @@ int second_pop[Y];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "second_pop",
@@ -359,13 +303,5 @@ int second_pop[Y];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 26,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
+// A-NEXT:   )
 // SLATE-FILECHECK-END A

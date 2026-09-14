@@ -19,8 +19,8 @@ int x_missing[4];
 // SLATE-FILECHECK-DEFINES X X
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -30,7 +30,7 @@ int x_missing[4];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "x_undefined",
@@ -52,17 +52,9 @@ int x_missing[4];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 6,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -72,7 +64,7 @@ int x_missing[4];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "x_missing",
@@ -94,19 +86,11 @@ int x_missing[4];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 12,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A: decl[0]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -116,7 +100,7 @@ int x_missing[4];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "x_defined",
@@ -138,19 +122,11 @@ int x_missing[4];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 4,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
+// A-NEXT:   )
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN FLAG
-// FLAG: decl[0]: Declaration {
-// FLAG-NEXT:       declaration: Declaration {
+// FLAG: decl[0]: Declaration(
+// FLAG-NEXT:       Declaration {
 // FLAG-NEXT:           specifiers: DeclarationSpecifiers {
 // FLAG-NEXT:               ty: Integer(
 // FLAG-NEXT:                   Ranked {
@@ -160,7 +136,7 @@ int x_missing[4];
 // FLAG-NEXT:               ),
 // FLAG-NEXT:           },
 // FLAG-NEXT:           declarators: [
-// FLAG-NEXT:               InitDeclarator {
+// FLAG-NEXT:               InitDeclaratorKind {
 // FLAG-NEXT:                   declarator: Array {
 // FLAG-NEXT:                       inner: Name(
 // FLAG-NEXT:                           "x_undefined",
@@ -182,17 +158,9 @@ int x_missing[4];
 // FLAG-NEXT:               },
 // FLAG-NEXT:           ],
 // FLAG-NEXT:       },
-// FLAG-NEXT:       provenance: Provenance {
-// FLAG-NEXT:           file: FileId(
-// FLAG-NEXT:               3,
-// FLAG-NEXT:           ),
-// FLAG-NEXT:           kind: User,
-// FLAG-NEXT:           line: 6,
-// FLAG-NEXT:           header: None,
-// FLAG-NEXT:       },
-// FLAG-NEXT:   }
-// FLAG-NEXT: decl[1]: Declaration {
-// FLAG-NEXT:       declaration: Declaration {
+// FLAG-NEXT:   )
+// FLAG-NEXT: decl[1]: Declaration(
+// FLAG-NEXT:       Declaration {
 // FLAG-NEXT:           specifiers: DeclarationSpecifiers {
 // FLAG-NEXT:               ty: Integer(
 // FLAG-NEXT:                   Ranked {
@@ -202,7 +170,7 @@ int x_missing[4];
 // FLAG-NEXT:               ),
 // FLAG-NEXT:           },
 // FLAG-NEXT:           declarators: [
-// FLAG-NEXT:               InitDeclarator {
+// FLAG-NEXT:               InitDeclaratorKind {
 // FLAG-NEXT:                   declarator: Array {
 // FLAG-NEXT:                       inner: Name(
 // FLAG-NEXT:                           "flag_without_x",
@@ -224,17 +192,9 @@ int x_missing[4];
 // FLAG-NEXT:               },
 // FLAG-NEXT:           ],
 // FLAG-NEXT:       },
-// FLAG-NEXT:       provenance: Provenance {
-// FLAG-NEXT:           file: FileId(
-// FLAG-NEXT:               3,
-// FLAG-NEXT:           ),
-// FLAG-NEXT:           kind: User,
-// FLAG-NEXT:           line: 9,
-// FLAG-NEXT:           header: None,
-// FLAG-NEXT:       },
-// FLAG-NEXT:   }
-// FLAG-NEXT: decl[2]: Declaration {
-// FLAG-NEXT:       declaration: Declaration {
+// FLAG-NEXT:   )
+// FLAG-NEXT: decl[2]: Declaration(
+// FLAG-NEXT:       Declaration {
 // FLAG-NEXT:           specifiers: DeclarationSpecifiers {
 // FLAG-NEXT:               ty: Integer(
 // FLAG-NEXT:                   Ranked {
@@ -244,7 +204,7 @@ int x_missing[4];
 // FLAG-NEXT:               ),
 // FLAG-NEXT:           },
 // FLAG-NEXT:           declarators: [
-// FLAG-NEXT:               InitDeclarator {
+// FLAG-NEXT:               InitDeclaratorKind {
 // FLAG-NEXT:                   declarator: Array {
 // FLAG-NEXT:                       inner: Name(
 // FLAG-NEXT:                           "x_missing",
@@ -266,19 +226,11 @@ int x_missing[4];
 // FLAG-NEXT:               },
 // FLAG-NEXT:           ],
 // FLAG-NEXT:       },
-// FLAG-NEXT:       provenance: Provenance {
-// FLAG-NEXT:           file: FileId(
-// FLAG-NEXT:               3,
-// FLAG-NEXT:           ),
-// FLAG-NEXT:           kind: User,
-// FLAG-NEXT:           line: 12,
-// FLAG-NEXT:           header: None,
-// FLAG-NEXT:       },
-// FLAG-NEXT:   }
+// FLAG-NEXT:   )
 // SLATE-FILECHECK-END FLAG
 // SLATE-FILECHECK-BEGIN X
-// X: decl[0]: Declaration {
-// X-NEXT:       declaration: Declaration {
+// X: decl[0]: Declaration(
+// X-NEXT:       Declaration {
 // X-NEXT:           specifiers: DeclarationSpecifiers {
 // X-NEXT:               ty: Integer(
 // X-NEXT:                   Ranked {
@@ -288,7 +240,7 @@ int x_missing[4];
 // X-NEXT:               ),
 // X-NEXT:           },
 // X-NEXT:           declarators: [
-// X-NEXT:               InitDeclarator {
+// X-NEXT:               InitDeclaratorKind {
 // X-NEXT:                   declarator: Array {
 // X-NEXT:                       inner: Name(
 // X-NEXT:                           "x_defined",
@@ -310,13 +262,5 @@ int x_missing[4];
 // X-NEXT:               },
 // X-NEXT:           ],
 // X-NEXT:       },
-// X-NEXT:       provenance: Provenance {
-// X-NEXT:           file: FileId(
-// X-NEXT:               3,
-// X-NEXT:           ),
-// X-NEXT:           kind: User,
-// X-NEXT:           line: 4,
-// X-NEXT:           header: None,
-// X-NEXT:       },
-// X-NEXT:   }
+// X-NEXT:   )
 // SLATE-FILECHECK-END X

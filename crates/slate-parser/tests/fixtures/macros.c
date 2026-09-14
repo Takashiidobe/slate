@@ -20,8 +20,8 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SLATE-FILECHECK-DEFINES SELECT SELECT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -31,7 +31,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "ordinary",
 // DEFAULT-NEXT:                   ),
@@ -53,17 +53,9 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -73,7 +65,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "recursive",
 // DEFAULT-NEXT:                   ),
@@ -88,17 +80,9 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 8,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -108,7 +92,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "selected",
 // DEFAULT-NEXT:                   ),
@@ -123,19 +107,11 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 15,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN SELECT
-// SELECT: decl[0]: Declaration {
-// SELECT-NEXT:       declaration: Declaration {
+// SELECT: decl[0]: Declaration(
+// SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
 // SELECT-NEXT:                   Ranked {
@@ -145,7 +121,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarators: [
-// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:               InitDeclaratorKind {
 // SELECT-NEXT:                   declarator: Name(
 // SELECT-NEXT:                       "ordinary",
 // SELECT-NEXT:                   ),
@@ -167,17 +143,9 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
-// SELECT-NEXT:       provenance: Provenance {
-// SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               3,
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           kind: User,
-// SELECT-NEXT:           line: 5,
-// SELECT-NEXT:           header: None,
-// SELECT-NEXT:       },
-// SELECT-NEXT:   }
-// SELECT-NEXT: decl[1]: Declaration {
-// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:   )
+// SELECT-NEXT: decl[1]: Declaration(
+// SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
 // SELECT-NEXT:                   Ranked {
@@ -187,7 +155,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarators: [
-// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:               InitDeclaratorKind {
 // SELECT-NEXT:                   declarator: Name(
 // SELECT-NEXT:                       "recursive",
 // SELECT-NEXT:                   ),
@@ -202,17 +170,9 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
-// SELECT-NEXT:       provenance: Provenance {
-// SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               3,
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           kind: User,
-// SELECT-NEXT:           line: 8,
-// SELECT-NEXT:           header: None,
-// SELECT-NEXT:       },
-// SELECT-NEXT:   }
-// SELECT-NEXT: decl[2]: Declaration {
-// SELECT-NEXT:       declaration: Declaration {
+// SELECT-NEXT:   )
+// SELECT-NEXT: decl[2]: Declaration(
+// SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
 // SELECT-NEXT:                   Ranked {
@@ -222,7 +182,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:               ),
 // SELECT-NEXT:           },
 // SELECT-NEXT:           declarators: [
-// SELECT-NEXT:               InitDeclarator {
+// SELECT-NEXT:               InitDeclaratorKind {
 // SELECT-NEXT:                   declarator: Name(
 // SELECT-NEXT:                       "selected",
 // SELECT-NEXT:                   ),
@@ -237,13 +197,5 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:               },
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
-// SELECT-NEXT:       provenance: Provenance {
-// SELECT-NEXT:           file: FileId(
-// SELECT-NEXT:               3,
-// SELECT-NEXT:           ),
-// SELECT-NEXT:           kind: User,
-// SELECT-NEXT:           line: 12,
-// SELECT-NEXT:           header: None,
-// SELECT-NEXT:       },
-// SELECT-NEXT:   }
+// SELECT-NEXT:   )
 // SLATE-FILECHECK-END SELECT

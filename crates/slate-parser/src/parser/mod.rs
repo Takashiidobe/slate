@@ -359,26 +359,6 @@ impl Parser {
         id
     }
 
-    pub(crate) fn token_provenance(&self, token: &Span<Token>) -> Provenance {
-        let loc = token.expansion;
-        let (kind, header) = self
-            .file_origins
-            .get(&loc.file)
-            .copied()
-            .unwrap_or((HeaderKind::System, None));
-        let line = self.line_starts.get(&loc.file).map_or(0, |starts| {
-            starts
-                .partition_point(|&start| start <= loc.offset)
-                .saturating_sub(1)
-        });
-        Provenance {
-            file: loc.file,
-            kind,
-            line,
-            header,
-        }
-    }
-
     fn node_provenance(&self, node: &PPNode) -> Provenance {
         match &node.value {
             PPNodeKind::Comment { provenance, .. } => *provenance,
@@ -389,7 +369,7 @@ impl Parser {
     fn comment_group(
         &self,
         nodes: &[PPNode],
-        provenance: Provenance,
+        _provenance: Provenance,
     ) -> (Span<CommentGroup>, usize) {
         let file = nodes[0].expansion.file;
         let mut texts = Vec::new();
@@ -423,7 +403,6 @@ impl Parser {
                 text: texts,
                 loc: loc.expect("comment_group requires at least one comment"),
             },
-            provenance,
         };
         (Span::cover(group, &nodes[..consumed]), consumed)
     }
@@ -500,9 +479,10 @@ fn span_pp_nodes<T>(value: T, nodes: &[PPNode]) -> Span<T> {
         first.spelling.through(last.spelling),
         first.expansion.through(last.expansion),
     )
+    .with_provenance(first.provenance)
 }
 
-fn span_decl_result(result: (Vec<Decl>, usize), nodes: &[PPNode]) -> (Vec<SpannedDecl>, usize) {
+fn span_decl_result(result: (Vec<DeclKind>, usize), nodes: &[PPNode]) -> (Vec<Decl>, usize) {
     let (decls, consumed) = result;
     (
         decls

@@ -51,7 +51,7 @@ that a program is semantically valid.
 ## Locations and provenance
 
 - `Loc { file, offset, length }`: byte range.
-- `Span<T> { id, value, spelling, expansion, macro_origin }`: `spelling` is
+- `Span<T> { id, value, spelling, expansion, provenance, macro_origin }`: `spelling` is
   where the tokens are written (possibly inside a macro definition).
   `expansion` is where they appear in the including file. **Every**
   declaration, declarator, statement and expression node is spanned.
@@ -65,11 +65,14 @@ that a program is semantically valid.
   in the debug dump; `tests/fixtures/node_ids_macro_expansion.c` (enabled via
   `// SLATE-FILECHECK-SHOW-IDS <prefix>`) checks that nodes sharing an
   expansion `Loc` still get distinct ids.
-- `Provenance { file, kind: System | User, line, header }`: `header` is the
+- `Provenance { file, kind: System | User, line, header }`: stored on every
+  `Span`, so source-grammar nodes inherit it automatically. `header` is the
   outermost header the main file directly included (`None` for the main
-  file). `line` is 0-based. Carried by every declaration-level node
-  (`Declaration`, `InitDeclarator`, `FunctionDefinition`, `TagDefinition`,
-  `FieldDeclaration`, `Enumerator`, `ParameterDeclaration`, `CommentGroup`).
+  file). `line` is 0-based. Public repeated grammar nodes use the
+  `Node = Span<NodeKind>` representation; payloads such as `FunctionDefinition`
+  and `Declaration` inherit the enclosing `Decl` or `Stmt` span and carry no
+  duplicate provenance. Debug output includes provenance only when `header` is
+  `Some`.
 - `macro_origin: Option<Rc<MacroOrigin>>` (`MacroOrigin { name, definition:
   Provenance, parent: Option<Rc<MacroOrigin>> }`) identifies which macro
   produced a token, e.g. `int m = INT_MAX;` gives the folded literal's `Span`
@@ -480,8 +483,6 @@ the AST redesign epic.
 
 | Current                                                                                                                                                                                       | Target                                                                                        | Also fixes                                                             |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `InitDeclarator` and `FieldDeclarator` carry no provenance; `Stmt::Decl` has none at all                                                                                                      | provenance on every declarator                                                                |                                                                        |
-| `ParameterDeclaration` has no provenance                                                                                                                                                      | provenance on every parameter                                                                 |                                                                        |
 | `TagSpecifier::Reference` has no attributes; `TagBody::Record` holds `FieldItem`                                                                                                              | `MemberItem`, `EnumItem`                                                                      |                                                                        |
 | `TypeSpecifier` variants use `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` instead of the table above                     | variant names and shapes in the `TypeSpecifier` table                                         |                                                                        |
 | `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                                             | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                                                        |

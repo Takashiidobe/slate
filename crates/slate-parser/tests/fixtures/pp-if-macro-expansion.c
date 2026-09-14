@@ -26,8 +26,8 @@ int narrow;
 // SLATE-FILECHECK-DEFINES WIDE WIDE
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -37,24 +37,16 @@ int narrow;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "version_ok",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -64,24 +56,16 @@ int narrow;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "max_ok",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 8,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -91,24 +75,16 @@ int narrow;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "defined_ok",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 11,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -118,26 +94,18 @@ int narrow;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "narrow",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 21,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIDE
-// WIDE: decl[0]: Declaration {
-// WIDE-NEXT:       declaration: Declaration {
+// WIDE: decl[0]: Declaration(
+// WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
 // WIDE-NEXT:                   Ranked {
@@ -147,24 +115,16 @@ int narrow;
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
 // WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:               InitDeclaratorKind {
 // WIDE-NEXT:                   declarator: Name(
 // WIDE-NEXT:                       "version_ok",
 // WIDE-NEXT:                   ),
 // WIDE-NEXT:               },
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
-// WIDE-NEXT:       provenance: Provenance {
-// WIDE-NEXT:           file: FileId(
-// WIDE-NEXT:               3,
-// WIDE-NEXT:           ),
-// WIDE-NEXT:           kind: User,
-// WIDE-NEXT:           line: 5,
-// WIDE-NEXT:           header: None,
-// WIDE-NEXT:       },
-// WIDE-NEXT:   }
-// WIDE-NEXT: decl[1]: Declaration {
-// WIDE-NEXT:       declaration: Declaration {
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[1]: Declaration(
+// WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
 // WIDE-NEXT:                   Ranked {
@@ -174,24 +134,16 @@ int narrow;
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
 // WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:               InitDeclaratorKind {
 // WIDE-NEXT:                   declarator: Name(
 // WIDE-NEXT:                       "max_ok",
 // WIDE-NEXT:                   ),
 // WIDE-NEXT:               },
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
-// WIDE-NEXT:       provenance: Provenance {
-// WIDE-NEXT:           file: FileId(
-// WIDE-NEXT:               3,
-// WIDE-NEXT:           ),
-// WIDE-NEXT:           kind: User,
-// WIDE-NEXT:           line: 8,
-// WIDE-NEXT:           header: None,
-// WIDE-NEXT:       },
-// WIDE-NEXT:   }
-// WIDE-NEXT: decl[2]: Declaration {
-// WIDE-NEXT:       declaration: Declaration {
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[2]: Declaration(
+// WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
 // WIDE-NEXT:                   Ranked {
@@ -201,24 +153,16 @@ int narrow;
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
 // WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:               InitDeclaratorKind {
 // WIDE-NEXT:                   declarator: Name(
 // WIDE-NEXT:                       "defined_ok",
 // WIDE-NEXT:                   ),
 // WIDE-NEXT:               },
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
-// WIDE-NEXT:       provenance: Provenance {
-// WIDE-NEXT:           file: FileId(
-// WIDE-NEXT:               3,
-// WIDE-NEXT:           ),
-// WIDE-NEXT:           kind: User,
-// WIDE-NEXT:           line: 11,
-// WIDE-NEXT:           header: None,
-// WIDE-NEXT:       },
-// WIDE-NEXT:   }
-// WIDE-NEXT: decl[3]: Declaration {
-// WIDE-NEXT:       declaration: Declaration {
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[3]: Declaration(
+// WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
 // WIDE-NEXT:                   Ranked {
@@ -228,20 +172,12 @@ int narrow;
 // WIDE-NEXT:               ),
 // WIDE-NEXT:           },
 // WIDE-NEXT:           declarators: [
-// WIDE-NEXT:               InitDeclarator {
+// WIDE-NEXT:               InitDeclaratorKind {
 // WIDE-NEXT:                   declarator: Name(
 // WIDE-NEXT:                       "wide",
 // WIDE-NEXT:                   ),
 // WIDE-NEXT:               },
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
-// WIDE-NEXT:       provenance: Provenance {
-// WIDE-NEXT:           file: FileId(
-// WIDE-NEXT:               3,
-// WIDE-NEXT:           ),
-// WIDE-NEXT:           kind: User,
-// WIDE-NEXT:           line: 19,
-// WIDE-NEXT:           header: None,
-// WIDE-NEXT:       },
-// WIDE-NEXT:   }
+// WIDE-NEXT:   )
 // SLATE-FILECHECK-END WIDE

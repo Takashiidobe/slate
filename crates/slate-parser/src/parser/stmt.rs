@@ -19,7 +19,6 @@ impl Parser {
         &self,
         nodes: &[PPNode],
     ) -> Result<(FunctionDefinition, usize), ParseError> {
-        let provenance = self.node_provenance(&nodes[0]);
         let sig_node_count = signature_node_span(nodes, &self.typedef_names);
         let joined_code;
         let code: &str = if sig_node_count == 1 {
@@ -74,7 +73,6 @@ impl Parser {
                     declarator,
                     attributes,
                     body,
-                    provenance,
                 },
                 sig_node_count,
             ));
@@ -122,7 +120,6 @@ impl Parser {
                 declarator,
                 attributes,
                 body,
-                provenance,
             },
             close_idx + 1,
         ))
@@ -135,13 +132,15 @@ impl Parser {
         mut pos: usize,
         names: &[String],
     ) -> Result<(Vec<ParameterDeclaration>, usize), ParseError> {
-        let mut declared: HashMap<String, (DeclarationSpecifiers, Declarator)> = HashMap::new();
+        let mut declared: HashMap<String, (DeclarationSpecifiers, Declarator, Span<()>)> =
+            HashMap::new();
         while tokens.value_at(pos) != Some(&Token::LBrace) {
             let mut parser = self.declarator_parser(tokens, pos);
             let specifiers = parser
                 .parse_specifiers(false)
                 .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
             loop {
+                let declarator_start = parser.pos;
                 let declarator = parser
                     .parse_declarator(false)
                     .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))?;
@@ -157,7 +156,14 @@ impl Parser {
                         format!("`{name}` is not a parameter of this function"),
                     ));
                 }
-                declared.insert(name.to_string(), (specifiers.clone(), declarator));
+                declared.insert(
+                    name.to_string(),
+                    (
+                        specifiers.clone(),
+                        declarator,
+                        Span::cover((), &tokens[declarator_start..parser.pos]),
+                    ),
+                );
                 if !parser.matches(Token::Comma) {
                     break;
                 }
@@ -173,14 +179,14 @@ impl Parser {
         let parameters = names
             .iter()
             .map(|name| match declared.remove(name) {
-                Some((written, declarator)) => {
+                Some((written, declarator, span)) => {
                     let promoted = if declarator.is_derived() {
                         None
                     } else {
                         default_argument_promotion(&written.ty)
                     };
-                    match promoted {
-                        Some(ty) => ParameterDeclaration {
+                    let parameter = match promoted {
+                        Some(ty) => ParameterDeclarationKind {
                             specifiers: DeclarationSpecifiers {
                                 ty,
                                 ..written.clone()
@@ -189,29 +195,40 @@ impl Parser {
                             declared_specifiers: Some(written),
                             attributes: Vec::new(),
                         },
-                        None => ParameterDeclaration {
+                        None => ParameterDeclarationKind {
                             specifiers: written,
                             declarator,
                             declared_specifiers: None,
                             attributes: Vec::new(),
                         },
-                    }
+                    };
+                    span.with_value(parameter)
                 }
-                None => ParameterDeclaration {
-                    specifiers: specifiers_with_type(TypeSpecifier::Integer(IntegerType::Ranked {
-                        rank: IntegerRank::Int,
-                        signed: true,
-                    })),
-                    declarator: Declarator::Name(name.clone()),
-                    declared_specifiers: None,
-                    attributes: Vec::new(),
-                },
+                None => {
+                    let span = tokens
+                        .iter()
+                        .find(|token| matches!(&token.value, Token::Ident(found) if found == name))
+                        .cloned()
+                        .map(|token| token.with_value(()))
+                        .unwrap_or_else(|| synthetic_span(()));
+                    span.with_value(ParameterDeclarationKind {
+                        specifiers: specifiers_with_type(TypeSpecifier::Integer(
+                            IntegerType::Ranked {
+                                rank: IntegerRank::Int,
+                                signed: true,
+                            },
+                        )),
+                        declarator: Declarator::Name(name.clone()),
+                        declared_specifiers: None,
+                        attributes: Vec::new(),
+                    })
+                }
             })
             .collect();
         Ok((parameters, pos))
     }
 
-    pub(super) fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<SpannedStmt>, ParseError> {
+    pub(super) fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<Stmt>, ParseError> {
         let mut stmts = Vec::new();
         let mut pending_comments = Vec::new();
         let mut run_text = String::new();
@@ -230,7 +247,7 @@ impl Parser {
                         run_tokens.clear();
                     }
                     let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
-                    let comment = group.map(Stmt::Comment);
+                    let comment = group.map(StmtKind::Comment);
                     if run_tokens.is_empty() {
                         stmts.push(comment);
                     } else {
@@ -260,7 +277,7 @@ impl Parser {
         &self,
         code: &str,
         tokens: &[Span<Token>],
-    ) -> Result<Vec<SpannedStmt>, ParseError> {
+    ) -> Result<Vec<Stmt>, ParseError> {
         let mut parser = self.clone();
         let mut position = 0;
         let mut stmts = Vec::new();
@@ -269,7 +286,7 @@ impl Parser {
             let mut fragment = Fragment::new(&parser, code, tokens, position);
             let stmt = parser.parse_one_stmt(&mut fragment)?;
             position = fragment.pos;
-            if let Stmt::Decl(declaration) = &stmt {
+            if let StmtKind::Decl(declaration) = &stmt {
                 parser.record_declaration_typedefs(declaration);
             }
             stmts.push(span_tokens(stmt, &tokens[start..position]));
@@ -280,14 +297,11 @@ impl Parser {
     pub(crate) fn parse_statement_expression_body(
         &self,
         tokens: &[Span<Token>],
-    ) -> Result<Vec<SpannedStmt>, ParseError> {
+    ) -> Result<Vec<Stmt>, ParseError> {
         self.parse_stmts_from_tokens("", tokens)
     }
 
-    pub(super) fn parse_body(
-        &self,
-        fragment: &mut Fragment,
-    ) -> Result<Vec<SpannedStmt>, ParseError> {
+    pub(super) fn parse_body(&self, fragment: &mut Fragment) -> Result<Vec<Stmt>, ParseError> {
         if fragment.peek() == Some(&Token::LBrace) {
             let close = matching_brace(fragment.tokens, fragment.pos)
                 .ok_or_else(|| fragment.error("expected `}`"))?;
@@ -307,9 +321,9 @@ impl Parser {
         }
     }
 
-    fn parse_labeled_body(&self, fragment: &mut Fragment) -> Result<Box<SpannedStmt>, ParseError> {
+    fn parse_labeled_body(&self, fragment: &mut Fragment) -> Result<Box<Stmt>, ParseError> {
         if matches!(fragment.peek(), None | Some(Token::RBrace)) {
-            return Ok(Box::new(synthetic_span(Stmt::Block(Vec::new()))));
+            return Ok(Box::new(synthetic_span(StmtKind::Block(Vec::new()))));
         }
         let start = fragment.pos;
         let stmt = self.parse_one_stmt(fragment)?;
@@ -322,8 +336,8 @@ impl Parser {
     pub(super) fn parse_simple_keyword_stmt(
         &self,
         fragment: &mut Fragment,
-        stmt: Stmt,
-    ) -> Result<Stmt, ParseError> {
+        stmt: StmtKind,
+    ) -> Result<StmtKind, ParseError> {
         fragment.pos += 1;
         fragment.expect(Token::Semi, "expected `;`")?;
         Ok(stmt)
@@ -367,7 +381,6 @@ impl Parser {
                 declarator,
                 attributes,
                 body,
-                provenance: Provenance::default(),
             },
             close + 1,
         )))
@@ -394,13 +407,13 @@ impl Parser {
         }
     }
 
-    pub(super) fn parse_one_stmt(&self, fragment: &mut Fragment) -> Result<Stmt, ParseError> {
+    pub(super) fn parse_one_stmt(&self, fragment: &mut Fragment) -> Result<StmtKind, ParseError> {
         let code = fragment.code;
         let tokens = fragment.tokens;
 
         if tokens.value_at(fragment.pos) == Some(&Token::Semi) {
             fragment.pos += 1;
-            return Ok(Stmt::Block(Vec::new()));
+            return Ok(StmtKind::Block(Vec::new()));
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::Keyword(Keyword::StaticAssert)) {
@@ -409,7 +422,7 @@ impl Parser {
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
             let assertion = self.parse_static_assert(code, &tokens[fragment.pos..=end])?;
             fragment.pos = end + 1;
-            return Ok(Stmt::StaticAssert(assertion));
+            return Ok(StmtKind::StaticAssert(assertion));
         }
 
         if let Some(Token::Ident(name)) = tokens.value_at(fragment.pos)
@@ -418,7 +431,7 @@ impl Parser {
             let label = span_tokens(name.clone(), &tokens[fragment.pos..fragment.pos + 1]);
             fragment.pos += 2;
             let body = self.parse_labeled_body(fragment)?;
-            return Ok(Stmt::Labeled { label, body });
+            return Ok(StmtKind::Labeled { label, body });
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::Ident("__label__".into())) {
@@ -439,7 +452,7 @@ impl Parser {
                 })
                 .collect::<Result<Vec<_>, _>>()?;
             fragment.pos = end + 1;
-            return Ok(Stmt::LocalLabelDecl(names));
+            return Ok(StmtKind::LocalLabelDecl(names));
         }
 
         if (tokens.value_at(fragment.pos) == Some(&Token::LBracket)
@@ -454,12 +467,12 @@ impl Parser {
                 .map_err(|error| fragment.error(error))?;
             if tokens.value_at(position) == Some(&Token::Semi) {
                 fragment.pos = position + 1;
-                return Ok(Stmt::Attribute(attributes));
+                return Ok(StmtKind::Attribute(attributes));
             }
         }
 
         if let Some(asm) = self.parse_asm_stmt(fragment)? {
-            return Ok(Stmt::Asm(asm));
+            return Ok(StmtKind::Asm(asm));
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::LBrace) {
@@ -467,7 +480,7 @@ impl Parser {
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
             let body = self.parse_stmts_from_tokens(code, &tokens[fragment.pos + 1..close])?;
             fragment.pos = close + 1;
-            return Ok(Stmt::Block(body));
+            return Ok(StmtKind::Block(body));
         }
 
         if self.starts_declaration(tokens, fragment.pos)
@@ -475,7 +488,7 @@ impl Parser {
                 self.try_parse_nested_function(code, tokens, fragment.pos)?
         {
             fragment.pos = next;
-            return Ok(Stmt::NestedFunction(Box::new(function)));
+            return Ok(StmtKind::NestedFunction(Box::new(function)));
         }
 
         if self.starts_declaration(tokens, fragment.pos) {
@@ -484,7 +497,7 @@ impl Parser {
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
             let declaration = self.parse_declaration_tokens(&tokens[fragment.pos..=end])?;
             fragment.pos = end + 1;
-            return Ok(Stmt::Decl(declaration));
+            return Ok(StmtKind::Decl(declaration));
         }
 
         match tokens.value_at(fragment.pos) {
@@ -495,18 +508,18 @@ impl Parser {
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
                 fragment.pos = end + 1;
                 if start == end {
-                    Ok(Stmt::ReturnVoid)
+                    Ok(StmtKind::ReturnVoid)
                 } else {
-                    Ok(Stmt::Return(
+                    Ok(StmtKind::Return(
                         self.parse_expression(code, &tokens[start..end])?,
                     ))
                 }
             }
             Some(Token::Keyword(Keyword::Break)) => {
-                self.parse_simple_keyword_stmt(fragment, Stmt::Break)
+                self.parse_simple_keyword_stmt(fragment, StmtKind::Break)
             }
             Some(Token::Keyword(Keyword::Continue)) => {
-                self.parse_simple_keyword_stmt(fragment, Stmt::Continue)
+                self.parse_simple_keyword_stmt(fragment, StmtKind::Continue)
             }
             Some(Token::Keyword(Keyword::Goto))
                 if tokens.value_at(fragment.pos + 1) == Some(&Token::Star) =>
@@ -517,7 +530,7 @@ impl Parser {
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
                 let target = self.parse_expression(code, &tokens[start..end])?;
                 fragment.pos = end + 1;
-                Ok(Stmt::ComputedGoto(target))
+                Ok(StmtKind::ComputedGoto(target))
             }
             Some(Token::Keyword(Keyword::Goto)) => {
                 fragment.pos += 1;
@@ -525,7 +538,7 @@ impl Parser {
                 let label = fragment.expect_ident("expected label after `goto`")?;
                 let label = span_tokens(label, &tokens[label_start..fragment.pos]);
                 fragment.expect(Token::Semi, "expected `;` after `goto` label")?;
-                Ok(Stmt::Goto(label))
+                Ok(StmtKind::Goto(label))
             }
             Some(Token::Keyword(Keyword::Case)) => {
                 let start = fragment.pos + 1;
@@ -552,13 +565,13 @@ impl Parser {
                     SwitchLabel::Case(value)
                 };
                 let body = self.parse_labeled_body(fragment)?;
-                Ok(Stmt::SwitchLabel { label, body })
+                Ok(StmtKind::SwitchLabel { label, body })
             }
             Some(Token::Keyword(Keyword::Default)) => {
                 fragment.pos += 1;
                 fragment.expect(Token::Colon, "expected `:` after `default`")?;
                 let body = self.parse_labeled_body(fragment)?;
-                Ok(Stmt::SwitchLabel {
+                Ok(StmtKind::SwitchLabel {
                     label: SwitchLabel::Default,
                     body,
                 })
@@ -579,7 +592,7 @@ impl Parser {
                 } else {
                     None
                 };
-                Ok(Stmt::If {
+                Ok(StmtKind::If {
                     condition,
                     then_branch,
                     else_branch,
@@ -595,7 +608,7 @@ impl Parser {
                 let condition = self.parse_expression(code, &tokens[open + 1..close])?;
                 fragment.pos = close + 1;
                 let body = self.parse_body(fragment)?;
-                Ok(Stmt::While { condition, body })
+                Ok(StmtKind::While { condition, body })
             }
             Some(Token::Keyword(Keyword::Do)) => {
                 fragment.pos += 1;
@@ -614,7 +627,7 @@ impl Parser {
                     return Err(self.error_at(Loc::whole(code), "expected `;` after `do`-`while`"));
                 }
                 fragment.pos = close + 2;
-                Ok(Stmt::DoWhile { body, condition })
+                Ok(StmtKind::DoWhile { body, condition })
             }
             Some(Token::Keyword(Keyword::For)) => {
                 let open = fragment.pos + 1;
@@ -638,12 +651,12 @@ impl Parser {
                     let mut decl_tokens = init_tokens.to_vec();
                     decl_tokens.push(synthetic(Token::Semi));
                     Some(Box::new(span_tokens(
-                        Stmt::Decl(self.parse_declaration_tokens(&decl_tokens)?),
+                        StmtKind::Decl(self.parse_declaration_tokens(&decl_tokens)?),
                         init_tokens,
                     )))
                 } else {
                     Some(Box::new(span_tokens(
-                        Stmt::Expr(self.parse_expression(code, init_tokens)?),
+                        StmtKind::Expr(self.parse_expression(code, init_tokens)?),
                         init_tokens,
                     )))
                 };
@@ -659,7 +672,7 @@ impl Parser {
                 };
                 fragment.pos = close + 1;
                 let body = self.parse_body(fragment)?;
-                Ok(Stmt::For {
+                Ok(StmtKind::For {
                     init,
                     condition,
                     increment,
@@ -676,7 +689,7 @@ impl Parser {
                 let discriminant = self.parse_expression(code, &tokens[open + 1..close])?;
                 fragment.pos = close + 1;
                 let body = self.parse_body(fragment)?;
-                Ok(Stmt::Switch { discriminant, body })
+                Ok(StmtKind::Switch { discriminant, body })
             }
             _ => {
                 let end = top_level_semi(&tokens[fragment.pos..])
@@ -684,7 +697,7 @@ impl Parser {
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
                 let expression = self.parse_expression(code, &tokens[fragment.pos..end])?;
                 fragment.pos = end + 1;
-                Ok(Stmt::Expr(expression))
+                Ok(StmtKind::Expr(expression))
             }
         }
     }

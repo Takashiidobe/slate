@@ -16,8 +16,8 @@ int no_stdc_version;
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C89
-// C89: decl[0]: Declaration {
-// C89-NEXT:       declaration: Declaration {
+// C89: decl[0]: Declaration(
+// C89-NEXT:       Declaration {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
 // C89-NEXT:                   Ranked {
@@ -27,26 +27,18 @@ int no_stdc_version;
 // C89-NEXT:               ),
 // C89-NEXT:           },
 // C89-NEXT:           declarators: [
-// C89-NEXT:               InitDeclarator {
+// C89-NEXT:               InitDeclaratorKind {
 // C89-NEXT:                   declarator: Name(
 // C89-NEXT:                       "no_stdc_version",
 // C89-NEXT:                   ),
 // C89-NEXT:               },
 // C89-NEXT:           ],
 // C89-NEXT:       },
-// C89-NEXT:       provenance: Provenance {
-// C89-NEXT:           file: FileId(
-// C89-NEXT:               3,
-// C89-NEXT:           ),
-// C89-NEXT:           kind: User,
-// C89-NEXT:           line: 3,
-// C89-NEXT:           header: None,
-// C89-NEXT:       },
-// C89-NEXT:   }
+// C89-NEXT:   )
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN C99
-// C99: decl[0]: Declaration {
-// C99-NEXT:       declaration: Declaration {
+// C99: decl[0]: Declaration(
+// C99-NEXT:       Declaration {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
 // C99-NEXT:                   Ranked {
@@ -56,7 +48,7 @@ int no_stdc_version;
 // C99-NEXT:               ),
 // C99-NEXT:           },
 // C99-NEXT:           declarators: [
-// C99-NEXT:               InitDeclarator {
+// C99-NEXT:               InitDeclaratorKind {
 // C99-NEXT:                   declarator: Name(
 // C99-NEXT:                       "stdc_version",
 // C99-NEXT:                   ),
@@ -78,19 +70,11 @@ int no_stdc_version;
 // C99-NEXT:               },
 // C99-NEXT:           ],
 // C99-NEXT:       },
-// C99-NEXT:       provenance: Provenance {
-// C99-NEXT:           file: FileId(
-// C99-NEXT:               3,
-// C99-NEXT:           ),
-// C99-NEXT:           kind: User,
-// C99-NEXT:           line: 1,
-// C99-NEXT:           header: None,
-// C99-NEXT:       },
-// C99-NEXT:   }
+// C99-NEXT:   )
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C11
-// C11: decl[0]: Declaration {
-// C11-NEXT:       declaration: Declaration {
+// C11: decl[0]: Declaration(
+// C11-NEXT:       Declaration {
 // C11-NEXT:           specifiers: DeclarationSpecifiers {
 // C11-NEXT:               ty: Integer(
 // C11-NEXT:                   Ranked {
@@ -100,7 +84,7 @@ int no_stdc_version;
 // C11-NEXT:               ),
 // C11-NEXT:           },
 // C11-NEXT:           declarators: [
-// C11-NEXT:               InitDeclarator {
+// C11-NEXT:               InitDeclaratorKind {
 // C11-NEXT:                   declarator: Name(
 // C11-NEXT:                       "stdc_version",
 // C11-NEXT:                   ),
@@ -122,19 +106,11 @@ int no_stdc_version;
 // C11-NEXT:               },
 // C11-NEXT:           ],
 // C11-NEXT:       },
-// C11-NEXT:       provenance: Provenance {
-// C11-NEXT:           file: FileId(
-// C11-NEXT:               3,
-// C11-NEXT:           ),
-// C11-NEXT:           kind: User,
-// C11-NEXT:           line: 1,
-// C11-NEXT:           header: None,
-// C11-NEXT:       },
-// C11-NEXT:   }
+// C11-NEXT:   )
 // SLATE-FILECHECK-END C11
 // SLATE-FILECHECK-BEGIN C17
-// C17: decl[0]: Declaration {
-// C17-NEXT:       declaration: Declaration {
+// C17: decl[0]: Declaration(
+// C17-NEXT:       Declaration {
 // C17-NEXT:           specifiers: DeclarationSpecifiers {
 // C17-NEXT:               ty: Integer(
 // C17-NEXT:                   Ranked {
@@ -144,7 +120,7 @@ int no_stdc_version;
 // C17-NEXT:               ),
 // C17-NEXT:           },
 // C17-NEXT:           declarators: [
-// C17-NEXT:               InitDeclarator {
+// C17-NEXT:               InitDeclaratorKind {
 // C17-NEXT:                   declarator: Name(
 // C17-NEXT:                       "stdc_version",
 // C17-NEXT:                   ),
@@ -166,19 +142,11 @@ int no_stdc_version;
 // C17-NEXT:               },
 // C17-NEXT:           ],
 // C17-NEXT:       },
-// C17-NEXT:       provenance: Provenance {
-// C17-NEXT:           file: FileId(
-// C17-NEXT:               3,
-// C17-NEXT:           ),
-// C17-NEXT:           kind: User,
-// C17-NEXT:           line: 1,
-// C17-NEXT:           header: None,
-// C17-NEXT:       },
-// C17-NEXT:   }
+// C17-NEXT:   )
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[0]: Declaration {
-// C23-NEXT:       declaration: Declaration {
+// C23: decl[0]: Declaration(
+// C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
 // C23-NEXT:                   Ranked {
@@ -188,7 +156,7 @@ int no_stdc_version;
 // C23-NEXT:               ),
 // C23-NEXT:           },
 // C23-NEXT:           declarators: [
-// C23-NEXT:               InitDeclarator {
+// C23-NEXT:               InitDeclaratorKind {
 // C23-NEXT:                   declarator: Name(
 // C23-NEXT:                       "stdc_version",
 // C23-NEXT:                   ),
@@ -210,13 +178,5 @@ int no_stdc_version;
 // C23-NEXT:               },
 // C23-NEXT:           ],
 // C23-NEXT:       },
-// C23-NEXT:       provenance: Provenance {
-// C23-NEXT:           file: FileId(
-// C23-NEXT:               3,
-// C23-NEXT:           ),
-// C23-NEXT:           kind: User,
-// C23-NEXT:           line: 1,
-// C23-NEXT:           header: None,
-// C23-NEXT:       },
-// C23-NEXT:   }
+// C23-NEXT:   )
 // SLATE-FILECHECK-END C23

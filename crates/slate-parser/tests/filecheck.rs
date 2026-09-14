@@ -503,48 +503,48 @@ fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
         .collect()
 }
 
-fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
+fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
     match decl {
-        Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => Vec::new(),
-        Decl::Function(function) => vec![DeclSummary::Function {
+        DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => Vec::new(),
+        DeclKind::Function(function) => vec![DeclSummary::Function {
             name: declarator_identifier(&function.declarator),
             returns: function
                 .body
                 .iter()
                 .filter_map(|stmt| match &stmt.value {
-                    Stmt::Return(expression) => match &expression.value {
+                    StmtKind::Return(expression) => match &expression.value {
                         ExprKind::IntegerLiteral(_) => {
                             Some(ConstExprParser::evaluate_ast(expression).unwrap())
                         }
                         ExprKind::StatementExpression(_) => None,
                         _ => panic!("clang return was not an integer"),
                     },
-                    Stmt::ReturnVoid => None,
-                    Stmt::Comment(_)
-                    | Stmt::Expr(_)
-                    | Stmt::Decl(_)
-                    | Stmt::StaticAssert(_)
-                    | Stmt::Attribute(_)
-                    | Stmt::Block(_)
-                    | Stmt::If { .. }
-                    | Stmt::While { .. }
-                    | Stmt::DoWhile { .. }
-                    | Stmt::For { .. }
-                    | Stmt::Switch { .. }
-                    | Stmt::SwitchLabel { .. }
-                    | Stmt::Labeled { .. }
-                    | Stmt::LocalLabelDecl(_)
-                    | Stmt::Asm(_)
-                    | Stmt::Goto(_)
-                    | Stmt::ComputedGoto(_)
-                    | Stmt::NestedFunction(_)
-                    | Stmt::Break
-                    | Stmt::Continue => None,
+                    StmtKind::ReturnVoid => None,
+                    StmtKind::Comment(_)
+                    | StmtKind::Expr(_)
+                    | StmtKind::Decl(_)
+                    | StmtKind::StaticAssert(_)
+                    | StmtKind::Attribute(_)
+                    | StmtKind::Block(_)
+                    | StmtKind::If { .. }
+                    | StmtKind::While { .. }
+                    | StmtKind::DoWhile { .. }
+                    | StmtKind::For { .. }
+                    | StmtKind::Switch { .. }
+                    | StmtKind::SwitchLabel { .. }
+                    | StmtKind::Labeled { .. }
+                    | StmtKind::LocalLabelDecl(_)
+                    | StmtKind::Asm(_)
+                    | StmtKind::Goto(_)
+                    | StmtKind::ComputedGoto(_)
+                    | StmtKind::NestedFunction(_)
+                    | StmtKind::Break
+                    | StmtKind::Continue => None,
                 })
                 .collect(),
             signature: None,
         }],
-        Decl::Declaration { declaration, .. } => {
+        DeclKind::Declaration(declaration) => {
             let mut summaries = Vec::new();
             if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &declaration.specifiers.ty {
                 let (kind, name) = defined_tag(*id);

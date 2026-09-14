@@ -47,14 +47,6 @@ int main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 0,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
@@ -90,14 +82,6 @@ int main() {
 // INNER-NEXT:                   ),
 // INNER-NEXT:               ),
 // INNER-NEXT:           ],
-// INNER-NEXT:           provenance: Provenance {
-// INNER-NEXT:               file: FileId(
-// INNER-NEXT:                   3,
-// INNER-NEXT:               ),
-// INNER-NEXT:               kind: User,
-// INNER-NEXT:               line: 0,
-// INNER-NEXT:               header: None,
-// INNER-NEXT:           },
 // INNER-NEXT:       },
 // INNER-NEXT:   )
 // SLATE-FILECHECK-END INNER

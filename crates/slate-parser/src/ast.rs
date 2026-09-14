@@ -23,10 +23,10 @@ fn encoding_prefix(encoding: crate::const_expr::Encoding, string: bool) -> &'sta
 }
 
 pub type Expr = Box<Span<ExprKind>>;
-pub type SpannedStmt = Span<Stmt>;
-pub type SpannedFieldItem = Span<FieldItem>;
-pub type SpannedEnumItem = Span<EnumItem>;
-pub type SpannedDecl = Span<Decl>;
+pub type Stmt = Span<StmtKind>;
+pub type FieldItem = Span<FieldItemKind>;
+pub type EnumItem = Span<EnumItemKind>;
+pub type Decl = Span<DeclKind>;
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum ExprKind {
@@ -115,7 +115,7 @@ pub enum ExprKind {
         value: Expr,
     },
     LabelAddress(Span<String>),
-    StatementExpression(Vec<SpannedStmt>),
+    StatementExpression(Vec<Stmt>),
     BoolLiteral(bool),
     NullPtrLiteral,
 }
@@ -228,7 +228,7 @@ pub enum Initializer {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Stmt {
+pub enum StmtKind {
     Comment(CommentGroup),
     Return(Expr),
     ReturnVoid,
@@ -236,37 +236,37 @@ pub enum Stmt {
     Decl(Declaration),
     StaticAssert(StaticAssert),
     Attribute(Vec<Attribute>),
-    Block(Vec<SpannedStmt>),
+    Block(Vec<Stmt>),
     If {
         condition: Expr,
-        then_branch: Vec<SpannedStmt>,
-        else_branch: Option<Vec<SpannedStmt>>,
+        then_branch: Vec<Stmt>,
+        else_branch: Option<Vec<Stmt>>,
     },
     While {
         condition: Expr,
-        body: Vec<SpannedStmt>,
+        body: Vec<Stmt>,
     },
     DoWhile {
-        body: Vec<SpannedStmt>,
+        body: Vec<Stmt>,
         condition: Expr,
     },
     For {
-        init: Option<Box<SpannedStmt>>,
+        init: Option<Box<Stmt>>,
         condition: Option<Expr>,
         increment: Option<Expr>,
-        body: Vec<SpannedStmt>,
+        body: Vec<Stmt>,
     },
     Switch {
         discriminant: Expr,
-        body: Vec<SpannedStmt>,
+        body: Vec<Stmt>,
     },
     Labeled {
         label: Span<String>,
-        body: Box<SpannedStmt>,
+        body: Box<Stmt>,
     },
     SwitchLabel {
         label: SwitchLabel,
-        body: Box<SpannedStmt>,
+        body: Box<Stmt>,
     },
     LocalLabelDecl(Vec<Span<String>>),
     Asm(GnuAsm),
@@ -284,7 +284,7 @@ pub enum SwitchLabel {
     Default,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FileId(pub u32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -316,7 +316,7 @@ impl Loc {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct NodeId(pub u32);
 
 static NEXT_NODE_ID: AtomicU32 = AtomicU32::new(0);
@@ -341,6 +341,7 @@ pub struct Span<T> {
     pub value: T,
     pub spelling: Loc,
     pub expansion: Loc,
+    pub provenance: Provenance,
     pub macro_origin: Option<Rc<MacroOrigin>>,
 }
 
@@ -349,7 +350,15 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
         if SHOW_NODE_IDS.with(Cell::get) {
             write!(formatter, "#{} ", self.id.0)?;
         }
-        self.value.fmt(formatter)
+        if self.provenance.header_is_none() {
+            self.value.fmt(formatter)
+        } else {
+            formatter
+                .debug_struct("Spanned")
+                .field("value", &self.value)
+                .field("provenance", &self.provenance)
+                .finish()
+        }
     }
 }
 
@@ -360,12 +369,18 @@ impl<T> Span<T> {
             value,
             spelling,
             expansion,
+            provenance: Provenance::default(),
             macro_origin: None,
         }
     }
 
     pub fn with_macro_origin(mut self, macro_origin: Option<Rc<MacroOrigin>>) -> Self {
         self.macro_origin = macro_origin;
+        self
+    }
+
+    pub fn with_provenance(mut self, provenance: Provenance) -> Self {
+        self.provenance = provenance;
         self
     }
 }
@@ -391,6 +406,7 @@ impl<T> Span<T> {
             value,
             spelling: self.spelling,
             expansion: self.expansion,
+            provenance: self.provenance,
             macro_origin: self.macro_origin,
         }
     }
@@ -401,6 +417,7 @@ impl<T> Span<T> {
             value: f(self.value),
             spelling: self.spelling,
             expansion: self.expansion,
+            provenance: self.provenance,
             macro_origin: self.macro_origin,
         }
     }
@@ -422,16 +439,18 @@ impl<T> Span<T> {
             first.expansion.through(last.expansion),
         )
         .with_macro_origin(macro_origin)
+        .with_provenance(first.provenance)
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HeaderKind {
+    #[default]
     System,
     User,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Provenance {
     pub file: FileId,
     pub kind: HeaderKind,
@@ -439,14 +458,9 @@ pub struct Provenance {
     pub header: Option<FileId>,
 }
 
-impl Default for Provenance {
-    fn default() -> Self {
-        Self {
-            file: FileId(0),
-            kind: HeaderKind::System,
-            line: 0,
-            header: None,
-        }
+impl Provenance {
+    fn header_is_none(&self) -> bool {
+        self.header.is_none()
     }
 }
 
@@ -680,8 +694,7 @@ pub struct FunctionDefinition {
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
     #[debug(skip_if = Vec::is_empty)]
-    pub body: Vec<SpannedStmt>,
-    pub provenance: Provenance,
+    pub body: Vec<Stmt>,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -1005,8 +1018,10 @@ impl ParameterList {
     }
 }
 
+pub type ParameterDeclaration = Span<ParameterDeclarationKind>;
+
 #[derive(CustomDebug, Clone, PartialEq)]
-pub struct ParameterDeclaration {
+pub struct ParameterDeclarationKind {
     pub specifiers: DeclarationSpecifiers,
     pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
@@ -1049,8 +1064,10 @@ impl Declaration {
     }
 }
 
+pub type InitDeclarator = Span<InitDeclaratorKind>;
+
 #[derive(CustomDebug, Clone, PartialEq)]
-pub struct InitDeclarator {
+pub struct InitDeclaratorKind {
     pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
     pub asm_label: Option<Span<AsmLabel>>,
@@ -1084,35 +1101,33 @@ pub struct TagDefinition {
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
     pub body: TagBody,
-    pub provenance: Provenance,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum TagBody {
-    Record(Vec<SpannedFieldItem>),
+    Record(Vec<FieldItem>),
     Enum {
         #[debug(skip_if = Option::is_none)]
         fixed_type: Option<TypeName>,
-        enumerators: Vec<SpannedEnumItem>,
+        enumerators: Vec<EnumItem>,
     },
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum FieldItem {
+pub enum FieldItemKind {
     Comment(CommentGroup),
     Field(FieldDecl),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum EnumItem {
+pub enum EnumItemKind {
     Comment(CommentGroup),
     Enumerator(Enumerator),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct CommentGroup {
     pub comment: Comment,
-    pub provenance: Provenance,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -1126,11 +1141,12 @@ pub struct FieldDecl {
     pub specifiers: DeclarationSpecifiers,
     #[debug(skip_if = Vec::is_empty)]
     pub declarators: Vec<FieldDeclarator>,
-    pub provenance: Provenance,
 }
 
+pub type FieldDeclarator = Span<FieldDeclaratorKind>;
+
 #[derive(CustomDebug, Clone, PartialEq)]
-pub struct FieldDeclarator {
+pub struct FieldDeclaratorKind {
     pub declarator: Declarator,
     #[debug(skip_if = Option::is_none)]
     pub bit_width: Option<Expr>,
@@ -1138,54 +1154,40 @@ pub struct FieldDeclarator {
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub struct Enumerator {
     pub name: String,
     pub value: Option<Expr>,
-    pub provenance: Provenance,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
-pub enum Decl {
+pub enum DeclKind {
     Comment(CommentGroup),
     Function(FunctionDefinition),
-    Declaration {
-        declaration: Declaration,
-        provenance: Provenance,
-    },
-    StaticAssert {
-        assertion: StaticAssert,
-        provenance: Provenance,
-    },
-    Asm {
-        asm: GnuAsm,
-        provenance: Provenance,
-    },
+    Declaration(Declaration),
+    StaticAssert(StaticAssert),
+    Asm(GnuAsm),
 }
 
-impl Decl {
+impl DeclKind {
     pub fn names(&self) -> Vec<&str> {
         match self {
-            Self::Comment(_) | Self::StaticAssert { .. } | Self::Asm { .. } => Vec::new(),
+            Self::Comment(_) | Self::StaticAssert(_) | Self::Asm(_) => Vec::new(),
             Self::Function(function) => function.declarator.name().into_iter().collect(),
-            Self::Declaration { declaration, .. } => declaration.names().collect(),
+            Self::Declaration(declaration) => declaration.names().collect(),
         }
     }
+}
 
-    pub fn provenance(&self) -> FileId {
-        match self {
-            Self::Comment(group) => group.provenance.file,
-            Self::Function(function) => function.provenance.file,
-            Self::Declaration { provenance, .. }
-            | Self::StaticAssert { provenance, .. }
-            | Self::Asm { provenance, .. } => provenance.file,
-        }
+impl Span<DeclKind> {
+    pub fn provenance_file(&self) -> FileId {
+        self.provenance.file
     }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
-    pub decls: Vec<SpannedDecl>,
+    pub decls: Vec<Decl>,
     pub tags: Vec<Span<TagDefinition>>,
     pub flavor: crate::compiler_args::CompilerFlavor,
     pub target: crate::target_info::TargetInfo,

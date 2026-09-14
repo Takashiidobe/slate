@@ -41,7 +41,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Ranked {
@@ -64,7 +64,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                           ty: Void,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                           InitDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Array {
 // DEFAULT-NEXT:                                   inner: Pointer {
 // DEFAULT-NEXT:                                       qualifiers: Qualifiers,
@@ -148,14 +148,6 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 0,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[1]: Function(
@@ -174,7 +166,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Ranked {
@@ -187,7 +179,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                               "n",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Ranked {
@@ -222,7 +214,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           InitDeclarator {
+// DEFAULT-NEXT:                           InitDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Array {
 // DEFAULT-NEXT:                                   inner: Name(
 // DEFAULT-NEXT:                                       "local",
@@ -275,14 +267,6 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 13,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
@@ -303,7 +287,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               parameters: Prototype {
 // COMPUTED-NEXT:                   parameters: [
-// COMPUTED-NEXT:                       ParameterDeclaration {
+// COMPUTED-NEXT:                       ParameterDeclarationKind {
 // COMPUTED-NEXT:                           specifiers: DeclarationSpecifiers {
 // COMPUTED-NEXT:                               ty: Integer(
 // COMPUTED-NEXT:                                   Ranked {
@@ -326,7 +310,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                           ty: Void,
 // COMPUTED-NEXT:                       },
 // COMPUTED-NEXT:                       declarators: [
-// COMPUTED-NEXT:                           InitDeclarator {
+// COMPUTED-NEXT:                           InitDeclaratorKind {
 // COMPUTED-NEXT:                               declarator: Array {
 // COMPUTED-NEXT:                                   inner: Pointer {
 // COMPUTED-NEXT:                                       qualifiers: Qualifiers,
@@ -417,14 +401,6 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                   ),
 // COMPUTED-NEXT:               },
 // COMPUTED-NEXT:           ],
-// COMPUTED-NEXT:           provenance: Provenance {
-// COMPUTED-NEXT:               file: FileId(
-// COMPUTED-NEXT:                   3,
-// COMPUTED-NEXT:               ),
-// COMPUTED-NEXT:               kind: User,
-// COMPUTED-NEXT:               line: 0,
-// COMPUTED-NEXT:               header: None,
-// COMPUTED-NEXT:           },
 // COMPUTED-NEXT:       },
 // COMPUTED-NEXT:   )
 // COMPUTED-NEXT: decl[1]: Function(
@@ -443,7 +419,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:               parameters: Prototype {
 // COMPUTED-NEXT:                   parameters: [
-// COMPUTED-NEXT:                       ParameterDeclaration {
+// COMPUTED-NEXT:                       ParameterDeclarationKind {
 // COMPUTED-NEXT:                           specifiers: DeclarationSpecifiers {
 // COMPUTED-NEXT:                               ty: Integer(
 // COMPUTED-NEXT:                                   Ranked {
@@ -456,7 +432,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                               "n",
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
-// COMPUTED-NEXT:                       ParameterDeclaration {
+// COMPUTED-NEXT:                       ParameterDeclarationKind {
 // COMPUTED-NEXT:                           specifiers: DeclarationSpecifiers {
 // COMPUTED-NEXT:                               ty: Integer(
 // COMPUTED-NEXT:                                   Ranked {
@@ -491,7 +467,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                           ),
 // COMPUTED-NEXT:                       },
 // COMPUTED-NEXT:                       declarators: [
-// COMPUTED-NEXT:                           InitDeclarator {
+// COMPUTED-NEXT:                           InitDeclaratorKind {
 // COMPUTED-NEXT:                               declarator: Array {
 // COMPUTED-NEXT:                                   inner: Name(
 // COMPUTED-NEXT:                                       "local",
@@ -544,14 +520,6 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
 // COMPUTED-NEXT:           ],
-// COMPUTED-NEXT:           provenance: Provenance {
-// COMPUTED-NEXT:               file: FileId(
-// COMPUTED-NEXT:                   3,
-// COMPUTED-NEXT:               ),
-// COMPUTED-NEXT:               kind: User,
-// COMPUTED-NEXT:               line: 13,
-// COMPUTED-NEXT:               header: None,
-// COMPUTED-NEXT:           },
 // COMPUTED-NEXT:       },
 // COMPUTED-NEXT:   )
 // SLATE-FILECHECK-END COMPUTED
@@ -572,7 +540,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               parameters: Prototype {
 // DOUBLED-NEXT:                   parameters: [
-// DOUBLED-NEXT:                       ParameterDeclaration {
+// DOUBLED-NEXT:                       ParameterDeclarationKind {
 // DOUBLED-NEXT:                           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:                               ty: Integer(
 // DOUBLED-NEXT:                                   Ranked {
@@ -595,7 +563,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                           ty: Void,
 // DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                       declarators: [
-// DOUBLED-NEXT:                           InitDeclarator {
+// DOUBLED-NEXT:                           InitDeclaratorKind {
 // DOUBLED-NEXT:                               declarator: Array {
 // DOUBLED-NEXT:                                   inner: Pointer {
 // DOUBLED-NEXT:                                       qualifiers: Qualifiers,
@@ -679,14 +647,6 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                   ),
 // DOUBLED-NEXT:               },
 // DOUBLED-NEXT:           ],
-// DOUBLED-NEXT:           provenance: Provenance {
-// DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   3,
-// DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               kind: User,
-// DOUBLED-NEXT:               line: 0,
-// DOUBLED-NEXT:               header: None,
-// DOUBLED-NEXT:           },
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )
 // DOUBLED-NEXT: decl[1]: Function(
@@ -705,7 +665,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               parameters: Prototype {
 // DOUBLED-NEXT:                   parameters: [
-// DOUBLED-NEXT:                       ParameterDeclaration {
+// DOUBLED-NEXT:                       ParameterDeclarationKind {
 // DOUBLED-NEXT:                           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:                               ty: Integer(
 // DOUBLED-NEXT:                                   Ranked {
@@ -718,7 +678,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                               "n",
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
-// DOUBLED-NEXT:                       ParameterDeclaration {
+// DOUBLED-NEXT:                       ParameterDeclarationKind {
 // DOUBLED-NEXT:                           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:                               ty: Integer(
 // DOUBLED-NEXT:                                   Ranked {
@@ -753,7 +713,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                       declarators: [
-// DOUBLED-NEXT:                           InitDeclarator {
+// DOUBLED-NEXT:                           InitDeclaratorKind {
 // DOUBLED-NEXT:                               declarator: Array {
 // DOUBLED-NEXT:                                   inner: Name(
 // DOUBLED-NEXT:                                       "local",
@@ -820,14 +780,6 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:           ],
-// DOUBLED-NEXT:           provenance: Provenance {
-// DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   3,
-// DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               kind: User,
-// DOUBLED-NEXT:               line: 13,
-// DOUBLED-NEXT:               header: None,
-// DOUBLED-NEXT:           },
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )
 // SLATE-FILECHECK-END DOUBLED

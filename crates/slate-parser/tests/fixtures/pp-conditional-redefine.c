@@ -18,8 +18,8 @@ int nested[X];
 // SLATE-FILECHECK-DEFINES AB A B
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -29,7 +29,7 @@ int nested[X];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "redefined",
@@ -51,17 +51,9 @@ int nested[X];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -71,7 +63,7 @@ int nested[X];
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Array {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "nested",
@@ -93,19 +85,11 @@ int nested[X];
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 12,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A: decl[0]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -115,7 +99,7 @@ int nested[X];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "redefined",
@@ -137,17 +121,9 @@ int nested[X];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 5,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
-// A-NEXT: decl[1]: Declaration {
-// A-NEXT:       declaration: Declaration {
+// A-NEXT:   )
+// A-NEXT: decl[1]: Declaration(
+// A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
 // A-NEXT:                   Ranked {
@@ -157,7 +133,7 @@ int nested[X];
 // A-NEXT:               ),
 // A-NEXT:           },
 // A-NEXT:           declarators: [
-// A-NEXT:               InitDeclarator {
+// A-NEXT:               InitDeclaratorKind {
 // A-NEXT:                   declarator: Array {
 // A-NEXT:                       inner: Name(
 // A-NEXT:                           "nested",
@@ -179,19 +155,11 @@ int nested[X];
 // A-NEXT:               },
 // A-NEXT:           ],
 // A-NEXT:       },
-// A-NEXT:       provenance: Provenance {
-// A-NEXT:           file: FileId(
-// A-NEXT:               3,
-// A-NEXT:           ),
-// A-NEXT:           kind: User,
-// A-NEXT:           line: 12,
-// A-NEXT:           header: None,
-// A-NEXT:       },
-// A-NEXT:   }
+// A-NEXT:   )
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN B
-// B: decl[0]: Declaration {
-// B-NEXT:       declaration: Declaration {
+// B: decl[0]: Declaration(
+// B-NEXT:       Declaration {
 // B-NEXT:           specifiers: DeclarationSpecifiers {
 // B-NEXT:               ty: Integer(
 // B-NEXT:                   Ranked {
@@ -201,7 +169,7 @@ int nested[X];
 // B-NEXT:               ),
 // B-NEXT:           },
 // B-NEXT:           declarators: [
-// B-NEXT:               InitDeclarator {
+// B-NEXT:               InitDeclaratorKind {
 // B-NEXT:                   declarator: Array {
 // B-NEXT:                       inner: Name(
 // B-NEXT:                           "redefined",
@@ -223,17 +191,9 @@ int nested[X];
 // B-NEXT:               },
 // B-NEXT:           ],
 // B-NEXT:       },
-// B-NEXT:       provenance: Provenance {
-// B-NEXT:           file: FileId(
-// B-NEXT:               3,
-// B-NEXT:           ),
-// B-NEXT:           kind: User,
-// B-NEXT:           line: 5,
-// B-NEXT:           header: None,
-// B-NEXT:       },
-// B-NEXT:   }
-// B-NEXT: decl[1]: Declaration {
-// B-NEXT:       declaration: Declaration {
+// B-NEXT:   )
+// B-NEXT: decl[1]: Declaration(
+// B-NEXT:       Declaration {
 // B-NEXT:           specifiers: DeclarationSpecifiers {
 // B-NEXT:               ty: Integer(
 // B-NEXT:                   Ranked {
@@ -243,7 +203,7 @@ int nested[X];
 // B-NEXT:               ),
 // B-NEXT:           },
 // B-NEXT:           declarators: [
-// B-NEXT:               InitDeclarator {
+// B-NEXT:               InitDeclaratorKind {
 // B-NEXT:                   declarator: Array {
 // B-NEXT:                       inner: Name(
 // B-NEXT:                           "nested",
@@ -265,19 +225,11 @@ int nested[X];
 // B-NEXT:               },
 // B-NEXT:           ],
 // B-NEXT:       },
-// B-NEXT:       provenance: Provenance {
-// B-NEXT:           file: FileId(
-// B-NEXT:               3,
-// B-NEXT:           ),
-// B-NEXT:           kind: User,
-// B-NEXT:           line: 12,
-// B-NEXT:           header: None,
-// B-NEXT:       },
-// B-NEXT:   }
+// B-NEXT:   )
 // SLATE-FILECHECK-END B
 // SLATE-FILECHECK-BEGIN AB
-// AB: decl[0]: Declaration {
-// AB-NEXT:       declaration: Declaration {
+// AB: decl[0]: Declaration(
+// AB-NEXT:       Declaration {
 // AB-NEXT:           specifiers: DeclarationSpecifiers {
 // AB-NEXT:               ty: Integer(
 // AB-NEXT:                   Ranked {
@@ -287,7 +239,7 @@ int nested[X];
 // AB-NEXT:               ),
 // AB-NEXT:           },
 // AB-NEXT:           declarators: [
-// AB-NEXT:               InitDeclarator {
+// AB-NEXT:               InitDeclaratorKind {
 // AB-NEXT:                   declarator: Array {
 // AB-NEXT:                       inner: Name(
 // AB-NEXT:                           "redefined",
@@ -309,17 +261,9 @@ int nested[X];
 // AB-NEXT:               },
 // AB-NEXT:           ],
 // AB-NEXT:       },
-// AB-NEXT:       provenance: Provenance {
-// AB-NEXT:           file: FileId(
-// AB-NEXT:               3,
-// AB-NEXT:           ),
-// AB-NEXT:           kind: User,
-// AB-NEXT:           line: 5,
-// AB-NEXT:           header: None,
-// AB-NEXT:       },
-// AB-NEXT:   }
-// AB-NEXT: decl[1]: Declaration {
-// AB-NEXT:       declaration: Declaration {
+// AB-NEXT:   )
+// AB-NEXT: decl[1]: Declaration(
+// AB-NEXT:       Declaration {
 // AB-NEXT:           specifiers: DeclarationSpecifiers {
 // AB-NEXT:               ty: Integer(
 // AB-NEXT:                   Ranked {
@@ -329,7 +273,7 @@ int nested[X];
 // AB-NEXT:               ),
 // AB-NEXT:           },
 // AB-NEXT:           declarators: [
-// AB-NEXT:               InitDeclarator {
+// AB-NEXT:               InitDeclaratorKind {
 // AB-NEXT:                   declarator: Array {
 // AB-NEXT:                       inner: Name(
 // AB-NEXT:                           "nested",
@@ -351,13 +295,5 @@ int nested[X];
 // AB-NEXT:               },
 // AB-NEXT:           ],
 // AB-NEXT:       },
-// AB-NEXT:       provenance: Provenance {
-// AB-NEXT:           file: FileId(
-// AB-NEXT:               3,
-// AB-NEXT:           ),
-// AB-NEXT:           kind: User,
-// AB-NEXT:           line: 12,
-// AB-NEXT:           header: None,
-// AB-NEXT:       },
-// AB-NEXT:   }
+// AB-NEXT:   )
 // SLATE-FILECHECK-END AB

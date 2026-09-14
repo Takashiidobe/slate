@@ -34,8 +34,8 @@ int triple = TRIPLE_NESTED;
 // SLATE-FILECHECK-DEFINES FEATURE SOME_FEATURE
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -45,7 +45,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "nested",
 // DEFAULT-NEXT:                   ),
@@ -67,17 +67,9 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 16,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -87,7 +79,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "feature",
 // DEFAULT-NEXT:                   ),
@@ -109,17 +101,9 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 17,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -129,7 +113,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "triple",
 // DEFAULT-NEXT:                   ),
@@ -151,19 +135,11 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 30,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FEATURE
-// FEATURE: decl[0]: Declaration {
-// FEATURE-NEXT:       declaration: Declaration {
+// FEATURE: decl[0]: Declaration(
+// FEATURE-NEXT:       Declaration {
 // FEATURE-NEXT:           specifiers: DeclarationSpecifiers {
 // FEATURE-NEXT:               ty: Integer(
 // FEATURE-NEXT:                   Ranked {
@@ -173,7 +149,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:               ),
 // FEATURE-NEXT:           },
 // FEATURE-NEXT:           declarators: [
-// FEATURE-NEXT:               InitDeclarator {
+// FEATURE-NEXT:               InitDeclaratorKind {
 // FEATURE-NEXT:                   declarator: Name(
 // FEATURE-NEXT:                       "nested",
 // FEATURE-NEXT:                   ),
@@ -195,17 +171,9 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:               },
 // FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
-// FEATURE-NEXT:       provenance: Provenance {
-// FEATURE-NEXT:           file: FileId(
-// FEATURE-NEXT:               3,
-// FEATURE-NEXT:           ),
-// FEATURE-NEXT:           kind: User,
-// FEATURE-NEXT:           line: 16,
-// FEATURE-NEXT:           header: None,
-// FEATURE-NEXT:       },
-// FEATURE-NEXT:   }
-// FEATURE-NEXT: decl[1]: Declaration {
-// FEATURE-NEXT:       declaration: Declaration {
+// FEATURE-NEXT:   )
+// FEATURE-NEXT: decl[1]: Declaration(
+// FEATURE-NEXT:       Declaration {
 // FEATURE-NEXT:           specifiers: DeclarationSpecifiers {
 // FEATURE-NEXT:               ty: Integer(
 // FEATURE-NEXT:                   Ranked {
@@ -215,7 +183,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:               ),
 // FEATURE-NEXT:           },
 // FEATURE-NEXT:           declarators: [
-// FEATURE-NEXT:               InitDeclarator {
+// FEATURE-NEXT:               InitDeclaratorKind {
 // FEATURE-NEXT:                   declarator: Name(
 // FEATURE-NEXT:                       "feature",
 // FEATURE-NEXT:                   ),
@@ -237,17 +205,9 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:               },
 // FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
-// FEATURE-NEXT:       provenance: Provenance {
-// FEATURE-NEXT:           file: FileId(
-// FEATURE-NEXT:               3,
-// FEATURE-NEXT:           ),
-// FEATURE-NEXT:           kind: User,
-// FEATURE-NEXT:           line: 17,
-// FEATURE-NEXT:           header: None,
-// FEATURE-NEXT:       },
-// FEATURE-NEXT:   }
-// FEATURE-NEXT: decl[2]: Declaration {
-// FEATURE-NEXT:       declaration: Declaration {
+// FEATURE-NEXT:   )
+// FEATURE-NEXT: decl[2]: Declaration(
+// FEATURE-NEXT:       Declaration {
 // FEATURE-NEXT:           specifiers: DeclarationSpecifiers {
 // FEATURE-NEXT:               ty: Integer(
 // FEATURE-NEXT:                   Ranked {
@@ -257,7 +217,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:               ),
 // FEATURE-NEXT:           },
 // FEATURE-NEXT:           declarators: [
-// FEATURE-NEXT:               InitDeclarator {
+// FEATURE-NEXT:               InitDeclaratorKind {
 // FEATURE-NEXT:                   declarator: Name(
 // FEATURE-NEXT:                       "triple",
 // FEATURE-NEXT:                   ),
@@ -279,13 +239,5 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:               },
 // FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
-// FEATURE-NEXT:       provenance: Provenance {
-// FEATURE-NEXT:           file: FileId(
-// FEATURE-NEXT:               3,
-// FEATURE-NEXT:           ),
-// FEATURE-NEXT:           kind: User,
-// FEATURE-NEXT:           line: 30,
-// FEATURE-NEXT:           header: None,
-// FEATURE-NEXT:       },
-// FEATURE-NEXT:   }
+// FEATURE-NEXT:   )
 // SLATE-FILECHECK-END FEATURE

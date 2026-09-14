@@ -20,10 +20,7 @@ impl Parser {
         let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
         Ok(Declaration {
             specifiers,
-            declarators: declarators
-                .into_iter()
-                .map(ParsedDeclarator::into_init_declarator)
-                .collect(),
+            declarators: declarators.into_iter().map(into_init_declarator).collect(),
         })
     }
 
@@ -36,14 +33,7 @@ impl Parser {
         let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, true)?;
         Ok((
             specifiers,
-            declarators
-                .into_iter()
-                .map(|parsed| FieldDeclarator {
-                    declarator: parsed.declarator,
-                    bit_width: parsed.bit_width,
-                    attributes: parsed.attributes,
-                })
-                .collect(),
+            declarators.into_iter().map(into_field_declarator).collect(),
         ))
     }
 
@@ -87,7 +77,7 @@ impl Parser {
         parser: &mut DeclaratorParser,
         specifiers: &mut DeclarationSpecifiers,
         is_field: bool,
-    ) -> Result<Vec<ParsedDeclarator>, ParseError> {
+    ) -> Result<Vec<Span<ParsedDeclarator>>, ParseError> {
         let tokens = parser.tokens;
         let mut declarators = Vec::new();
         if parser.peek() != Some(&Token::Semi) {
@@ -124,8 +114,9 @@ impl Parser {
         parser: &mut DeclaratorParser,
         specifiers: &DeclarationSpecifiers,
         is_field: bool,
-    ) -> Result<ParsedDeclarator, ParseError> {
+    ) -> Result<Span<ParsedDeclarator>, ParseError> {
         let tokens = parser.tokens;
+        let start = parser.pos;
         let (mut attributes, position) = self
             .parse_attribute_groups(tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
@@ -173,13 +164,16 @@ impl Parser {
         } else {
             None
         };
-        Ok(ParsedDeclarator {
-            declarator,
-            bit_width,
-            asm_label,
-            attributes,
-            initializer,
-        })
+        Ok(Span::cover(
+            ParsedDeclarator {
+                declarator,
+                bit_width,
+                asm_label,
+                attributes,
+                initializer,
+            },
+            &tokens[start..parser.pos],
+        ))
     }
 
     fn parse_declaration_initializer(
@@ -254,7 +248,7 @@ impl Parser {
         Ok(ast)
     }
 
-    pub(super) fn parse_decls(&mut self, nodes: &[PPNode]) -> Result<Vec<SpannedDecl>, ParseError> {
+    pub(super) fn parse_decls(&mut self, nodes: &[PPNode]) -> Result<Vec<Decl>, ParseError> {
         let mut decls = Vec::new();
         let mut i = 0;
         while i < nodes.len() {
@@ -275,7 +269,7 @@ impl Parser {
     pub(super) fn parse_top_level_item(
         &mut self,
         nodes: &[PPNode],
-    ) -> Result<(Vec<SpannedDecl>, usize), ParseError> {
+    ) -> Result<(Vec<Decl>, usize), ParseError> {
         if let PPNodeKind::Code { .. } = &nodes[0].value {
             let tokens = self.node_tokens(&nodes[0]);
             let top_level_items = split_top_level_items(&tokens, &self.typedef_names);
@@ -308,11 +302,9 @@ impl Parser {
         match &nodes[0].value {
             PPNodeKind::Comment { provenance, .. } => {
                 let (group, consumed) = self.comment_group(nodes, *provenance);
-                Ok((vec![group.map(Decl::Comment)], consumed))
+                Ok((vec![group.map(DeclKind::Comment)], consumed))
             }
-            PPNodeKind::Code {
-                text, provenance, ..
-            } if text_starts_with_typedef(text) => {
+            PPNodeKind::Code { text, .. } if text_starts_with_typedef(text) => {
                 let tokens = self.node_tokens(&nodes[0]);
                 let has_inline_body = matches!(
                     tokens.values().find(|token| {
@@ -347,10 +339,8 @@ impl Parser {
                         continue;
                     }
                     statement_tokens.push(semi.clone());
-                    let typedef = Decl::Declaration {
-                        declaration: self.parse_declaration_tokens(&statement_tokens)?,
-                        provenance: *provenance,
-                    };
+                    let typedef =
+                        DeclKind::Declaration(self.parse_declaration_tokens(&statement_tokens)?);
                     typedefs.push(span_pp_nodes(typedef, &nodes[..span]));
                 }
                 Ok((typedefs, span))
@@ -359,22 +349,14 @@ impl Parser {
                 let tokens = self.node_tokens(&nodes[0]);
                 if tokens.value_at(0) == Some(&Token::Keyword(Keyword::StaticAssert)) {
                     return Ok((
-                        vec![nodes[0].clone().with_value(Decl::StaticAssert {
-                            assertion:
-                                self.parse_static_assert(self.node_text(&nodes[0]), &tokens)?,
-                            provenance: self.node_provenance(&nodes[0]),
-                        })],
+                        vec![nodes[0].clone().with_value(DeclKind::StaticAssert(
+                            self.parse_static_assert(self.node_text(&nodes[0]), &tokens)?,
+                        ))],
                         1,
                     ));
                 }
                 if let Some(asm) = self.parse_file_scope_asm(self.node_text(&nodes[0]), &tokens)? {
-                    return Ok((
-                        vec![nodes[0].clone().with_value(Decl::Asm {
-                            asm,
-                            provenance: self.node_provenance(&nodes[0]),
-                        })],
-                        1,
-                    ));
+                    return Ok((vec![nodes[0].clone().with_value(DeclKind::Asm(asm))], 1));
                 }
                 let first_lbrace = top_level_token(&tokens, &Token::LBrace);
                 let first_equal = top_level_token(&tokens, &Token::Equal);
@@ -492,10 +474,8 @@ impl Parser {
                     {
                         declaration_tokens.push(synthetic(Token::Semi));
                     }
-                    let declaration = Decl::Declaration {
-                        declaration: self.parse_declaration_tokens(&declaration_tokens)?,
-                        provenance: self.node_provenance(&nodes[0]),
-                    };
+                    let declaration =
+                        DeclKind::Declaration(self.parse_declaration_tokens(&declaration_tokens)?);
                     return Ok((
                         vec![span_pp_nodes(declaration, &nodes[..item_span])],
                         item_span,
@@ -503,7 +483,7 @@ impl Parser {
                 }
                 let (func, consumed) = self.parse_function(nodes)?;
                 Ok((
-                    vec![span_pp_nodes(Decl::Function(func), &nodes[..consumed])],
+                    vec![span_pp_nodes(DeclKind::Function(func), &nodes[..consumed])],
                     consumed,
                 ))
             }
@@ -537,7 +517,7 @@ impl Parser {
     pub(super) fn parse_tag_definition(
         &self,
         nodes: &[PPNode],
-    ) -> Result<(Vec<Decl>, usize), ParseError> {
+    ) -> Result<(Vec<DeclKind>, usize), ParseError> {
         let code = self.node_text(&nodes[0]);
         let all_tokens = self.node_tokens(&nodes[0]);
         let mut extension_prefix = 0usize;
@@ -607,7 +587,6 @@ impl Parser {
                 .parse_attribute_groups(&trailing_tokens, 0)
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
             attributes.extend(trailing_attributes);
-            let provenance = self.node_provenance(&nodes[0]);
             let body = if kind == TagKind::Enum {
                 TagBody::Enum {
                     fixed_type,
@@ -623,10 +602,9 @@ impl Parser {
                     let (specifiers, declarators) =
                         self.parse_field_declaration_tokens(&segment)?;
                     fields.push(span_tokens(
-                        FieldItem::Field(FieldDecl {
+                        FieldItemKind::Field(FieldDecl {
                             specifiers,
                             declarators,
-                            provenance: self.token_provenance(&segment[0]),
                         }),
                         &segment,
                     ));
@@ -640,7 +618,6 @@ impl Parser {
                     name,
                     attributes,
                     body,
-                    provenance,
                 },
                 &tokens[..=same_line_close],
             ));
@@ -649,7 +626,6 @@ impl Parser {
                 TypeSpecifier::Tag(TagSpecifier::Definition(id)),
                 &trailing_tokens,
                 declarators_position,
-                provenance,
             )?;
             return Ok((vec![declaration], consumed));
         }
@@ -700,7 +676,6 @@ impl Parser {
         } else {
             1
         };
-        let provenance = self.node_provenance(&nodes[0]);
         let body = if kind == TagKind::Enum {
             TagBody::Enum {
                 fixed_type,
@@ -716,7 +691,6 @@ impl Parser {
                 name,
                 attributes,
                 body,
-                provenance,
             },
             &nodes[..=close],
         ));
@@ -725,7 +699,6 @@ impl Parser {
             TypeSpecifier::Tag(TagSpecifier::Definition(id)),
             &trailing_tokens,
             position,
-            provenance,
         )?;
         Ok((vec![declaration], consumed))
     }
@@ -734,7 +707,7 @@ impl Parser {
         &self,
         code: &str,
         body_tokens: &[Span<Token>],
-    ) -> Result<Vec<SpannedEnumItem>, ParseError> {
+    ) -> Result<Vec<EnumItem>, ParseError> {
         let mut items = Vec::new();
         for raw_segment in split_top_level(body_tokens, &Token::Comma) {
             let segment = raw_segment
@@ -756,10 +729,9 @@ impl Parser {
                 }
             };
             items.push(span_tokens(
-                EnumItem::Enumerator(Enumerator {
+                EnumItemKind::Enumerator(Enumerator {
                     name: name.clone(),
                     value,
-                    provenance: self.token_provenance(&segment[0]),
                 }),
                 &raw_segment,
             ));
@@ -767,14 +739,14 @@ impl Parser {
         Ok(items)
     }
 
-    fn parse_enum_items(&self, nodes: &[PPNode]) -> Result<Vec<SpannedEnumItem>, ParseError> {
+    fn parse_enum_items(&self, nodes: &[PPNode]) -> Result<Vec<EnumItem>, ParseError> {
         let mut items = Vec::new();
         let mut index = 0;
         while index < nodes.len() {
             match &nodes[index].value {
                 PPNodeKind::Comment { provenance, .. } => {
                     let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
-                    items.push(group.map(EnumItem::Comment));
+                    items.push(group.map(EnumItemKind::Comment));
                     index += consumed;
                 }
                 PPNodeKind::Code { .. } => {
@@ -804,8 +776,7 @@ impl Parser {
         ty: TypeSpecifier,
         trailing: &[Span<Token>],
         position: usize,
-        provenance: Provenance,
-    ) -> Result<Decl, ParseError> {
+    ) -> Result<DeclKind, ParseError> {
         let mut specifiers = specifiers_with_type(ty);
         self.parse_specifier_keywords(&mut self.declarator_parser(prefix, 0), &mut specifiers)?;
         let declarators = if trailing.value_at(position) == Some(&Token::Semi) {
@@ -817,22 +788,19 @@ impl Parser {
             }
             self.parse_declarator_list(&mut parser, &mut specifiers, false)?
                 .into_iter()
-                .map(ParsedDeclarator::into_init_declarator)
+                .map(into_init_declarator)
                 .collect()
         };
-        Ok(Decl::Declaration {
-            declaration: Declaration {
-                specifiers,
-                declarators,
-            },
-            provenance,
-        })
+        Ok(DeclKind::Declaration(Declaration {
+            specifiers,
+            declarators,
+        }))
     }
 
     pub(super) fn parse_linkage_spec_block(
         &mut self,
         nodes: &[PPNode],
-    ) -> Result<(Vec<SpannedDecl>, usize), ParseError> {
+    ) -> Result<(Vec<Decl>, usize), ParseError> {
         let code = self.node_text(&nodes[0]);
         let mut depth = 1i32;
         let mut close = None;
@@ -862,17 +830,14 @@ impl Parser {
         Ok((decls, close + 1))
     }
 
-    pub(super) fn parse_field_items(
-        &self,
-        nodes: &[PPNode],
-    ) -> Result<Vec<SpannedFieldItem>, ParseError> {
+    pub(super) fn parse_field_items(&self, nodes: &[PPNode]) -> Result<Vec<FieldItem>, ParseError> {
         let mut fields = Vec::new();
         let mut index = 0;
         while index < nodes.len() {
             match &nodes[index].value {
                 PPNodeKind::Comment { provenance, .. } => {
                     let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
-                    fields.push(group.map(FieldItem::Comment));
+                    fields.push(group.map(FieldItemKind::Comment));
                     index += consumed;
                 }
                 PPNodeKind::Code { .. } => {
@@ -915,10 +880,9 @@ impl Parser {
                         let (specifiers, declarators) =
                             self.parse_field_declaration_tokens(&declaration_tokens)?;
                         fields.push(span_pp_nodes(
-                            FieldItem::Field(FieldDecl {
+                            FieldItemKind::Field(FieldDecl {
                                 specifiers,
                                 declarators,
-                                provenance: self.node_provenance(&nodes[start]),
                             }),
                             &nodes[start..index],
                         ));
@@ -929,8 +893,8 @@ impl Parser {
         Ok(fields)
     }
 
-    pub(super) fn record_typedefs(&mut self, decl: &Decl) {
-        if let Decl::Declaration { declaration, .. } = decl {
+    pub(super) fn record_typedefs(&mut self, decl: &DeclKind) {
+        if let DeclKind::Declaration(declaration) = decl {
             self.record_declaration_typedefs(declaration);
         }
     }
@@ -951,15 +915,21 @@ struct ParsedDeclarator {
     initializer: Option<Initializer>,
 }
 
-impl ParsedDeclarator {
-    fn into_init_declarator(self) -> InitDeclarator {
-        InitDeclarator {
-            declarator: self.declarator,
-            asm_label: self.asm_label,
-            attributes: self.attributes,
-            initializer: self.initializer,
-        }
-    }
+fn into_init_declarator(parsed: Span<ParsedDeclarator>) -> InitDeclarator {
+    parsed.map(|parsed| InitDeclaratorKind {
+        declarator: parsed.declarator,
+        asm_label: parsed.asm_label,
+        attributes: parsed.attributes,
+        initializer: parsed.initializer,
+    })
+}
+
+fn into_field_declarator(parsed: Span<ParsedDeclarator>) -> FieldDeclarator {
+    parsed.map(|parsed| FieldDeclaratorKind {
+        declarator: parsed.declarator,
+        bit_width: parsed.bit_width,
+        attributes: parsed.attributes,
+    })
 }
 
 pub(super) fn specifiers_with_type(ty: TypeSpecifier) -> DeclarationSpecifiers {

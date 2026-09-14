@@ -26,7 +26,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               parameters: Prototype {
 // DEFAULT-NEXT:                   parameters: [
-// DEFAULT-NEXT:                       ParameterDeclaration {
+// DEFAULT-NEXT:                       ParameterDeclarationKind {
 // DEFAULT-NEXT:                           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                               ty: Integer(
 // DEFAULT-NEXT:                                   Ranked {
@@ -59,7 +59,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           parameters: Prototype {
 // DEFAULT-NEXT:                               parameters: [
-// DEFAULT-NEXT:                                   ParameterDeclaration {
+// DEFAULT-NEXT:                                   ParameterDeclarationKind {
 // DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                           ty: Integer(
 // DEFAULT-NEXT:                                               Ranked {
@@ -96,14 +96,6 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               0,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 0,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -119,14 +111,6 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 0,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
@@ -142,7 +126,7 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               parameters: Prototype {
 // DOUBLED-NEXT:                   parameters: [
-// DOUBLED-NEXT:                       ParameterDeclaration {
+// DOUBLED-NEXT:                       ParameterDeclarationKind {
 // DOUBLED-NEXT:                           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:                               ty: Integer(
 // DOUBLED-NEXT:                                   Ranked {
@@ -175,7 +159,7 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                           parameters: Prototype {
 // DOUBLED-NEXT:                               parameters: [
-// DOUBLED-NEXT:                                   ParameterDeclaration {
+// DOUBLED-NEXT:                                   ParameterDeclarationKind {
 // DOUBLED-NEXT:                                       specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:                                           ty: Integer(
 // DOUBLED-NEXT:                                               Ranked {
@@ -212,14 +196,6 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                               },
 // DOUBLED-NEXT:                           ),
 // DOUBLED-NEXT:                       ],
-// DOUBLED-NEXT:                       provenance: Provenance {
-// DOUBLED-NEXT:                           file: FileId(
-// DOUBLED-NEXT:                               0,
-// DOUBLED-NEXT:                           ),
-// DOUBLED-NEXT:                           kind: System,
-// DOUBLED-NEXT:                           line: 0,
-// DOUBLED-NEXT:                           header: None,
-// DOUBLED-NEXT:                       },
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:               Expr(
@@ -235,14 +211,6 @@ void nested_outer(int n) {
 // DOUBLED-NEXT:                   },
 // DOUBLED-NEXT:               ),
 // DOUBLED-NEXT:           ],
-// DOUBLED-NEXT:           provenance: Provenance {
-// DOUBLED-NEXT:               file: FileId(
-// DOUBLED-NEXT:                   3,
-// DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               kind: User,
-// DOUBLED-NEXT:               line: 0,
-// DOUBLED-NEXT:               header: None,
-// DOUBLED-NEXT:           },
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )
 // SLATE-FILECHECK-END DOUBLED

@@ -19,8 +19,8 @@ int fallback;
 // SLATE-FILECHECK-DEFINES THIRD THIRD
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -30,26 +30,18 @@ int fallback;
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "not_third",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 5,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FIRST
-// FIRST: decl[0]: Declaration {
-// FIRST-NEXT:       declaration: Declaration {
+// FIRST: decl[0]: Declaration(
+// FIRST-NEXT:       Declaration {
 // FIRST-NEXT:           specifiers: DeclarationSpecifiers {
 // FIRST-NEXT:               ty: Integer(
 // FIRST-NEXT:                   Ranked {
@@ -59,26 +51,18 @@ int fallback;
 // FIRST-NEXT:               ),
 // FIRST-NEXT:           },
 // FIRST-NEXT:           declarators: [
-// FIRST-NEXT:               InitDeclarator {
+// FIRST-NEXT:               InitDeclaratorKind {
 // FIRST-NEXT:                   declarator: Name(
 // FIRST-NEXT:                       "first",
 // FIRST-NEXT:                   ),
 // FIRST-NEXT:               },
 // FIRST-NEXT:           ],
 // FIRST-NEXT:       },
-// FIRST-NEXT:       provenance: Provenance {
-// FIRST-NEXT:           file: FileId(
-// FIRST-NEXT:               3,
-// FIRST-NEXT:           ),
-// FIRST-NEXT:           kind: User,
-// FIRST-NEXT:           line: 1,
-// FIRST-NEXT:           header: None,
-// FIRST-NEXT:       },
-// FIRST-NEXT:   }
+// FIRST-NEXT:   )
 // SLATE-FILECHECK-END FIRST
 // SLATE-FILECHECK-BEGIN SECOND
-// SECOND: decl[0]: Declaration {
-// SECOND-NEXT:       declaration: Declaration {
+// SECOND: decl[0]: Declaration(
+// SECOND-NEXT:       Declaration {
 // SECOND-NEXT:           specifiers: DeclarationSpecifiers {
 // SECOND-NEXT:               ty: Integer(
 // SECOND-NEXT:                   Ranked {
@@ -88,26 +72,18 @@ int fallback;
 // SECOND-NEXT:               ),
 // SECOND-NEXT:           },
 // SECOND-NEXT:           declarators: [
-// SECOND-NEXT:               InitDeclarator {
+// SECOND-NEXT:               InitDeclaratorKind {
 // SECOND-NEXT:                   declarator: Name(
 // SECOND-NEXT:                       "second",
 // SECOND-NEXT:                   ),
 // SECOND-NEXT:               },
 // SECOND-NEXT:           ],
 // SECOND-NEXT:       },
-// SECOND-NEXT:       provenance: Provenance {
-// SECOND-NEXT:           file: FileId(
-// SECOND-NEXT:               3,
-// SECOND-NEXT:           ),
-// SECOND-NEXT:           kind: User,
-// SECOND-NEXT:           line: 3,
-// SECOND-NEXT:           header: None,
-// SECOND-NEXT:       },
-// SECOND-NEXT:   }
+// SECOND-NEXT:   )
 // SLATE-FILECHECK-END SECOND
 // SLATE-FILECHECK-BEGIN THIRD
-// THIRD: decl[0]: Declaration {
-// THIRD-NEXT:       declaration: Declaration {
+// THIRD: decl[0]: Declaration(
+// THIRD-NEXT:       Declaration {
 // THIRD-NEXT:           specifiers: DeclarationSpecifiers {
 // THIRD-NEXT:               ty: Integer(
 // THIRD-NEXT:                   Ranked {
@@ -117,20 +93,12 @@ int fallback;
 // THIRD-NEXT:               ),
 // THIRD-NEXT:           },
 // THIRD-NEXT:           declarators: [
-// THIRD-NEXT:               InitDeclarator {
+// THIRD-NEXT:               InitDeclaratorKind {
 // THIRD-NEXT:                   declarator: Name(
 // THIRD-NEXT:                       "fallback",
 // THIRD-NEXT:                   ),
 // THIRD-NEXT:               },
 // THIRD-NEXT:           ],
 // THIRD-NEXT:       },
-// THIRD-NEXT:       provenance: Provenance {
-// THIRD-NEXT:           file: FileId(
-// THIRD-NEXT:               3,
-// THIRD-NEXT:           ),
-// THIRD-NEXT:           kind: User,
-// THIRD-NEXT:           line: 7,
-// THIRD-NEXT:           header: None,
-// THIRD-NEXT:       },
-// THIRD-NEXT:   }
+// THIRD-NEXT:   )
 // SLATE-FILECHECK-END THIRD

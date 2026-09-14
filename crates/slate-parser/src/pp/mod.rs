@@ -320,14 +320,20 @@ impl<'a> Preprocessor<'a> {
         let mut nodes = Vec::new();
         for item in items {
             match item {
-                Item::Comment(comment) => nodes.push(Span::new(
-                    PPNodeKind::Comment {
-                        text: comment.value.clone(),
-                        provenance: self.provenance(comment.spelling),
-                    },
-                    comment.spelling,
-                    comment.spelling,
-                )),
+                Item::Comment(comment) => {
+                    let provenance = self.provenance(comment.spelling);
+                    nodes.push(
+                        Span::new(
+                            PPNodeKind::Comment {
+                                text: comment.value.clone(),
+                                provenance,
+                            },
+                            comment.spelling,
+                            comment.spelling,
+                        )
+                        .with_provenance(provenance),
+                    );
+                }
                 Item::Text(tokens) => nodes.push(self.expand_line(tokens)),
                 Item::Conditional(section) => nodes.extend(self.walk_conditional(section)?),
                 Item::Directive(directive) => match directive.name {
@@ -364,17 +370,22 @@ impl<'a> Preprocessor<'a> {
 
     fn expand_line(&self, source_tokens: &[Span<Token>]) -> PPNode {
         let loc = Span::cover((), source_tokens).spelling;
+        let provenance = self.provenance(loc);
         let expanded =
-            Self::strip_pragma_operator(&self.expand_macros(source_tokens, &mut HashSet::new()));
+            Self::strip_pragma_operator(&self.expand_macros(source_tokens, &mut HashSet::new()))
+                .into_iter()
+                .map(|token| token.with_provenance(provenance))
+                .collect::<Vec<_>>();
         Span::new(
             PPNodeKind::Code {
                 text: tokens_source(expanded.values()),
                 tokens: expanded,
-                provenance: self.provenance(loc),
+                provenance,
             },
             loc,
             loc,
         )
+        .with_provenance(provenance)
     }
 
     fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {
@@ -496,15 +507,21 @@ impl<'a> Preprocessor<'a> {
         if !is_empty {
             tokens.extend(suffix);
         }
+        let provenance = self.provenance(loc);
+        let tokens: Vec<_> = tokens
+            .into_iter()
+            .map(|token| token.with_provenance(provenance))
+            .collect();
         Ok(Span::new(
             PPNodeKind::Code {
                 text: tokens_source(tokens.values()),
                 tokens,
-                provenance: self.provenance(loc),
+                provenance,
             },
             loc,
             loc,
-        ))
+        )
+        .with_provenance(provenance))
     }
 
     fn walk_conditional(&mut self, section: &IfSection) -> Result<Vec<PPNode>, PPFailure> {

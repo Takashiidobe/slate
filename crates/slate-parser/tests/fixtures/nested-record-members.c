@@ -34,20 +34,12 @@ struct outer {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                           FieldDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 3,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
@@ -60,32 +52,16 @@ struct outer {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                           FieldDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "c",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 4,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 2,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
 // DEFAULT-NEXT: tag[1]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
@@ -108,7 +84,7 @@ struct outer {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                           FieldDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Array {
 // DEFAULT-NEXT:                                   inner: Name(
 // DEFAULT-NEXT:                                       "bits",
@@ -145,14 +121,6 @@ struct outer {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 1,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
@@ -167,20 +135,12 @@ struct outer {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                           FieldDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "value",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 2,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Field(
@@ -194,35 +154,19 @@ struct outer {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                           FieldDeclaratorKind {
 // DEFAULT-NEXT:                               declarator: Name(
 // DEFAULT-NEXT:                                   "fallback",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 9,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
@@ -233,15 +177,7 @@ struct outer {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN EXTRA
 // EXTRA: tag[0]: TagDefinition {
@@ -263,20 +199,12 @@ struct outer {
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclarator {
+// EXTRA-NEXT:                           FieldDeclaratorKind {
 // EXTRA-NEXT:                               declarator: Name(
 // EXTRA-NEXT:                                   "i",
 // EXTRA-NEXT:                               ),
 // EXTRA-NEXT:                           },
 // EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                       provenance: Provenance {
-// EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               3,
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                           kind: User,
-// EXTRA-NEXT:                           line: 3,
-// EXTRA-NEXT:                           header: None,
-// EXTRA-NEXT:                       },
 // EXTRA-NEXT:                   },
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:               Field(
@@ -289,32 +217,16 @@ struct outer {
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclarator {
+// EXTRA-NEXT:                           FieldDeclaratorKind {
 // EXTRA-NEXT:                               declarator: Name(
 // EXTRA-NEXT:                                   "c",
 // EXTRA-NEXT:                               ),
 // EXTRA-NEXT:                           },
 // EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                       provenance: Provenance {
-// EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               3,
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                           kind: User,
-// EXTRA-NEXT:                           line: 4,
-// EXTRA-NEXT:                           header: None,
-// EXTRA-NEXT:                       },
 // EXTRA-NEXT:                   },
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:           ],
 // EXTRA-NEXT:       ),
-// EXTRA-NEXT:       provenance: Provenance {
-// EXTRA-NEXT:           file: FileId(
-// EXTRA-NEXT:               3,
-// EXTRA-NEXT:           ),
-// EXTRA-NEXT:           kind: User,
-// EXTRA-NEXT:           line: 2,
-// EXTRA-NEXT:           header: None,
-// EXTRA-NEXT:       },
 // EXTRA-NEXT:   }
 // EXTRA-NEXT: tag[1]: TagDefinition {
 // EXTRA-NEXT:       id: TagId(
@@ -337,7 +249,7 @@ struct outer {
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclarator {
+// EXTRA-NEXT:                           FieldDeclaratorKind {
 // EXTRA-NEXT:                               declarator: Array {
 // EXTRA-NEXT:                                   inner: Name(
 // EXTRA-NEXT:                                       "bits",
@@ -374,14 +286,6 @@ struct outer {
 // EXTRA-NEXT:                               },
 // EXTRA-NEXT:                           },
 // EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                       provenance: Provenance {
-// EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               3,
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                           kind: User,
-// EXTRA-NEXT:                           line: 1,
-// EXTRA-NEXT:                           header: None,
-// EXTRA-NEXT:                       },
 // EXTRA-NEXT:                   },
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:               Field(
@@ -396,20 +300,12 @@ struct outer {
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclarator {
+// EXTRA-NEXT:                           FieldDeclaratorKind {
 // EXTRA-NEXT:                               declarator: Name(
 // EXTRA-NEXT:                                   "value",
 // EXTRA-NEXT:                               ),
 // EXTRA-NEXT:                           },
 // EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                       provenance: Provenance {
-// EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               3,
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                           kind: User,
-// EXTRA-NEXT:                           line: 2,
-// EXTRA-NEXT:                           header: None,
-// EXTRA-NEXT:                       },
 // EXTRA-NEXT:                   },
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:               Field(
@@ -423,35 +319,19 @@ struct outer {
 // EXTRA-NEXT:                           ),
 // EXTRA-NEXT:                       },
 // EXTRA-NEXT:                       declarators: [
-// EXTRA-NEXT:                           FieldDeclarator {
+// EXTRA-NEXT:                           FieldDeclaratorKind {
 // EXTRA-NEXT:                               declarator: Name(
 // EXTRA-NEXT:                                   "extra",
 // EXTRA-NEXT:                               ),
 // EXTRA-NEXT:                           },
 // EXTRA-NEXT:                       ],
-// EXTRA-NEXT:                       provenance: Provenance {
-// EXTRA-NEXT:                           file: FileId(
-// EXTRA-NEXT:                               3,
-// EXTRA-NEXT:                           ),
-// EXTRA-NEXT:                           kind: User,
-// EXTRA-NEXT:                           line: 7,
-// EXTRA-NEXT:                           header: None,
-// EXTRA-NEXT:                       },
 // EXTRA-NEXT:                   },
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:           ],
 // EXTRA-NEXT:       ),
-// EXTRA-NEXT:       provenance: Provenance {
-// EXTRA-NEXT:           file: FileId(
-// EXTRA-NEXT:               3,
-// EXTRA-NEXT:           ),
-// EXTRA-NEXT:           kind: User,
-// EXTRA-NEXT:           line: 0,
-// EXTRA-NEXT:           header: None,
-// EXTRA-NEXT:       },
 // EXTRA-NEXT:   }
-// EXTRA-NEXT: decl[0]: Declaration {
-// EXTRA-NEXT:       declaration: Declaration {
+// EXTRA-NEXT: decl[0]: Declaration(
+// EXTRA-NEXT:       Declaration {
 // EXTRA-NEXT:           specifiers: DeclarationSpecifiers {
 // EXTRA-NEXT:               ty: Tag(
 // EXTRA-NEXT:                   Definition(
@@ -462,13 +342,5 @@ struct outer {
 // EXTRA-NEXT:               ),
 // EXTRA-NEXT:           },
 // EXTRA-NEXT:       },
-// EXTRA-NEXT:       provenance: Provenance {
-// EXTRA-NEXT:           file: FileId(
-// EXTRA-NEXT:               3,
-// EXTRA-NEXT:           ),
-// EXTRA-NEXT:           kind: User,
-// EXTRA-NEXT:           line: 0,
-// EXTRA-NEXT:           header: None,
-// EXTRA-NEXT:       },
-// EXTRA-NEXT:   }
+// EXTRA-NEXT:   )
 // SLATE-FILECHECK-END EXTRA

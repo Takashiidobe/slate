@@ -39,7 +39,7 @@ void f(void) {
 // C17-NEXT:                           storage: Auto,
 // C17-NEXT:                       },
 // C17-NEXT:                       declarators: [
-// C17-NEXT:                           InitDeclarator {
+// C17-NEXT:                           InitDeclaratorKind {
 // C17-NEXT:                               declarator: Name(
 // C17-NEXT:                                   "z",
 // C17-NEXT:                               ),
@@ -73,7 +73,7 @@ void f(void) {
 // C17-NEXT:                           ),
 // C17-NEXT:                       },
 // C17-NEXT:                       declarators: [
-// C17-NEXT:                           InitDeclarator {
+// C17-NEXT:                           InitDeclaratorKind {
 // C17-NEXT:                               declarator: Pointer {
 // C17-NEXT:                                   qualifiers: Qualifiers,
 // C17-NEXT:                                   inner: Name(
@@ -97,7 +97,7 @@ void f(void) {
 // C17-NEXT:                           ty: Bool,
 // C17-NEXT:                       },
 // C17-NEXT:                       declarators: [
-// C17-NEXT:                           InitDeclarator {
+// C17-NEXT:                           InitDeclaratorKind {
 // C17-NEXT:                               declarator: Name(
 // C17-NEXT:                                   "t",
 // C17-NEXT:                               ),
@@ -118,7 +118,7 @@ void f(void) {
 // C17-NEXT:                           ty: Bool,
 // C17-NEXT:                       },
 // C17-NEXT:                       declarators: [
-// C17-NEXT:                           InitDeclarator {
+// C17-NEXT:                           InitDeclaratorKind {
 // C17-NEXT:                               declarator: Name(
 // C17-NEXT:                                   "u",
 // C17-NEXT:                               ),
@@ -134,14 +134,6 @@ void f(void) {
 // C17-NEXT:                   },
 // C17-NEXT:               ),
 // C17-NEXT:           ],
-// C17-NEXT:           provenance: Provenance {
-// C17-NEXT:               file: FileId(
-// C17-NEXT:                   3,
-// C17-NEXT:               ),
-// C17-NEXT:               kind: User,
-// C17-NEXT:               line: 0,
-// C17-NEXT:               header: None,
-// C17-NEXT:           },
 // C17-NEXT:       },
 // C17-NEXT:   )
 // SLATE-FILECHECK-END C17
@@ -166,7 +158,7 @@ void f(void) {
 // C23-NEXT:                           ),
 // C23-NEXT:                       },
 // C23-NEXT:                       declarators: [
-// C23-NEXT:                           InitDeclarator {
+// C23-NEXT:                           InitDeclaratorKind {
 // C23-NEXT:                               declarator: Name(
 // C23-NEXT:                                   "z",
 // C23-NEXT:                               ),
@@ -196,7 +188,7 @@ void f(void) {
 // C23-NEXT:                           ),
 // C23-NEXT:                       },
 // C23-NEXT:                       declarators: [
-// C23-NEXT:                           InitDeclarator {
+// C23-NEXT:                           InitDeclaratorKind {
 // C23-NEXT:                               declarator: Pointer {
 // C23-NEXT:                                   qualifiers: Qualifiers,
 // C23-NEXT:                                   inner: Name(
@@ -218,7 +210,7 @@ void f(void) {
 // C23-NEXT:                           ty: Bool,
 // C23-NEXT:                       },
 // C23-NEXT:                       declarators: [
-// C23-NEXT:                           InitDeclarator {
+// C23-NEXT:                           InitDeclaratorKind {
 // C23-NEXT:                               declarator: Name(
 // C23-NEXT:                                   "t",
 // C23-NEXT:                               ),
@@ -239,7 +231,7 @@ void f(void) {
 // C23-NEXT:                           ty: Bool,
 // C23-NEXT:                       },
 // C23-NEXT:                       declarators: [
-// C23-NEXT:                           InitDeclarator {
+// C23-NEXT:                           InitDeclaratorKind {
 // C23-NEXT:                               declarator: Name(
 // C23-NEXT:                                   "u",
 // C23-NEXT:                               ),
@@ -255,14 +247,6 @@ void f(void) {
 // C23-NEXT:                   },
 // C23-NEXT:               ),
 // C23-NEXT:           ],
-// C23-NEXT:           provenance: Provenance {
-// C23-NEXT:               file: FileId(
-// C23-NEXT:                   3,
-// C23-NEXT:               ),
-// C23-NEXT:               kind: User,
-// C23-NEXT:               line: 0,
-// C23-NEXT:               header: None,
-// C23-NEXT:           },
 // C23-NEXT:       },
 // C23-NEXT:   )
 // SLATE-FILECHECK-END C23

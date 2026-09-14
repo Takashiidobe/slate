@@ -36,7 +36,7 @@ impl TranslationUnit {
             .decls
             .iter()
             .filter_map(|decl| match &decl.value {
-                Decl::Declaration { declaration, .. }
+                DeclKind::Declaration(declaration)
                     if declaration.specifiers.storage == StorageClass::Typedef =>
                 {
                     Some(declaration.names().map(str::to_string))
@@ -52,7 +52,7 @@ impl TranslationUnit {
             }
             if let TagBody::Record(fields) = &tag.value.body {
                 for field_item in fields {
-                    if let FieldItem::Field(field) = &field_item.value {
+                    if let FieldItemKind::Field(field) = &field_item.value {
                         collect_tag_names(&field.specifiers.ty, &mut tags);
                     }
                 }
@@ -60,7 +60,7 @@ impl TranslationUnit {
         }
         for decl in &self.decls {
             match &decl.value {
-                Decl::Function(function) => {
+                DeclKind::Function(function) => {
                     collect_tag_names(&function.specifiers.ty, &mut tags);
                     for parameter in function
                         .declarator
@@ -70,27 +70,28 @@ impl TranslationUnit {
                         collect_tag_names(&parameter.specifiers.ty, &mut tags);
                     }
                 }
-                Decl::Declaration { declaration, .. } => {
+                DeclKind::Declaration(declaration) => {
                     collect_tag_names(&declaration.specifiers.ty, &mut tags);
                 }
-                Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
+                DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => {}
             }
         }
 
         let mut errors = Vec::new();
         for decl in &self.decls {
             match &decl.value {
-                Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
-                Decl::Function(function) => {
+                DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => {}
+                DeclKind::Function(function) => {
+                    let provenance = decl.provenance;
                     check_attributes(
                         &function.specifiers.attributes,
-                        function.provenance,
+                        provenance,
                         decl.expansion,
                         &mut errors,
                     );
                     check_attributes(
                         &function.attributes,
-                        function.provenance,
+                        provenance,
                         decl.expansion,
                         &mut errors,
                     );
@@ -98,46 +99,38 @@ impl TranslationUnit {
                         &function.specifiers.ty,
                         &typedefs,
                         &tags,
-                        function.provenance,
+                        provenance,
                         decl.expansion,
                         &mut errors,
                     );
                     if flavor == CompilerFlavor::Clang {
-                        check_function_asm(self, function, &mut errors);
+                        check_function_asm(self, function, provenance, &mut errors);
                     }
-                    check_literals(function, &self.target, &mut errors);
+                    check_literals(function, &self.target, provenance, &mut errors);
                 }
-                Decl::Declaration {
-                    declaration,
-                    provenance,
-                } => {
+                DeclKind::Declaration(declaration) => {
+                    let provenance = decl.provenance;
                     let specifiers = &declaration.specifiers;
                     if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
                         && let Some(tag) = self.tag(*id)
                     {
-                        check_tag_definition(
-                            &tag.value,
-                            &typedefs,
-                            &tags,
-                            decl.expansion,
-                            &mut errors,
-                        );
+                        check_tag_definition(tag, &typedefs, &tags, decl.expansion, &mut errors);
                     }
                     check_type(
                         &specifiers.ty,
                         &typedefs,
                         &tags,
-                        *provenance,
+                        provenance,
                         decl.expansion,
                         &mut errors,
                     );
                     check_attributes(
                         &specifiers.attributes,
-                        *provenance,
+                        provenance,
                         decl.expansion,
                         &mut errors,
                     );
-                    check_declaration_literals(declaration, &self.target, *provenance, &mut errors);
+                    check_declaration_literals(declaration, &self.target, provenance, &mut errors);
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
                         if matches!(specifiers.ty, TypeSpecifier::Void)
@@ -149,7 +142,7 @@ impl TranslationUnit {
                             && !declarator_indirects_void(declarator)
                         {
                             errors.push(error(
-                                *provenance,
+                                provenance,
                                 decl.expansion,
                                 "object cannot have type void",
                             ));
@@ -158,13 +151,13 @@ impl TranslationUnit {
                             declarator,
                             &typedefs,
                             &tags,
-                            *provenance,
+                            init_declarator.provenance,
                             decl.expansion,
                             &mut errors,
                         );
                         check_attributes(
                             &init_declarator.attributes,
-                            *provenance,
+                            init_declarator.provenance,
                             decl.expansion,
                             &mut errors,
                         );
@@ -174,7 +167,7 @@ impl TranslationUnit {
                                 specifiers,
                                 init_declarator,
                                 true,
-                                *provenance,
+                                init_declarator.provenance,
                                 decl.expansion,
                                 &mut errors,
                             );
@@ -366,31 +359,32 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
 }
 
 fn check_tag_definition(
-    tag: &TagDefinition,
+    tag: &Span<TagDefinition>,
     typedefs: &HashSet<String>,
     tags: &HashSet<String>,
     loc: Loc,
     errors: &mut Vec<SemaError>,
 ) {
-    check_attributes(&tag.attributes, tag.provenance, loc, errors);
+    let provenance = tag.provenance;
+    check_attributes(&tag.attributes, provenance, loc, errors);
     let fields = match &tag.body {
         TagBody::Record(fields) => fields,
         TagBody::Enum { fixed_type, .. } => {
             if let Some(fixed_type) = fixed_type {
-                check_type_name(fixed_type, typedefs, tags, tag.provenance, loc, errors);
+                check_type_name(fixed_type, typedefs, tags, provenance, loc, errors);
             }
             return;
         }
     };
     for field_item in fields {
-        let FieldItem::Field(field) = &field_item.value else {
+        let FieldItemKind::Field(field) = &field_item.value else {
             continue;
         };
         check_type(
             &field.specifiers.ty,
             typedefs,
             tags,
-            field.provenance,
+            field_item.provenance,
             field_item.expansion,
             errors,
         );
@@ -402,7 +396,7 @@ fn check_tag_definition(
         );
         check_attributes(
             &attributes.cloned().collect::<Vec<_>>(),
-            field.provenance,
+            field_item.provenance,
             field_item.expansion,
             errors,
         );
@@ -511,24 +505,26 @@ fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaEr
 }
 
 enum BodyNode<'a> {
-    Stmt(&'a SpannedStmt),
+    Stmt(&'a Stmt),
     Expr(&'a Expr),
     EnterJumpScope,
     ExitJumpScope,
 }
 
-fn walk_stmts<'a>(stmts: &'a [SpannedStmt], visit: &mut impl FnMut(BodyNode<'a>)) {
+fn walk_stmts<'a>(stmts: &'a [Stmt], visit: &mut impl FnMut(BodyNode<'a>)) {
     for stmt in stmts {
         walk_stmt(stmt, visit);
     }
 }
 
-fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
+fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
     visit(BodyNode::Stmt(stmt));
     match &stmt.value {
-        Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::ComputedGoto(expr) => walk_expr(expr, visit),
-        Stmt::Labeled { body, .. } => walk_stmt(body, visit),
-        Stmt::SwitchLabel { label, body } => {
+        StmtKind::Return(expr) | StmtKind::Expr(expr) | StmtKind::ComputedGoto(expr) => {
+            walk_expr(expr, visit)
+        }
+        StmtKind::Labeled { body, .. } => walk_stmt(body, visit),
+        StmtKind::SwitchLabel { label, body } => {
             match label {
                 SwitchLabel::Case(expr) => walk_expr(expr, visit),
                 SwitchLabel::CaseRange { start, end } => {
@@ -539,7 +535,7 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             }
             walk_stmt(body, visit);
         }
-        Stmt::Decl(declaration) => {
+        StmtKind::Decl(declaration) => {
             for initializer in declaration
                 .declarators
                 .iter()
@@ -548,16 +544,16 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
                 walk_initializer(initializer, visit);
             }
         }
-        Stmt::Block(body) | Stmt::DoWhile { body, .. } => walk_stmts(body, visit),
-        Stmt::While { condition, body }
-        | Stmt::Switch {
+        StmtKind::Block(body) | StmtKind::DoWhile { body, .. } => walk_stmts(body, visit),
+        StmtKind::While { condition, body }
+        | StmtKind::Switch {
             discriminant: condition,
             body,
         } => {
             walk_expr(condition, visit);
             walk_stmts(body, visit);
         }
-        Stmt::If {
+        StmtKind::If {
             condition,
             then_branch,
             else_branch,
@@ -568,7 +564,7 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
                 walk_stmts(else_branch, visit);
             }
         }
-        Stmt::For {
+        StmtKind::For {
             init,
             condition,
             increment,
@@ -582,16 +578,16 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             }
             walk_stmts(body, visit);
         }
-        Stmt::NestedFunction(_)
-        | Stmt::Comment(_)
-        | Stmt::ReturnVoid
-        | Stmt::StaticAssert(_)
-        | Stmt::Attribute(_)
-        | Stmt::LocalLabelDecl(_)
-        | Stmt::Asm(_)
-        | Stmt::Goto(_)
-        | Stmt::Break
-        | Stmt::Continue => {}
+        StmtKind::NestedFunction(_)
+        | StmtKind::Comment(_)
+        | StmtKind::ReturnVoid
+        | StmtKind::StaticAssert(_)
+        | StmtKind::Attribute(_)
+        | StmtKind::LocalLabelDecl(_)
+        | StmtKind::Asm(_)
+        | StmtKind::Goto(_)
+        | StmtKind::Break
+        | StmtKind::Continue => {}
     }
 }
 
@@ -787,13 +783,18 @@ fn check_literal_expr(expr: &Expr, target: &TargetInfo) -> Option<String> {
     }
 }
 
-fn check_literals(function: &FunctionDefinition, target: &TargetInfo, errors: &mut Vec<SemaError>) {
+fn check_literals(
+    function: &FunctionDefinition,
+    target: &TargetInfo,
+    provenance: Provenance,
+    errors: &mut Vec<SemaError>,
+) {
     walk_stmts(&function.body, &mut |node| {
         let BodyNode::Expr(expr) = node else {
             return;
         };
         if let Some(message) = check_literal_expr(expr, target) {
-            errors.push(error(function.provenance, expr.expansion, message));
+            errors.push(error(provenance, expr.expansion, message));
         }
     });
 }
@@ -822,6 +823,7 @@ fn check_declaration_literals(
 fn check_function_asm(
     unit: &TranslationUnit,
     function: &FunctionDefinition,
+    provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
     let mut labels = HashMap::new();
@@ -829,7 +831,7 @@ fn check_function_asm(
     let mut next_scope = 0;
     walk_stmts(&function.body, &mut |node| match node {
         BodyNode::Stmt(stmt) => {
-            if let Stmt::Labeled { label: name, .. } = &stmt.value {
+            if let StmtKind::Labeled { label: name, .. } = &stmt.value {
                 labels.insert(name.as_str(), scope.clone());
             }
         }
@@ -846,22 +848,17 @@ fn check_function_asm(
     next_scope = 0;
     walk_stmts(&function.body, &mut |node| match node {
         BodyNode::Stmt(stmt) => match &stmt.value {
-            Stmt::Asm(asm) => check_asm_operands(
-                asm,
-                &labels,
-                &scope,
-                function.provenance,
-                stmt.expansion,
-                errors,
-            ),
-            Stmt::Decl(declaration) => {
+            StmtKind::Asm(asm) => {
+                check_asm_operands(asm, &labels, &scope, provenance, stmt.expansion, errors)
+            }
+            StmtKind::Decl(declaration) => {
                 for declarator in &declaration.declarators {
                     check_register_variable(
                         unit,
                         &declaration.specifiers,
                         declarator,
                         false,
-                        function.provenance,
+                        provenance,
                         stmt.expansion,
                         errors,
                     );

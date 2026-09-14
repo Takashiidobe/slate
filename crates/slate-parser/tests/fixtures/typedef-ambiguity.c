@@ -17,8 +17,8 @@ int call_main() {
 // SLATE-FILECHECK-DEFINES CAST AS_CAST
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT: decl[0]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -28,24 +28,16 @@ int call_main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Name(
 // DEFAULT-NEXT:                       "B",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 0,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration {
-// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
 // DEFAULT-NEXT:                   Ranked {
@@ -55,14 +47,14 @@ int call_main() {
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
-// DEFAULT-NEXT:               InitDeclarator {
+// DEFAULT-NEXT:               InitDeclaratorKind {
 // DEFAULT-NEXT:                   declarator: Function {
 // DEFAULT-NEXT:                       inner: Name(
 // DEFAULT-NEXT:                           "A",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       parameters: Prototype {
 // DEFAULT-NEXT:                           parameters: [
-// DEFAULT-NEXT:                               ParameterDeclaration {
+// DEFAULT-NEXT:                               ParameterDeclarationKind {
 // DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                       ty: Integer(
 // DEFAULT-NEXT:                                           Ranked {
@@ -81,15 +73,7 @@ int call_main() {
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               3,
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: User,
-// DEFAULT-NEXT:           line: 9,
-// DEFAULT-NEXT:           header: None,
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
+// DEFAULT-NEXT:   )
 // DEFAULT-NEXT: decl[2]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
@@ -135,20 +119,12 @@ int call_main() {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 10,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN CAST
-// CAST: decl[0]: Declaration {
-// CAST-NEXT:       declaration: Declaration {
+// CAST: decl[0]: Declaration(
+// CAST-NEXT:       Declaration {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
 // CAST-NEXT:               ty: Integer(
 // CAST-NEXT:                   Ranked {
@@ -158,24 +134,16 @@ int call_main() {
 // CAST-NEXT:               ),
 // CAST-NEXT:           },
 // CAST-NEXT:           declarators: [
-// CAST-NEXT:               InitDeclarator {
+// CAST-NEXT:               InitDeclaratorKind {
 // CAST-NEXT:                   declarator: Name(
 // CAST-NEXT:                       "B",
 // CAST-NEXT:                   ),
 // CAST-NEXT:               },
 // CAST-NEXT:           ],
 // CAST-NEXT:       },
-// CAST-NEXT:       provenance: Provenance {
-// CAST-NEXT:           file: FileId(
-// CAST-NEXT:               3,
-// CAST-NEXT:           ),
-// CAST-NEXT:           kind: User,
-// CAST-NEXT:           line: 0,
-// CAST-NEXT:           header: None,
-// CAST-NEXT:       },
-// CAST-NEXT:   }
-// CAST-NEXT: decl[1]: Declaration {
-// CAST-NEXT:       declaration: Declaration {
+// CAST-NEXT:   )
+// CAST-NEXT: decl[1]: Declaration(
+// CAST-NEXT:       Declaration {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
 // CAST-NEXT:               ty: Integer(
 // CAST-NEXT:                   Ranked {
@@ -186,22 +154,14 @@ int call_main() {
 // CAST-NEXT:               storage: Typedef,
 // CAST-NEXT:           },
 // CAST-NEXT:           declarators: [
-// CAST-NEXT:               InitDeclarator {
+// CAST-NEXT:               InitDeclaratorKind {
 // CAST-NEXT:                   declarator: Name(
 // CAST-NEXT:                       "A",
 // CAST-NEXT:                   ),
 // CAST-NEXT:               },
 // CAST-NEXT:           ],
 // CAST-NEXT:       },
-// CAST-NEXT:       provenance: Provenance {
-// CAST-NEXT:           file: FileId(
-// CAST-NEXT:               3,
-// CAST-NEXT:           ),
-// CAST-NEXT:           kind: User,
-// CAST-NEXT:           line: 3,
-// CAST-NEXT:           header: None,
-// CAST-NEXT:       },
-// CAST-NEXT:   }
+// CAST-NEXT:   )
 // CAST-NEXT: decl[2]: Function(
 // CAST-NEXT:       FunctionDefinition {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
@@ -250,14 +210,6 @@ int call_main() {
 // CAST-NEXT:                   ),
 // CAST-NEXT:               ),
 // CAST-NEXT:           ],
-// CAST-NEXT:           provenance: Provenance {
-// CAST-NEXT:               file: FileId(
-// CAST-NEXT:                   3,
-// CAST-NEXT:               ),
-// CAST-NEXT:               kind: User,
-// CAST-NEXT:               line: 4,
-// CAST-NEXT:               header: None,
-// CAST-NEXT:           },
 // CAST-NEXT:       },
 // CAST-NEXT:   )
 // SLATE-FILECHECK-END CAST

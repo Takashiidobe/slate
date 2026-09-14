@@ -459,16 +459,9 @@ impl<'a> DeclaratorParser<'a> {
             name,
             attributes: Vec::new(),
             body,
-            provenance: parser.token_provenance(&self.tokens[start]),
         };
         let id = parser.define_tag(span_tokens(definition, &self.tokens[start..self.pos]));
         Ok(TypeSpecifier::Tag(TagSpecifier::Definition(id)))
-    }
-
-    fn provenance_at(&self, index: usize) -> Provenance {
-        self.statements.map_or_else(Provenance::default, |parser| {
-            parser.token_provenance(&self.tokens[index])
-        })
     }
 
     pub(super) fn parse_enum_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
@@ -500,7 +493,7 @@ impl<'a> DeclaratorParser<'a> {
         tag_reference(TagKind::Enum, name)
     }
 
-    pub(super) fn parse_field_list(&mut self) -> Result<Vec<SpannedFieldItem>, DeclaratorError> {
+    pub(super) fn parse_field_list(&mut self) -> Result<Vec<FieldItem>, DeclaratorError> {
         self.pos += 1;
         let mut fields = Vec::new();
         while self.peek() != Some(&Token::RBrace) {
@@ -519,6 +512,7 @@ impl<'a> DeclaratorParser<'a> {
             specifiers.qualifiers = qualifiers;
             let mut declarators = Vec::new();
             while !self.matches(Token::Semi) {
+                let declarator_start = self.pos;
                 let declarator = if self.peek() == Some(&Token::Colon) {
                     Declarator::Abstract
                 } else {
@@ -539,11 +533,14 @@ impl<'a> DeclaratorParser<'a> {
                     None
                 };
                 let attributes = self.parse_attributes()?;
-                declarators.push(FieldDeclarator {
-                    declarator,
-                    bit_width,
-                    attributes,
-                });
+                declarators.push(span_tokens(
+                    FieldDeclaratorKind {
+                        declarator,
+                        bit_width,
+                        attributes,
+                    },
+                    &self.tokens[declarator_start..self.pos],
+                ));
                 if self.matches(Token::Comma) {
                     continue;
                 }
@@ -553,12 +550,10 @@ impl<'a> DeclaratorParser<'a> {
                 )?;
                 break;
             }
-            let provenance = self.provenance_at(start);
             fields.push(span_tokens(
-                FieldItem::Field(FieldDecl {
+                FieldItemKind::Field(FieldDecl {
                     specifiers,
                     declarators,
-                    provenance,
                 }),
                 &self.tokens[start..self.pos],
             ));
@@ -567,9 +562,7 @@ impl<'a> DeclaratorParser<'a> {
         Ok(fields)
     }
 
-    pub(super) fn parse_enumerator_list(
-        &mut self,
-    ) -> Result<Vec<SpannedEnumItem>, DeclaratorError> {
+    pub(super) fn parse_enumerator_list(&mut self) -> Result<Vec<EnumItem>, DeclaratorError> {
         self.pos += 1;
         let mut items = Vec::new();
         loop {
@@ -580,7 +573,6 @@ impl<'a> DeclaratorParser<'a> {
             let Some(Token::Ident(name)) = self.peek().cloned() else {
                 return Err(DeclaratorError::ExpectedEnumerator);
             };
-            let provenance = self.provenance_at(self.pos);
             self.pos += 1;
             let value = if self.matches(Token::Equal) {
                 let (value, end) = const_expr::Parser::parse_one(
@@ -596,11 +588,7 @@ impl<'a> DeclaratorParser<'a> {
                 None
             };
             items.push(span_tokens(
-                EnumItem::Enumerator(Enumerator {
-                    name,
-                    value,
-                    provenance,
-                }),
+                EnumItemKind::Enumerator(Enumerator { name, value }),
                 &self.tokens[start..self.pos],
             ));
             if self.matches(Token::Comma) {
@@ -1135,6 +1123,7 @@ impl<'a> DeclaratorParser<'a> {
                 variadic = true;
                 break;
             }
+            let parameter_start = self.pos;
             let mut specifiers = self.parse_specifiers(false)?;
             let declarator = match self.peek() {
                 Some(Token::Comma) | Some(Token::RParen) => Declarator::Abstract,
@@ -1149,12 +1138,15 @@ impl<'a> DeclaratorParser<'a> {
                 .collect::<Vec<_>>();
             let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
             specifiers.ty = apply_vector_attributes(ty, &vector_attributes);
-            parameters.push(ParameterDeclaration {
-                specifiers,
-                declarator,
-                declared_specifiers: None,
-                attributes,
-            });
+            parameters.push(span_tokens(
+                ParameterDeclarationKind {
+                    specifiers,
+                    declarator,
+                    declared_specifiers: None,
+                    attributes,
+                },
+                &self.tokens[parameter_start..self.pos],
+            ));
             if self.matches(Token::RParen) {
                 break;
             }
