@@ -1,6 +1,6 @@
 use crate::ast::{
     ArraySize, CType, Declarator, Designator, Expr, ExprKind, FloatingType, GenericAssociation,
-    Initializer, InitializerItem, IntegerRank, IntegerType, IntegerValue, Span,
+    GenericControl, Initializer, InitializerItem, IntegerRank, IntegerType, Span,
 };
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
@@ -397,16 +397,6 @@ fn identifier(expression: &Expr) -> Option<&str> {
         ExprKind::Identifier(name) => Some(name),
         _ => None,
     }
-}
-
-fn integer_value(token: &Token) -> IntegerValue {
-    if let Some(value) = token.integer_value_i128() {
-        return IntegerValue::I128(value);
-    }
-    let Token::IntLit(spelling) = token else {
-        unreachable!("integer_value called on a non-IntLit token");
-    };
-    IntegerValue::Wide(parse_wide_integer_literal(spelling))
 }
 
 impl std::fmt::Display for FloatLiteral {
@@ -961,22 +951,10 @@ impl<'a> Parser<'a> {
             loop {
                 if self.peek() == Some(&Token::LBracket) {
                     self.take();
-                    let Some(token @ Token::IntLit(_)) = self.take() else {
-                        return Err(ConstExprError::ExpectedIntegerExpression);
-                    };
-                    let index_value = integer_value(&token);
-                    let Some(index) = token.integer_value() else {
-                        return Err(ConstExprError::ExpectedIntegerExpression);
-                    };
+                    let index = self.parse_conditional()?;
                     if self.consume(&Token::Ellipsis) {
-                        let Some(Token::IntLit(end)) = self.take() else {
-                            return Err(ConstExprError::ExpectedIntegerExpression);
-                        };
-                        let end = integer_value(&Token::IntLit(end));
-                        designators.push(Designator::ArrayRange {
-                            start: index_value,
-                            end,
-                        });
+                        let end = self.parse_conditional()?;
+                        designators.push(Designator::ArrayRange { start: index, end });
                     } else {
                         designators.push(Designator::Array(index));
                     }
@@ -1285,48 +1263,34 @@ impl<'a> Parser<'a> {
 
     fn parse_generic(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
-        let controlling_start = self.position;
-        let controlling = if let Some((_, _, end)) = self.try_parse_type_name(self.position)
+        let controlling = if let Some(next) = self.peek()
+            && starts_type_name(next, &self.typedef_names)
+            && let Some((ty, declarator, end)) = self.try_parse_type_name(self.position)
             && self.token_at(end) == Some(&Token::Comma)
         {
             self.position = end;
-            self.node(
-                ExprKind::Identifier("<type-name>".into()),
-                controlling_start,
-            )
+            GenericControl::Type { ty, declarator }
         } else {
-            self.parse_assignment()?
+            GenericControl::Expr(self.parse_assignment()?)
         };
         self.expect(Token::Comma)?;
         let mut associations = Vec::new();
         loop {
-            let type_start = self.position;
-            let mut depth = 0i32;
-            while let Some(token) = self.peek() {
-                match token {
-                    Token::LParen | Token::LBracket => depth += 1,
-                    Token::RParen | Token::RBracket if depth > 0 => depth -= 1,
-                    Token::Colon if depth == 0 => break,
-                    _ => {}
-                }
-                self.take();
+            if self.consume(&Token::Keyword(Keyword::Default)) {
+                self.expect(Token::Colon)?;
+                associations.push(GenericAssociation::Default(self.parse_assignment()?));
+            } else {
+                let Some((ty, declarator, end)) = self.try_parse_type_name(self.position) else {
+                    return Err(ConstExprError::ExpectedTypeName);
+                };
+                self.position = end;
+                self.expect(Token::Colon)?;
+                associations.push(GenericAssociation::Type {
+                    ty,
+                    declarator,
+                    value: self.parse_assignment()?,
+                });
             }
-            let type_tokens = self.tokens[type_start..self.position].to_vec();
-            self.expect(Token::Colon)?;
-            let type_name = match type_tokens.as_tokens().as_slice() {
-                [Token::Keyword(Keyword::Default)] => None,
-                _ => Some(
-                    type_tokens
-                        .values()
-                        .map(String::from)
-                        .collect::<Vec<_>>()
-                        .join(" "),
-                ),
-            };
-            associations.push(GenericAssociation {
-                type_name,
-                expression: self.parse_assignment()?,
-            });
             if self.consume(&Token::Comma) {
                 continue;
             }

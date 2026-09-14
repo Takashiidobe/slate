@@ -1038,7 +1038,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1056,7 +1058,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1140,7 +1144,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               value: List(
@@ -1153,7 +1159,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               value: List(
@@ -1175,7 +1183,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               value: List(
@@ -1188,7 +1198,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1206,7 +1218,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1224,7 +1238,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1242,7 +1258,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1260,7 +1278,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1278,7 +1298,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1368,7 +1390,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1386,7 +1410,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1404,7 +1430,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1422,7 +1450,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1440,7 +1470,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1458,7 +1490,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1517,7 +1551,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1535,7 +1571,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           0,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1553,7 +1591,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1571,7 +1611,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",
@@ -1589,7 +1631,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "a",
@@ -1607,7 +1651,9 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:                                                       "c",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       2,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           2,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   Field(
 // DEFAULT-NEXT:                                                       "b",

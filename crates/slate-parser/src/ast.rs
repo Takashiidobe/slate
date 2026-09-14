@@ -89,7 +89,7 @@ pub enum ExprKind {
         member: Expr,
     },
     Generic {
-        controlling: Expr,
+        controlling: GenericControl,
         associations: Vec<GenericAssociation>,
     },
     VaArg {
@@ -113,9 +113,22 @@ pub enum ExprKind {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct GenericAssociation {
-    pub type_name: Option<String>,
-    pub expression: Expr,
+pub enum GenericControl {
+    Expr(Expr),
+    Type {
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum GenericAssociation {
+    Type {
+        ty: Box<CType>,
+        declarator: Declarator,
+        value: Expr,
+    },
+    Default(Expr),
 }
 
 impl std::fmt::Display for ExprKind {
@@ -185,18 +198,9 @@ impl std::fmt::Display for ExprKind {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Designator {
-    Array(i64),
-    ArrayRange {
-        start: IntegerValue,
-        end: IntegerValue,
-    },
+    Array(Expr),
+    ArrayRange { start: Expr, end: Expr },
     Field(String),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum IntegerValue {
-    I128(i128),
-    Wide(WideInt),
 }
 
 #[derive(Debug, Clone, PartialEq)]

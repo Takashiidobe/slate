@@ -438,10 +438,11 @@ the AST redesign epic.
 | `Decl::Record`, `Decl::Enum` emitted before a `Declaration` whose specifier is a bodiless `CType::Tagged`; `CType::Tagged { body }` inline for local tags | `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |
 | `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |
 | `FunctionDecl.parameters: []` for both `(void)` and `()` | `ParameterList::{Void, Empty, IdentifierList}` | |
-| `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`) | |
+| `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals, `GenericControl::Type` and `GenericAssociation::Type` hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`) | |
+| `Designator::Array`/`ArrayRange` | `Index`/`IndexRange` | |
+| array bounds that fold are stored as `ExprKind::Integer` | unevaluated `Expr` (`lh7.3.12`) | `int a[1 << 3]` loses its expression |
+| bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser | argument-less `Aligned`, value chosen in `src/ir/sema` | |
 | `ConstExpr::Integer(i64)` for integer and char literals; raw string spelling | `IntegerLiteral`/`CharLiteral`/`StringLiteral`/`FloatLiteral` | suffix and char kind lost (`lh7.1.13`); escapes undecoded (`lh7.1.14`) |
-| Enumerator values and array designators evaluated to `i64` in the parser | unevaluated `Expr` | `B = A + 1` loses its expression |
-| `_Generic` controlling identifier replaced by `"<type-name>"`; association types as joined strings | `GenericControl`, `TypeName` | `lh7.1.15` |
 | `if`/loop bodies are `Vec<Stmt>`; `Case`/`Default`/`Labeled` are markers | `Box<Stmt>` bodies; `Labeled` containers; `Null` | braces not preserved |
 | `sema.rs` returns errors only; rejects tag definitions in parameter lists | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` | |
 | parser calls name-based `filter_translation_unit` before resolution | IR pipeline prunes resolved symbol dependencies from explicit roots | |

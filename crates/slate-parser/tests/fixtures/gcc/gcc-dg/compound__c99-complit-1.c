@@ -2520,7 +2520,9 @@ int main(void) {
 // DEFAULT-NEXT:                                       InitializerItem {
 // DEFAULT-NEXT:                                           designators: [
 // DEFAULT-NEXT:                                               Array(
-// DEFAULT-NEXT:                                                   3,
+// DEFAULT-NEXT:                                                   Integer(
+// DEFAULT-NEXT:                                                       3,
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                           value: Expr(

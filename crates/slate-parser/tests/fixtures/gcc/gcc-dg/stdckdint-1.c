@@ -672,46 +672,46 @@ int main() {
 // DEFAULT-NEXT:               StaticAssert(
 // DEFAULT-NEXT:                   StaticAssert {
 // DEFAULT-NEXT:                       condition: Generic {
-// DEFAULT-NEXT:                           controlling: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_add_overflow",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           controlling: Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_add_overflow",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "a",
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Type {
+// DEFAULT-NEXT:                                   ty: Bool,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Default(
+// DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -719,46 +719,46 @@ int main() {
 // DEFAULT-NEXT:               StaticAssert(
 // DEFAULT-NEXT:                   StaticAssert {
 // DEFAULT-NEXT:                       condition: Generic {
-// DEFAULT-NEXT:                           controlling: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_sub_overflow",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           controlling: Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_sub_overflow",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "a",
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Type {
+// DEFAULT-NEXT:                                   ty: Bool,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Default(
+// DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -766,46 +766,46 @@ int main() {
 // DEFAULT-NEXT:               StaticAssert(
 // DEFAULT-NEXT:                   StaticAssert {
 // DEFAULT-NEXT:                       condition: Generic {
-// DEFAULT-NEXT:                           controlling: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_mul_overflow",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                           controlling: Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "__builtin_mul_overflow",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       Unary {
-// DEFAULT-NEXT:                                           op: AddrOf,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "a",
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Unary {
+// DEFAULT-NEXT:                                               op: AddrOf,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Type {
+// DEFAULT-NEXT:                                   ty: Bool,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: None,
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Default(
+// DEFAULT-NEXT:                                   Integer(
 // DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },

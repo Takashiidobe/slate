@@ -348,26 +348,26 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               2,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               4,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               2,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               3,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -381,7 +381,9 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -393,13 +395,19 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -1074,10 +1082,10 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               5,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1085,10 +1093,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           "O",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               2,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1096,10 +1104,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           "K",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1173,10 +1181,10 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               5,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1189,10 +1197,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [
 // DEFAULT-NEXT:                                                   ArrayRange {
-// DEFAULT-NEXT:                                                       start: I128(
+// DEFAULT-NEXT:                                                       start: Integer(
 // DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       end: I128(
+// DEFAULT-NEXT:                                                       end: Integer(
 // DEFAULT-NEXT:                                                           2,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -1200,10 +1208,10 @@ int main(void) {
 // DEFAULT-NEXT:                                                       "K",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   ArrayRange {
-// DEFAULT-NEXT:                                                       start: I128(
+// DEFAULT-NEXT:                                                       start: Integer(
 // DEFAULT-NEXT:                                                           0,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       end: I128(
+// DEFAULT-NEXT:                                                       end: Integer(
 // DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -1220,19 +1228,25 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           5,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               5,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Field(
 // DEFAULT-NEXT:                                           "O",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Field(
 // DEFAULT-NEXT:                                           "K",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -1296,10 +1310,10 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               5,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1307,10 +1321,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           "O",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               2,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1323,10 +1337,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [
 // DEFAULT-NEXT:                                                   ArrayRange {
-// DEFAULT-NEXT:                                                       start: I128(
+// DEFAULT-NEXT:                                                       start: Integer(
 // DEFAULT-NEXT:                                                           0,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       end: I128(
+// DEFAULT-NEXT:                                                       end: Integer(
 // DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -1343,19 +1357,25 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           5,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               5,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Field(
 // DEFAULT-NEXT:                                           "O",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Field(
 // DEFAULT-NEXT:                                           "K",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -1430,10 +1450,10 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
+// DEFAULT-NEXT:                                           end: Integer(
 // DEFAULT-NEXT:                                               1,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -1443,10 +1463,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [
 // DEFAULT-NEXT:                                                   ArrayRange {
-// DEFAULT-NEXT:                                                       start: I128(
+// DEFAULT-NEXT:                                                       start: Integer(
 // DEFAULT-NEXT:                                                           1,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       end: I128(
+// DEFAULT-NEXT:                                                       end: Integer(
 // DEFAULT-NEXT:                                                           2,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -1463,10 +1483,14 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -1518,12 +1542,18 @@ int main(void) {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       ArrayRange {
-// DEFAULT-NEXT:                                           start: I128(
+// DEFAULT-NEXT:                                           start: Integer(
 // DEFAULT-NEXT:                                               0,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           end: I128(
-// DEFAULT-NEXT:                                               0,
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           end: Binary {
+// DEFAULT-NEXT:                                               op: Sub,
+// DEFAULT-NEXT:                                               left: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: Integer(
+// DEFAULT-NEXT:                                                   1,
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(

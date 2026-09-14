@@ -6284,49 +6284,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                                               op: Add,
 // DEFAULT-NEXT:                                                                               left: Call {
 // DEFAULT-NEXT:                                                                                   callee: Generic {
-// DEFAULT-NEXT:                                                                                       controlling: Paren(
-// DEFAULT-NEXT:                                                                                           Identifier(
-// DEFAULT-NEXT:                                                                                               "value",
+// DEFAULT-NEXT:                                                                                       controlling: Expr(
+// DEFAULT-NEXT:                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                                   "value",
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       associations: [
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned char",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Char {
+// DEFAULT-NEXT:                                                                                                       signed: Some(
+// DEFAULT-NEXT:                                                                                                           false,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_zeros_uc",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned short",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Short,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_zeros_us",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned int",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_zeros_ui",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned long int",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Long,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_zeros_ul",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned long long int",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_zeros_ull",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
@@ -6340,49 +6363,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               right: Call {
 // DEFAULT-NEXT:                                                                                   callee: Generic {
-// DEFAULT-NEXT:                                                                                       controlling: Paren(
-// DEFAULT-NEXT:                                                                                           Identifier(
-// DEFAULT-NEXT:                                                                                               "value",
+// DEFAULT-NEXT:                                                                                       controlling: Expr(
+// DEFAULT-NEXT:                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                                   "value",
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       associations: [
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned char",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Char {
+// DEFAULT-NEXT:                                                                                                       signed: Some(
+// DEFAULT-NEXT:                                                                                                           false,
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_ones_uc",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned short",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Short,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_ones_us",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned int",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_ones_ui",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned long int",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: Long,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_ones_ul",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                                   "unsigned long long int",
+// DEFAULT-NEXT:                                                                                           Type {
+// DEFAULT-NEXT:                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                                   "stdc_leading_ones_ull",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
@@ -6397,49 +6443,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                           right: Call {
 // DEFAULT-NEXT:                                                                               callee: Generic {
-// DEFAULT-NEXT:                                                                                   controlling: Paren(
-// DEFAULT-NEXT:                                                                                       Identifier(
-// DEFAULT-NEXT:                                                                                           "value",
+// DEFAULT-NEXT:                                                                                   controlling: Expr(
+// DEFAULT-NEXT:                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "value",
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                                   associations: [
-// DEFAULT-NEXT:                                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                                               "unsigned char",
+// DEFAULT-NEXT:                                                                                       Type {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Char {
+// DEFAULT-NEXT:                                                                                                   signed: Some(
+// DEFAULT-NEXT:                                                                                                       false,
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                                               "stdc_trailing_zeros_uc",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                                               "unsigned short",
+// DEFAULT-NEXT:                                                                                       Type {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Short,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                                               "stdc_trailing_zeros_us",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                                               "unsigned int",
+// DEFAULT-NEXT:                                                                                       Type {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                                               "stdc_trailing_zeros_ui",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                                               "unsigned long int",
+// DEFAULT-NEXT:                                                                                       Type {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                                               "stdc_trailing_zeros_ul",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                                               "unsigned long long int",
+// DEFAULT-NEXT:                                                                                       Type {
+// DEFAULT-NEXT:                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                   rank: LongLong,
+// DEFAULT-NEXT:                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                                               "stdc_trailing_zeros_ull",
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
@@ -6454,49 +6523,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       right: Call {
 // DEFAULT-NEXT:                                                                           callee: Generic {
-// DEFAULT-NEXT:                                                                               controlling: Paren(
-// DEFAULT-NEXT:                                                                                   Identifier(
-// DEFAULT-NEXT:                                                                                       "value",
+// DEFAULT-NEXT:                                                                               controlling: Expr(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                           "value",
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                               associations: [
-// DEFAULT-NEXT:                                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                                           "unsigned char",
+// DEFAULT-NEXT:                                                                                   Type {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Char {
+// DEFAULT-NEXT:                                                                                               signed: Some(
+// DEFAULT-NEXT:                                                                                                   false,
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                                           "stdc_trailing_ones_uc",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                                           "unsigned short",
+// DEFAULT-NEXT:                                                                                   Type {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: Short,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                                           "stdc_trailing_ones_us",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                                           "unsigned int",
+// DEFAULT-NEXT:                                                                                   Type {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                                           "stdc_trailing_ones_ui",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                                           "unsigned long int",
+// DEFAULT-NEXT:                                                                                   Type {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: Long,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                                           "stdc_trailing_ones_ul",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                                           "unsigned long long int",
+// DEFAULT-NEXT:                                                                                   Type {
+// DEFAULT-NEXT:                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                               rank: LongLong,
+// DEFAULT-NEXT:                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                                           "stdc_trailing_ones_ull",
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
@@ -6511,49 +6603,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: Call {
 // DEFAULT-NEXT:                                                                       callee: Generic {
-// DEFAULT-NEXT:                                                                           controlling: Paren(
-// DEFAULT-NEXT:                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                   "value",
+// DEFAULT-NEXT:                                                                           controlling: Expr(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                       "value",
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                           associations: [
-// DEFAULT-NEXT:                                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                                       "unsigned char",
+// DEFAULT-NEXT:                                                                               Type {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Char {
+// DEFAULT-NEXT:                                                                                           signed: Some(
+// DEFAULT-NEXT:                                                                                               false,
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                                       "stdc_first_leading_zero_uc",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                                       "unsigned short",
+// DEFAULT-NEXT:                                                                               Type {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Short,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                                       "stdc_first_leading_zero_us",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                                       "unsigned int",
+// DEFAULT-NEXT:                                                                               Type {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                                       "stdc_first_leading_zero_ui",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                                       "unsigned long int",
+// DEFAULT-NEXT:                                                                               Type {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                                       "stdc_first_leading_zero_ul",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                                       "unsigned long long int",
+// DEFAULT-NEXT:                                                                               Type {
+// DEFAULT-NEXT:                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                           rank: LongLong,
+// DEFAULT-NEXT:                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                                       "stdc_first_leading_zero_ull",
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
@@ -6568,49 +6683,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               right: Call {
 // DEFAULT-NEXT:                                                                   callee: Generic {
-// DEFAULT-NEXT:                                                                       controlling: Paren(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "value",
+// DEFAULT-NEXT:                                                                       controlling: Expr(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "value",
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                       associations: [
-// DEFAULT-NEXT:                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                   "unsigned char",
+// DEFAULT-NEXT:                                                                           Type {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Char {
+// DEFAULT-NEXT:                                                                                       signed: Some(
+// DEFAULT-NEXT:                                                                                           false,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                   "stdc_first_leading_one_uc",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                   "unsigned short",
+// DEFAULT-NEXT:                                                                           Type {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                       rank: Short,
+// DEFAULT-NEXT:                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                   "stdc_first_leading_one_us",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                   "unsigned int",
+// DEFAULT-NEXT:                                                                           Type {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                   "stdc_first_leading_one_ui",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                   "unsigned long int",
+// DEFAULT-NEXT:                                                                           Type {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                       rank: Long,
+// DEFAULT-NEXT:                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                   "stdc_first_leading_one_ul",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                                   "unsigned long long int",
+// DEFAULT-NEXT:                                                                           Type {
+// DEFAULT-NEXT:                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                                   "stdc_first_leading_one_ull",
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
@@ -6625,49 +6763,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           right: Call {
 // DEFAULT-NEXT:                                                               callee: Generic {
-// DEFAULT-NEXT:                                                                   controlling: Paren(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "value",
+// DEFAULT-NEXT:                                                                   controlling: Expr(
+// DEFAULT-NEXT:                                                                       Paren(
+// DEFAULT-NEXT:                                                                           Identifier(
+// DEFAULT-NEXT:                                                                               "value",
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                                   associations: [
-// DEFAULT-NEXT:                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                               "unsigned char",
+// DEFAULT-NEXT:                                                                       Type {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Char {
+// DEFAULT-NEXT:                                                                                   signed: Some(
+// DEFAULT-NEXT:                                                                                       false,
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                               "stdc_first_trailing_zero_uc",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                               "unsigned short",
+// DEFAULT-NEXT:                                                                       Type {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Short,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                               "stdc_first_trailing_zero_us",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                               "unsigned int",
+// DEFAULT-NEXT:                                                                       Type {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                               "stdc_first_trailing_zero_ui",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                               "unsigned long int",
+// DEFAULT-NEXT:                                                                       Type {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                               "stdc_first_trailing_zero_ul",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                                           type_name: Some(
-// DEFAULT-NEXT:                                                                               "unsigned long long int",
+// DEFAULT-NEXT:                                                                       Type {
+// DEFAULT-NEXT:                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                   rank: LongLong,
+// DEFAULT-NEXT:                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           value: Identifier(
 // DEFAULT-NEXT:                                                                               "stdc_first_trailing_zero_ull",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
@@ -6682,49 +6843,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       right: Call {
 // DEFAULT-NEXT:                                                           callee: Generic {
-// DEFAULT-NEXT:                                                               controlling: Paren(
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "value",
+// DEFAULT-NEXT:                                                               controlling: Expr(
+// DEFAULT-NEXT:                                                                   Paren(
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "value",
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               associations: [
-// DEFAULT-NEXT:                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                           "unsigned char",
+// DEFAULT-NEXT:                                                                   Type {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Char {
+// DEFAULT-NEXT:                                                                               signed: Some(
+// DEFAULT-NEXT:                                                                                   false,
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                           "stdc_first_trailing_one_uc",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                           "unsigned short",
+// DEFAULT-NEXT:                                                                   Type {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Short,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                           "stdc_first_trailing_one_us",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                           "unsigned int",
+// DEFAULT-NEXT:                                                                   Type {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                           "stdc_first_trailing_one_ui",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                           "unsigned long int",
+// DEFAULT-NEXT:                                                                   Type {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Long,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                           "stdc_first_trailing_one_ul",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                                       type_name: Some(
-// DEFAULT-NEXT:                                                                           "unsigned long long int",
+// DEFAULT-NEXT:                                                                   Type {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: LongLong,
+// DEFAULT-NEXT:                                                                               signed: false,
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                       value: Identifier(
 // DEFAULT-NEXT:                                                                           "stdc_first_trailing_one_ull",
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
@@ -6739,49 +6923,72 @@ int main(void) {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: Call {
 // DEFAULT-NEXT:                                                       callee: Generic {
-// DEFAULT-NEXT:                                                           controlling: Paren(
-// DEFAULT-NEXT:                                                               Identifier(
-// DEFAULT-NEXT:                                                                   "value",
+// DEFAULT-NEXT:                                                           controlling: Expr(
+// DEFAULT-NEXT:                                                               Paren(
+// DEFAULT-NEXT:                                                                   Identifier(
+// DEFAULT-NEXT:                                                                       "value",
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           associations: [
-// DEFAULT-NEXT:                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                       "unsigned char",
+// DEFAULT-NEXT:                                                               Type {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Char {
+// DEFAULT-NEXT:                                                                           signed: Some(
+// DEFAULT-NEXT:                                                                               false,
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                       "stdc_count_zeros_uc",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                       "unsigned short",
+// DEFAULT-NEXT:                                                               Type {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Short,
+// DEFAULT-NEXT:                                                                           signed: false,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                       "stdc_count_zeros_us",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                       "unsigned int",
+// DEFAULT-NEXT:                                                               Type {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                           signed: false,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                       "stdc_count_zeros_ui",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                       "unsigned long int",
+// DEFAULT-NEXT:                                                               Type {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: Long,
+// DEFAULT-NEXT:                                                                           signed: false,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                       "stdc_count_zeros_ul",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               GenericAssociation {
-// DEFAULT-NEXT:                                                                   type_name: Some(
-// DEFAULT-NEXT:                                                                       "unsigned long long int",
+// DEFAULT-NEXT:                                                               Type {
+// DEFAULT-NEXT:                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                       Ranked {
+// DEFAULT-NEXT:                                                                           rank: LongLong,
+// DEFAULT-NEXT:                                                                           signed: false,
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                   value: Identifier(
 // DEFAULT-NEXT:                                                                       "stdc_count_zeros_ull",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
@@ -6796,49 +7003,72 @@ int main(void) {
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: Call {
 // DEFAULT-NEXT:                                                   callee: Generic {
-// DEFAULT-NEXT:                                                       controlling: Paren(
-// DEFAULT-NEXT:                                                           Identifier(
-// DEFAULT-NEXT:                                                               "value",
+// DEFAULT-NEXT:                                                       controlling: Expr(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Identifier(
+// DEFAULT-NEXT:                                                                   "value",
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                       associations: [
-// DEFAULT-NEXT:                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                   "unsigned char",
+// DEFAULT-NEXT:                                                           Type {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Char {
+// DEFAULT-NEXT:                                                                       signed: Some(
+// DEFAULT-NEXT:                                                                           false,
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                   "stdc_count_ones_uc",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                   "unsigned short",
+// DEFAULT-NEXT:                                                           Type {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Short,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                   "stdc_count_ones_us",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                   "unsigned int",
+// DEFAULT-NEXT:                                                           Type {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                   "stdc_count_ones_ui",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                   "unsigned long int",
+// DEFAULT-NEXT:                                                           Type {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Long,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                   "stdc_count_ones_ul",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           GenericAssociation {
-// DEFAULT-NEXT:                                                               type_name: Some(
-// DEFAULT-NEXT:                                                                   "unsigned long long int",
+// DEFAULT-NEXT:                                                           Type {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                                       signed: false,
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               expression: Identifier(
+// DEFAULT-NEXT:                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                               value: Identifier(
 // DEFAULT-NEXT:                                                                   "stdc_count_ones_ull",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
@@ -6853,49 +7083,72 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: Call {
 // DEFAULT-NEXT:                                               callee: Generic {
-// DEFAULT-NEXT:                                                   controlling: Paren(
-// DEFAULT-NEXT:                                                       Integer(
-// DEFAULT-NEXT:                                                           64,
+// DEFAULT-NEXT:                                                   controlling: Expr(
+// DEFAULT-NEXT:                                                       Paren(
+// DEFAULT-NEXT:                                                           Integer(
+// DEFAULT-NEXT:                                                               64,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   associations: [
-// DEFAULT-NEXT:                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                           type_name: Some(
-// DEFAULT-NEXT:                                                               "unsigned char",
+// DEFAULT-NEXT:                                                       Type {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Char {
+// DEFAULT-NEXT:                                                                   signed: Some(
+// DEFAULT-NEXT:                                                                       false,
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           value: Identifier(
 // DEFAULT-NEXT:                                                               "stdc_has_single_bit_uc",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                           type_name: Some(
-// DEFAULT-NEXT:                                                               "unsigned short",
+// DEFAULT-NEXT:                                                       Type {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Short,
+// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           value: Identifier(
 // DEFAULT-NEXT:                                                               "stdc_has_single_bit_us",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                           type_name: Some(
-// DEFAULT-NEXT:                                                               "unsigned int",
+// DEFAULT-NEXT:                                                       Type {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           value: Identifier(
 // DEFAULT-NEXT:                                                               "stdc_has_single_bit_ui",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                           type_name: Some(
-// DEFAULT-NEXT:                                                               "unsigned long int",
+// DEFAULT-NEXT:                                                       Type {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Long,
+// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           value: Identifier(
 // DEFAULT-NEXT:                                                               "stdc_has_single_bit_ul",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       GenericAssociation {
-// DEFAULT-NEXT:                                                           type_name: Some(
-// DEFAULT-NEXT:                                                               "unsigned long long int",
+// DEFAULT-NEXT:                                                       Type {
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: LongLong,
+// DEFAULT-NEXT:                                                                   signed: false,
+// DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           expression: Identifier(
+// DEFAULT-NEXT:                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                           value: Identifier(
 // DEFAULT-NEXT:                                                               "stdc_has_single_bit_ull",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
@@ -6910,49 +7163,72 @@ int main(void) {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Call {
 // DEFAULT-NEXT:                                           callee: Generic {
-// DEFAULT-NEXT:                                               controlling: Paren(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "value",
+// DEFAULT-NEXT:                                               controlling: Expr(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "value",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               associations: [
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "unsigned char",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: Some(
+// DEFAULT-NEXT:                                                                   false,
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "stdc_bit_width_uc",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "unsigned short",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Short,
+// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "stdc_bit_width_us",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "unsigned int",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "stdc_bit_width_ui",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "unsigned long int",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "stdc_bit_width_ul",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "unsigned long long int",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: LongLong,
+// DEFAULT-NEXT:                                                               signed: false,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "stdc_bit_width_ull",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -6967,49 +7243,72 @@ int main(void) {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Call {
 // DEFAULT-NEXT:                                       callee: Generic {
-// DEFAULT-NEXT:                                           controlling: Paren(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "value",
+// DEFAULT-NEXT:                                           controlling: Expr(
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "value",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           associations: [
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "unsigned char",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: Some(
+// DEFAULT-NEXT:                                                               false,
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: Identifier(
 // DEFAULT-NEXT:                                                       "stdc_bit_floor_uc",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "unsigned short",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Short,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: Identifier(
 // DEFAULT-NEXT:                                                       "stdc_bit_floor_us",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "unsigned int",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: Identifier(
 // DEFAULT-NEXT:                                                       "stdc_bit_floor_ui",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "unsigned long int",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Long,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: Identifier(
 // DEFAULT-NEXT:                                                       "stdc_bit_floor_ul",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "unsigned long long int",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: LongLong,
+// DEFAULT-NEXT:                                                           signed: false,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Identifier(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: Identifier(
 // DEFAULT-NEXT:                                                       "stdc_bit_floor_ull",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
@@ -7024,49 +7323,72 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Call {
 // DEFAULT-NEXT:                                   callee: Generic {
-// DEFAULT-NEXT:                                       controlling: Paren(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "value",
+// DEFAULT-NEXT:                                       controlling: Expr(
+// DEFAULT-NEXT:                                           Paren(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "value",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       associations: [
-// DEFAULT-NEXT:                                           GenericAssociation {
-// DEFAULT-NEXT:                                               type_name: Some(
-// DEFAULT-NEXT:                                                   "unsigned char",
+// DEFAULT-NEXT:                                           Type {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Char {
+// DEFAULT-NEXT:                                                       signed: Some(
+// DEFAULT-NEXT:                                                           false,
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               expression: Identifier(
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Identifier(
 // DEFAULT-NEXT:                                                   "stdc_bit_ceil_uc",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           GenericAssociation {
-// DEFAULT-NEXT:                                               type_name: Some(
-// DEFAULT-NEXT:                                                   "unsigned short",
+// DEFAULT-NEXT:                                           Type {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Short,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               expression: Identifier(
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Identifier(
 // DEFAULT-NEXT:                                                   "stdc_bit_ceil_us",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           GenericAssociation {
-// DEFAULT-NEXT:                                               type_name: Some(
-// DEFAULT-NEXT:                                                   "unsigned int",
+// DEFAULT-NEXT:                                           Type {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               expression: Identifier(
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Identifier(
 // DEFAULT-NEXT:                                                   "stdc_bit_ceil_ui",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           GenericAssociation {
-// DEFAULT-NEXT:                                               type_name: Some(
-// DEFAULT-NEXT:                                                   "unsigned long int",
+// DEFAULT-NEXT:                                           Type {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Long,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               expression: Identifier(
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Identifier(
 // DEFAULT-NEXT:                                                   "stdc_bit_ceil_ul",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           GenericAssociation {
-// DEFAULT-NEXT:                                               type_name: Some(
-// DEFAULT-NEXT:                                                   "unsigned long long int",
+// DEFAULT-NEXT:                                           Type {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: LongLong,
+// DEFAULT-NEXT:                                                       signed: false,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               expression: Identifier(
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                               value: Identifier(
 // DEFAULT-NEXT:                                                   "stdc_bit_ceil_ull",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
@@ -8192,17 +8514,30 @@ int main(void) {
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Generic {
-// DEFAULT-NEXT:                                           controlling: Paren(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "phrase",
+// DEFAULT-NEXT:                                           controlling: Expr(
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "phrase",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           associations: [
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "const char *",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Cast {
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Qualified {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                           is_const: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Cast {
 // DEFAULT-NEXT:                                                       ty: Qualified {
 // DEFAULT-NEXT:                                                           qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                               is_const: true,
@@ -8238,9 +8573,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: None,
-// DEFAULT-NEXT:                                                   expression: Call {
+// DEFAULT-NEXT:                                               Default(
+// DEFAULT-NEXT:                                                   Call {
 // DEFAULT-NEXT:                                                       callee: Paren(
 // DEFAULT-NEXT:                                                           Identifier(
 // DEFAULT-NEXT:                                                               "strchr",
@@ -8259,7 +8593,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -8288,17 +8622,30 @@ int main(void) {
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Generic {
-// DEFAULT-NEXT:                                           controlling: Paren(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "mutable_phrase",
+// DEFAULT-NEXT:                                           controlling: Expr(
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "mutable_phrase",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           associations: [
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "const char *",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: Cast {
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Qualified {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                           is_const: true,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Char {
+// DEFAULT-NEXT:                                                               signed: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   declarator: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   value: Cast {
 // DEFAULT-NEXT:                                                       ty: Qualified {
 // DEFAULT-NEXT:                                                           qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                               is_const: true,
@@ -8334,9 +8681,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: None,
-// DEFAULT-NEXT:                                                   expression: Call {
+// DEFAULT-NEXT:                                               Default(
+// DEFAULT-NEXT:                                                   Call {
 // DEFAULT-NEXT:                                                       callee: Paren(
 // DEFAULT-NEXT:                                                           Identifier(
 // DEFAULT-NEXT:                                                               "strchr",
@@ -8355,7 +8701,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -8402,17 +8748,26 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "phrase",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "phrase",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const void *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -8449,9 +8804,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "memchr",
@@ -8475,7 +8829,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -8493,17 +8847,26 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "mutable_phrase",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "mutable_phrase",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const void *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Void,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -8540,9 +8903,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "memchr",
@@ -8566,7 +8928,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -8584,17 +8946,30 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "phrase",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "phrase",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const char *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -8630,9 +9005,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "strstr",
@@ -8651,7 +9025,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -8669,17 +9043,30 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "mutable_phrase",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "mutable_phrase",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const char *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -8715,9 +9102,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "strstr",
@@ -8736,7 +9122,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -9272,17 +9658,28 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "const_month",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "const_month",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const wchar_t *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "wchar_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -9316,9 +9713,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "wcschr",
@@ -9337,7 +9733,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -9355,17 +9751,28 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "wide_month",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "wide_month",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const wchar_t *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "wchar_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -9399,9 +9806,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "wcschr",
@@ -9420,7 +9826,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -9438,17 +9844,28 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "const_month",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "const_month",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const wchar_t *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "wchar_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -9482,9 +9899,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "wcsstr",
@@ -9503,7 +9919,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(
@@ -9521,17 +9937,28 @@ int main(void) {
 // DEFAULT-NEXT:                       value: Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "wide_month",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "wide_month",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const wchar_t *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Named(
+// DEFAULT-NEXT:                                               "wchar_t",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -9565,9 +9992,8 @@ int main(void) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "wcsstr",
@@ -9586,7 +10012,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Identifier(

@@ -650,10 +650,10 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [
 // DEFAULT-NEXT:                                                   ArrayRange {
-// DEFAULT-NEXT:                                                       start: I128(
+// DEFAULT-NEXT:                                                       start: Integer(
 // DEFAULT-NEXT:                                                           2,
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       end: I128(
+// DEFAULT-NEXT:                                                       end: Integer(
 // DEFAULT-NEXT:                                                           5,
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -699,7 +699,9 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [
 // DEFAULT-NEXT:                                                   Array(
-// DEFAULT-NEXT:                                                       1,
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           1,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               value: Expr(

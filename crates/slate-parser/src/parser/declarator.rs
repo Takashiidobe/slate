@@ -1,11 +1,11 @@
 use super::attributes::{apply_vector_attributes, parse_attribute_groups};
-use super::decl::{evaluate_enum_expression, record_enum_value, specifiers_with_type};
+use super::decl::specifiers_with_type;
 use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, coalesce_string_literals, span_tokens};
 use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use miette::Diagnostic;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Eq, Error, Diagnostic)]
@@ -520,8 +520,6 @@ impl<'a> DeclaratorParser<'a> {
     pub(super) fn parse_enumerator_list(&mut self) -> Result<Vec<Enumerator>, DeclaratorError> {
         self.pos += 1;
         let mut enumerators = Vec::new();
-        let mut values = HashMap::new();
-        let mut next_value = 0i64;
         loop {
             if self.matches(Token::RBrace) {
                 break;
@@ -530,29 +528,19 @@ impl<'a> DeclaratorParser<'a> {
                 return Err(DeclaratorError::ExpectedEnumerator);
             };
             self.pos += 1;
-            let start_of_value = self.pos + 1;
             let value = if self.matches(Token::Equal) {
-                let start = self.pos;
-                while !matches!(
-                    self.peek(),
-                    Some(&Token::Comma) | Some(&Token::RBrace) | None
-                ) {
-                    self.pos += 1;
-                }
-                let value = evaluate_enum_expression(&self.tokens[start..self.pos], &values)
-                    .map_err(|error| error.to_string())?;
+                let (value, end) = const_expr::Parser::parse_one(
+                    self.tokens,
+                    self.pos,
+                    self.typedef_names,
+                    self.statements,
+                )
+                .map_err(|error| error.to_string())?;
+                self.pos = end;
                 Some(value)
             } else {
                 None
             };
-            let explicit_value = value;
-            let value = explicit_value.map(|value| {
-                Box::new(span_tokens(
-                    ExprKind::Integer(value),
-                    &self.tokens[start_of_value..self.pos],
-                ))
-            });
-            record_enum_value(&mut values, &mut next_value, &name, explicit_value);
             enumerators.push(Enumerator { name, value });
             if self.matches(Token::Comma) {
                 continue;
@@ -688,22 +676,15 @@ impl<'a> DeclaratorParser<'a> {
         )
     }
 
-    pub(super) fn parse_designator_index_expr(&mut self) -> i64 {
-        let start = self.pos;
-        let mut depth = 0i32;
-        while let Some(token) = self.tokens.value_at(self.pos) {
-            match token {
-                Token::LBracket | Token::LParen => depth += 1,
-                Token::RBracket if depth == 0 => break,
-                Token::Ellipsis if depth == 0 => break,
-                Token::RBracket | Token::RParen => depth -= 1,
-                _ => {}
-            }
-            self.pos += 1;
-        }
-
-        const_expr::Parser::evaluate(&self.tokens[start..self.pos])
-            .unwrap_or_else(|error| panic!("invalid array designator expression: {error:?}"))
+    fn parse_designator_index(&mut self) -> Result<Expr, const_expr::ConstExprError> {
+        let (index, end) = const_expr::Parser::parse_one(
+            self.tokens,
+            self.pos,
+            self.typedef_names,
+            self.statements,
+        )?;
+        self.pos = end;
+        Ok(index)
     }
 
     pub(super) fn parse_initializer(
@@ -716,13 +697,10 @@ impl<'a> DeclaratorParser<'a> {
                 let mut designators = Vec::new();
                 loop {
                     if self.matches(Token::LBracket) {
-                        let index = self.parse_designator_index_expr();
+                        let index = self.parse_designator_index()?;
                         if self.matches(Token::Ellipsis) {
-                            let end = self.parse_designator_index_expr();
-                            designators.push(Designator::ArrayRange {
-                                start: IntegerValue::I128(index as i128),
-                                end: IntegerValue::I128(end as i128),
-                            });
+                            let end = self.parse_designator_index()?;
+                            designators.push(Designator::ArrayRange { start: index, end });
                         } else {
                             designators.push(Designator::Array(index));
                         }

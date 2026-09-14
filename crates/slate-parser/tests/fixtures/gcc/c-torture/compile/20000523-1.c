@@ -50,9 +50,13 @@ int i = sizeof(void *);
 // DEFAULT-NEXT:               Enumerator {
 // DEFAULT-NEXT:                   name: "foo",
 // DEFAULT-NEXT:                   value: Some(
-// DEFAULT-NEXT:                       Integer(
-// DEFAULT-NEXT:                           8,
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       SizeOfType {
+// DEFAULT-NEXT:                           ty: Void,
+// DEFAULT-NEXT:                           declarator: Pointer {
+// DEFAULT-NEXT:                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                               inner: Abstract,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

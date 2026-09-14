@@ -238,24 +238,27 @@ int main(void) {
 // DEFAULT-NEXT:                       ty: Void,
 // DEFAULT-NEXT:                       declarator: Abstract,
 // DEFAULT-NEXT:                       value: Generic {
-// DEFAULT-NEXT:                           controlling: Paren(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_nanf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [
-// DEFAULT-NEXT:                                       StringLit(
-// DEFAULT-NEXT:                                           "",
+// DEFAULT-NEXT:                           controlling: Expr(
+// DEFAULT-NEXT:                               Paren(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_nanf",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLit(
+// DEFAULT-NEXT:                                               "",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "float",
+// DEFAULT-NEXT:                               Type {
+// DEFAULT-NEXT:                                   ty: Floating(
+// DEFAULT-NEXT:                                       Float,
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
 // DEFAULT-NEXT:                                       0,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },

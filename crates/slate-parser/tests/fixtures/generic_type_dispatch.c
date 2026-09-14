@@ -349,33 +349,55 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Generic {
-// DEFAULT-NEXT:                                               controlling: Paren(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "value",
+// DEFAULT-NEXT:                                               controlling: Expr(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Identifier(
+// DEFAULT-NEXT:                                                           "value",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               associations: [
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "int",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "int_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "long",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "long_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "const int *",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Qualified {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                               is_const: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "pointer_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -412,33 +434,55 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Generic {
-// DEFAULT-NEXT:                                               controlling: Paren(
-// DEFAULT-NEXT:                                                   Integer(
-// DEFAULT-NEXT:                                                       8,
+// DEFAULT-NEXT:                                               controlling: Expr(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Integer(
+// DEFAULT-NEXT:                                                           8,
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               associations: [
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "int",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "int_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "long",
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "long_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "const int *",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Qualified {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                               is_const: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           ty: Integer(
+// DEFAULT-NEXT:                                                               Ranked {
+// DEFAULT-NEXT:                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Pointer {
+// DEFAULT-NEXT:                                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                           inner: Abstract,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Identifier(
 // DEFAULT-NEXT:                                                           "pointer_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
@@ -475,8 +519,56 @@ int main(void) {
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Generic {
-// DEFAULT-NEXT:                                               controlling: Paren(
-// DEFAULT-NEXT:                                                   Cast {
+// DEFAULT-NEXT:                                               controlling: Expr(
+// DEFAULT-NEXT:                                                   Paren(
+// DEFAULT-NEXT:                                                       Cast {
+// DEFAULT-NEXT:                                                           ty: Qualified {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                                   is_const: true,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                       signed: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarator: Pointer {
+// DEFAULT-NEXT:                                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                               inner: Abstract,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           value: Identifier(
+// DEFAULT-NEXT:                                                               "array",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               associations: [
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Int,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
+// DEFAULT-NEXT:                                                           "int_score",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   Type {
+// DEFAULT-NEXT:                                                       ty: Integer(
+// DEFAULT-NEXT:                                                           Ranked {
+// DEFAULT-NEXT:                                                               rank: Long,
+// DEFAULT-NEXT:                                                               signed: true,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                       value: Identifier(
+// DEFAULT-NEXT:                                                           "long_score",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   Type {
 // DEFAULT-NEXT:                                                       ty: Qualified {
 // DEFAULT-NEXT:                                                           qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                               is_const: true,
@@ -493,32 +585,6 @@ int main(void) {
 // DEFAULT-NEXT:                                                           inner: Abstract,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       value: Identifier(
-// DEFAULT-NEXT:                                                           "array",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               associations: [
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "int",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
-// DEFAULT-NEXT:                                                           "int_score",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "long",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
-// DEFAULT-NEXT:                                                           "long_score",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   GenericAssociation {
-// DEFAULT-NEXT:                                                       type_name: Some(
-// DEFAULT-NEXT:                                                           "const int *",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       expression: Identifier(
 // DEFAULT-NEXT:                                                           "pointer_score",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },

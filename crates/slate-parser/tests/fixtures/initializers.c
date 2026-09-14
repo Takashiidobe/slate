@@ -346,7 +346,9 @@ int main() {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           2,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               2,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -358,7 +360,9 @@ int main() {
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [
 // DEFAULT-NEXT:                                       Array(
-// DEFAULT-NEXT:                                           0,
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   value: Expr(
@@ -768,7 +772,9 @@ int main() {
 // ENABLED-NEXT:                               InitializerItem {
 // ENABLED-NEXT:                                   designators: [
 // ENABLED-NEXT:                                       Array(
-// ENABLED-NEXT:                                           2,
+// ENABLED-NEXT:                                           Integer(
+// ENABLED-NEXT:                                               2,
+// ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ],
 // ENABLED-NEXT:                                   value: Expr(
@@ -780,7 +786,9 @@ int main() {
 // ENABLED-NEXT:                               InitializerItem {
 // ENABLED-NEXT:                                   designators: [
 // ENABLED-NEXT:                                       Array(
-// ENABLED-NEXT:                                           0,
+// ENABLED-NEXT:                                           Integer(
+// ENABLED-NEXT:                                               0,
+// ENABLED-NEXT:                                           ),
 // ENABLED-NEXT:                                       ),
 // ENABLED-NEXT:                                   ],
 // ENABLED-NEXT:                                   value: Expr(

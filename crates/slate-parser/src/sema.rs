@@ -569,9 +569,13 @@ fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
             controlling,
             associations,
         } => {
-            walk_expr(controlling, visit);
+            if let GenericControl::Expr(controlling) = controlling {
+                walk_expr(controlling, visit);
+            }
             for association in associations {
-                walk_expr(&association.expression, visit);
+                let (GenericAssociation::Type { value, .. } | GenericAssociation::Default(value)) =
+                    association;
+                walk_expr(value, visit);
             }
         }
         ExprKind::Paren(value)

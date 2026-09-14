@@ -359,34 +359,40 @@ int main(void) {
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Generic {
-// DEFAULT-NEXT:                                           controlling: Paren(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "i",
+// DEFAULT-NEXT:                                           controlling: Expr(
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "i",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           associations: [
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "int",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: StringLit(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: StringLit(
 // DEFAULT-NEXT:                                                       "int",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "double",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: StringLit(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: StringLit(
 // DEFAULT-NEXT:                                                       "double",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: None,
-// DEFAULT-NEXT:                                                   expression: StringLit(
+// DEFAULT-NEXT:                                               Default(
+// DEFAULT-NEXT:                                                   StringLit(
 // DEFAULT-NEXT:                                                       "other",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
@@ -418,34 +424,40 @@ int main(void) {
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
 // DEFAULT-NEXT:                                       Generic {
-// DEFAULT-NEXT:                                           controlling: Paren(
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "d",
+// DEFAULT-NEXT:                                           controlling: Expr(
+// DEFAULT-NEXT:                                               Paren(
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "d",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           associations: [
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "int",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: StringLit(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: StringLit(
 // DEFAULT-NEXT:                                                       "int",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: Some(
-// DEFAULT-NEXT:                                                       "double",
+// DEFAULT-NEXT:                                               Type {
+// DEFAULT-NEXT:                                                   ty: Floating(
+// DEFAULT-NEXT:                                                       Double,
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   expression: StringLit(
+// DEFAULT-NEXT:                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                   value: StringLit(
 // DEFAULT-NEXT:                                                       "double",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               GenericAssociation {
-// DEFAULT-NEXT:                                                   type_name: None,
-// DEFAULT-NEXT:                                                   expression: StringLit(
+// DEFAULT-NEXT:                                               Default(
+// DEFAULT-NEXT:                                                   StringLit(
 // DEFAULT-NEXT:                                                       "other",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),

@@ -237,15 +237,16 @@ int main(void) {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
 // DEFAULT-NEXT:                       left: Generic {
-// DEFAULT-NEXT:                           controlling: Identifier(
-// DEFAULT-NEXT:                               "<type-name>",
+// DEFAULT-NEXT:                           controlling: Expr(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "true",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Type {
+// DEFAULT-NEXT:                                   ty: Bool,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
@@ -293,15 +294,16 @@ int main(void) {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
 // DEFAULT-NEXT:                       left: Generic {
-// DEFAULT-NEXT:                           controlling: Identifier(
-// DEFAULT-NEXT:                               "<type-name>",
+// DEFAULT-NEXT:                           controlling: Expr(
+// DEFAULT-NEXT:                               Identifier(
+// DEFAULT-NEXT:                                   "false",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
-// DEFAULT-NEXT:                               GenericAssociation {
-// DEFAULT-NEXT:                                   type_name: Some(
-// DEFAULT-NEXT:                                       "_Bool",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   expression: Integer(
+// DEFAULT-NEXT:                               Type {
+// DEFAULT-NEXT:                                   ty: Bool,
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                                   value: Integer(
 // DEFAULT-NEXT:                                       1,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },

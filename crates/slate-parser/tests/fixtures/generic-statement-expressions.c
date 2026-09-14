@@ -22,24 +22,29 @@ int statement_value() {
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Generic {
-// DEFAULT-NEXT:                       controlling: Integer(
-// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                       controlling: Expr(
+// DEFAULT-NEXT:                           Integer(
+// DEFAULT-NEXT:                               1,
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       associations: [
-// DEFAULT-NEXT:                           GenericAssociation {
-// DEFAULT-NEXT:                               type_name: Some(
-// DEFAULT-NEXT:                                   "int",
+// DEFAULT-NEXT:                           Type {
+// DEFAULT-NEXT:                               ty: Integer(
+// DEFAULT-NEXT:                                   Ranked {
+// DEFAULT-NEXT:                                       rank: Int,
+// DEFAULT-NEXT:                                       signed: true,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               expression: Integer(
+// DEFAULT-NEXT:                               declarator: Abstract,
+// DEFAULT-NEXT:                               value: Integer(
 // DEFAULT-NEXT:                                   1,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           GenericAssociation {
-// DEFAULT-NEXT:                               type_name: None,
-// DEFAULT-NEXT:                               expression: Integer(
+// DEFAULT-NEXT:                           Default(
+// DEFAULT-NEXT:                               Integer(
 // DEFAULT-NEXT:                                   0,
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),

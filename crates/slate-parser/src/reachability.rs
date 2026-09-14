@@ -119,6 +119,16 @@ impl<'a> Reachability<'a> {
             Initializer::Expr(expr) => self.mark_expr(expr),
             Initializer::List(items) => {
                 for item in items {
+                    for designator in &item.designators {
+                        match designator {
+                            Designator::Array(index) => self.mark_expr(index),
+                            Designator::ArrayRange { start, end } => {
+                                self.mark_expr(start);
+                                self.mark_expr(end);
+                            }
+                            Designator::Field(_) => {}
+                        }
+                    }
                     self.mark_initializer(&item.value);
                 }
             }
@@ -198,12 +208,22 @@ impl<'a> Reachability<'a> {
                 controlling,
                 associations,
             } => {
-                self.mark_expr(controlling);
+                match controlling {
+                    GenericControl::Expr(controlling) => self.mark_expr(controlling),
+                    GenericControl::Type { ty, declarator } => self.mark_type_name(ty, declarator),
+                }
                 for association in associations {
-                    if let Some(type_name) = &association.type_name {
-                        self.mark_name(type_name);
+                    match association {
+                        GenericAssociation::Type {
+                            ty,
+                            declarator,
+                            value,
+                        } => {
+                            self.mark_type_name(ty, declarator);
+                            self.mark_expr(value);
+                        }
+                        GenericAssociation::Default(value) => self.mark_expr(value),
                     }
-                    self.mark_expr(&association.expression);
                 }
             }
             ExprKind::SizeOfType { ty, declarator } | ExprKind::AlignOf { ty, declarator } => {

@@ -5440,91 +5440,154 @@ int main(void) {
 // DEFAULT-NEXT:                           left: Binary {
 // DEFAULT-NEXT:                               op: Add,
 // DEFAULT-NEXT:                               left: Generic {
-// DEFAULT-NEXT:                                   controlling: Paren(
-// DEFAULT-NEXT:                                       Integer(
-// DEFAULT-NEXT:                                           1,
+// DEFAULT-NEXT:                                   controlling: Expr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Integer(
+// DEFAULT-NEXT:                                               1,
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   associations: [
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: Some(
-// DEFAULT-NEXT:                                               "int",
+// DEFAULT-NEXT:                                       Type {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           value: Integer(
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: Some(
-// DEFAULT-NEXT:                                               "double",
+// DEFAULT-NEXT:                                       Type {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           value: Integer(
 // DEFAULT-NEXT:                                               22,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: Some(
-// DEFAULT-NEXT:                                               "char *",
+// DEFAULT-NEXT:                                       Type {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Integer(
 // DEFAULT-NEXT:                                               33,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: None,
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                       Default(
+// DEFAULT-NEXT:                                           Integer(
 // DEFAULT-NEXT:                                               44,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Generic {
-// DEFAULT-NEXT:                                   controlling: Paren(
-// DEFAULT-NEXT:                                       Float(
-// DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               value: Double(
-// DEFAULT-NEXT:                                                   1.0,
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                   controlling: Expr(
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           Float(
+// DEFAULT-NEXT:                                               FloatLiteral {
+// DEFAULT-NEXT:                                                   value: Double(
+// DEFAULT-NEXT:                                                       1.0,
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   associations: [
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: Some(
-// DEFAULT-NEXT:                                               "int",
+// DEFAULT-NEXT:                                       Type {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Ranked {
+// DEFAULT-NEXT:                                                   rank: Int,
+// DEFAULT-NEXT:                                                   signed: true,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           value: Integer(
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: Some(
-// DEFAULT-NEXT:                                               "double",
+// DEFAULT-NEXT:                                       Type {
+// DEFAULT-NEXT:                                           ty: Floating(
+// DEFAULT-NEXT:                                               Double,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                           declarator: Abstract,
+// DEFAULT-NEXT:                                           value: Integer(
 // DEFAULT-NEXT:                                               22,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: Some(
-// DEFAULT-NEXT:                                               "char *",
+// DEFAULT-NEXT:                                       Type {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Integer(
 // DEFAULT-NEXT:                                               33,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       GenericAssociation {
-// DEFAULT-NEXT:                                           type_name: None,
-// DEFAULT-NEXT:                                           expression: Integer(
+// DEFAULT-NEXT:                                       Default(
+// DEFAULT-NEXT:                                           Integer(
 // DEFAULT-NEXT:                                               44,
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Cast {
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Cast {
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           value: Integer(
+// DEFAULT-NEXT:                                               0,
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               associations: [
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           11,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Floating(
+// DEFAULT-NEXT:                                           Double,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       declarator: Abstract,
+// DEFAULT-NEXT:                                       value: Integer(
+// DEFAULT-NEXT:                                           22,
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   Type {
 // DEFAULT-NEXT:                                       ty: Integer(
 // DEFAULT-NEXT:                                           Char {
 // DEFAULT-NEXT:                                               signed: None,
@@ -5535,41 +5598,14 @@ int main(void) {
 // DEFAULT-NEXT:                                           inner: Abstract,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Integer(
-// DEFAULT-NEXT:                                           0,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "int",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Integer(
-// DEFAULT-NEXT:                                           11,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "double",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Integer(
-// DEFAULT-NEXT:                                           22,
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "char *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Integer(
 // DEFAULT-NEXT:                                           33,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Integer(
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Integer(
 // DEFAULT-NEXT:                                           44,
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },

@@ -292,17 +292,30 @@ int main() { foo(); }
 // DEFAULT-NEXT:                       Binary {
 // DEFAULT-NEXT:                           op: NotEqual,
 // DEFAULT-NEXT:                           left: Generic {
-// DEFAULT-NEXT:                               controlling: Paren(
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "fmt",
+// DEFAULT-NEXT:                               controlling: Expr(
+// DEFAULT-NEXT:                                   Paren(
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "fmt",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               associations: [
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: Some(
-// DEFAULT-NEXT:                                           "const char *",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       expression: Cast {
+// DEFAULT-NEXT:                                   Type {
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Cast {
 // DEFAULT-NEXT:                                           ty: Qualified {
 // DEFAULT-NEXT:                                               qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                   is_const: true,
@@ -338,9 +351,8 @@ int main() { foo(); }
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   GenericAssociation {
-// DEFAULT-NEXT:                                       type_name: None,
-// DEFAULT-NEXT:                                       expression: Call {
+// DEFAULT-NEXT:                                   Default(
+// DEFAULT-NEXT:                                       Call {
 // DEFAULT-NEXT:                                           callee: Paren(
 // DEFAULT-NEXT:                                               Identifier(
 // DEFAULT-NEXT:                                                   "strchr",
@@ -359,7 +371,7 @@ int main() { foo(); }
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Integer(

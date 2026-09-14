@@ -8,7 +8,7 @@ use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::pp::{PPNode, PPNodeKind};
 use crate::reachability::filter_translation_unit;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 impl Parser {
     pub(super) fn parse_declaration_tokens(
@@ -656,8 +656,6 @@ impl Parser {
             )?;
             let tag_decl = if kind == TagKind::Enum {
                 let mut enumerators = Vec::new();
-                let mut values = HashMap::new();
-                let mut next_value = 0i64;
                 for segment in split_top_level(body_tokens, &Token::Comma) {
                     let segment = segment
                         .into_iter()
@@ -669,30 +667,18 @@ impl Parser {
                     let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
                         return Err(self.error_at(Loc::whole(code), "expected enumerator"));
                     };
-                    let explicit_value = match segment.value_at(1) {
+                    let value = match segment.value_at(1) {
                         None => None,
-                        Some(Token::Equal) => {
-                            Some(evaluate_enum_expression(&segment[2..], &values).map_err(
-                                |error| self.error_at_tokens(&segment[2..], 0, error.to_string()),
-                            )?)
-                        }
+                        Some(Token::Equal) => Some(self.parse_enumerator_value(&segment[2..])?),
                         _ => {
                             return Err(
                                 self.error_at(Loc::whole(code), "expected enumerator value")
                             );
                         }
                     };
-                    record_enum_value(
-                        &mut values,
-                        &mut next_value,
-                        enumerator_name,
-                        explicit_value,
-                    );
                     enumerators.push(Enumerator {
                         name: enumerator_name.clone(),
-                        value: explicit_value.map(|value| {
-                            Box::new(span_tokens(ExprKind::Integer(value), &segment[2..]))
-                        }),
+                        value,
                     });
                 }
                 Decl::Enum(EnumDecl {
@@ -792,8 +778,6 @@ impl Parser {
         )?;
         let tag_decl = if kind == TagKind::Enum {
             let mut enumerators = Vec::new();
-            let mut values = HashMap::new();
-            let mut next_value = 0i64;
             let body_tokens = self.nodes_tokens(&nodes[body_start..close]);
             for segment in split_top_level(&body_tokens, &Token::Comma) {
                 let segment = segment
@@ -806,28 +790,16 @@ impl Parser {
                 let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
                     return Err(self.error_at(Loc::whole(code), "expected enumerator"));
                 };
-                let explicit_value = match segment.value_at(1) {
+                let value = match segment.value_at(1) {
                     None => None,
-                    Some(Token::Equal) => Some(
-                        evaluate_enum_expression(&segment[2..], &values).map_err(|error| {
-                            self.error_at_tokens(&segment[2..], 0, error.to_string())
-                        })?,
-                    ),
+                    Some(Token::Equal) => Some(self.parse_enumerator_value(&segment[2..])?),
                     _ => {
                         return Err(self.error_at(Loc::whole(code), "expected enumerator value"));
                     }
                 };
-                record_enum_value(
-                    &mut values,
-                    &mut next_value,
-                    enumerator_name,
-                    explicit_value,
-                );
                 enumerators.push(Enumerator {
                     name: enumerator_name.clone(),
-                    value: explicit_value.map(|value| {
-                        Box::new(span_tokens(ExprKind::Integer(value), &segment[2..]))
-                    }),
+                    value,
                 });
             }
             Decl::Enum(EnumDecl {
@@ -849,6 +821,11 @@ impl Parser {
             vec![tag_decl].into_iter().chain(declaration).collect(),
             consumed,
         ))
+    }
+
+    fn parse_enumerator_value(&self, tokens: &[Span<Token>]) -> Result<Expr, ParseError> {
+        const_expr::Parser::parse_expression(tokens, &self.typedef_names, Some(self))
+            .map_err(|error| self.error_at_tokens(tokens, 0, error.to_string()))
     }
 
     fn parse_tag_declaration(
@@ -1212,34 +1189,6 @@ pub(super) fn split_top_level(tokens: &[Span<Token>], delimiter: &Token) -> Vec<
         segments.push(current);
     }
     segments
-}
-
-pub(super) fn evaluate_enum_expression(
-    tokens: &[Span<Token>],
-    values: &HashMap<String, i64>,
-) -> Result<i64, const_expr::ConstExprError> {
-    let tokens = tokens
-        .iter()
-        .map(|token| match &token.value {
-            Token::Ident(name) => values.get(name).map_or_else(
-                || token.clone(),
-                |value| token.clone().with_value(Token::IntLit(value.to_string())),
-            ),
-            _ => token.clone(),
-        })
-        .collect::<Vec<_>>();
-    const_expr::Parser::evaluate(&tokens)
-}
-
-pub(super) fn record_enum_value(
-    values: &mut HashMap<String, i64>,
-    next_value: &mut i64,
-    name: &str,
-    explicit_value: Option<i64>,
-) {
-    let value = explicit_value.unwrap_or(*next_value);
-    values.insert(name.to_string(), value);
-    *next_value = value.wrapping_add(1);
 }
 
 pub(super) fn matching_paren(tokens: &[Span<Token>], open: usize) -> Option<usize> {
