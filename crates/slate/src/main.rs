@@ -80,6 +80,9 @@ fn cli_result<T, E: std::fmt::Display>(result: Result<T, E>) -> Result<T, String
 
 const SLATE_ISSUES_URL: &str = "https://github.com/takashiidobe/slate/issues";
 
+/// Currently there are lots of NYIs (Not Yet Implemented) errors that come from ClangIR.
+/// We want to handle these in a structured fashion, so all error types use this trait to report
+/// NYIs upstream
 trait Diagnosable {
     fn nyi_diagnostic(&self) -> Option<Vec<&str>>;
 }

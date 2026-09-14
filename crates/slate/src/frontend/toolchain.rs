@@ -1,33 +1,13 @@
-//! Frontend: turn a C source file into ClangIR in MLIR *generic* form, the
-//! regular `"op"(operands) <{attrs}> ({regions}) : type` syntax the parser reads.
-//!
-//! Tool paths default to the local CIR-enabled build and are overridable:
-//!   SLATE_CLANG    (default ~/llvm-project/build-cir/bin/clang)
-//!   SLATE_CIR_OPT  (default ~/llvm-project/build-cir/bin/cir-opt)
-//!   SLATE_LIBC_SHIM (defaults to the repo's libc-shim/include; a directory
-//!                    overrides it; an empty value disables the shim and
-//!                    falls back to system libc headers. SLATE_CLANG parses
-//!                    with -nostdlibinc -isystem <dir> against whichever
-//!                    directory is active, while keeping clang's own builtin
-//!                    freestanding headers such as stddef.h/stdint.h/stdatomic.h)
-
 use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::{Command, ExitStatus, Stdio};
+use std::sync::OnceLock;
 use thiserror::Error;
 use triplers::{ArchPart, Canonicalizable, Env, Kernel, Triple, Vendor};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Tool {
     Clang,
-}
-
-impl std::fmt::Display for Tool {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Clang => f.write_str("clang"),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -163,7 +143,7 @@ fn libc_shim_args(target: &str) -> Vec<String> {
 }
 
 pub fn clang_resource_dir_include() -> Option<String> {
-    static RESOURCE_DIR: std::sync::OnceLock<Option<String>> = std::sync::OnceLock::new();
+    static RESOURCE_DIR: OnceLock<Option<String>> = OnceLock::new();
     RESOURCE_DIR
         .get_or_init(|| {
             let out = Command::new(clang())
@@ -180,7 +160,7 @@ pub fn clang_resource_dir_include() -> Option<String> {
 }
 
 fn system_fallback_include_dirs() -> Vec<String> {
-    static DIRS: std::sync::OnceLock<Vec<String>> = std::sync::OnceLock::new();
+    static DIRS: OnceLock<Vec<String>> = OnceLock::new();
     DIRS.get_or_init(|| {
         let Ok(out) = Command::new(clang())
             .args(["-E", "-Wp,-v", "-x", "c", "/dev/null"])
@@ -414,6 +394,7 @@ pub struct TargetConfig {
     pub vendor: &'static str,
 }
 
+/// This function takes a rust target and returns Information required
 pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
     let triple = parse_target(target)?;
     let arch = arch_name(triple.arch)?;
@@ -431,6 +412,7 @@ pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
     };
     let env = match triple.env {
         Some(Env::MSVC) => "msvc",
+        // there are lots of gnu/musl envs in triplers, so we use canonicalize here
         Some(env) if env.canonicalize().starts_with("gnu") => "gnu",
         Some(env) if env.canonicalize().starts_with("musl") => "musl",
         _ => "",
@@ -564,8 +546,10 @@ pub fn active_long_bits() -> u32 {
     long_bits(&active_target())
 }
 
+/// Whether or not the target has FMA (Fused-Multiply Add), an optimization that turns an expression
+/// like (a * b) + c into a single step with only one rounding step.
 pub fn target_has_native_fma(bits: u32) -> bool {
-    static MACROS: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    static MACROS: OnceLock<String> = OnceLock::new();
     let macros = MACROS.get_or_init(|| {
         let Ok(args) = target_args() else {
             return String::new();
@@ -708,8 +692,6 @@ fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, St
     Ok(macros)
 }
 
-/// Emit high-level ClangIR (pre-CFG-flattening, passes disabled) for `src` and
-/// return it in MLIR generic form.
 pub fn emit_generic(src: &Path) -> Result<String, EmitError> {
     emit_generic_with_args(src, &[])
 }
@@ -718,14 +700,6 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
     emit_generic_with_args_and_cir_opt_flags(src, extra_args, &["--cir-canonicalize", "--mem2reg"])
 }
 
-/// Like `emit_generic_with_args`, but also flattens every function in the
-/// translation unit into a plain multi-block CFG (`cir.switch.flat`,
-/// `cir.brcond`, real `cir.br` edges in place of `cir.goto`/`cir.label`)
-/// instead of ClangIR's usual nested structured form. Only meant to be
-/// re-run on translation units that need it (see `frontend::cir_input`) — applying
-/// this to every function unconditionally would flatten goto-free functions
-/// too, which lowers to a correct but far uglier `loop { match state {..} }`
-/// dispatch instead of native Rust control flow.
 pub fn emit_generic_with_args_flattened(
     src: &Path,
     extra_args: &[String],
