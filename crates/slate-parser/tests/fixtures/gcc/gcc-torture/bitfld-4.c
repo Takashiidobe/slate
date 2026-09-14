@@ -105,33 +105,7 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* When comparisons of bit-fields to unsigned constants got shortened,\n   the shortened signed constant was wrongly marked as overflowing,\n   leading to a later integer_zerop failure and misoptimization.\n\n   Related to bug tree-optimization/16437 but shows the problem on\n   32-bit systems.  */",
-// DEFAULT-NEXT:                   "/* Origin: Joseph Myers <jsm@polyomino.org.uk> */",
-// DEFAULT-NEXT:                   "/* { dg-require-effective-target int32plus } */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 0,
-// DEFAULT-NEXT:                   length: 393,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 0,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration {
+// DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -156,7 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[2]: Declaration {
+// DEFAULT-NEXT: decl[1]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -177,7 +151,7 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT: decl[2]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -248,7 +222,7 @@ int main(void) {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[3]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

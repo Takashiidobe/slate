@@ -59,31 +59,7 @@ void location_completer (char *text)
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* This tests to make sure PRE doesn't choose the wrong name when\n   inserting phi nodes.  Otherwise, we get uses that aren't dominated\n   by defs.  \n   PR 13177.  */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 49,
-// DEFAULT-NEXT:                   length: 166,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 2,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Function(
+// DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "location_completer",

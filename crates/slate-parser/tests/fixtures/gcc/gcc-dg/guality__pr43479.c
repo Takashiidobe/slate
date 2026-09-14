@@ -34,33 +34,7 @@ main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* PR debug/43479 */",
-// DEFAULT-NEXT:                   "/* { dg-do run } */",
-// DEFAULT-NEXT:                   "/* { dg-options \"-g\" } */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 0,
-// DEFAULT-NEXT:                   length: 66,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 0,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "foo",
@@ -319,150 +293,6 @@ main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment(
-// DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comment: Comment {
-// DEFAULT-NEXT:                           text: [
-// DEFAULT-NEXT:                               "/* { dg-final { gdb-test . \"i\" \"6\" } } */",
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           loc: Loc {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               offset: 193,
-// DEFAULT-NEXT:                               length: 41,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 10,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment(
-// DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comment: Comment {
-// DEFAULT-NEXT:                           text: [
-// DEFAULT-NEXT:                               "/* { dg-final { gdb-test .-1 \"h\" \"9\" } } */",
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           loc: Loc {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               offset: 241,
-// DEFAULT-NEXT:                               length: 43,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 11,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment(
-// DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comment: Comment {
-// DEFAULT-NEXT:                           text: [
-// DEFAULT-NEXT:                               "/* { dg-final { gdb-test .-2 \"n\" \"9\" } } */",
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           loc: Loc {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               offset: 289,
-// DEFAULT-NEXT:                               length: 43,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 12,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment(
-// DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comment: Comment {
-// DEFAULT-NEXT:                           text: [
-// DEFAULT-NEXT:                               "/* { dg-final { gdb-test . \"j\" \"8\" } } */",
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           loc: Loc {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               offset: 367,
-// DEFAULT-NEXT:                               length: 41,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 15,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment(
-// DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comment: Comment {
-// DEFAULT-NEXT:                           text: [
-// DEFAULT-NEXT:                               "/* { dg-final { gdb-test .-1 \"h\" \"9\" } } */",
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           loc: Loc {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               offset: 415,
-// DEFAULT-NEXT:                               length: 43,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 16,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Comment(
-// DEFAULT-NEXT:                   CommentGroup {
-// DEFAULT-NEXT:                       comment: Comment {
-// DEFAULT-NEXT:                           text: [
-// DEFAULT-NEXT:                               "/* { dg-final { gdb-test 12 \"n\" \"9\" } } */",
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           loc: Loc {
-// DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               offset: 463,
-// DEFAULT-NEXT:                               length: 42,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 17,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
@@ -477,7 +307,7 @@ main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Function(
+// DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

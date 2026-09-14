@@ -245,6 +245,20 @@ fn run_fixture(
         String::from_utf8_lossy(&rendered.stderr)
     );
 
+    if rendered.stdout.is_empty() {
+        let raw_source = decode_source_bytes(&std::fs::read(fixture).expect("read fixture"));
+        let has_checks = raw_source.lines().any(|line| {
+            line.starts_with(&format!("// {prefix}:"))
+                || line.starts_with(&format!("// {prefix}-NEXT:"))
+        });
+        assert!(
+            !has_checks,
+            "renderer produced no output for {} ({prefix}) but fixture still has CHECK lines",
+            fixture.display()
+        );
+        return;
+    }
+
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/filecheck")
         .join(format!(

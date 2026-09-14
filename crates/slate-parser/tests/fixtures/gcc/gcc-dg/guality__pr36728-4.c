@@ -62,33 +62,7 @@ main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* PR debug/36728 */",
-// DEFAULT-NEXT:                   "/* { dg-do run } */",
-// DEFAULT-NEXT:                   "/* { dg-options \"-g\" } */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 0,
-// DEFAULT-NEXT:                   length: 66,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 0,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {
@@ -455,48 +429,7 @@ main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* On s390(x) r2 and r3 are (depending on the optimization level) used\n   when adjusting the addresses in order to meet the alignment\n   requirements above.  They usually hold the function arguments arg1\n   and arg2.  So it is expected that these values are unavailable in\n   some of these tests.  */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg1\" \"1\" { target { ! \"s390*-*-*\" } } } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg2\" \"2\" { target { ! \"s390*-*-*\" } } } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg3\" \"3\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg4\" \"4\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg5\" \"5\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg6\" \"6\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"arg7\" \"30\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 14 \"y\" \"2\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg1\" \"1\" { target { ! \"s390*-*-*\" } } } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg2\" \"2\" { target { ! \"s390*-*-*\" } } } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg3\" \"3\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg4\" \"4\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg5\" \"5\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg6\" \"6\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"arg7\" \"30\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"*x\" \"(char) 25\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-final { gdb-test 16 \"y\" \"2\" } } */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 609,
-// DEFAULT-NEXT:                   length: 1201,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 26,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Function(
+// DEFAULT-NEXT: decl[1]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Integer(
 // DEFAULT-NEXT:               Ranked {

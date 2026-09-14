@@ -25,40 +25,7 @@ __complex__ long long f ()
 }
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* This does not work on h8300 due to the use of an asm\n   statement to force a 'long long' (64-bits) to go in a register.  */",
-// DEFAULT-NEXT:                   "/* { dg-do assemble } */",
-// DEFAULT-NEXT:                   "/* { dg-skip-if \"\" { { i?86-*-* x86_64-*-* } && { ia32 && { ! nonpic } } } } */",
-// DEFAULT-NEXT:                   "/* { dg-skip-if \"Not enough 64-bit registers\" { pdp11-*-* } { \"-O0\" } { \"\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-xfail-if \"Inconsistent constraint on asm\" { csky-*-* } { \"-O0\" } { \"\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-xfail-if \"Inconsistent constraint on asm\" { bpf-*-* } { \"-O0\" } { \"\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-xfail-if \"\" { h8300-*-* } } */",
-// DEFAULT-NEXT:                   "/* { dg-require-stack-size \"99*4+16\" } */",
-// DEFAULT-NEXT:                   "/* { dg-additional-options \"-std=gnu89\" } */",
-// DEFAULT-NEXT:                   "/* Copyright (C) 2000, 2003 Free Software Foundation */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 1,
-// DEFAULT-NEXT:                   length: 665,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 1,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Complex(
 // DEFAULT-NEXT:               Integer(

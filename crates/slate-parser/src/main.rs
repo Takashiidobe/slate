@@ -13,13 +13,25 @@ fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     if args.next().as_deref() != Some("parse") {
         return Err(miette::miette!(
-            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc]"
+            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [--show-comments]"
         ));
     }
     let path = args
         .next()
         .ok_or_else(|| miette::miette!("missing source path"))?;
-    let compiler_args = CompilerArgParser::parse(args).map_err(|error| miette::miette!(error))?;
+    let mut show_comments = false;
+    let remaining: Vec<String> = args
+        .filter(|arg| {
+            if arg == "--show-comments" {
+                show_comments = true;
+                false
+            } else {
+                true
+            }
+        })
+        .collect();
+    let compiler_args =
+        CompilerArgParser::parse(remaining).map_err(|error| miette::miette!(error))?;
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
     if let Some(home) = env::var_os("HOME") {
@@ -37,7 +49,7 @@ fn main() -> miette::Result<()> {
     let (ast, files) = parsed?;
     ast.analyze(&files)?;
     let stdout = io::stdout();
-    let mut renderer = Renderer::new(stdout.lock());
+    let mut renderer = Renderer::new(stdout.lock()).with_show_comments(show_comments);
     renderer
         .render(&ast)
         .map_err(|error| miette::miette!(error))?;

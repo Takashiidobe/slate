@@ -234,35 +234,7 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Comment(
-// DEFAULT-NEXT:       CommentGroup {
-// DEFAULT-NEXT:           comment: Comment {
-// DEFAULT-NEXT:               text: [
-// DEFAULT-NEXT:                   "/* { dg-do assemble } */",
-// DEFAULT-NEXT:                   "/* { dg-require-effective-target ptr32plus } */",
-// DEFAULT-NEXT:                   "/* { dg-xfail-if \"The array too big\" { \"h8300-*-*\" } { \"-mno-h\" \"-mn\" } { \"\" } } */",
-// DEFAULT-NEXT:                   "/* { dg-require-stack-size \"2048*4*4\" } */",
-// DEFAULT-NEXT:                   "/* PR c/6957\n   This testcase ICEd at -O2 on IA-32, because\n   (insn 141 139 142 (set (subreg:SF (reg:QI 72) 0)\n\t   (plus:SF (reg:SF 73)\n\t       (reg:SF 76))) 525 {*fop_sf_comm_nosse} (insn_list 134 (nil))\n       (expr_list:REG_DEAD (reg:SF 73) (nil)))\n   couldn't be reloaded. */",
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:               loc: Loc {
-// DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   offset: 1,
-// DEFAULT-NEXT:                   length: 481,
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 1,
-// DEFAULT-NEXT:               header: None,
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT: decl[0]: Function(
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "foo",
