@@ -9,8 +9,8 @@ open until agreed. Decided sections record the agreed shape choices.
 
 This reference covers numeric types, typed constants and bindings, string
 literal objects, loops, jumps, switches, enums, structs, and unions.
-Functions (attributes, parameters, return type, and body) remain a separate
-discussion. Newly proposed shapes below are design choices for review.
+The control-flow/aggregate shapes and use of IDs are accepted. Function
+and attribute shapes below are the next proposals for discussion.
 
 ## Information ownership
 
@@ -207,8 +207,9 @@ initializer field.
 
 A parameter always carries its resolved type, including in an unnamed
 prototype parameter. It has no declaration-time value or initializer: the
-caller supplies an argument value. Parameter attributes and the remaining
-function shape will be specified with functions.
+caller supplies an argument value. The [function proposal](#functions-callable-type-and-named-entity)
+below refines this partial parameter shape into signature types, parameter
+metadata, and definition bindings.
 
 Original C storage classes are declaration
 metadata once their effects have been resolved into storage duration,
@@ -352,7 +353,7 @@ must not itself decide whether literal object addresses are merged.
 
 ## Structured control flow
 
-**Proposed:** keep statement regions with typed expression trees. The
+**Decided:** keep statement regions with typed expression trees. The
 generated `clang-ir-types` bindings informed the region split: CIR `For`
 has condition/body/step regions, `While` and `Do` have condition/body
 regions, and `Switch` contains potentially nested `Case` regions. The
@@ -557,12 +558,13 @@ annotation is origin metadata; the executable edge determines behavior.
 
 ## Enum and record type identity
 
-**Proposed:** named and anonymous tags have stable identity in module
+**Decided:** named and anonymous tags have stable identity in module
 tables. Types refer to definitions by ID, allowing forward declarations
 and recursive pointers without copying the definition at each use.
 
 ```text
 TypeKind = ... | Enum(EnumId) | Struct(RecordId) | Union(RecordId)
+           | Function(FunctionType)
 
 module.enums[EnumId] = EnumDefinition
 module.records[RecordId] = StructDefinition | UnionDefinition
@@ -572,6 +574,12 @@ Names and aliases are useful for output but do not establish type identity.
 Distinct anonymous declarations remain distinct types; multiple declarators
 sharing one tag definition share its ID. Contextual type metadata can still
 carry typedef names and qualifiers at each use.
+
+Names are retained through semantic lowering. IDs join references to the
+correct definition; names and typedef metadata guide readable Rust output.
+Rust lowering can choose an output name once per ID and reuse it at every
+reference. Ownership of children remains structural even when nodes have
+IDs for references or metadata.
 
 The earlier `StorageMetadata` shape described numeric storage. Aggregate
 type storage metadata instead references the layout below. Shared layout
@@ -721,6 +729,265 @@ attributes have resolved effects in storage metadata; original spelling
 can remain contextual metadata. Other behavior-affecting attributes must
 likewise be resolved before an emitter can ignore their source spelling.
 
+## Functions: callable type and named entity
+
+**Proposed:** separate a callable type from the named function that has it.
+A function pointer needs a signature but has no function body or symbol
+definition. Keep concrete source-level parameter and result types rather
+than rewriting the signature into machine registers or hidden ABI operands.
+
+```text
+FunctionType {
+    parameters: Prototype { fixed: Vec<Type>, variadic: bool }
+              | Unprototyped,
+    result: Type,
+    abi: ResolvedCallingConvention,
+}
+
+Function {
+    id: FunctionId,
+    name: String,
+    ty: FunctionType,
+    parameter_metadata: Vec<ParameterMetadata>,
+    result_metadata: ResultMetadata,
+    symbol: FunctionSymbol,
+    implementation: FunctionImplementation,
+    attributes: FunctionAttributes,
+    metadata: { origins: ..., c_storage_class: ..., annotations: ... },
+}
+
+FunctionImplementation =
+    Declaration
+  | Definition(FunctionDefinition)
+  | Alias { target: FunctionId }
+  | Resolver { resolver: FunctionId }
+```
+
+`result: Void` means no returned value. No-return behavior is a function
+contract, not a replacement of the C signature's result type with `Void`
+or `Never`. A declaration is distinct from a definition with an empty body.
+Aliases retain symbol identity and point to another function; they are not
+synthetic wrapper bodies. `Resolver` reserves the distinct symbol behavior
+of an indirect-function resolver rather than treating it as an ordinary
+function call on every invocation.
+
+The function's source name and emitted linkage name may differ. Redeclarations
+of the same entity join on `FunctionId`; sema checks compatibility and
+merges their effective information rather than selecting the last spelling.
+Definition parameter names identify its bindings; names in other prototypes
+are retained as origin context. A function's ID and name remain available
+when its address is used as a value.
+
+### Parameters, return information, and bodies
+
+```text
+ParameterMetadata {
+    name: Option<String>,
+    origin: ...,
+    contracts: Vec<ParameterContract>,
+    hints: Vec<ParameterHint>,
+}
+
+ResultMetadata {
+    origin: ...,
+    contracts: Vec<ResultContract>,
+    hints: Vec<ResultHint>,
+}
+
+FunctionDefinition {
+    parameters: Vec<ParameterBinding>,
+    entry: Vec<Stmt>,
+    body: Scope,
+}
+
+ParameterBinding {
+    parameter: ParamIndex,
+    variable: VariableId,
+    name: Option<String>,
+    ty: Type,
+}
+
+Return { value: Option<Value> }
+```
+
+`ParamIndex` is a zero-based signature position, not a source parameter
+name. Prototype parameter metadata is positional, matching the fixed type
+list. Function types omit names and binding IDs, but their contextual
+parameter/result types still carry `c_type`, storage, and qualifiers.
+
+Definition bindings are the parameter objects read and written by the body.
+Their type can retain top-level qualification that is irrelevant to the
+callable type. Array/function parameter adjustment is already resolved in
+the signature; original array form and bounds remain contextual information
+or explicit contracts where they constrain valid calls. A bound does not
+automatically turn a pointer parameter into a Rust slice.
+
+`entry` executes once per call and contains any required incoming-value
+conversions or parameter-bound evaluations. It is not re-entered by a goto
+to a label in the body. The body owns nested scopes, locals, and statements;
+references inside it use resolved variable, function, type, and label IDs.
+Return values include explicit conversions to the result type. Returning a
+record remains a typed aggregate return, not a synthetic output pointer.
+
+For old-style definitions, retain known incoming parameter types separately
+from local binding types when default promotions require an entry conversion.
+An unprototyped declaration does not mean zero parameters and is not a
+variadic prototype. Its complete definition-entry shape is an open detail;
+do not fabricate a zero-argument signature to fit it into the prototype form.
+
+Body fallthrough must have explicit function-end semantics. Void functions
+can return without a value and `main` gets its implicit zero return. For
+other non-void functions, do not automatically infer a no-return contract
+from a missing return statement. The precise missing-result representation
+is an open item below, including whether a caller uses that result.
+
+### Symbol and ABI information
+
+```text
+FunctionSymbol {
+    link_name: String,
+    linkage: Internal | External,
+    visibility: Default | Hidden | Protected,
+    binding: Strong | Weak,
+    emission: ResolvedFunctionEmission,
+    section: Option<String>,
+    alignment_bytes: Option<u32>,
+    retention: { compiler_used: bool, linker_retain: bool },
+}
+```
+
+`ResolvedFunctionEmission` records whether this translation unit supplies
+the linkable definition, only a local inline body, or a reference, together
+with required import/export behavior. Its final variant list must reflect
+the supported target object formats. A body alone does not determine this.
+Resolve the language-mode-dependent effects of C `inline`, `extern inline`,
+and related attributes here. Inline performance preferences stay separate.
+
+The ABI belongs to the callable type and call sites, including indirect
+calls. IR sema resolves the target calling convention and any signature
+adaptations Rust cannot express directly. Ordinary struct passing uses the
+existing concrete type/layout and the corresponding Rust foreign ABI.
+Register assignments, stack slots, and hidden return pointers need not
+become parameters in this source-to-source IR. If an unusual ABI requires
+a wrapper, preserve that requirement explicitly for emission rather than
+assuming `extern "C"` covers every signature.
+
+### Attributes by meaning and attachment
+
+**Proposed:** use typed attribute groups with resolved operands. Avoid an
+unstructured list of C attribute strings as the Rust emitter's interface.
+
+```text
+FunctionAttributes {
+    control: {
+        normal_return: MayReturn | NoNormalReturn,
+        returns_twice: bool,
+    },
+    contracts: Vec<FunctionContract>,
+    execution: Vec<ExecutionRequirement>,
+    hints: Vec<FunctionHint>,
+}
+```
+
+Unknown behavior is conservative: an ordinary declaration may return and
+may have side effects. A no-return contract is not a claim that the function
+cannot unwind or otherwise transfer control nonlocally. `returns_twice`
+must remain visible to control-flow handling. Detailed nonlocal-exit and
+unwinding support is a separate design choice, not a default `nothrow` flag.
+
+| Attribute information | Resolved owner | Intended use |
+| --- | --- | --- |
+| Calling convention | `FunctionType.abi` | Correct direct and indirect calls |
+| Symbol name, visibility, weak/import/export, section | `FunctionSymbol` | Correct symbol/linker behavior |
+| Alias or resolver | `FunctionImplementation` | Preserve symbol indirection |
+| No-return, returns-twice | `FunctionAttributes.control` | Correct control-flow treatment |
+| Constructor/destructor registration and priority | Execution requirements | Preserve startup/shutdown execution |
+| Target features, interrupt, naked | Execution requirements | Preserve target-specific execution requirements |
+| Nonnull/access/alignment requirements | Parameter/result contracts | Preserve declared contracts and guide analysis |
+| Allocation size, alignment, allocator/deallocator relationships | Result/function contracts | Guide allocation and ownership reasoning |
+| Pure/const effect contracts | Function contracts | Describe declared effects without claiming Rust purity |
+| Inline preference, hot/cold, optimization preferences | Hints | Optional output/code-generation guidance after semantic effects are resolved |
+| Deprecated, nodiscard, format, annotations | Hints/origin context at the applicable attachment | Diagnostics and contextual rewriting |
+
+Function, parameter, result, type, and call-site attachment are distinct.
+An attribute constraining a pointee stays on that type use or access
+contract; it is not a property of every numeric type with the same width.
+Parameter-number operands resolve to `ParamIndex`. Relationships such as
+an allocation size equal to the product of two arguments remain structured,
+for example `Product(Argument(0), Argument(1))`; related functions use IDs.
+
+Contracts supplied by declarations are kept distinct from facts proved by
+analysis. Nonnull alone does not establish reference validity or lifetime;
+allocation information alone does not establish a unique Rust owner.
+Body-derived effect summaries belong to the analysis side table. Attributes
+on function-pointer types must remain available at indirect calls even
+when no particular function definition is known.
+
+Original attributes remain in origin metadata for diagnostics and context.
+IR sema either resolves a behavior-affecting attribute or reports an
+unsupported semantic feature. A compiler-ignored attribute may remain
+context only. It must not silently downgrade an unhandled calling
+convention or execution requirement to an optional hint.
+
+### Calls and attribute visibility
+
+```text
+Call {
+    callee: Direct(FunctionId) | Indirect(Value),
+    signature: FunctionType,
+    arguments: Vec<Value>,
+    contracts: EffectiveCallContracts,
+    requirements: Vec<CallRequirement>,
+}
+```
+
+The enclosing expression supplies the call's result type and node identity.
+Arguments contain explicit conversions; variadic and unprototyped calls
+retain the actual promoted argument types in those values. The call's
+signature and effective contracts reflect what sema resolved at that call
+site, including applicable function-pointer attributes. Later redeclarations
+must not retroactively change already-resolved argument evaluation or typing.
+Repeated signature/contract data may be interned behind references.
+
+Calls evaluate their callee and arguments according to the resolved
+sequencing, exactly once. Requirements such as a supported must-tail call
+belong on the call, not on every invocation of its target. Builtins whose
+semantics require dedicated IR operations should lower to those operations;
+a familiar function name by itself is not sufficient builtin identity.
+
+### Concrete example
+
+For `int add(int a, int b) { return a + b; }`, abbreviated:
+
+```text
+Function {
+    id: add_id,
+    name: "add",
+    ty: {
+        parameters: Prototype { fixed: [I32, I32], variadic: false },
+        result: I32,
+        abi: C_for_target,
+    },
+    parameter_metadata: [{ name: "a", ... }, { name: "b", ... }],
+    implementation: Definition {
+        parameters: [
+            { parameter: 0, variable: a_id, name: "a", ty: I32 },
+            { parameter: 1, variable: b_id, name: "b", ty: I32 },
+        ],
+        entry: [],
+        body: { Return(Add(Read(a_id), Read(b_id), overflow=ub)) },
+    },
+    symbol: { link_name: "add", linkage: External, ... },
+    attributes: { control: { normal_return: MayReturn, returns_twice: false }, ... },
+    ...,
+}
+```
+
+`I32` abbreviates its contextual `Type`, including `c_type=int` and storage
+metadata. The signature provides callable types, while definition bindings
+provide names and IDs for local uses. Extern declarations omit the definition;
+function pointers refer to the callable type without copying this entity.
+
 ## Reference points
 
 The local generated bindings consulted for these proposals are
@@ -733,6 +1000,13 @@ implicit parent-dependent yield behavior and C++-specific record fields.
 The generated type enum has no dedicated C enum variant; the enum shape
 above is a Slate-specific proposal.
 
+For functions, `src/ops/globals.rs::Func`, `src/ops/calls.rs::Call`, and
+`src/types.rs::Func` informed the separation of symbols, callable types,
+bodies, and parameter/result attributes. This proposal retains concrete
+source-level signatures and typed attribute groups for Rust translation.
+GCC documents [mode-dependent inline semantics](https://gcc.gnu.org/onlinedocs/gcc/Inline.html)
+and [attribute meanings](https://gcc.gnu.org/onlinedocs/gcc/Common-Attributes.html).
+
 For source semantics, the [C11 draft, sections 6.8.4–6.8.6](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)
 describes selection, loops, and jumps. GNU extensions include
 [inclusive case ranges](https://gcc.gnu.org/onlinedocs/gcc/Case-Ranges.html)
@@ -743,7 +1017,8 @@ These references are background; the shapes above are our design proposals.
 
 1. Does the proposed variable/value split capture the intended distinction
    between declaration storage classes and type storage metadata?
-2. Do structured regions with explicit normal exits provide the desired
-   balance for switches, including cases nested inside loops?
-3. Are logical fields plus type-owned storage layouts sufficient for the
-   record information Rust lowering should consume?
+2. Does the function-type / named-function / definition-binding split expose
+   the right information without making ordinary function lowering cumbersome?
+3. Which contracts and execution requirements need concrete variants first?
+4. Old-style definition entry, missing non-void results, GNU nested-function
+   captures/static chains, and nonlocal exits need dedicated follow-up shapes.
