@@ -241,7 +241,7 @@ in later passes. Related implementation work: `lh7.2.8` and `lh7.2.9`.
 ```
 Origin {
   loc:       spelling + expansion Loc
-  header:    Provenance (outermost header, System/User)
+  system_header: Provenance (first system header entered from user code)
   expansion: Option<ExpansionId>
   reason:    Option<Reason>   // promotion, implicit main return, ...
 }

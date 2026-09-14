@@ -350,7 +350,7 @@ impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
         if SHOW_NODE_IDS.with(Cell::get) {
             write!(formatter, "#{} ", self.id.0)?;
         }
-        if self.provenance.header_is_none() {
+        if self.provenance.system_header_is_none() {
             self.value.fmt(formatter)
         } else {
             formatter
@@ -455,12 +455,12 @@ pub struct Provenance {
     pub file: FileId,
     pub kind: HeaderKind,
     pub line: usize,
-    pub header: Option<FileId>,
+    pub system_header: Option<FileId>,
 }
 
 impl Provenance {
-    fn header_is_none(&self) -> bool {
-        self.header.is_none()
+    fn system_header_is_none(&self) -> bool {
+        self.system_header.is_none()
     }
 }
 

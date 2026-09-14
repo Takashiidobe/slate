@@ -227,14 +227,6 @@ impl Parser {
         root_file: FileId,
     ) -> Result<TranslationUnit, ParseError> {
         self.tags.borrow_mut().clear();
-        self.file_origins.clear();
-        for node in nodes {
-            if let PPNodeKind::Code { provenance, .. } = &node.value {
-                self.file_origins
-                    .entry(provenance.file)
-                    .or_insert((provenance.kind, provenance.header));
-            }
-        }
         let decls = self.parse_decls(nodes)?;
         let ast = filter_translation_unit(
             &TranslationUnit {

@@ -145,7 +145,6 @@ pub struct Parser {
     target: TargetInfo,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
     line_starts: HashMap<FileId, Vec<usize>>,
-    file_origins: HashMap<FileId, (HeaderKind, Option<FileId>)>,
 }
 
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
@@ -173,7 +172,6 @@ impl Parser {
             target: TargetInfo::default(),
             tags: Rc::default(),
             line_starts: HashMap::new(),
-            file_origins: HashMap::new(),
         }
     }
 

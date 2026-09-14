@@ -65,19 +65,20 @@ that a program is semantically valid.
   in the debug dump; `tests/fixtures/node_ids_macro_expansion.c` (enabled via
   `// SLATE-FILECHECK-SHOW-IDS <prefix>`) checks that nodes sharing an
   expansion `Loc` still get distinct ids.
-- `Provenance { file, kind: System | User, line, header }`: stored on every
-  `Span`, so source-grammar nodes inherit it automatically. `header` is the
-  outermost header the main file directly included (`None` for the main
-  file). `line` is 0-based. Public repeated grammar nodes use the
+- `Provenance { file, kind: System | User, line, system_header }`: stored on every
+  `Span`, so source-grammar nodes inherit it automatically. `system_header` is
+  the first system header entered from user code and is preserved through its
+  transitive include subtree. It is `None` for main-file and user-header code.
+  `line` is 0-based. Public repeated grammar nodes use the
   `Node = Span<NodeKind>` representation; payloads such as `FunctionDefinition`
   and `Declaration` inherit the enclosing `Decl` or `Stmt` span and carry no
-  duplicate provenance. Debug output includes provenance only when `header` is
-  `Some`.
+  duplicate provenance. Debug output includes provenance only when
+  `system_header` is `Some`.
 - `macro_origin: Option<Rc<MacroOrigin>>` (`MacroOrigin { name, definition:
   Provenance, parent: Option<Rc<MacroOrigin>> }`) identifies which macro
   produced a token, e.g. `int m = INT_MAX;` gives the folded literal's `Span`
   a `macro_origin` of `{ name: "INT_MAX", definition: <limits.h provenance> }`
-  so Slate can pattern-match macro name + header. `name`/`definition` are the
+  so Slate can pattern-match macro name + system header. `name`/`definition` are the
   outermost macro invoked at the use site; `parent` chains through whatever
   further macros its replacement expanded through (e.g. `INT_MAX` expanding
   through `__INT_MAX__`), innermost last. Set in `pp/expand.rs::expand_macros`

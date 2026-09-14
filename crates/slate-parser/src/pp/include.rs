@@ -102,10 +102,12 @@ impl Preprocessor<'_> {
         let file = self.files.intern(resolved.clone(), kind);
         self.open_macro_states.push((once_key.clone(), macro_state));
         self.open_stack.push(once_key);
-        let enclosing_header = self.outermost_header;
-        self.outermost_header.get_or_insert(file);
+        let enclosing_system_header = self.outermost_system_header;
+        if kind == HeaderKind::System {
+            self.outermost_system_header.get_or_insert(file);
+        }
         let nodes = self.parse_source(&src, file);
-        self.outermost_header = enclosing_header;
+        self.outermost_system_header = enclosing_system_header;
         self.open_stack.pop();
         self.open_macro_states.pop();
         nodes
