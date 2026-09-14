@@ -358,7 +358,7 @@ impl Parser {
     ) -> Result<(Vec<SpannedDecl>, usize), ParseError> {
         if let PPNodeKind::Code { .. } = &nodes[0].value {
             let tokens = self.node_tokens(&nodes[0]);
-            let top_level_items = split_top_level_items(&tokens);
+            let top_level_items = split_top_level_items(&tokens, &self.typedef_names);
             if top_level_items.len() > 1 {
                 let provenance = self.node_provenance(&nodes[0]);
                 let mut declarations = Vec::new();
@@ -1222,15 +1222,26 @@ pub(super) fn top_level_semi(tokens: &[Span<Token>]) -> Option<usize> {
     top_level_token(tokens, &Token::Semi)
 }
 
-pub(super) fn split_top_level_items(tokens: &[Span<Token>]) -> Vec<Vec<Span<Token>>> {
+pub(super) fn split_top_level_items(
+    tokens: &[Span<Token>],
+    typedef_names: &HashSet<String>,
+) -> Vec<Vec<Span<Token>>> {
     let mut items = Vec::new();
     let mut start = 0;
     let mut depth = 0i32;
     let mut function_body = false;
     let mut has_assignment = false;
+    let mut kr_style = false;
+    let mut paren_open = None;
     for (index, token) in tokens.iter().enumerate() {
         match token.value {
-            Token::LParen | Token::LBracket => depth += 1,
+            Token::LParen => {
+                if depth == 0 {
+                    paren_open = Some(index);
+                }
+                depth += 1;
+            }
+            Token::LBracket => depth += 1,
             Token::LBrace => {
                 function_body = depth == 0
                     && index > start
@@ -1238,16 +1249,34 @@ pub(super) fn split_top_level_items(tokens: &[Span<Token>]) -> Vec<Vec<Span<Toke
                     && tokens.value_at(index - 1) == Some(&Token::RParen);
                 depth += 1;
             }
-            Token::RParen | Token::RBracket | Token::RBrace => depth -= 1,
+            Token::RParen => {
+                depth -= 1;
+                if depth == 0
+                    && let Some(open) = paren_open.take()
+                {
+                    let preceded_by_name =
+                        open > 0 && matches!(tokens.value_at(open - 1), Some(Token::Ident(_)));
+                    if !has_assignment && preceded_by_name {
+                        kr_style = bare_identifier_names(
+                            tokens[open + 1..index].iter().map(|t| &t.value),
+                            typedef_names,
+                        )
+                        .is_some_and(|names| !names.is_empty());
+                    }
+                }
+            }
+            Token::RBracket | Token::RBrace => depth -= 1,
             Token::Equal if depth == 0 => has_assignment = true,
             _ => {}
         }
-        let is_function_end = function_body && depth == 0 && token.value == Token::RBrace;
-        if depth == 0 && (token.value == Token::Semi || is_function_end) {
+        let is_function_end =
+            (function_body || kr_style) && depth == 0 && token.value == Token::RBrace;
+        if depth == 0 && ((token.value == Token::Semi && !kr_style) || is_function_end) {
             items.push(tokens[start..=index].to_vec());
             start = index + 1;
             function_body = false;
             has_assignment = false;
+            kr_style = false;
         }
     }
     if start < tokens.len() {

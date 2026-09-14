@@ -182,10 +182,25 @@ ParameterList =
     | Prototype { parameters: Vec<ParameterDeclaration>, variadic: bool }
     | Void                                        // (void)
     | Empty                                       // () — meaning depends on standard, decided by sema
-    | IdentifierList(Vec<String>)                 // K&R: f(a, b)
 
-ParameterDeclaration { specifiers, declarator: Declarator, attributes, provenance }
+ParameterDeclaration {
+    specifiers,
+    declarator: Declarator,
+    declared_specifiers,   // Some(written specifiers) when a K&R rewrite promoted
+                            // `specifiers` (default argument promotion); None otherwise
+    attributes,
+    provenance,
+}
 ```
+
+K&R definitions (`f(a, b) int a; char b; { ... }`) are rewritten into
+`ParameterList::Prototype` at parse time; there is no separate K&R
+representation. Callers of an unprototyped function apply default argument
+promotions (small integers to `int`, `float` to `double`), so a rewritten
+parameter's `specifiers` is the promoted, ABI-visible type; `declared_specifiers`
+recovers the type as written, for the function-body local. An
+implicit-int parameter (no declaration at all) is already `int`, so
+`declared_specifiers` stays `None`.
 
 ### `TypeName`
 
@@ -202,7 +217,6 @@ TypeName { specifiers: DeclarationSpecifiers, declarator: Declarator }   // decl
 FunctionDefinition {
     specifiers: DeclarationSpecifiers,
     declarator: Declarator,                 // outermost derived layer is Function
-    kr_declarations: Vec<Declaration>,      // K&R parameter declarations
     attributes: Vec<Attribute>,
     body: CompoundStatement,
     provenance,
@@ -450,7 +464,7 @@ the AST redesign epic.
 | `CType::Tag(TagSpecifier)` inside `CType`; `Reference` has no attributes; `TagBody::Record` holds `FieldItem`; `TagBody::Enum` has no `fixed_type`                                            | `TypeSpecifier` (`lh7.3.5`), `MemberItem`, `EnumItem`                                         |                                                                        |
 | `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                                             | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                                                        |
 | `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied                                                                                                              | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator             | two type encodings                                                     |
-| `FunctionDecl.parameters: []` for both `(void)` and `()`                                                                                                                                      | `ParameterList::{Void, Empty, IdentifierList}`                                                |                                                                        |
+| `FunctionDecl.parameters: []` for both `(void)` and `()`                                                                                                                                      | `ParameterList::{Void, Empty}`                                                                |                                                                        |
 | `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals, `GenericControl::Type` and `GenericAssociation::Type` hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`)                                                         |                                                                        |
 | `Designator::Array`/`ArrayRange`                                                                                                                                                              | `Index`/`IndexRange`                                                                          |                                                                        |
 | bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                                                   | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                                                        |

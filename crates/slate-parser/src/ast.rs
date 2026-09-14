@@ -861,6 +861,8 @@ impl Declarator {
 pub struct Parameter {
     pub ty: CType,
     #[debug(skip_if = Option::is_none)]
+    pub declared_ty: Option<CType>,
+    #[debug(skip_if = Option::is_none)]
     pub declarator: Option<Declarator>,
     #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,

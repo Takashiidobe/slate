@@ -636,9 +636,17 @@ char *mode, *s;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Parameter {
 // DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Char {
-// DEFAULT-NEXT:                           signed: None,
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declared_ty: Some(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Pointer {
@@ -651,9 +659,17 @@ char *mode, *s;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Parameter {
 // DEFAULT-NEXT:                   ty: Integer(
-// DEFAULT-NEXT:                       Char {
-// DEFAULT-NEXT:                           signed: None,
+// DEFAULT-NEXT:                       Ranked {
+// DEFAULT-NEXT:                           rank: Int,
+// DEFAULT-NEXT:                           signed: true,
 // DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   declared_ty: Some(
+// DEFAULT-NEXT:                       Integer(
+// DEFAULT-NEXT:                           Char {
+// DEFAULT-NEXT:                               signed: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   declarator: Some(
 // DEFAULT-NEXT:                       Pointer {

@@ -986,6 +986,7 @@ impl<'a> DeclaratorParser<'a> {
             attributes.extend(self.parse_attributes()?);
             parameters.push(Parameter {
                 ty: apply_vector_attributes(ty, &attributes),
+                declared_ty: None,
                 declarator,
                 attributes,
             });

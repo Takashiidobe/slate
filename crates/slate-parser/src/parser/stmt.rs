@@ -314,9 +314,12 @@ impl Parser {
         let parameters = names
             .iter()
             .map(|name| {
-                if let Some((ty, declarator)) = declared.remove(name) {
+                if let Some((declared_ty, declarator)) = declared.remove(name) {
+                    let promoted_ty = default_argument_promotion(&declared_ty);
+                    let declared_ty = (promoted_ty != declared_ty).then_some(declared_ty);
                     Parameter {
-                        ty,
+                        ty: promoted_ty,
+                        declared_ty,
                         declarator: Some(declarator),
                         attributes: Vec::new(),
                     }
@@ -326,6 +329,7 @@ impl Parser {
                             rank: IntegerRank::Int,
                             signed: true,
                         }),
+                        declared_ty: None,
                         declarator: Some(Declarator::Name(name.clone())),
                         attributes: Vec::new(),
                     }
@@ -877,5 +881,22 @@ impl Parser {
         let tokens = coalesce_string_literals(tokens);
         const_expr::Parser::parse_expression(&tokens, &self.typedef_names, Some(self))
             .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))
+    }
+}
+
+fn default_argument_promotion(ty: &CType) -> CType {
+    let promoted_int = CType::Integer(IntegerType::Ranked {
+        rank: IntegerRank::Int,
+        signed: true,
+    });
+    match ty {
+        CType::Bool => promoted_int,
+        CType::Integer(IntegerType::Char { .. }) => promoted_int,
+        CType::Integer(IntegerType::Ranked {
+            rank: IntegerRank::Short,
+            ..
+        }) => promoted_int,
+        CType::Floating(FloatingType::Float) => CType::Floating(FloatingType::Double),
+        _ => ty.clone(),
     }
 }
