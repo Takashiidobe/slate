@@ -141,10 +141,13 @@ impl Parser {
         parser.pos = position;
         let gnu_auto_type = parser.matches(Token::Ident("__auto_type".into()));
         self.parse_specifier_keywords(parser, &mut specifiers)?;
-        specifiers.ty = if gnu_auto_type
-            || specifiers.storage == StorageClass::Auto
-                && matches!(parser.peek(), Some(Token::Ident(_)))
-        {
+        let c23_auto_inference = self.standard().is_c23_or_later()
+            && specifiers.storage == StorageClass::Auto
+            && matches!(parser.peek(), Some(Token::Ident(_)));
+        if c23_auto_inference {
+            specifiers.storage = StorageClass::None;
+        }
+        specifiers.ty = if gnu_auto_type || c23_auto_inference {
             CType::TargetBuiltin("__auto_type".into())
         } else {
             parser

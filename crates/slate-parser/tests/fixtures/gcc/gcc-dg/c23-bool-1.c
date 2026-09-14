@@ -191,8 +191,8 @@ int main(void) {
 // DEFAULT-NEXT:                       op: NotEqual,
 // DEFAULT-NEXT:                       left: Generic {
 // DEFAULT-NEXT:                           controlling: Expr(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "true",
+// DEFAULT-NEXT:                               BoolLiteral(
+// DEFAULT-NEXT:                                   true,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
@@ -240,8 +240,8 @@ int main(void) {
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
-// DEFAULT-NEXT:                       left: Identifier(
-// DEFAULT-NEXT:                           "true",
+// DEFAULT-NEXT:                       left: BoolLiteral(
+// DEFAULT-NEXT:                           true,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
@@ -272,8 +272,8 @@ int main(void) {
 // DEFAULT-NEXT:                       op: NotEqual,
 // DEFAULT-NEXT:                       left: Generic {
 // DEFAULT-NEXT:                           controlling: Expr(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "false",
+// DEFAULT-NEXT:                               BoolLiteral(
+// DEFAULT-NEXT:                                   false,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           associations: [
@@ -321,8 +321,8 @@ int main(void) {
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
-// DEFAULT-NEXT:                       left: Identifier(
-// DEFAULT-NEXT:                           "false",
+// DEFAULT-NEXT:                       left: BoolLiteral(
+// DEFAULT-NEXT:                           false,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {

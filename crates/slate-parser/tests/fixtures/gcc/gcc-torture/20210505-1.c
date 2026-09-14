@@ -317,8 +317,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "false",
+// DEFAULT-NEXT:                           BoolLiteral(
+// DEFAULT-NEXT:                               false,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
@@ -386,8 +386,8 @@ int main(void) {
 // DEFAULT-NEXT:                       target: Identifier(
 // DEFAULT-NEXT:                           "stop",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       value: Identifier(
-// DEFAULT-NEXT:                           "true",
+// DEFAULT-NEXT:                       value: BoolLiteral(
+// DEFAULT-NEXT:                           true,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),

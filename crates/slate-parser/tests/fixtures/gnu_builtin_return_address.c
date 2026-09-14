@@ -172,9 +172,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "return_address",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       right: Paren(
@@ -183,9 +181,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "frame_address",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },

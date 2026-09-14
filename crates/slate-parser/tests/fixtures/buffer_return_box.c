@@ -1069,9 +1069,7 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
@@ -1577,9 +1575,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       left: Identifier(
 // DEFAULT-NEXT:                                           "m",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -1597,9 +1593,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       left: Identifier(
 // DEFAULT-NEXT:                                           "a",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },

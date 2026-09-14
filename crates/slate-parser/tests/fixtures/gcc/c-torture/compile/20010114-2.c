@@ -115,8 +115,8 @@ struct { int x; bool y; } foo = { 0, false };
 // DEFAULT-NEXT:                               InitializerItem {
 // DEFAULT-NEXT:                                   designators: [],
 // DEFAULT-NEXT:                                   value: Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "false",
+// DEFAULT-NEXT:                                       BoolLiteral(
+// DEFAULT-NEXT:                                           false,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },

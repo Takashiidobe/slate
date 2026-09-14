@@ -871,9 +871,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               "realloc",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "nullptr",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               NullPtrLiteral,
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
 // DEFAULT-NEXT:                                                       value: 0,

@@ -455,9 +455,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "none",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },

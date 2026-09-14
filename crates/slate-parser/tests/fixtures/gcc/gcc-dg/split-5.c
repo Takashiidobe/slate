@@ -3660,9 +3660,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           initializer: Some(
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   NullPtrLiteral,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -3684,9 +3682,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           initializer: Some(
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   NullPtrLiteral,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -3708,9 +3704,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           initializer: Some(
 // DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   NullPtrLiteral,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -3765,9 +3759,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "stack",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "nullptr",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: NullPtrLiteral,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               then_branch: [
 // DEFAULT-NEXT:                                   Expr(
@@ -3818,9 +3810,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: Identifier(
-// DEFAULT-NEXT:                                               "nullptr",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: NullPtrLiteral,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       body: [
 // DEFAULT-NEXT:                                           Expr(
@@ -3913,9 +3903,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           "pthread_exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3993,9 +3981,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           "pthread_exit",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       arguments: [
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4185,9 +4171,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4507,9 +4491,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           field: "ss_sp",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
@@ -4574,9 +4556,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           field: "uc_link",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       value: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -4629,9 +4609,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4733,9 +4711,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           field: "ss_sp",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
@@ -4800,9 +4776,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           field: "uc_link",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       value: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       value: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Expr(
@@ -4836,9 +4810,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4902,9 +4874,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                   "block",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           NullPtrLiteral,
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -4972,9 +4942,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                                       "tid",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               NullPtrLiteral,
 // DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "start_thread",
 // DEFAULT-NEXT:                               ),
@@ -5032,9 +5000,7 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 // DEFAULT-NEXT:                               Identifier(
 // DEFAULT-NEXT:                                   "tid",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               NullPtrLiteral,
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },

@@ -315,9 +315,7 @@ int main(void) {
 // DEFAULT-NEXT:                       left: Identifier(
 // DEFAULT-NEXT:                           "fp",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(

@@ -122,6 +122,8 @@ pub enum ExprKind {
     },
     LabelAddress(String),
     StatementExpression(Vec<SpannedStmt>),
+    BoolLiteral(bool),
+    NullPtrLiteral,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -212,6 +214,9 @@ impl std::fmt::Display for ExprKind {
             Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
             Self::LabelAddress(label) => write!(formatter, "&&{label}"),
             Self::StatementExpression(_) => formatter.write_str("({ ... })"),
+            Self::BoolLiteral(true) => formatter.write_str("true"),
+            Self::BoolLiteral(false) => formatter.write_str("false"),
+            Self::NullPtrLiteral => formatter.write_str("nullptr"),
         }
     }
 }

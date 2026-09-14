@@ -329,9 +329,7 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           field: "onEvent",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
@@ -375,9 +373,7 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           field: "counter",
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
@@ -467,17 +463,13 @@ int main(void) {
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   NullPtrLiteral,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           InitializerItem {
 // DEFAULT-NEXT:                                               designators: [],
 // DEFAULT-NEXT:                                               value: Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   NullPtrLiteral,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ],

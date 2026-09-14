@@ -7875,9 +7875,7 @@ int main(void) {
 // DEFAULT-NEXT:                                       "thread_key",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               NullPtrLiteral,
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Identifier(
@@ -8341,9 +8339,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "aligned_memory",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: Equal,
@@ -8582,18 +8578,14 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "exclusive_first",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: Equal,
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "exclusive_second",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -8604,9 +8596,7 @@ int main(void) {
 // DEFAULT-NEXT:                       left: Identifier(
 // DEFAULT-NEXT:                           "exclusive_first",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(
@@ -8630,9 +8620,7 @@ int main(void) {
 // DEFAULT-NEXT:                       left: Identifier(
 // DEFAULT-NEXT:                           "exclusive_second",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "nullptr",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: NullPtrLiteral,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   then_branch: [
 // DEFAULT-NEXT:                       Expr(

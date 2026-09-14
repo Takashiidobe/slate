@@ -2187,9 +2187,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               "reallocarray",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           arguments: [
-// DEFAULT-NEXT:                                               Identifier(
-// DEFAULT-NEXT:                                                   "nullptr",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               NullPtrLiteral,
 // DEFAULT-NEXT:                                               IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
 // DEFAULT-NEXT:                                                       value: 4,
@@ -2658,9 +2656,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "aligned",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: Equal,
@@ -2715,9 +2711,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "page",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: Equal,
@@ -2770,9 +2764,7 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "rounded",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "nullptr",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           right: Binary {
 // DEFAULT-NEXT:                               op: Equal,
@@ -5070,9 +5062,7 @@ int main(void) {
 // DEFAULT-NEXT:                                           inner: Abstract,
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       value: Paren(
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "nullptr",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           NullPtrLiteral,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Cast {

@@ -50,9 +50,7 @@ int main() {
 // DEFAULT-NEXT:       FunctionDecl {
 // DEFAULT-NEXT:           ret_type: TypeOf(
 // DEFAULT-NEXT:               Expression(
-// DEFAULT-NEXT:                   Identifier(
-// DEFAULT-NEXT:                       "nullptr",
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   NullPtrLiteral,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "fn",
@@ -66,9 +64,7 @@ int main() {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Identifier(
-// DEFAULT-NEXT:                       "nullptr",
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   NullPtrLiteral,
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

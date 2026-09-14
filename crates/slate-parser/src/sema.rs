@@ -288,7 +288,8 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
         | ExprKind::SizeOfExpr(_)
         | ExprKind::SizeOfType { .. }
         | ExprKind::AlignOf { .. }
-        | ExprKind::AlignOfExpr(_) => true,
+        | ExprKind::AlignOfExpr(_)
+        | ExprKind::BoolLiteral(_) => true,
         ExprKind::Unary { op, operand } => {
             matches!(
                 op,
@@ -333,7 +334,8 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
         | ExprKind::BitCast { .. }
         | ExprKind::VaArg { .. }
         | ExprKind::LabelAddress(_)
-        | ExprKind::StatementExpression(_) => false,
+        | ExprKind::StatementExpression(_)
+        | ExprKind::NullPtrLiteral => false,
     }
 }
 
@@ -650,7 +652,9 @@ fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
         | ExprKind::AlignOf { .. }
         | ExprKind::OffsetOf { .. }
         | ExprKind::TypesCompatible { .. }
-        | ExprKind::LabelAddress(_) => {}
+        | ExprKind::LabelAddress(_)
+        | ExprKind::BoolLiteral(_)
+        | ExprKind::NullPtrLiteral => {}
     }
 }
 

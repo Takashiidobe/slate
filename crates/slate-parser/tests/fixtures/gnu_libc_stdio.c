@@ -2591,9 +2591,7 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       NullPtrLiteral,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2619,9 +2617,7 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       NullPtrLiteral,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2884,9 +2880,7 @@ int main(void) {
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "stream",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: NullPtrLiteral,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3270,9 +3264,7 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       NullPtrLiteral,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -3409,9 +3401,7 @@ int main(void) {
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "stream",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: NullPtrLiteral,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
@@ -3914,9 +3904,7 @@ int main(void) {
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "stream",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "nullptr",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: NullPtrLiteral,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),

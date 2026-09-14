@@ -277,9 +277,7 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       NullPtrLiteral,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },

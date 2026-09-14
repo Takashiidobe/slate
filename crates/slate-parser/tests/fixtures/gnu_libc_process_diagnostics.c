@@ -1058,9 +1058,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   "mcheck",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               arguments: [
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "nullptr",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   NullPtrLiteral,
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: IntegerLiteral(

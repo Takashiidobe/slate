@@ -2,6 +2,7 @@ use crate::ast::{
     ArraySize, CType, Declarator, Designator, Expr, ExprKind, FloatingType, GenericAssociation,
     GenericControl, Initializer, InitializerItem, IntegerRank, IntegerType, Span,
 };
+use crate::compiler_args::LanguageStandard;
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
@@ -655,6 +656,11 @@ pub struct Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+    fn standard(&self) -> LanguageStandard {
+        self.statements
+            .map_or_else(LanguageStandard::default, |parser| parser.standard())
+    }
+
     pub fn parse(tokens: &[Span<Token>]) -> Result<Expr, ConstExprError> {
         let mut parser = Self::new(tokens, &HashSet::new(), None);
         let expression = parser.parse_conditional()?;
@@ -874,6 +880,8 @@ impl<'a> Parser<'a> {
             ExprKind::StatementExpression(_) => {
                 Err(ConstExprError::NotConstant("statement expression"))
             }
+            ExprKind::BoolLiteral(value) => Ok(i64::from(*value)),
+            ExprKind::NullPtrLiteral => Err(ConstExprError::NotConstant("nullptr")),
         }
     }
 
@@ -1505,6 +1513,17 @@ impl<'a> Parser<'a> {
                 return self.parse_types_compatible(start);
             }
             Some(Token::Ident(value)) if value == "_Generic" => return self.parse_generic(start),
+            Some(Token::Ident(value)) if value == "true" && self.standard().is_c23_or_later() => {
+                ExprKind::BoolLiteral(true)
+            }
+            Some(Token::Ident(value)) if value == "false" && self.standard().is_c23_or_later() => {
+                ExprKind::BoolLiteral(false)
+            }
+            Some(Token::Ident(value))
+                if value == "nullptr" && self.standard().is_c23_or_later() =>
+            {
+                ExprKind::NullPtrLiteral
+            }
             Some(Token::Ident(value)) => ExprKind::Identifier(value.clone()),
             Some(Token::Keyword(keyword)) => ExprKind::Identifier(<&str>::from(*keyword).into()),
             Some(token) => return Err(ConstExprError::UnexpectedToken(token.clone())),

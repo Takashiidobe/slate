@@ -83,8 +83,8 @@ int main(void) {
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   initializer: Some(
 // DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "true",
+// DEFAULT-NEXT:                           BoolLiteral(
+// DEFAULT-NEXT:                               true,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),

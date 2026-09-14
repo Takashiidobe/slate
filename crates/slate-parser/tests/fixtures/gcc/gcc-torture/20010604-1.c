@@ -195,8 +195,8 @@ int main(void) {
 // DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "d",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "true",
+// DEFAULT-NEXT:                                   right: BoolLiteral(
+// DEFAULT-NEXT:                                       true,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
@@ -205,8 +205,8 @@ int main(void) {
 // DEFAULT-NEXT:                               left: Identifier(
 // DEFAULT-NEXT:                                   "e",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: Identifier(
-// DEFAULT-NEXT:                                   "true",
+// DEFAULT-NEXT:                               right: BoolLiteral(
+// DEFAULT-NEXT:                                   true,
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
@@ -215,8 +215,8 @@ int main(void) {
 // DEFAULT-NEXT:                           left: Identifier(
 // DEFAULT-NEXT:                               "f",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "true",
+// DEFAULT-NEXT:                           right: BoolLiteral(
+// DEFAULT-NEXT:                               true,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
@@ -312,14 +312,14 @@ int main(void) {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "true",
+// DEFAULT-NEXT:                           BoolLiteral(
+// DEFAULT-NEXT:                               true,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "true",
+// DEFAULT-NEXT:                           BoolLiteral(
+// DEFAULT-NEXT:                               true,
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "true",
+// DEFAULT-NEXT:                           BoolLiteral(
+// DEFAULT-NEXT:                               true,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           CharLiteral(
 // DEFAULT-NEXT:                               CharLiteral {

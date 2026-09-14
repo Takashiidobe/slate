@@ -1611,7 +1611,6 @@ int main(void) {
 // DEFAULT-NEXT:                           ty: TargetBuiltin(
 // DEFAULT-NEXT:                               "__auto_type",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           storage: Auto,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
 // DEFAULT-NEXT:                           InitDeclarator {
@@ -2172,9 +2171,7 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       NullPtrLiteral,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2201,9 +2198,7 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "nullptr",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       NullPtrLiteral,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
@@ -2222,8 +2217,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "true",
+// DEFAULT-NEXT:                                       BoolLiteral(
+// DEFAULT-NEXT:                                           true,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -2243,8 +2238,8 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "false",
+// DEFAULT-NEXT:                                       BoolLiteral(
+// DEFAULT-NEXT:                                           false,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -3355,9 +3350,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               left: Identifier(
 // DEFAULT-NEXT:                                                   "null_value",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "nullptr",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       right: Paren(
@@ -3366,9 +3359,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               left: Identifier(
 // DEFAULT-NEXT:                                                   "null_pointer",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: Identifier(
-// DEFAULT-NEXT:                                                   "nullptr",
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               right: NullPtrLiteral,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },

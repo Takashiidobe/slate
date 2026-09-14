@@ -358,7 +358,9 @@ impl<'a> Reachability<'a> {
             | ExprKind::FloatLiteral(_)
             | ExprKind::CharLiteral(_)
             | ExprKind::StringLiteral(_)
-            | ExprKind::LabelAddress(_) => {}
+            | ExprKind::LabelAddress(_)
+            | ExprKind::BoolLiteral(_)
+            | ExprKind::NullPtrLiteral => {}
         }
     }
 
