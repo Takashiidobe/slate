@@ -7,11 +7,10 @@ individual IR nodes and where their associated information lives. Shapes
 are pseudocode, not Rust implementation declarations. Proposals here remain
 open until agreed. Decided sections record the agreed shape choices.
 
-The reference will cover numeric types, enums, structs, unions, functions
-(attributes, parameters, return type, body), and statements including
-switch, for, while, and do/while. This first discussion defines numeric
-types, typed constants and bindings, and string literal objects. Other node
-shapes are not specified yet.
+This reference covers numeric types, typed constants and bindings, string
+literal objects, loops, jumps, switches, enums, structs, and unions.
+Functions (attributes, parameters, return type, and body) remain a separate
+discussion. Newly proposed shapes below are design choices for review.
 
 ## Information ownership
 
@@ -59,8 +58,8 @@ are supported too. Their detailed variants and representation will be
 worked out later; the list above covers the binary numeric variants.
 
 `Bool` is a separate type with two values, not a one-bit integer.
-Enums retain a separate identity and refer to an underlying integer type;
-their full shape will be discussed separately. Complex, vector, and
+Enums retain a separate identity and refer to an underlying integer type
+(see [Enums](#enums)). Complex, vector, and
 fixed-point types likewise need their own shapes.
 
 The numeric variant itself contains no literal value, variable name, C
@@ -351,7 +350,400 @@ not rewrite the original C element type to `const char`. Object identity
 is represented independently of content equality; sharing content buffers
 must not itself decide whether literal object addresses are merged.
 
+## Structured control flow
+
+**Proposed:** keep statement regions with typed expression trees. The
+generated `clang-ir-types` bindings informed the region split: CIR `For`
+has condition/body/step regions, `While` and `Do` have condition/body
+regions, and `Switch` contains potentially nested `Case` regions. The
+following shapes add resolved IDs and explicit normal-exit destinations.
+
+Common node IDs and origin metadata are implicit in shapes that do not
+show them. `LoopId`, `SwitchId`, and `CaseId` identify their corresponding
+nodes. A region is a statement container, not automatically a C scope:
+
+```text
+Region {
+    statements: Vec<Stmt>,
+    normal_exit: Continuation,
+}
+
+EvalBlock {
+    statements: Vec<Stmt>,
+    result: Value,
+}
+
+Continuation =
+    After(NodeId)
+  | LoopCondition(LoopId)
+  | LoopStep(LoopId)
+  | CaseEntry(CaseId)
+  | Exit(LoopId | SwitchId)
+
+Scope {
+    id: ScopeId,
+    body: Region,
+    lifetime: ScopeLifetimeInfo,
+}
+```
+
+`normal_exit` is followed only when execution reaches the end of a region.
+`return`, `goto`, `break`, and `continue` transfer control immediately and
+do not also execute that exit. `After(node)` resumes at the node's lexical
+continuation, preserving enclosing loop tests and other structured flow.
+These references do not duplicate statements or require SSA block arguments.
+
+An `EvalBlock` executes its statements and then evaluates its result once,
+when that block is reached. Conditions have a `Bool` result with C truth
+conversions already explicit. This preserves side effects in loop headers.
+Scope lifetime information covers object lifetimes and applicable cleanup
+actions; region boundaries alone neither create nor end local lifetimes.
+Edges that cross scopes must honor this information. Cleanup details can be
+extended independently of the loop shapes.
+
+### C-style for
+
+```text
+For {
+    id: LoopId,
+    scope: ScopeId,
+    init: Region,
+    condition: EvalBlock,
+    step: Region,
+    body: Region,
+}
+```
+
+The init region can contain declarations or expression statements. It runs
+once on normal entry, with `normal_exit = LoopCondition(id)`. Initializer
+declarations belong to the loop's scope, covering its header and body.
+An absent C condition becomes constant `true`; absent init and step become
+empty regions. Their original omission is optional source metadata.
+
+| Event | Destination |
+| --- | --- |
+| Condition true | Body entry |
+| Condition false | `Exit(id)` |
+| Body completes normally | `LoopStep(id)` |
+| `continue` targeting this loop | `LoopStep(id)` |
+| Step completes normally | `LoopCondition(id)` |
+| `break` targeting this loop | `Exit(id)` |
+
+This retains a C for loop without forcing it into a Rust iterator range.
+Any later iterator rewrite must establish the required facts about bound
+evaluation, mutation, and step behavior.
+
+### While and do/while
+
+```text
+While {
+    id: LoopId,
+    scope: ScopeId,
+    condition: EvalBlock,
+    body: Region,
+}
+
+DoWhile {
+    id: LoopId,
+    scope: ScopeId,
+    body: Region,
+    condition: EvalBlock,
+}
+```
+
+`While` enters through its condition. `DoWhile` enters through its body.
+For both, body normal completion and `continue` reach `LoopCondition(id)`;
+condition true reaches the body, and condition false reaches `Exit(id)`.
+`break` reaches `Exit(id)` directly. A do/while condition is not executed
+on a break path. The scope table retains any nested compound-body scope.
+
+### Break, continue, labels, and goto
+
+```text
+Break { target: LoopId | SwitchId }
+Continue { target: LoopId }
+
+Label {
+    id: LabelId,
+    name: Option<String>,
+    scope: ScopeId,
+}
+
+Goto { target: LabelId }
+LabelAddress { target: LabelId }
+IndirectGoto { destination: Value }
+```
+
+Labels mark positions in region statement lists. A label is not a scope
+and does not own the following statements. Label IDs resolve forward
+references and GNU local-label shadowing; the spelling is for printing.
+Direct gotos may cross region boundaries within the enclosing function.
+Taking a label's address produces a typed value; an indirect goto evaluates
+its destination once. A computed target set, if known, is an analysis fact.
+
+`continue` inside a switch within a loop names that loop; `break` names the
+switch. Their destination does not depend on re-searching enclosing nodes.
+Entering a label bypasses statements preceding it, including initializers.
+IR sema checks forbidden scope entries and records scope/lifetime effects;
+Rust lowering must not execute bypassed initializers to satisfy Rust syntax.
+
+### Switch, cases, and fallthrough
+
+```text
+Switch {
+    id: SwitchId,
+    scope: ScopeId,
+    discriminant: EvalBlock,
+    body: Region,
+    cases: Vec<CaseId>,
+    default: Option<CaseId>,
+}
+
+Case {
+    id: CaseId,
+    owner: SwitchId,
+    selectors: Vec<CaseSelector>,
+    body: Region,
+}
+
+CaseSelector =
+    Equal(IntegerConstant)
+  | Range { low: IntegerConstant, high: IntegerConstant }
+  | Default
+```
+
+Evaluate the discriminant once with integer promotions already resolved.
+Case constants have the discriminant's comparison type; ranges are
+inclusive and need not be expanded into individual values. IR sema checks
+overlaps and duplicate defaults. Adjacent labels with a common entry can
+share a `Case` with multiple selectors, including a default selector.
+
+`cases` indexes the case nodes owned by this switch, including cases nested
+in its body but excluding those owned by nested switches. Bodies are stored
+once in the statement tree, not copied into this index. `default` indexes
+the one case containing `Default`; its absence means a nonmatching value
+goes to `Exit(id)`. Dispatch enters the selected case directly, not the
+beginning of the switch body.
+
+**Use explicit exits, not a per-case fallthrough boolean.** In a simple
+switch, a case body's normal exit is `CaseEntry(next_case)` or `Exit(id)`.
+A `break` remains a separate statement, so a conditional break can coexist
+with a normal fallthrough path. A default can appear anywhere in the body.
+
+```text
+case 1:
+    if stop { Break { target: switch_id } }
+    work();
+    normal_exit: CaseEntry(case_2)
+
+case 2:
+    more_work();
+    normal_exit: Exit(switch_id)
+```
+
+For nested cases, normal completion may instead resume with `After(case)`
+inside an enclosing statement. That continuation retains intervening
+conditions, loop steps, and scope exits. Do not replace it with a direct
+jump to the next case by source order. This supports Duff's-device-style
+entry into a loop body and labels reachable by goto before the first case.
+Switch cases do not introduce scopes; explicit `Scope` nodes preserve the
+actual C scopes. Normal completion of the outer switch body exits the switch.
+
+The full representation always works; a derived simple-arm view can expose
+top-level cases to Rust `match` lowering. Enum-case coverage and whether
+fallthrough is reachable are analysis facts, not promises that a switch
+has no other possible input values. An explicit source `fallthrough`
+annotation is origin metadata; the executable edge determines behavior.
+
+## Enum and record type identity
+
+**Proposed:** named and anonymous tags have stable identity in module
+tables. Types refer to definitions by ID, allowing forward declarations
+and recursive pointers without copying the definition at each use.
+
+```text
+TypeKind = ... | Enum(EnumId) | Struct(RecordId) | Union(RecordId)
+
+module.enums[EnumId] = EnumDefinition
+module.records[RecordId] = StructDefinition | UnionDefinition
+```
+
+Names and aliases are useful for output but do not establish type identity.
+Distinct anonymous declarations remain distinct types; multiple declarators
+sharing one tag definition share its ID. Contextual type metadata can still
+carry typedef names and qualifiers at each use.
+
+The earlier `StorageMetadata` shape described numeric storage. Aggregate
+type storage metadata instead references the layout below. Shared layout
+data lives once with its type definition; references are still type-owned
+storage metadata, not optional analysis facts.
+
+### Enums
+
+```text
+EnumDefinition {
+    id: EnumId,
+    name: Option<String>,
+    underlying: Option<Type>,
+    enumerators: Option<Vec<Enumerator>>,
+    metadata: { storage: Option<StorageMetadata>, origin: ... },
+}
+
+Enumerator {
+    id: EnumeratorId,
+    name: String,
+    value: Constant,
+    metadata: { origin: ..., attributes: ... },
+}
+```
+
+`underlying` is the resolved integer representation, selected by IR sema
+using the target, compiler mode, and any explicit underlying type. Every
+complete enum has it and matching storage metadata. A supported incomplete
+enum may lack both; an explicit known underlying type can supply storage
+even before enumerators are defined. `enumerators: None` means no definition
+is available, not an empty list of constants.
+
+Enumerators retain names, source order, duplicate numeric values, and their
+resolved constant types. Do not assume an enumerator expression's type is
+always the enum type. Implicit values are evaluated by sema, and arithmetic
+uses explicit conversions while retaining enum origin for contextual
+lowering. The enumerator list is not a closed validity set for stored values.
+
+This lets Rust lowering choose integer constants, a newtype, flags, or a
+Rust enum when justified. It must not assume that every value names exactly
+one enumerator, nor infer a flags representation from the type name alone.
+
+### Structs and unions
+
+```text
+StructDefinition {
+    id: RecordId,
+    name: Option<String>,
+    fields: Option<Vec<Field>>,
+    metadata: RecordMetadata,
+}
+
+UnionDefinition {
+    id: RecordId,
+    name: Option<String>,
+    fields: Option<Vec<Field>>,
+    metadata: RecordMetadata,
+}
+
+Field {
+    id: FieldId,
+    name: Option<String>,
+    ty: Type,
+    kind: Ordinary | AnonymousMember | BitField { width: u32 }
+        | FlexibleArray,
+    metadata: { origin: ..., attributes: ... },
+}
+
+RecordMetadata {
+    storage: Option<RecordStorage>,
+    origin: ...,
+    attributes: ...,
+}
+
+RecordStorage {
+    size_bytes: u64,
+    alignment_bytes: u32,
+    fields: Map<FieldId, FieldStorage>,
+    bit_field_units: Vec<BitFieldUnit>,
+}
+
+FieldStorage =
+    Object { offset_bytes: u64, alignment_bytes: u32 }
+  | Bits { slices: Vec<BitSlice>, signed: bool }
+  | NoStorage
+
+BitFieldUnit {
+    id: UnitId,
+    offset_bytes: u64,
+    storage_type: Type,
+    alignment_bytes: u32,
+}
+
+BitSlice {
+    unit: UnitId,
+    unit_bit_offset: u32,
+    value_bit_offset: u32,
+    width: u32,
+}
+```
+
+`fields: None` and absent storage mean an incomplete record. A complete
+record has both fields and resolved storage, even for an accepted empty
+record extension. Fields remain in declaration order. Their types carry
+constness and C type metadata; the record stores physical placement and
+effective member alignment after target packing/alignment rules.
+
+For structs, ordinary fields have distinct storage placements. For unions,
+members overlap the same object storage; they are alternative views, not
+a struct's consecutive fields. Overall size includes tail padding and
+alignment requirements. A union has no runtime tag or type-level active
+member field. Initializers and member accesses name the selected `FieldId`;
+later analysis may track which member was written.
+
+Anonymous aggregate members keep a field ID and their nested record type.
+Name resolution expands promoted member names into projection paths through
+those IDs, so `p->x` does not require Rust lowering to repeat anonymous
+member lookup. Synthesized Rust names belong to emission.
+
+Flexible array members use an explicit flexible-array type/field kind,
+not a zero-length fixed array. Store their element type and offset;
+`RecordStorage.size_bytes` describes the base object, not an arbitrary
+runtime tail. Any known extra allocation extent belongs to the object or
+analysis facts. Zero-length array extensions remain distinguishable.
+
+### Bit-fields and padding
+
+Keep logical fields separate from storage units, following the useful
+distinction in the local CIR bindings. A bit-field's declared type and
+width cannot be recovered from the unit holding it. Several fields can
+share a unit; `BitSlice` explicitly maps value bits to unit bits, including
+multiple slices if required by a supported layout. Offsets count from the
+least significant bit of the decoded unit value; target byte order is
+handled by the unit's storage representation.
+
+Unnamed fields remain represented. A zero-width field has `NoStorage`;
+its layout effect is already reflected in following offsets. Reads and
+writes project by field ID and use the resolved layout. Access operations
+also retain volatile/atomic and effective-alignment requirements; a byte
+layout alone does not authorize a particular machine access width.
+
+Padding is storage information, not a user field. Record size, member
+placements, and unused portions of bit-field units describe it without
+inventing padding fields in the logical field list. Rust lowering can
+introduce physical padding or backing fields when needed. Layout-affecting
+attributes have resolved effects in storage metadata; original spelling
+can remain contextual metadata. Other behavior-affecting attributes must
+likewise be resolved before an emitter can ignore their source spelling.
+
+## Reference points
+
+The local generated bindings consulted for these proposals are
+`~/Projects/clang-ir/clang-ir-types/src/ops/control_flow.rs` (`For`, `While`,
+`Do`, `Case`, `Switch`, `Goto`, `Yield`), `src/types.rs` (`Struct`, `Union`,
+`BitField`), and `src/attrs.rs` (`BitFieldDecl`, `BitfieldInfo`, `RecordLayout`).
+They motivate regions and the logical-field/storage-unit distinction.
+This design uses typed IDs instead of symbolic lookup and omits CIR's
+implicit parent-dependent yield behavior and C++-specific record fields.
+The generated type enum has no dedicated C enum variant; the enum shape
+above is a Slate-specific proposal.
+
+For source semantics, the [C11 draft, sections 6.8.4–6.8.6](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)
+describes selection, loops, and jumps. GNU extensions include
+[inclusive case ranges](https://gcc.gnu.org/onlinedocs/gcc/Case-Ranges.html)
+and [labels as values](https://gcc.gnu.org/onlinedocs/gcc/Labels-as-Values.html).
+These references are background; the shapes above are our design proposals.
+
 ## Questions for this discussion
 
 1. Does the proposed variable/value split capture the intended distinction
    between declaration storage classes and type storage metadata?
+2. Do structured regions with explicit normal exits provide the desired
+   balance for switches, including cases nested inside loops?
+3. Are logical fields plus type-owned storage layouts sufficient for the
+   record information Rust lowering should consume?
