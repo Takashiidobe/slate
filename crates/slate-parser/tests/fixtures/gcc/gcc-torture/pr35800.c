@@ -242,1353 +242,1421 @@ int main() {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 1,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 1,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "1",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "int",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "int",
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 2,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "2",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "char",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "char",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 3,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "3",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 3,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "3",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "short",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "short",
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 4,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "4",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "4",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "long",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "long",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 5,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "5",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 5,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "5",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "unsigned char",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "unsigned char",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 6,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "6",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 6,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "6",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "signed char",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "signed char",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 7,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "7",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 7,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "7",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "unsigned short",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "unsigned short",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 8,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "8",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 8,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "8",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "unsigned int",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "unsigned int",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 9,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "9",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 9,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "9",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "unsigned",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "unsigned",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 10,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "10",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 10,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "10",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "unsigned long",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "unsigned long",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 11,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "11",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 11,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "11",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               118,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "void",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           118,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "void",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 12,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "12",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 12,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "12",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               102,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "float",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           102,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "float",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 13,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "13",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 13,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "13",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "double",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           98,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "double",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 14,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "14",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 14,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "14",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "long double",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           98,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "long double",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 15,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "15",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 15,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "15",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "integer",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "integer",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 16,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "16",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 16,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "16",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "boolean",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           98,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "boolean",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 17,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "17",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 17,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "17",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "short real",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "short real",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 18,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "18",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 18,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "18",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "real",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "real",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 19,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "19",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 19,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "19",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "stringptr",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           112,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "stringptr",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 20,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "20",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 20,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "20",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "character",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "character",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 21,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "21",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 21,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "21",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               49,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "logical*1",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           49,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "logical*1",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 22,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "22",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 22,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "22",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               50,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "logical*2",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           50,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "logical*2",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 23,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "23",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 23,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "23",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               52,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "logical*4",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           52,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "logical*4",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 24,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "24",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 24,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "24",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "logical",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "logical",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 25,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "25",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 25,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "25",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               109,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               120,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "complex",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           109,
-// DEFAULT-NEXT:                                           112,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           120,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "complex",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 26,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "26",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 26,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "26",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               109,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               120,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "double complex",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           98,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           109,
-// DEFAULT-NEXT:                                           112,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           120,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "double complex",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 27,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "27",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 27,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "27",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               49,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "integer*1",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           49,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "integer*1",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 28,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "28",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 28,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "28",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               50,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "integer*2",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           50,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "integer*2",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 29,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "29",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 29,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "29",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               52,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "integer*4",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           52,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "integer*4",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 30,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "30",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 30,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "30",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               119,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "wchar",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           119,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           104,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "wchar",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 31,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "31",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 31,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "31",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "long long",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "long long",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 32,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "32",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 32,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "32",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "unsigned long long",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           117,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           115,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           100,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           32,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "unsigned long long",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 33,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "33",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 33,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "33",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               99,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               56,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "logical*8",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           99,
-// DEFAULT-NEXT:                                           97,
-// DEFAULT-NEXT:                                           108,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           56,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "logical*8",
-// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 34,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "34",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 34,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "34",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "name",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               103,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               42,
+// DEFAULT-NEXT:                                               56,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "integer*8",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "name",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           105,
-// DEFAULT-NEXT:                                           110,
-// DEFAULT-NEXT:                                           116,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           103,
-// DEFAULT-NEXT:                                           101,
-// DEFAULT-NEXT:                                           114,
-// DEFAULT-NEXT:                                           42,
-// DEFAULT-NEXT:                                           56,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "integer*8",
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

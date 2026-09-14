@@ -205,12 +205,12 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: Some(
 // DEFAULT-NEXT:                       [
-// DEFAULT-NEXT:                           Labeled(
-// DEFAULT-NEXT:                               "a",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Block(
-// DEFAULT-NEXT:                               [],
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Labeled {
+// DEFAULT-NEXT:                               label: "a",
+// DEFAULT-NEXT:                               body: Block(
+// DEFAULT-NEXT:                                   [],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           If {
 // DEFAULT-NEXT:                               condition: Binary {
 // DEFAULT-NEXT:                                   op: Equal,
@@ -228,12 +228,12 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                               else_branch: Some(
 // DEFAULT-NEXT:                                   [
-// DEFAULT-NEXT:                                       Labeled(
-// DEFAULT-NEXT:                                           "b",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Block(
-// DEFAULT-NEXT:                                           [],
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Labeled {
+// DEFAULT-NEXT:                                           label: "b",
+// DEFAULT-NEXT:                                           body: Block(
+// DEFAULT-NEXT:                                               [],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       If {
 // DEFAULT-NEXT:                                           condition: Binary {
 // DEFAULT-NEXT:                                               op: NotEqual,

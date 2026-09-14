@@ -273,36 +273,57 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           CharLiteral(
-// DEFAULT-NEXT:                               CharLiteral {
-// DEFAULT-NEXT:                                   encoding: Plain,
-// DEFAULT-NEXT:                                   code_units: [
-// DEFAULT-NEXT:                                       120,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   spelling: "x",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           CharLiteral(
-// DEFAULT-NEXT:                               CharLiteral {
-// DEFAULT-NEXT:                                   encoding: Plain,
-// DEFAULT-NEXT:                                   code_units: [
-// DEFAULT-NEXT:                                       88,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   spelling: "X",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "upper",
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               CharLiteral(
+// DEFAULT-NEXT:                                   CharLiteral {
+// DEFAULT-NEXT:                                       encoding: Plain,
+// DEFAULT-NEXT:                                       code_units: [
+// DEFAULT-NEXT:                                           120,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       spelling: "x",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: IntegerLiteral(
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Break,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               CharLiteral(
+// DEFAULT-NEXT:                                   CharLiteral {
+// DEFAULT-NEXT:                                       encoding: Plain,
+// DEFAULT-NEXT:                                       code_units: [
+// DEFAULT-NEXT:                                           88,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       spelling: "X",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "upper",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       Break,
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Default,
+// DEFAULT-NEXT:                           body: Return(
+// DEFAULT-NEXT:                               IntegerLiteral(
 // DEFAULT-NEXT:                                   IntegerLiteral {
 // DEFAULT-NEXT:                                       value: 1,
 // DEFAULT-NEXT:                                       radix: Decimal,
@@ -313,23 +334,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       spelling: "1",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Default,
-// DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 1,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "1",
-// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {

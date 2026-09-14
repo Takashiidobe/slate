@@ -452,53 +452,89 @@ repeat:
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "repeat",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Switch {
-// DEFAULT-NEXT:                   discriminant: Identifier(
-// DEFAULT-NEXT:                       "ret",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: Minus,
-// DEFAULT-NEXT:                               operand: IntegerLiteral(
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "repeat",
+// DEFAULT-NEXT:                   body: Switch {
+// DEFAULT-NEXT:                       discriminant: Identifier(
+// DEFAULT-NEXT:                           "ret",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       body: [
+// DEFAULT-NEXT:                           SwitchLabel {
+// DEFAULT-NEXT:                               label: Case(
+// DEFAULT-NEXT:                                   Unary {
+// DEFAULT-NEXT:                                       op: Minus,
+// DEFAULT-NEXT:                                       operand: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 11,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "11",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               body: If {
+// DEFAULT-NEXT:                                   condition: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "add_output_space_event",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "req",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Member {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "req",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               field: "sock",
+// DEFAULT-NEXT:                                               arrow: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   then_branch: [
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "del_tux_atom",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "req",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Goto(
+// DEFAULT-NEXT:                                           "repeat",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                                   else_branch: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           DoWhile {
+// DEFAULT-NEXT:                               body: [],
+// DEFAULT-NEXT:                               condition: IntegerLiteral(
 // DEFAULT-NEXT:                                   IntegerLiteral {
-// DEFAULT-NEXT:                                       value: 11,
+// DEFAULT-NEXT:                                       value: 0,
 // DEFAULT-NEXT:                                       radix: Decimal,
 // DEFAULT-NEXT:                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                           unsigned: false,
 // DEFAULT-NEXT:                                           size: None,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "11",
+// DEFAULT-NEXT:                                       spelling: "0",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "add_output_space_event",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "req",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Member {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "req",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       field: "sock",
-// DEFAULT-NEXT:                                       arrow: true,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                           Break,
+// DEFAULT-NEXT:                           SwitchLabel {
+// DEFAULT-NEXT:                               label: Default,
+// DEFAULT-NEXT:                               body: Expr(
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "del_tux_atom",
+// DEFAULT-NEXT:                                           "add_req_to_workqueue",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       arguments: [
 // DEFAULT-NEXT:                                           Identifier(
@@ -507,41 +543,9 @@ repeat:
 // DEFAULT-NEXT:                                       ],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Goto(
-// DEFAULT-NEXT:                                   "repeat",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       DoWhile {
-// DEFAULT-NEXT:                           body: [],
-// DEFAULT-NEXT:                           condition: IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 0,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "0",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       Default,
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "add_req_to_workqueue",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "req",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {

@@ -3,7 +3,10 @@ use super::decl::{
     split_top_level, top_level_semi,
 };
 use super::declarator::DeclaratorParser;
-use super::{Cursor, Fragment, Loc, Parser, coalesce_string_literals, lex, span_tokens, synthetic};
+use super::{
+    Cursor, Fragment, Loc, Parser, coalesce_string_literals, lex, span_tokens, synthetic,
+    synthetic_span,
+};
 use crate::ast::*;
 use crate::const_expr;
 use crate::error::ParseError;
@@ -419,18 +422,25 @@ impl Parser {
             fragment.pos = close + 1;
             Ok(body)
         } else {
-            let mut stmts = Vec::new();
-            loop {
-                let start = fragment.pos;
-                let stmt = self.parse_one_stmt(fragment)?;
-                let is_label = matches!(stmt, Stmt::Labeled(_));
-                stmts.push(span_tokens(stmt, &fragment.tokens[start..fragment.pos]));
-                if !is_label {
-                    break;
-                }
-            }
-            Ok(stmts)
+            let start = fragment.pos;
+            let stmt = self.parse_one_stmt(fragment)?;
+            Ok(vec![span_tokens(
+                stmt,
+                &fragment.tokens[start..fragment.pos],
+            )])
         }
+    }
+
+    fn parse_labeled_body(&self, fragment: &mut Fragment) -> Result<Box<SpannedStmt>, ParseError> {
+        if matches!(fragment.peek(), None | Some(Token::RBrace)) {
+            return Ok(Box::new(synthetic_span(Stmt::Block(Vec::new()))));
+        }
+        let start = fragment.pos;
+        let stmt = self.parse_one_stmt(fragment)?;
+        Ok(Box::new(span_tokens(
+            stmt,
+            &fragment.tokens[start..fragment.pos],
+        )))
     }
 
     pub(super) fn parse_simple_keyword_stmt(
@@ -588,7 +598,8 @@ impl Parser {
         {
             let name = name.clone();
             fragment.pos += 2;
-            return Ok(Stmt::Labeled(name));
+            let body = self.parse_labeled_body(fragment)?;
+            return Ok(Stmt::Labeled { label: name, body });
         }
 
         if tokens.value_at(fragment.pos) == Some(&Token::Ident("__label__".into())) {
@@ -703,25 +714,31 @@ impl Parser {
                 let range = tokens[start..colon]
                     .values()
                     .position(|token| *token == Token::Ellipsis);
-                let value = if let Some(range) = range {
+                let label = if let Some(range) = range {
                     let range_start = self.parse_expression(code, &tokens[start..start + range])?;
                     let range_end =
                         self.parse_expression(code, &tokens[start + range + 1..colon])?;
                     fragment.pos = colon + 1;
-                    return Ok(Stmt::CaseRange {
+                    SwitchLabel::CaseRange {
                         start: range_start,
                         end: range_end,
-                    });
+                    }
                 } else {
-                    self.parse_expression(code, &tokens[start..colon])?
+                    let value = self.parse_expression(code, &tokens[start..colon])?;
+                    fragment.pos = colon + 1;
+                    SwitchLabel::Case(value)
                 };
-                fragment.pos = colon + 1;
-                Ok(Stmt::Case(value))
+                let body = self.parse_labeled_body(fragment)?;
+                Ok(Stmt::SwitchLabel { label, body })
             }
             Some(Token::Keyword(Keyword::Default)) => {
                 fragment.pos += 1;
                 fragment.expect(Token::Colon, "expected `:` after `default`")?;
-                Ok(Stmt::Default)
+                let body = self.parse_labeled_body(fragment)?;
+                Ok(Stmt::SwitchLabel {
+                    label: SwitchLabel::Default,
+                    body,
+                })
             }
             Some(Token::Keyword(Keyword::If)) => {
                 let open = fragment.pos + 1;

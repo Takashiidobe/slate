@@ -102,12 +102,12 @@ void dotest()
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "l1",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [],
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "l1",
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(

@@ -107,38 +107,38 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:               Goto(
 // DEFAULT-NEXT:                   "L1",
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "L0",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "L0",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 0,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "0",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "L1",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 1,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "L1",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 1,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "1",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "1",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
@@ -360,38 +360,38 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:                       ),
 // COMPUTED-NEXT:                   },
 // COMPUTED-NEXT:               ),
-// COMPUTED-NEXT:               Labeled(
-// COMPUTED-NEXT:                   "L0",
-// COMPUTED-NEXT:               ),
-// COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   IntegerLiteral(
-// COMPUTED-NEXT:                       IntegerLiteral {
-// COMPUTED-NEXT:                           value: 0,
-// COMPUTED-NEXT:                           radix: Decimal,
-// COMPUTED-NEXT:                           suffix: IntegerSuffix {
-// COMPUTED-NEXT:                               unsigned: false,
-// COMPUTED-NEXT:                               size: None,
+// COMPUTED-NEXT:               Labeled {
+// COMPUTED-NEXT:                   label: "L0",
+// COMPUTED-NEXT:                   body: Return(
+// COMPUTED-NEXT:                       IntegerLiteral(
+// COMPUTED-NEXT:                           IntegerLiteral {
+// COMPUTED-NEXT:                               value: 0,
+// COMPUTED-NEXT:                               radix: Decimal,
+// COMPUTED-NEXT:                               suffix: IntegerSuffix {
+// COMPUTED-NEXT:                                   unsigned: false,
+// COMPUTED-NEXT:                                   size: None,
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                               spelling: "0",
 // COMPUTED-NEXT:                           },
-// COMPUTED-NEXT:                           spelling: "0",
-// COMPUTED-NEXT:                       },
+// COMPUTED-NEXT:                       ),
 // COMPUTED-NEXT:                   ),
-// COMPUTED-NEXT:               ),
-// COMPUTED-NEXT:               Labeled(
-// COMPUTED-NEXT:                   "L1",
-// COMPUTED-NEXT:               ),
-// COMPUTED-NEXT:               Return(
-// COMPUTED-NEXT:                   IntegerLiteral(
-// COMPUTED-NEXT:                       IntegerLiteral {
-// COMPUTED-NEXT:                           value: 1,
-// COMPUTED-NEXT:                           radix: Decimal,
-// COMPUTED-NEXT:                           suffix: IntegerSuffix {
-// COMPUTED-NEXT:                               unsigned: false,
-// COMPUTED-NEXT:                               size: None,
+// COMPUTED-NEXT:               },
+// COMPUTED-NEXT:               Labeled {
+// COMPUTED-NEXT:                   label: "L1",
+// COMPUTED-NEXT:                   body: Return(
+// COMPUTED-NEXT:                       IntegerLiteral(
+// COMPUTED-NEXT:                           IntegerLiteral {
+// COMPUTED-NEXT:                               value: 1,
+// COMPUTED-NEXT:                               radix: Decimal,
+// COMPUTED-NEXT:                               suffix: IntegerSuffix {
+// COMPUTED-NEXT:                                   unsigned: false,
+// COMPUTED-NEXT:                                   size: None,
+// COMPUTED-NEXT:                               },
+// COMPUTED-NEXT:                               spelling: "1",
 // COMPUTED-NEXT:                           },
-// COMPUTED-NEXT:                           spelling: "1",
-// COMPUTED-NEXT:                       },
+// COMPUTED-NEXT:                       ),
 // COMPUTED-NEXT:                   ),
-// COMPUTED-NEXT:               ),
+// COMPUTED-NEXT:               },
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:           provenance: Provenance {
 // COMPUTED-NEXT:               file: FileId(
@@ -606,38 +606,38 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:               Goto(
 // DOUBLED-NEXT:                   "L1",
 // DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               Labeled(
-// DOUBLED-NEXT:                   "L0",
-// DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   IntegerLiteral(
-// DOUBLED-NEXT:                       IntegerLiteral {
-// DOUBLED-NEXT:                           value: 0,
-// DOUBLED-NEXT:                           radix: Decimal,
-// DOUBLED-NEXT:                           suffix: IntegerSuffix {
-// DOUBLED-NEXT:                               unsigned: false,
-// DOUBLED-NEXT:                               size: None,
+// DOUBLED-NEXT:               Labeled {
+// DOUBLED-NEXT:                   label: "L0",
+// DOUBLED-NEXT:                   body: Return(
+// DOUBLED-NEXT:                       IntegerLiteral(
+// DOUBLED-NEXT:                           IntegerLiteral {
+// DOUBLED-NEXT:                               value: 0,
+// DOUBLED-NEXT:                               radix: Decimal,
+// DOUBLED-NEXT:                               suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                   unsigned: false,
+// DOUBLED-NEXT:                                   size: None,
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                               spelling: "0",
 // DOUBLED-NEXT:                           },
-// DOUBLED-NEXT:                           spelling: "0",
-// DOUBLED-NEXT:                       },
+// DOUBLED-NEXT:                       ),
 // DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               Labeled(
-// DOUBLED-NEXT:                   "L1",
-// DOUBLED-NEXT:               ),
-// DOUBLED-NEXT:               Return(
-// DOUBLED-NEXT:                   IntegerLiteral(
-// DOUBLED-NEXT:                       IntegerLiteral {
-// DOUBLED-NEXT:                           value: 1,
-// DOUBLED-NEXT:                           radix: Decimal,
-// DOUBLED-NEXT:                           suffix: IntegerSuffix {
-// DOUBLED-NEXT:                               unsigned: false,
-// DOUBLED-NEXT:                               size: None,
+// DOUBLED-NEXT:               },
+// DOUBLED-NEXT:               Labeled {
+// DOUBLED-NEXT:                   label: "L1",
+// DOUBLED-NEXT:                   body: Return(
+// DOUBLED-NEXT:                       IntegerLiteral(
+// DOUBLED-NEXT:                           IntegerLiteral {
+// DOUBLED-NEXT:                               value: 1,
+// DOUBLED-NEXT:                               radix: Decimal,
+// DOUBLED-NEXT:                               suffix: IntegerSuffix {
+// DOUBLED-NEXT:                                   unsigned: false,
+// DOUBLED-NEXT:                                   size: None,
+// DOUBLED-NEXT:                               },
+// DOUBLED-NEXT:                               spelling: "1",
 // DOUBLED-NEXT:                           },
-// DOUBLED-NEXT:                           spelling: "1",
-// DOUBLED-NEXT:                       },
+// DOUBLED-NEXT:                       ),
 // DOUBLED-NEXT:                   ),
-// DOUBLED-NEXT:               ),
+// DOUBLED-NEXT:               },
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:           provenance: Provenance {
 // DOUBLED-NEXT:               file: FileId(

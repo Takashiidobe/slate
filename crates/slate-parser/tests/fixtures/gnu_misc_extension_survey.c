@@ -371,17 +371,17 @@ done:
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "done",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Attribute(
-// DEFAULT-NEXT:                   [
-// DEFAULT-NEXT:                       Unknown {
-// DEFAULT-NEXT:                           name: "unused",
-// DEFAULT-NEXT:                           arguments: [],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "done",
+// DEFAULT-NEXT:                   body: Attribute(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Unknown {
+// DEFAULT-NEXT:                               name: "unused",
+// DEFAULT-NEXT:                               arguments: [],
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
 // DEFAULT-NEXT:                       IntegerLiteral {

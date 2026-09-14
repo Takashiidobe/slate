@@ -607,17 +607,17 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "do_precision",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "f",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Labeled {
+// DEFAULT-NEXT:                           label: "do_precision",
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "f",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           VaArg {
 // DEFAULT-NEXT:                               list: Identifier(
@@ -666,56 +666,56 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "do_form_integer",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           VaArg {
-// DEFAULT-NEXT:                               list: Identifier(
-// DEFAULT-NEXT:                                   "ap",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               ty: Integer(
-// DEFAULT-NEXT:                                   Ranked {
-// DEFAULT-NEXT:                                       rank: Long,
-// DEFAULT-NEXT:                                       signed: false,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               declarator: Abstract,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Goto(
-// DEFAULT-NEXT:                           "end",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "do_form_string",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "string",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: VaArg {
+// DEFAULT-NEXT:                       Labeled {
+// DEFAULT-NEXT:                           label: "do_form_integer",
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               VaArg {
 // DEFAULT-NEXT:                                   list: Identifier(
 // DEFAULT-NEXT:                                       "ap",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   ty: Qualified {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                           is_const: true,
+// DEFAULT-NEXT:                                   ty: Integer(
+// DEFAULT-NEXT:                                       Ranked {
+// DEFAULT-NEXT:                                           rank: Long,
+// DEFAULT-NEXT:                                           signed: false,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       ty: Integer(
-// DEFAULT-NEXT:                                           Char {
-// DEFAULT-NEXT:                                               signed: None,
-// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   declarator: Abstract,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       Goto(
+// DEFAULT-NEXT:                           "end",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Labeled {
+// DEFAULT-NEXT:                           label: "do_form_string",
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "string",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: VaArg {
+// DEFAULT-NEXT:                                       list: Identifier(
+// DEFAULT-NEXT:                                           "ap",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   declarator: Pointer {
-// DEFAULT-NEXT:                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                       inner: Abstract,
+// DEFAULT-NEXT:                                       ty: Qualified {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                               is_const: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           ty: Integer(
+// DEFAULT-NEXT:                                               Char {
+// DEFAULT-NEXT:                                                   signed: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       declarator: Pointer {
+// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                           inner: Abstract,
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Call {
 // DEFAULT-NEXT:                               callee: Identifier(
@@ -731,17 +731,17 @@ int main(void) {
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "end",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "f",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Labeled {
+// DEFAULT-NEXT:                           label: "end",
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "f",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,
@@ -762,22 +762,22 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "all_done",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "all_done",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 0,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "0",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Comment(
 // DEFAULT-NEXT:                   CommentGroup {
 // DEFAULT-NEXT:                       comment: Comment {

@@ -520,23 +520,23 @@ int main(void) {
 // DEFAULT-NEXT:           ret_type: Void,
 // DEFAULT-NEXT:           name: "f31",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "lbl_br1",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Assign {
-// DEFAULT-NEXT:                       op: Assign,
-// DEFAULT-NEXT:                       target: Identifier(
-// DEFAULT-NEXT:                           "g18",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       value: Unary {
-// DEFAULT-NEXT:                           op: BitNot,
-// DEFAULT-NEXT:                           operand: Identifier(
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "lbl_br1",
+// DEFAULT-NEXT:                   body: Expr(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Identifier(
 // DEFAULT-NEXT:                               "g18",
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           value: Unary {
+// DEFAULT-NEXT:                               op: BitNot,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "g18",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Assign {
 // DEFAULT-NEXT:                       op: Assign,
@@ -562,45 +562,49 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "lbl_b5",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Switch {
-// DEFAULT-NEXT:                   discriminant: Identifier(
-// DEFAULT-NEXT:                       "g12",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 4,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "4",
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "lbl_b5",
+// DEFAULT-NEXT:                   body: Switch {
+// DEFAULT-NEXT:                       discriminant: Identifier(
+// DEFAULT-NEXT:                           "g12",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Case(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                       body: [
+// DEFAULT-NEXT:                           SwitchLabel {
+// DEFAULT-NEXT:                               label: Case(
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 4,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "4",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               body: SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 0,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "0",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: Goto(
+// DEFAULT-NEXT:                                       "lbl_sw8",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Goto(
-// DEFAULT-NEXT:                   "lbl_sw8",
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
 // DEFAULT-NEXT:                       callee: Identifier(
@@ -609,19 +613,19 @@ int main(void) {
 // DEFAULT-NEXT:                       arguments: [],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "lbl_sw8",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               If {
-// DEFAULT-NEXT:                   condition: Identifier(
-// DEFAULT-NEXT:                       "g27",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Goto(
-// DEFAULT-NEXT:                           "lbl_b5",
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "lbl_sw8",
+// DEFAULT-NEXT:                   body: If {
+// DEFAULT-NEXT:                       condition: Identifier(
+// DEFAULT-NEXT:                           "g27",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: None,
+// DEFAULT-NEXT:                       then_branch: [
+// DEFAULT-NEXT:                           Goto(
+// DEFAULT-NEXT:                               "lbl_b5",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       else_branch: None,
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Assign {

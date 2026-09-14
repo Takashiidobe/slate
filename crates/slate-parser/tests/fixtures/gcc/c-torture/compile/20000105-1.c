@@ -223,143 +223,153 @@ main(int na, char* argv[])
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
-// DEFAULT-NEXT:                               Labeled(
-// DEFAULT-NEXT:                                   "help",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_exit",
+// DEFAULT-NEXT:                               Labeled {
+// DEFAULT-NEXT:                                   label: "help",
+// DEFAULT-NEXT:                                   body: Expr(
+// DEFAULT-NEXT:                                       Call {
+// DEFAULT-NEXT:                                           callee: Identifier(
+// DEFAULT-NEXT:                                               "__builtin_exit",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           arguments: [
+// DEFAULT-NEXT:                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 0,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "0",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   119,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "w",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           IntegerLiteral(
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: SwitchLabel {
+// DEFAULT-NEXT:                                       label: Case(
+// DEFAULT-NEXT:                                           CharLiteral(
+// DEFAULT-NEXT:                                               CharLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       87,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   spelling: "W",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       body: Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "wflg",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "1",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Break,
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "t",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: SwitchLabel {
+// DEFAULT-NEXT:                                       label: Case(
+// DEFAULT-NEXT:                                           CharLiteral(
+// DEFAULT-NEXT:                                               CharLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       84,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   spelling: "T",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       body: Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "tflg",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "1",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Break,
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "d",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: Expr(
+// DEFAULT-NEXT:                                       Assign {
+// DEFAULT-NEXT:                                           op: Assign,
+// DEFAULT-NEXT:                                           target: Identifier(
+// DEFAULT-NEXT:                                               "dflg",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           value: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 0,
+// DEFAULT-NEXT:                                                   value: 1,
 // DEFAULT-NEXT:                                                   radix: Decimal,
 // DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                       unsigned: false,
 // DEFAULT-NEXT:                                                       size: None,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "0",
+// DEFAULT-NEXT:                                                   spelling: "1",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               119,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "w",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               87,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "W",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "wflg",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 1,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "1",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "t",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               84,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "T",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "tflg",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 1,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "1",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "d",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "dflg",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 1,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "1",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },

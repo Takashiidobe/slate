@@ -189,22 +189,22 @@ main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "lab",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "lab",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 0,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "0",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(
@@ -344,22 +344,22 @@ main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "lab",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "lab",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 0,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "0",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(

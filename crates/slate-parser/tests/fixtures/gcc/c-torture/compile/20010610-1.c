@@ -107,10 +107,12 @@ main(void)
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Default,
-// DEFAULT-NEXT:                       Block(
-// DEFAULT-NEXT:                           [],
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Default,
+// DEFAULT-NEXT:                           body: Block(
+// DEFAULT-NEXT:                               [],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

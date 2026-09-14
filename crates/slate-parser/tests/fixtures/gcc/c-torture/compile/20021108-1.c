@@ -45,26 +45,26 @@ l2:;
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           name: "main",
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "l1",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Binary {
-// DEFAULT-NEXT:                       op: Sub,
-// DEFAULT-NEXT:                       left: LabelAddress(
-// DEFAULT-NEXT:                           "l1",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       right: LabelAddress(
-// DEFAULT-NEXT:                           "l2",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "l2",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [],
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "l1",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       Binary {
+// DEFAULT-NEXT:                           op: Sub,
+// DEFAULT-NEXT:                           left: LabelAddress(
+// DEFAULT-NEXT:                               "l1",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: LabelAddress(
+// DEFAULT-NEXT:                               "l2",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "l2",
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(

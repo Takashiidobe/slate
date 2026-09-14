@@ -479,10 +479,8 @@ fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
                     | Stmt::DoWhile { .. }
                     | Stmt::For { .. }
                     | Stmt::Switch { .. }
-                    | Stmt::Case(_)
-                    | Stmt::CaseRange { .. }
-                    | Stmt::Default
-                    | Stmt::Labeled(_)
+                    | Stmt::SwitchLabel { .. }
+                    | Stmt::Labeled { .. }
                     | Stmt::LocalLabelDecl(_)
                     | Stmt::Asm(_)
                     | Stmt::Goto(_)

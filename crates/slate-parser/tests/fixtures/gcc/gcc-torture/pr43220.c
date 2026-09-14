@@ -126,12 +126,12 @@ lab:;
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "lab",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [],
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "lab",
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
 // DEFAULT-NEXT:                       Decl(

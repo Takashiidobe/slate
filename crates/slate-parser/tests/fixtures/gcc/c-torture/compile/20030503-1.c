@@ -69,17 +69,17 @@ void foo ()
 // DEFAULT-NEXT:                               condition: None,
 // DEFAULT-NEXT:                               increment: None,
 // DEFAULT-NEXT:                               body: [
-// DEFAULT-NEXT:                                   Labeled(
-// DEFAULT-NEXT:                                       "foo",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Call {
-// DEFAULT-NEXT:                                           callee: Identifier(
-// DEFAULT-NEXT:                                               "bar",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           arguments: [],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Labeled {
+// DEFAULT-NEXT:                                       label: "foo",
+// DEFAULT-NEXT:                                       body: Expr(
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "bar",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   ReturnVoid,
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           },

@@ -838,38 +838,42 @@ int main(void) {
 // DEFAULT-NEXT:                       "func_2_BS_COND_1",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 2,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 2,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "2",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "2",
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Goto(
-// DEFAULT-NEXT:                           "BS_LABEL_0",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           IntegerLiteral(
-// DEFAULT-NEXT:                               IntegerLiteral {
-// DEFAULT-NEXT:                                   value: 4,
-// DEFAULT-NEXT:                                   radix: Decimal,
-// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                       unsigned: false,
-// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                           body: Goto(
+// DEFAULT-NEXT:                               "BS_LABEL_0",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 4,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "4",
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   spelling: "4",
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Goto(
-// DEFAULT-NEXT:                           "BS_LABEL_0",
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           body: Goto(
+// DEFAULT-NEXT:                               "BS_LABEL_0",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               For {
@@ -1029,18 +1033,18 @@ int main(void) {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Labeled(
-// DEFAULT-NEXT:                                           "BS_LABEL_0",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       For {
-// DEFAULT-NEXT:                                           init: None,
-// DEFAULT-NEXT:                                           condition: None,
-// DEFAULT-NEXT:                                           increment: None,
-// DEFAULT-NEXT:                                           body: [
-// DEFAULT-NEXT:                                               Block(
-// DEFAULT-NEXT:                                                   [],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       Labeled {
+// DEFAULT-NEXT:                                           label: "BS_LABEL_0",
+// DEFAULT-NEXT:                                           body: For {
+// DEFAULT-NEXT:                                               init: None,
+// DEFAULT-NEXT:                                               condition: None,
+// DEFAULT-NEXT:                                               increment: None,
+// DEFAULT-NEXT:                                               body: [
+// DEFAULT-NEXT:                                                   Block(
+// DEFAULT-NEXT:                                                       [],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   else_branch: None,

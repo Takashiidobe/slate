@@ -231,21 +231,21 @@ int main(void) {
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "top",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Postfix {
-// DEFAULT-NEXT:                       op: Increment,
-// DEFAULT-NEXT:                       operand: Member {
-// DEFAULT-NEXT:                           base: Identifier(
-// DEFAULT-NEXT:                               "p",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           field: "a",
-// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "top",
+// DEFAULT-NEXT:                   body: Expr(
+// DEFAULT-NEXT:                       Postfix {
+// DEFAULT-NEXT:                           op: Increment,
+// DEFAULT-NEXT:                           operand: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "p",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "a",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: GreaterEqual,

@@ -229,39 +229,39 @@ int main(void) {
 // DEFAULT-NEXT:                                               Goto(
 // DEFAULT-NEXT:                                                   "done",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Labeled(
-// DEFAULT-NEXT:                                                   "failed",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                               Labeled {
+// DEFAULT-NEXT:                                                   label: "failed",
+// DEFAULT-NEXT:                                                   body: Expr(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "result",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               operand: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 5,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "5",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Labeled {
+// DEFAULT-NEXT:                                                   label: "done",
+// DEFAULT-NEXT:                                                   body: Expr(
+// DEFAULT-NEXT:                                                       Identifier(
 // DEFAULT-NEXT:                                                           "result",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           operand: IntegerLiteral(
-// DEFAULT-NEXT:                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                   value: 5,
-// DEFAULT-NEXT:                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                       size: None,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   spelling: "5",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Labeled(
-// DEFAULT-NEXT:                                                   "done",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "result",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -369,39 +369,39 @@ int main(void) {
 // DEFAULT-NEXT:                                               Goto(
 // DEFAULT-NEXT:                                                   "done",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Labeled(
-// DEFAULT-NEXT:                                                   "failed",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                               Labeled {
+// DEFAULT-NEXT:                                                   label: "failed",
+// DEFAULT-NEXT:                                                   body: Expr(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "result",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Unary {
+// DEFAULT-NEXT:                                                               op: Minus,
+// DEFAULT-NEXT:                                                               operand: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 5,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "5",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               Labeled {
+// DEFAULT-NEXT:                                                   label: "done",
+// DEFAULT-NEXT:                                                   body: Expr(
+// DEFAULT-NEXT:                                                       Identifier(
 // DEFAULT-NEXT:                                                           "result",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       value: Unary {
-// DEFAULT-NEXT:                                                           op: Minus,
-// DEFAULT-NEXT:                                                           operand: IntegerLiteral(
-// DEFAULT-NEXT:                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                   value: 5,
-// DEFAULT-NEXT:                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                       size: None,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   spelling: "5",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Labeled(
-// DEFAULT-NEXT:                                                   "done",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "result",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),

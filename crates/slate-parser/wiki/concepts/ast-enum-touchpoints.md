@@ -47,6 +47,15 @@ the wrapper's `.value`.
 - `src/sema.rs` — `walk_stmt` is exhaustive: a variant holding statements
   or expressions must recurse so clang-flavor asm checks see nested
   `asm`, register locals, and labels.
+- `Stmt::Labeled { label: String, body: Box<Stmt> }` (goto target) and
+  `Stmt::SwitchLabel { label: SwitchLabel, body: Box<Stmt> }` (`case`/
+  `case ... ...`/`default`) nest their target statement as `body` instead
+  of appearing as a flat list item followed by the labelled statement, so
+  `case 1: case 2: x;` parses as one nested `SwitchLabel`, not three flat
+  `Stmt`s (`lh7.3.9`). Every exhaustive `Stmt` match above must recurse
+  into `body` the same way it recurses into `Block`'s statement list, or
+  whatever the label wraps (a nested `asm`, a `goto`, an expression)
+  becomes invisible to that pass.
 
 ## Adding an `ExprKind` variant
 

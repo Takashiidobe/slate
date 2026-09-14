@@ -168,41 +168,41 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "neg",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   Unary {
-// DEFAULT-NEXT:                       op: Minus,
-// DEFAULT-NEXT:                       operand: IntegerLiteral(
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "neg",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       Unary {
+// DEFAULT-NEXT:                           op: Minus,
+// DEFAULT-NEXT:                           operand: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "zero",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
 // DEFAULT-NEXT:                           IntegerLiteral {
-// DEFAULT-NEXT:                               value: 1,
+// DEFAULT-NEXT:                               value: 0,
 // DEFAULT-NEXT:                               radix: Decimal,
 // DEFAULT-NEXT:                               suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                   unsigned: false,
 // DEFAULT-NEXT:                                   size: None,
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               spelling: "1",
+// DEFAULT-NEXT:                               spelling: "0",
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "zero",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 0,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "0",
-// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(

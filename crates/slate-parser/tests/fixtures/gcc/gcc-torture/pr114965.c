@@ -128,42 +128,46 @@ int main() { foo("_"); }
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "_",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               43,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "+",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "a",
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "_",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Unary {
-// DEFAULT-NEXT:                                           op: Deref,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "x",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: SwitchLabel {
+// DEFAULT-NEXT:                                       label: Case(
+// DEFAULT-NEXT:                                           CharLiteral(
+// DEFAULT-NEXT:                                               CharLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       43,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   spelling: "+",
+// DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       body: Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "a",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Unary {
+// DEFAULT-NEXT:                                                   op: Deref,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "x",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Expr(
 // DEFAULT-NEXT:                                   Postfix {
 // DEFAULT-NEXT:                                       op: Increment,
@@ -173,8 +177,10 @@ int main() { foo("_"); }
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Continue,
-// DEFAULT-NEXT:                               Default,
-// DEFAULT-NEXT:                               Break,
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Default,
+// DEFAULT-NEXT:                                   body: Break,
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       Break,

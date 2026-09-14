@@ -241,23 +241,23 @@ void bar(void) {}
 // DEFAULT-NEXT:                       "cond",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "here",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Unary {
-// DEFAULT-NEXT:                                   op: Deref,
-// DEFAULT-NEXT:                                   operand: Identifier(
-// DEFAULT-NEXT:                                       "pptr",
+// DEFAULT-NEXT:                       Labeled {
+// DEFAULT-NEXT:                           label: "here",
+// DEFAULT-NEXT:                           body: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "pptr",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   value: LabelAddress(
+// DEFAULT-NEXT:                                       "here",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: LabelAddress(
-// DEFAULT-NEXT:                                   "here",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },

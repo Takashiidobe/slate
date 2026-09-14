@@ -254,77 +254,83 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 0,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 0,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "0",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "0",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Goto(
-// DEFAULT-NEXT:                                   "loopDone2",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               34,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "\"",
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   body: Goto(
+// DEFAULT-NEXT:                                       "loopDone2",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               92,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "\\\\",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "pz",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: Unary {
-// DEFAULT-NEXT:                                               op: Minus,
-// DEFAULT-NEXT:                                               operand: IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 1,
-// DEFAULT-NEXT:                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "1",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: CharLiteral(
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
 // DEFAULT-NEXT:                                           CharLiteral {
 // DEFAULT-NEXT:                                               encoding: Plain,
 // DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   92,
+// DEFAULT-NEXT:                                                   34,
 // DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               spelling: "\\\\",
+// DEFAULT-NEXT:                                               spelling: "\"",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: SwitchLabel {
+// DEFAULT-NEXT:                                       label: Case(
+// DEFAULT-NEXT:                                           CharLiteral(
+// DEFAULT-NEXT:                                               CharLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       92,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   spelling: "\\\\",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       body: Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Index {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "pz",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   index: Unary {
+// DEFAULT-NEXT:                                                       op: Minus,
+// DEFAULT-NEXT:                                                       operand: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 1,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "1",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: CharLiteral(
+// DEFAULT-NEXT:                                                   CharLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           92,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       spelling: "\\\\",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Expr(
 // DEFAULT-NEXT:                                   Assign {
 // DEFAULT-NEXT:                                       op: Assign,
@@ -364,12 +370,12 @@ int main(void) {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "loopDone2",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Block(
-// DEFAULT-NEXT:                   [],
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "loopDone2",
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: NotEqual,

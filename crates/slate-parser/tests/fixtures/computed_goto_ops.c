@@ -228,54 +228,54 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "zero",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 10,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "zero",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 10,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "10",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "10",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "one",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 20,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "one",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 20,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "20",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "20",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "two",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Return(
-// DEFAULT-NEXT:                   IntegerLiteral(
-// DEFAULT-NEXT:                       IntegerLiteral {
-// DEFAULT-NEXT:                           value: 30,
-// DEFAULT-NEXT:                           radix: Decimal,
-// DEFAULT-NEXT:                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                               unsigned: false,
-// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "two",
+// DEFAULT-NEXT:                   body: Return(
+// DEFAULT-NEXT:                       IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 30,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "30",
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           spelling: "30",
-// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:           provenance: Provenance {
 // DEFAULT-NEXT:               file: FileId(

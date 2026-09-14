@@ -297,18 +297,20 @@ int main(void) {
 // DEFAULT-NEXT:                       arguments: [],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Case(
-// DEFAULT-NEXT:                           CharLiteral(
-// DEFAULT-NEXT:                               CharLiteral {
-// DEFAULT-NEXT:                                   encoding: Plain,
-// DEFAULT-NEXT:                                   code_units: [
-// DEFAULT-NEXT:                                       10,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   spelling: "\\n",
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Case(
+// DEFAULT-NEXT:                               CharLiteral(
+// DEFAULT-NEXT:                                   CharLiteral {
+// DEFAULT-NEXT:                                       encoding: Plain,
+// DEFAULT-NEXT:                                       code_units: [
+// DEFAULT-NEXT:                                           10,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       spelling: "\\n",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Break,
+// DEFAULT-NEXT:                           body: Break,
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               While {

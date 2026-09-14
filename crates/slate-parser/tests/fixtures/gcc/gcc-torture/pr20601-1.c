@@ -1558,48 +1558,50 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           body: [
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               117,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "u",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Unary {
-// DEFAULT-NEXT:                                       op: Not,
-// DEFAULT-NEXT:                                       operand: Index {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "e",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           index: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 1,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "1",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "abort",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [],
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "u",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   else_branch: None,
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: If {
+// DEFAULT-NEXT:                                       condition: Unary {
+// DEFAULT-NEXT:                                           op: Not,
+// DEFAULT-NEXT:                                           operand: Index {
+// DEFAULT-NEXT:                                               base: Identifier(
+// DEFAULT-NEXT:                                                   "e",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               index: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 1,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       spelling: "1",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       then_branch: [
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "abort",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       else_branch: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Expr(
 // DEFAULT-NEXT:                                   Assign {
@@ -1648,56 +1650,60 @@ int main(void) {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               80,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "P",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: BitOrAssign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "j",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 4096,
-// DEFAULT-NEXT:                                               radix: Hex,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "0x1000",
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   80,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "P",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                               Case(
-// DEFAULT-NEXT:                                   CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               45,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "-",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: Expr(
+// DEFAULT-NEXT:                                       Assign {
+// DEFAULT-NEXT:                                           op: BitOrAssign,
+// DEFAULT-NEXT:                                           target: Identifier(
+// DEFAULT-NEXT:                                               "j",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 4096,
+// DEFAULT-NEXT:                                                   radix: Hex,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "0x1000",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Postfix {
-// DEFAULT-NEXT:                                       op: Decrement,
-// DEFAULT-NEXT:                                       operand: Identifier(
-// DEFAULT-NEXT:                                           "d",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               Break,
+// DEFAULT-NEXT:                               SwitchLabel {
+// DEFAULT-NEXT:                                   label: Case(
+// DEFAULT-NEXT:                                       CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   45,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "-",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   body: Expr(
+// DEFAULT-NEXT:                                       Postfix {
+// DEFAULT-NEXT:                                           op: Decrement,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "d",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Expr(
 // DEFAULT-NEXT:                                   Postfix {
 // DEFAULT-NEXT:                                       op: Increment,

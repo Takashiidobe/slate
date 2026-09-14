@@ -611,24 +611,24 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Labeled(
-// DEFAULT-NEXT:                   "second",
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Expr(
-// DEFAULT-NEXT:                   Assign {
-// DEFAULT-NEXT:                       op: AddAssign,
-// DEFAULT-NEXT:                       target: Identifier(
-// DEFAULT-NEXT:                           "acc",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       value: Member {
-// DEFAULT-NEXT:                           base: Identifier(
-// DEFAULT-NEXT:                               "q",
+// DEFAULT-NEXT:               Labeled {
+// DEFAULT-NEXT:                   label: "second",
+// DEFAULT-NEXT:                   body: Expr(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: AddAssign,
+// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                               "acc",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           field: "y",
-// DEFAULT-NEXT:                           arrow: true,
+// DEFAULT-NEXT:                           value: Member {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "q",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               field: "y",
+// DEFAULT-NEXT:                               arrow: true,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Identifier(
 // DEFAULT-NEXT:                       "acc",

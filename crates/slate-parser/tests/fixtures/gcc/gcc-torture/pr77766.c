@@ -389,17 +389,17 @@ int   main() {
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Labeled(
-// DEFAULT-NEXT:                                   "L",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Identifier(
-// DEFAULT-NEXT:                                       "j",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Break,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   else_branch: None,
+// DEFAULT-NEXT:                               Labeled {
+// DEFAULT-NEXT:                                   label: "L",
+// DEFAULT-NEXT:                                   body: If {
+// DEFAULT-NEXT:                                       condition: Identifier(
+// DEFAULT-NEXT:                                           "j",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       then_branch: [
+// DEFAULT-NEXT:                                           Break,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       else_branch: None,
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },

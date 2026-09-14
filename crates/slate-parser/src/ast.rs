@@ -266,13 +266,14 @@ pub enum Stmt {
         discriminant: Expr,
         body: Vec<SpannedStmt>,
     },
-    Case(Expr),
-    CaseRange {
-        start: Expr,
-        end: Expr,
+    Labeled {
+        label: String,
+        body: Box<SpannedStmt>,
     },
-    Default,
-    Labeled(String),
+    SwitchLabel {
+        label: SwitchLabel,
+        body: Box<SpannedStmt>,
+    },
     LocalLabelDecl(Vec<String>),
     Asm(GnuAsm),
     Goto(String),
@@ -280,6 +281,13 @@ pub enum Stmt {
     NestedFunction(Box<FunctionDecl>),
     Break,
     Continue,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum SwitchLabel {
+    Case(Expr),
+    CaseRange { start: Expr, end: Expr },
+    Default,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

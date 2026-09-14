@@ -487,12 +487,18 @@ fn walk_stmts<'a>(stmts: &'a [SpannedStmt], visit: &mut impl FnMut(BodyNode<'a>)
 fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
     visit(BodyNode::Stmt(stmt));
     match &stmt.value {
-        Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::Case(expr) | Stmt::ComputedGoto(expr) => {
-            walk_expr(expr, visit)
-        }
-        Stmt::CaseRange { start, end } => {
-            walk_expr(start, visit);
-            walk_expr(end, visit);
+        Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::ComputedGoto(expr) => walk_expr(expr, visit),
+        Stmt::Labeled { body, .. } => walk_stmt(body, visit),
+        Stmt::SwitchLabel { label, body } => {
+            match label {
+                SwitchLabel::Case(expr) => walk_expr(expr, visit),
+                SwitchLabel::CaseRange { start, end } => {
+                    walk_expr(start, visit);
+                    walk_expr(end, visit);
+                }
+                SwitchLabel::Default => {}
+            }
+            walk_stmt(body, visit);
         }
         Stmt::Decl(declaration) => {
             for initializer in declaration
@@ -542,8 +548,6 @@ fn walk_stmt<'a>(stmt: &'a SpannedStmt, visit: &mut impl FnMut(BodyNode<'a>)) {
         | Stmt::ReturnVoid
         | Stmt::StaticAssert(_)
         | Stmt::Attribute(_)
-        | Stmt::Default
-        | Stmt::Labeled(_)
         | Stmt::LocalLabelDecl(_)
         | Stmt::Asm(_)
         | Stmt::Goto(_)
@@ -783,7 +787,7 @@ fn check_function_asm(
     let mut next_scope = 0;
     walk_stmts(&function.body, &mut |node| match node {
         BodyNode::Stmt(stmt) => {
-            if let Stmt::Labeled(name) = &stmt.value {
+            if let Stmt::Labeled { label: name, .. } = &stmt.value {
                 labels.insert(name.as_str(), scope.clone());
             }
         }

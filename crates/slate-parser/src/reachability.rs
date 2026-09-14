@@ -179,12 +179,20 @@ impl<'a> Reachability<'a> {
 
     fn mark_stmt(&mut self, stmt: &SpannedStmt) {
         match &stmt.value {
-            Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::Case(expr) | Stmt::ComputedGoto(expr) => {
+            Stmt::Return(expr) | Stmt::Expr(expr) | Stmt::ComputedGoto(expr) => {
                 self.mark_expr(expr)
             }
-            Stmt::CaseRange { start, end } => {
-                self.mark_expr(start);
-                self.mark_expr(end);
+            Stmt::Labeled { body, .. } => self.mark_stmt(body),
+            Stmt::SwitchLabel { label, body } => {
+                match label {
+                    SwitchLabel::Case(expr) => self.mark_expr(expr),
+                    SwitchLabel::CaseRange { start, end } => {
+                        self.mark_expr(start);
+                        self.mark_expr(end);
+                    }
+                    SwitchLabel::Default => {}
+                }
+                self.mark_stmt(body);
             }
             Stmt::Decl(declaration) => self.mark_declaration(declaration),
             Stmt::Block(body) => self.mark_stmts(body),
@@ -227,8 +235,6 @@ impl<'a> Reachability<'a> {
             | Stmt::ReturnVoid
             | Stmt::StaticAssert(_)
             | Stmt::Attribute(_)
-            | Stmt::Default
-            | Stmt::Labeled(_)
             | Stmt::LocalLabelDecl(_)
             | Stmt::Asm(_)
             | Stmt::Goto(_)

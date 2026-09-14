@@ -166,17 +166,17 @@ int main(void) { f(); }
 // DEFAULT-NEXT:                                   "mylabel",
 // DEFAULT-NEXT:                               ],
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Labeled(
-// DEFAULT-NEXT:                               "mylabel",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           Expr(
-// DEFAULT-NEXT:                               Postfix {
-// DEFAULT-NEXT:                                   op: Increment,
-// DEFAULT-NEXT:                                   operand: Identifier(
-// DEFAULT-NEXT:                                       "x",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Labeled {
+// DEFAULT-NEXT:                               label: "mylabel",
+// DEFAULT-NEXT:                               body: Expr(
+// DEFAULT-NEXT:                                   Postfix {
+// DEFAULT-NEXT:                                       op: Increment,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "x",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           If {
 // DEFAULT-NEXT:                               condition: Binary {
 // DEFAULT-NEXT:                                   op: NotEqual,

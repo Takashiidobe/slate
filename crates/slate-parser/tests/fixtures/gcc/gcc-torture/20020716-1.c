@@ -279,12 +279,12 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "lab1",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Block(
-// DEFAULT-NEXT:                           [],
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       Labeled {
+// DEFAULT-NEXT:                           label: "lab1",
+// DEFAULT-NEXT:                           body: Block(
+// DEFAULT-NEXT:                               [],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               If {

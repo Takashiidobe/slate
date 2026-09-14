@@ -329,20 +329,20 @@ int main() {
 // DEFAULT-NEXT:                               "b",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Labeled(
-// DEFAULT-NEXT:                                   "L",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Unary {
-// DEFAULT-NEXT:                                       op: Not,
-// DEFAULT-NEXT:                                       operand: Identifier(
-// DEFAULT-NEXT:                                           "f",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                               Labeled {
+// DEFAULT-NEXT:                                   label: "L",
+// DEFAULT-NEXT:                                   body: If {
+// DEFAULT-NEXT:                                       condition: Unary {
+// DEFAULT-NEXT:                                           op: Not,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "f",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       then_branch: [
+// DEFAULT-NEXT:                                           Continue,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                       else_branch: None,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Continue,
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   else_branch: None,
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           else_branch: None,

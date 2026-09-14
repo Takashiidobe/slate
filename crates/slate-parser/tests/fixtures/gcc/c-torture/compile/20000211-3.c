@@ -35,13 +35,15 @@ void f_clos(int x)
 // DEFAULT-NEXT:                       "x",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Default,
-// DEFAULT-NEXT:                       Labeled(
-// DEFAULT-NEXT:                           "mumble",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Block(
-// DEFAULT-NEXT:                           [],
-// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       SwitchLabel {
+// DEFAULT-NEXT:                           label: Default,
+// DEFAULT-NEXT:                           body: Labeled {
+// DEFAULT-NEXT:                               label: "mumble",
+// DEFAULT-NEXT:                               body: Block(
+// DEFAULT-NEXT:                                   [],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

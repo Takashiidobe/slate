@@ -263,8 +263,10 @@ EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | Co
 
 ## Statements
 
-`Stmt = Span<StmtKind>`. Bodies are statements, not statement lists, so
-the presence of braces is preserved.
+`Stmt = Span<StmtKind>`. This section is the target shape; see the
+Migration table for where `src/ast.rs` still differs (notably: `if`/loop
+bodies are `Vec<Stmt>`, not `Box<Stmt>`, so brace presence is not yet
+preserved).
 
 ```
 CompoundStatement { items: Vec<BlockItem> }
@@ -286,7 +288,8 @@ StmtKind =
     | While { condition, body: Box<Stmt> }
     | DoWhile { body: Box<Stmt>, condition }
     | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Box<Stmt> }
-    | Labeled { label: Label, body: Box<Stmt> }
+    | Labeled { label: String, body: Box<Stmt> }              // goto target
+    | SwitchLabel { label: SwitchLabel, body: Box<Stmt> }     // case/default
     | Goto(String)
     | IndirectGoto(Expr)                        // GNU goto *p
     | Continue
@@ -297,12 +300,19 @@ StmtKind =
 
 ForInit = Declaration(Declaration) | Expr(Option<Expr>)
 
-Label = Named(String) | Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
+SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 ```
 
-- `case 1: case 2: x;` is `Labeled(Case 1, Labeled(Case 2, Expr x))`.
-- C23 labels before a declaration or at the end of a block are
-  `Labeled { body: Null }` followed by the next block item.
+- `Labeled` and `SwitchLabel` are separate variants (not one `Label` sum
+  type) because a `goto` label and a `switch` case/default are different
+  things spelled with the same `name:` syntax; keeping them apart avoids a
+  `Label::Named` arm that every case/default match has to rule out.
+- Each nests its target statement as `body` rather than appearing as a
+  flat list item, so `case 1: case 2: x;` is
+  `SwitchLabel(Case 1, body: SwitchLabel(Case 2, body: Expr x))`, and a
+  label at the end of a block or before nothing parseable gets an empty
+  `Block([])` as `body` (implemented this way already; not yet `Null`
+  since `Stmt::Null` doesn't exist — see Migration).
 - `switch` cases are found by walking the body. Cases may be nested inside
   other statements (Duff's device), so they are not collected by the parser.
 
@@ -444,6 +454,6 @@ the AST redesign epic.
 | `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals, `GenericControl::Type` and `GenericAssociation::Type` hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`)                                                         |                                                                        |
 | `Designator::Array`/`ArrayRange`                                                                                                                                                              | `Index`/`IndexRange`                                                                          |                                                                        |
 | bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                                                   | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                                                        |
-| `if`/loop bodies are `Vec<Stmt>`; `Case`/`Default`/`Labeled` are markers                                                                                                                      | `Box<Stmt>` bodies; `Labeled` containers; `Null`                                              | braces not preserved                                                   |
+| `if`/loop bodies are `Vec<Stmt>`; a braced `{ ... }` body is flattened into that `Vec` the same as a brace-less single statement                                                              | `Box<Stmt>` bodies, so a `Block` body is visible in the AST                                   | braces not preserved                                                   |
 | `sema.rs` returns errors only; rejects tag definitions in parameter lists                                                                                                                     | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` |                                                                        |
 | parser calls name-based `filter_translation_unit` before resolution                                                                                                                           | IR pipeline prunes resolved symbol dependencies from explicit roots                           |                                                                        |
