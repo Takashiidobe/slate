@@ -301,10 +301,10 @@ EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | Co
 
 ## Statements
 
-`Stmt = Span<StmtKind>`. This section is the target shape; see the
-Migration table for where `src/ast.rs` still differs (notably: `if`/loop
-bodies are `Vec<Stmt>`, not `Box<Stmt>`, so brace presence is not yet
-preserved).
+`Stmt = Span<StmtKind>`. Control-flow bodies are normalized to `Vec<Stmt>`.
+The outer braces of a control body are not preserved: valid unbraced bodies
+cannot introduce declarations, nested compound statements remain `Block`
+nodes, and Rust lowering requires a braced body in either case.
 
 ```
 CompoundStatement { items: Vec<BlockItem> }
@@ -320,12 +320,11 @@ BlockItem =
 StmtKind =
     | Compound(CompoundStatement)
     | Expr(Expr)
-    | Null                                      // `;`
-    | If { condition, then_branch: Box<Stmt>, else_branch: Option<Box<Stmt>> }
-    | Switch { discriminant, body: Box<Stmt> }
-    | While { condition, body: Box<Stmt> }
-    | DoWhile { body: Box<Stmt>, condition }
-    | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Box<Stmt> }
+    | If { condition, then_branch: Vec<Stmt>, else_branch: Option<Vec<Stmt>> }
+    | Switch { discriminant, body: Vec<Stmt> }
+    | While { condition, body: Vec<Stmt> }
+    | DoWhile { body: Vec<Stmt>, condition }
+    | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Vec<Stmt> }
     | Labeled { label: Span<String>, body: Box<Stmt> }        // goto target
     | SwitchLabel { label: SwitchLabel, body: Box<Stmt> }     // case/default
     | Goto(Span<String>)
@@ -349,15 +348,15 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
   flat list item, so `case 1: case 2: x;` is
   `SwitchLabel(Case 1, body: SwitchLabel(Case 2, body: Expr x))`, and a
   label at the end of a block or before nothing parseable gets an empty
-  `Block([])` as `body` (implemented this way already; not yet `Null`
-  since `Stmt::Null` doesn't exist — see Migration).
+  `Block([])` as `body`. A null statement `;` uses the same representation;
+  both lower to an empty Rust block where a body is required.
 - `switch` cases are found by walking the body. Cases may be nested inside
   other statements (Duff's device), so they are not collected by the parser.
 
 ## Comments
 
 ```
-CommentGroup { comment: Comment, provenance }
+CommentGroup { comment: Comment }
 Comment { text: Vec<String>, loc: Loc }
 ```
 
@@ -489,6 +488,5 @@ the AST redesign epic.
 | `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                                             | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                                                        |
 | `Designator::Array`/`ArrayRange`                                                                                                                                                              | `Index`/`IndexRange`                                                                          |                                                                        |
 | bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                                                   | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                                                        |
-| `if`/loop bodies are `Vec<Stmt>`; a braced `{ ... }` body is flattened into that `Vec` the same as a brace-less single statement                                                              | `Box<Stmt>` bodies, so a `Block` body is visible in the AST                                   | braces not preserved                                                   |
 | `sema.rs` returns errors only; rejects tag definitions in parameter lists                                                                                                                     | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` |                                                                        |
 | parser calls name-based `filter_translation_unit` before resolution                                                                                                                           | IR pipeline prunes resolved symbol dependencies from explicit roots                           |                                                                        |
