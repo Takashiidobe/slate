@@ -57,12 +57,22 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 literals, parentheses, and same-concrete-type addition directly to
 `ir::Value`. Integer literal selection uses the existing C candidate order
 and target integer widths. Floating constants retain their exact value bits.
+The dump prints f32/f64 numerically using round-trippable decimal formatting
+(including signed zero); NaNs retain hexadecimal bits to preserve payloads.
+The f16, f80, and f128 printer uses `rustc_apfloat` directly, without an f64
+conversion. NaNs retain hexadecimal bits in every format.
 Addition is not folded or reassociated. Signed overflow defaults to
 `undefined`, unsigned overflow to `wrap`; floating addition defaults to
 nearest-even rounding with ignored exceptions. The context exposes separate
 integer and floating semantic settings for future option resolution.
+Overflow metadata describes the operation's behavior if overflow occurs,
+not a prediction that these operands overflow. Both i32 and i64 additions
+use the context's signed-overflow policy; u32 and u64 additions wrap.
 
-The initial numeric type stores integer width/signedness or floating width.
+The initial numeric type stores integer width/signedness or one of five
+floating formats: f16, f32, f64, f80, f128. These denote value formats, not
+storage sizes. The IR can represent and print f80, but target-based sema
+resolution of `long double` remains the next hookup.
 It does not yet implement the full type/storage metadata proposed below.
 Mixed-type additions requiring conversions, `_BitInt`, decimal/imaginary
 and target-dependent long-double literals, and other expressions return
@@ -89,7 +99,7 @@ arguments to both the test harness and expectation generator.
 ```text
 add<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
 add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
-add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(bits=0x3ff0000000000000), const<f64>(bits=0x4000000000000000))
+add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), const<f64>(2.0))
 ```
 
 ### Validation and declaration pruning

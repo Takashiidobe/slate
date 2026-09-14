@@ -2,7 +2,11 @@ mod numeric;
 
 use crate::ast::Span;
 pub use numeric::{
-    AddSemantics, Exceptions, FloatingSemantics, Number, NumericType, Overflow, Rounding,
+    AddSemantics, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow, Rounding,
+};
+use rustc_apfloat::{
+    Float,
+    ieee::{Half, Quad, X87DoubleExtended},
 };
 use std::fmt;
 
@@ -50,9 +54,20 @@ impl Value {
     fn format(&self, f: &mut fmt::Formatter<'_>, show_spans: bool) -> fmt::Result {
         match &self.node.value {
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
-            ValueKind::Constant(Number::FloatBits(bits)) => {
-                write!(f, "const<{}>(bits=0x{bits:x})", self.ty)
-            }
+            ValueKind::Constant(Number::FloatBits(bits)) => match self.ty {
+                NumericType::Float(FloatType::F32) if !f32::from_bits(*bits as u32).is_nan() => {
+                    write!(f, "const<{}>({:?})", self.ty, f32::from_bits(*bits as u32))
+                }
+                NumericType::Float(FloatType::F64) if !f64::from_bits(*bits as u64).is_nan() => {
+                    write!(f, "const<{}>({:?})", self.ty, f64::from_bits(*bits as u64))
+                }
+                NumericType::Float(FloatType::F16) => format_apfloat::<Half>(f, self.ty, *bits),
+                NumericType::Float(FloatType::F80) => {
+                    format_apfloat::<X87DoubleExtended>(f, self.ty, *bits)
+                }
+                NumericType::Float(FloatType::F128) => format_apfloat::<Quad>(f, self.ty, *bits),
+                _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
+            },
             ValueKind::Add {
                 left,
                 right,
@@ -105,5 +120,18 @@ impl Value {
             )?;
         }
         Ok(())
+    }
+}
+
+fn format_apfloat<T: Float>(
+    f: &mut fmt::Formatter<'_>,
+    ty: NumericType,
+    bits: u128,
+) -> fmt::Result {
+    let value = T::from_bits(bits);
+    if value.is_nan() {
+        write!(f, "const<{ty}>(bits=0x{bits:x})")
+    } else {
+        write!(f, "const<{ty}>({value})")
     }
 }

@@ -2,8 +2,8 @@ use super::validate::{fits_rank, integer_candidates, integer_rank_width};
 use crate::ast::{Expr, ExprKind, Span};
 use crate::const_expr::{BinaryOp, FloatValue, IntegerSizeSuffix, resolve_float};
 use crate::ir::{
-    AddSemantics, Exceptions, FloatingSemantics, Number, NumericType, Overflow, Rounding, Value,
-    ValueKind,
+    AddSemantics, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
+    Rounding, Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
 use thiserror::Error;
@@ -63,11 +63,11 @@ impl Context {
                 if literal.imaginary {
                     return Err(ResolveError::Unsupported("imaginary literals"));
                 }
-                let (width, bits) = match resolve_float(literal)?.value {
-                    FloatValue::Half(bits) => (16, u128::from(bits)),
-                    FloatValue::Single(value) => (32, u128::from(value.to_bits())),
-                    FloatValue::Double(value) => (64, u128::from(value.to_bits())),
-                    FloatValue::Quad(bits) => (128, bits),
+                let (format, bits) = match resolve_float(literal)?.value {
+                    FloatValue::Half(bits) => (FloatType::F16, u128::from(bits)),
+                    FloatValue::Single(value) => (FloatType::F32, u128::from(value.to_bits())),
+                    FloatValue::Double(value) => (FloatType::F64, u128::from(value.to_bits())),
+                    FloatValue::Quad(bits) => (FloatType::F128, bits),
                     _ => {
                         return Err(ResolveError::Unsupported(
                             "target-dependent or decimal floating literals",
@@ -75,7 +75,7 @@ impl Context {
                     }
                 };
                 (
-                    NumericType::Float { width },
+                    NumericType::Float(format),
                     ValueKind::Constant(Number::FloatBits(bits)),
                 )
             }
@@ -101,7 +101,7 @@ impl Context {
                             Overflow::Wrap
                         },
                     },
-                    NumericType::Float { .. } => AddSemantics::Floating(self.floating),
+                    NumericType::Float(_) => AddSemantics::Floating(self.floating),
                 };
                 (
                     left.ty,
