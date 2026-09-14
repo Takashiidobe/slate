@@ -1,11 +1,11 @@
 # IR Shape
 
-_discussion draft — numeric types proposed; not an implemented API_
+_design discussion — agreed choices marked Decided; not an implemented API_
 
 Companion to [IR Spec](ir-spec.md). This document describes the fields of
 individual IR nodes and where their associated information lives. Shapes
 are pseudocode, not Rust implementation declarations. Proposals here remain
-open until agreed; they do not silently replace decisions in the spec.
+open until agreed. Decided sections record the agreed shape choices.
 
 The reference will cover numeric types, enums, structs, unions, functions
 (attributes, parameters, return type, body), and statements including
@@ -22,7 +22,9 @@ side table does not by itself mean the information is optional.
 | Information | Owner | Required for correct emission? |
 | --- | --- | --- |
 | Numeric value domain | Canonical numeric type | Yes |
-| Object size and alignment | Resolved target representation; object/field overrides | Yes when stored |
+| Object size, alignment, representation | Storage metadata on the type; object/field overrides | Yes when stored |
+| Declared constness | Type metadata | Required where qualification constrains access |
+| Storage class, storage duration, linkage | Variable declaration/object | Yes where applicable |
 | Calling convention and ABI classification | Resolved function signature/call contract | Yes at calls and FFI boundaries |
 | Original C type and typedef chain | Origin of an individual type use | No, after semantic and representation decisions are resolved |
 | Source spelling, literal radix/suffix, macro/header origin | Node/type-use origin metadata | No |
@@ -36,92 +38,109 @@ spec's broad wording that C-specific information is optional metadata.
 
 ## Numeric type
 
-**Proposed:** the numeric type describes a value domain. Keep integers and
-floating-point formats explicit rather than a bag of flags such as
-`is_float`, `is_signed`, and `is_long`.
+**Decided:** use explicit numeric variants, with C type information retained
+as metadata for contextual Rust lowering.
 
 ```text
 NumericType =
-    Integer { bits: NonZeroU32, signedness: Signed | Unsigned }
-  | Float { format: FloatFormat }
-
-FloatFormat = Binary16 | Binary32 | Binary64 | X87Extended80 | Binary128
+    I8 | I16 | I32 | I64 | I128
+  | U8 | U16 | U32 | U64 | U128
+  | F16 | F32 | F64 | F80 | F128
+  | BitInt { width: NonZeroU32, signed: bool }
 ```
 
-Integer `bits` is the value representation width, including the sign bit
-for a signed integer. Signed values use two's-complement interpretation.
-The width is not restricted to native Rust integer widths, so bit-precise
-integers can retain their actual domain. The target controls which widths
-are supported. The printer renders these as `i32`, `u64`, `i17`, etc.
+The printer uses `i32`, `u64`, `f80`, etc. `BitInt` represents `_BitInt(N)`
+with its resolved width and signedness. Its width includes the sign bit
+when signed, and is not restricted to native Rust integer widths. The
+target controls which widths are supported.
 
-Float format identifies the numeric representation, not just storage size.
-The initial format set above is a proposal; decimal and other extension
-formats need distinct identities if supported. Do not silently approximate
-an unsupported format with a native Rust float. Rounding/evaluation behavior
-belongs to the operation or an explicit semantic environment it references.
+Decimal floating-point types (`_Decimal*`, called `BF*` in this discussion)
+are supported too. Their detailed variants and representation will be
+worked out later; the list above covers the binary numeric variants.
 
-`Bool` is a separate type with two values, not `Integer { bits: 1, ... }`.
+`Bool` is a separate type with two values, not a one-bit integer.
 Enums retain a separate identity and refer to an underlying integer type;
 their full shape will be discussed separately. Complex, vector, and
 fixed-point types likewise need their own shapes.
 
-The type contains no literal value, variable name, source location, C rank,
-typedef name, range proof, or overflow policy. C promotions and usual
-arithmetic conversions have already been resolved into operations.
+The numeric variant itself contains no literal value, variable name, C
+rank, typedef name, range proof, or overflow policy. A type wraps the
+variant with metadata, including `c_type`, storage, and constness.
 
-## Type identity and representation
+## Target resolution and type metadata
 
-**Proposed:** intern value-domain types in a module table and reference them
-by `TypeId`. Identical integer domains share a type even when different C
-spellings produced them.
+**Decided:** IR semantic analysis (`src/ir/sema`), given the target and
+compiler configuration, resolves C numeric types to concrete variants and
+computes their widths and storage representation. For an explicit variant
+such as `U64`, the numeric width is already fixed; sema resolves how that
+type is represented on the target. For a C type such as `long`, sema first
+chooses the appropriate concrete variant. It also evaluates `_BitInt(N)`'s
+width. Rust lowering does not repeat these decisions.
+
+This is the target-aware IR sema stage described in the IR spec, not the
+later pass that derives ranges, aliasing, and other analysis facts.
+
+**Decided:** storage information is metadata on the type, alongside
+constness and the original C type. Proposed field shape after resolution:
 
 ```text
-module.types[TypeId] = NumericType
+Type {
+    kind: NumericType,
+    metadata: TypeMetadata,
+}
 
-NumericRepresentation {
-    value_type: TypeId,
+TypeMetadata {
+    c_type: Option<CTypeOriginId>,
+    storage: StorageMetadata,
+    constness: Const | NonConst,
+    origin: Option<OriginId>,
+}
+
+StorageMetadata {
     size_bytes: u64,
-    abi_alignment_bytes: u32,
+    alignment_bytes: u32,
     encoding: ResolvedNumericEncoding,
 }
 ```
 
 `ResolvedNumericEncoding` stands for the required mapping between the value
 domain and object storage, including padding where applicable; its concrete
-shape is open. The target module owns byte order. Representations are
-resolved by the frontend, not inferred by the Rust emitter from C names.
-An object refers to its representation; field packing or explicit object
-alignment is recorded at the field/object rather than changing every use
-of the numeric type.
+shape is open. The target module owns byte order. Storage metadata is
+required when emitting storage-sensitive code, even though it is called
+metadata. It describes how a value of the type is stored, not whether a
+particular expression has an allocated object.
+
+Field packing or explicit object alignment is recorded at the field/object
+as an override of the type's storage metadata. Resolved calling semantics
+remain on function signatures and calls.
 
 Value width is not necessarily object size. In particular, do not derive
 storage size or alignment merely by dividing `bits` by eight, or treat
-`f80` as a promise of a ten-byte object. If two C types have the same value
-domain but different storage or ABI requirements, sharing `TypeId` must not
-erase those requirements. Their object representations and resolved call
-contracts preserve the distinction.
+`f80` as a promise of a ten-byte object. Equal numeric variants must not
+erase distinct storage metadata or resolved calling requirements.
 
 This keeps pure arithmetic independent of storage while giving Rust enough
 information to represent objects and foreign signatures correctly.
 
-## Source context belongs to a type use
+## Contextual type uses
 
-**Proposed:** attach C context to each use of a type, not to the canonical
-numeric type. A parameter, return type, field, local, or expression can have
-its own origin even when all share one `TypeId`.
+**Proposed:** a parameter, return type, field, local, or expression references
+its own contextual `Type`. Types may be interned by their full contents;
+interning only by `NumericType` must not merge different metadata.
 
 ```text
-TypeUse {
-    ty: TypeId,
-    origin: Option<TypeOriginId>,
-}
-
-TypeOrigin {
-    c_type: CTypeOriginId,
-    source: Option<OriginId>,
+Type {
+    kind: U64,
+    metadata: {
+        c_type: size_t,
+        storage: { size_bytes: 8, alignment_bytes: 8, encoding: ... },
+        constness: Const,
+        origin: ...,
+    },
 }
 ```
 
+This illustrates a `const size_t` type on the initial LP64 target.
 `CTypeOriginId` references an interned description of the original C type
 and typedef chain, including declaration identities for aliases. The same
 mechanism can later describe nested pointer and aggregate type uses.
@@ -129,20 +148,73 @@ mechanism can later describe nested pointer and aggregate type uses.
 as described in the IR spec. These are optional to consume.
 
 For example, on the initial LP64 target, `size_t n` and
-`unsigned long flags` can both use `Integer { bits: 64, signedness: Unsigned }`.
-Their type-use origins distinguish `size_t` from `unsigned long`. A Rust
+`unsigned long flags` can both have numeric kind `U64`.
+Their type metadata distinguishes `size_t` from `unsigned long`. A Rust
 rewriter can use the alias and header identity to recognize `size_t`;
 ordinary arithmetic does not need that information. A typedef's name alone
 does not prove it is the standard library type.
 
+Constness records declared qualification, not inferred Rust binding
+mutability. A non-const C local may become an immutable Rust binding when
+analysis establishes that it is never written after initialization. Reads
+and conversions carry the resulting value type; they do not blindly copy
+every qualifier from the source object.
+
+## Variables and computed values
+
+**Proposed:** both variables and computed values carry a type. Only objects
+have storage duration and object identity. Distinguish this from type
+storage metadata, which describes representation.
+
+```text
+Variable {
+    id: VariableId,
+    ty: Type,
+    storage_duration: Automatic | Static | Thread,
+    linkage: None | Internal | External,
+    declaration_metadata: { c_storage_class: ... },
+    initializer: ...,
+}
+
+Value {
+    id: NodeId,
+    ty: Type,
+    kind: Constant(...) | Read(Place) | Add(...) | ...,
+}
+```
+
+These are partial shapes for this distinction, not complete variable or
+expression definitions. Original C storage classes are declaration
+metadata once their effects have been resolved into storage duration,
+linkage, and any other required semantics. A computed value such as `a + b`
+does not acquire a C storage class merely because its operands have one.
+Its type still carries storage metadata describing its representation if
+stored. When lowering needs an actual temporary object, that object carries
+its own storage duration and lifetime.
+
 ## Numeric constants and operations
 
 **Proposed:** a constant value belongs to an expression node, separate from
-the type. The surrounding expression provides its node ID and type use.
+the type. The surrounding expression provides its node ID and type.
 
 ```text
 NumericConstant = IntegerBits(BitVector) | FloatBits(BitVector)
 ```
+
+For the requested `BitInt { width: N, signed: true/false, value: ... }`
+shape, the value-bearing node is a constant whose type holds the width and
+signedness:
+
+```text
+Value {
+    ty: Type { kind: BitInt { width: 17, signed: true }, metadata: ... },
+    kind: Constant(IntegerBits(value)),
+    ...,
+}
+```
+
+Putting the literal value inside the type would make different constants
+different types and would not describe a variable whose value changes.
 
 Integer bits match the resolved integer width; the type supplies signedness.
 Float bits encode the value in its resolved format and preserve distinctions
@@ -159,10 +231,8 @@ It does not change the integer type shared by every other expression.
 
 ## Questions for this discussion
 
-1. Does this split work: small numeric value-domain types, required target
-   representation information, and optional C context on each type use?
-2. Should representation be a separate referenced record as proposed, or
-   part of the canonical type key? The former shares arithmetic types;
-   the latter simplifies storage-type lookup but duplicates equal domains.
-3. Is the proposed float-format set sufficient for the first implementation?
-   Other formats should be explicit support decisions.
+1. Does the proposed variable/value split capture the intended distinction
+   between declaration storage classes and type storage metadata?
+2. Is the separate `BitInt` type and constant payload the right value-bearing
+   shape? The explicit numeric variants and type metadata ownership are
+   decided; this constant-node shape remains proposed.
