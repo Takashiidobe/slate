@@ -528,9 +528,19 @@ pub enum X86RegisterWidth {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum AlignAsOperand {
+    Type {
+        ty: Box<CType>,
+        declarator: Declarator,
+    },
+    Expr(Expr),
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
     Aligned(Expr),
+    AlignAs(AlignAsOperand),
     VectorSize(Expr),
     Mode(String),
     Visibility(String),

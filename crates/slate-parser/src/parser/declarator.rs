@@ -82,8 +82,13 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(crate) fn parse_attributes(&mut self) -> Result<Vec<Attribute>, String> {
-        let (attributes, position) =
-            parse_attribute_groups(self.tokens, self.pos, self.biggest_alignment)?;
+        let (attributes, position) = parse_attribute_groups(
+            self.tokens,
+            self.pos,
+            self.biggest_alignment,
+            self.typedef_names,
+            self.statements,
+        )?;
         self.pos = position;
         Ok(attributes)
     }
@@ -891,8 +896,14 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn opens_parameter_list(&self, pos: usize) -> bool {
-        let pos = parse_attribute_groups(self.tokens, pos, self.biggest_alignment)
-            .map_or(pos, |(_, after_attributes)| after_attributes);
+        let pos = parse_attribute_groups(
+            self.tokens,
+            pos,
+            self.biggest_alignment,
+            self.typedef_names,
+            self.statements,
+        )
+        .map_or(pos, |(_, after_attributes)| after_attributes);
         match self.tokens.value_at(pos) {
             Some(Token::RParen | Token::Ellipsis | Token::Keyword(Keyword::Register)) => true,
             Some(token) => const_expr::starts_type_name(token, self.typedef_names),

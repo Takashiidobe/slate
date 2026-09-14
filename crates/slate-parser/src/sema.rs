@@ -258,7 +258,9 @@ fn check_attributes(
                 format!("invalid arguments for attribute `{name}`"),
             ));
         }
-        if let Attribute::Aligned(expression) | Attribute::VectorSize(expression) = attribute
+        if let Attribute::Aligned(expression)
+        | Attribute::VectorSize(expression)
+        | Attribute::AlignAs(AlignAsOperand::Expr(expression)) = attribute
             && !is_integer_constant_expression(expression)
         {
             errors.push(error(

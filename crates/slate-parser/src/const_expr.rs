@@ -1253,6 +1253,20 @@ impl<'a> Parser<'a> {
         Some((Box::new(ty), declarator, declarator_parser.position()))
     }
 
+    pub(crate) fn try_parse_full_type_name(
+        tokens: &[Span<Token>],
+        typedef_names: &HashSet<String>,
+        statements: Option<&'a crate::parser::Parser>,
+    ) -> Option<(Box<CType>, Declarator)> {
+        let first = &tokens.first()?.value;
+        if !starts_type_name(first, typedef_names) {
+            return None;
+        }
+        let parser = Self::new(tokens, typedef_names, statements);
+        let (ty, declarator, end) = parser.try_parse_type_name(0)?;
+        (end == tokens.len()).then_some((ty, declarator))
+    }
+
     fn parse_unary(&mut self) -> Result<Expr, ConstExprError> {
         let start = self.position;
         if let Some(Token::Ident(name)) = self.peek()

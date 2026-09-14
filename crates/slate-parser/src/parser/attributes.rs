@@ -2,6 +2,7 @@ use super::Parser;
 use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Token, TokenSpanExt};
+use std::collections::HashSet;
 
 impl Parser {
     pub(super) fn parse_attribute_groups(
@@ -9,7 +10,13 @@ impl Parser {
         tokens: &[Span<Token>],
         position: usize,
     ) -> Result<(Vec<Attribute>, usize), String> {
-        parse_attribute_groups(tokens, position, self.biggest_alignment)
+        parse_attribute_groups(
+            tokens,
+            position,
+            self.biggest_alignment,
+            &self.typedef_names,
+            Some(self),
+        )
     }
 
     pub(super) fn parse_record_attributes(
@@ -95,6 +102,8 @@ pub(super) fn parse_attribute_groups(
     tokens: &[Span<Token>],
     position: usize,
     biggest_alignment: i64,
+    typedef_names: &HashSet<String>,
+    statements: Option<&Parser>,
 ) -> Result<(Vec<Attribute>, usize), String> {
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
@@ -107,7 +116,15 @@ pub(super) fn parse_attribute_groups(
             if arguments.is_empty() {
                 return Err("expected `(` after `_Alignas`".into());
             }
-            attributes.push(Attribute::Aligned(parse_attribute_expression(&arguments)?));
+            let operand = match const_expr::Parser::try_parse_full_type_name(
+                &arguments,
+                typedef_names,
+                statements,
+            ) {
+                Some((ty, declarator)) => AlignAsOperand::Type { ty, declarator },
+                None => AlignAsOperand::Expr(parse_attribute_expression(&arguments)?),
+            };
+            attributes.push(Attribute::AlignAs(operand));
         } else if cursor.consume(&Token::Ident("__attribute__".into()))
             || cursor.consume(&Token::Ident("__attribute".into()))
         {
