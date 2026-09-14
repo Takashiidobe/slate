@@ -408,7 +408,7 @@ impl<'a> Reachability<'a> {
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
             | Declarator::Pointer { inner, .. } => self.mark_declarator(inner),
-            Declarator::Array { inner, size } => {
+            Declarator::Array { inner, size, .. } => {
                 self.mark_declarator(inner);
                 if let ArraySize::Expression(size) = size {
                     self.mark_expr(size);

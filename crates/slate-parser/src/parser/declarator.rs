@@ -832,16 +832,10 @@ impl<'a> DeclaratorParser<'a> {
             declarator = match self.peek() {
                 Some(Token::LBracket) => {
                     self.pos += 1;
-                    while matches!(
-                        self.peek(),
-                        Some(Token::Keyword(
-                            Keyword::Static
-                                | Keyword::Const
-                                | Keyword::Volatile
-                                | Keyword::Restrict
-                        ))
-                    ) {
-                        self.pos += 1;
+                    let mut is_static = self.matches(Token::Keyword(Keyword::Static));
+                    let qualifiers = self.take_qualifiers();
+                    if !is_static {
+                        is_static = self.matches(Token::Keyword(Keyword::Static));
                     }
                     let size = if self.peek() == Some(&Token::RBracket) {
                         ArraySize::Unspecified
@@ -878,6 +872,8 @@ impl<'a> DeclaratorParser<'a> {
                     Declarator::Array {
                         inner: Box::new(declarator),
                         size,
+                        qualifiers,
+                        is_static,
                     }
                 }
                 Some(Token::LParen) => {
@@ -1026,7 +1022,7 @@ pub fn apply_abstract_declarator(ty: CType, declarator: Declarator) -> CType {
             qualifiers,
             pointee: Box::new(apply_abstract_declarator(ty, *inner)),
         },
-        Declarator::Array { inner, size } => match *inner {
+        Declarator::Array { inner, size, .. } => match *inner {
             Declarator::Grouped(grouped) => apply_abstract_declarator(
                 CType::Array {
                     element: Box::new(ty),

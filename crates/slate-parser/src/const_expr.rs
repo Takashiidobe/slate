@@ -1708,7 +1708,7 @@ fn declarator_size(ty: &CType, declarator: &Declarator) -> Result<u64, ConstExpr
             declarator_size(ty, inner)
         }
         Declarator::Pointer { .. } => Ok(8),
-        Declarator::Array { inner, size } => {
+        Declarator::Array { inner, size, .. } => {
             let element = declarator_size(ty, inner)?;
             let count = match size {
                 ArraySize::Expression(expr) => Parser::evaluate_expr(expr, None)? as u64,

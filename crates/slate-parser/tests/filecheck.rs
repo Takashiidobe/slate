@@ -768,7 +768,7 @@ fn parameter_fact(parameter: &Parameter) -> String {
 fn object_facts(specifiers: &DeclarationSpecifiers, declarator: &Declarator) -> String {
     let mut dimensions = Vec::new();
     let mut current = declarator;
-    while let Declarator::Array { inner, size } = current {
+    while let Declarator::Array { inner, size, .. } = current {
         dimensions.push(array_size(size));
         current = inner;
     }

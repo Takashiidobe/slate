@@ -829,6 +829,10 @@ pub enum Declarator {
     Array {
         inner: Box<Declarator>,
         size: ArraySize,
+        #[debug(skip_if = Qualifiers::is_default)]
+        qualifiers: Qualifiers,
+        #[debug(skip_if = is_false)]
+        is_static: bool,
     },
     Function {
         inner: Box<Declarator>,
