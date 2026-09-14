@@ -611,6 +611,25 @@ pub enum AlignAsOperand {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum CallingConvention {
+    Cdecl,
+    Stdcall,
+    Fastcall,
+    Vectorcall,
+    Thiscall,
+    MsAbi,
+    SysVAbi,
+    RegParm(Expr),
+    Pcs(PcsConvention),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PcsConvention {
+    Aapcs,
+    AapcsVfp,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
     Packed,
     Aligned(Expr),
@@ -656,10 +675,11 @@ pub enum Attribute {
     TargetClones(Vec<String>),
     Ifunc(String),
     DllImport,
+    DllExport,
     WeakImport,
     TlsModel(String),
     MsStruct,
-    Stdcall,
+    CallingConvention(CallingConvention),
     NoMips16,
     Availability(Vec<String>),
     ExtVectorType(Expr),

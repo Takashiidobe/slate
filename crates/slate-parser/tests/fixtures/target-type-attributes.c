@@ -300,7 +300,9 @@ __attribute__((common, nocommon)) int common_value;
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               attributes: [
-// DEFAULT-NEXT:                   Stdcall,
+// DEFAULT-NEXT:                   CallingConvention(
+// DEFAULT-NEXT:                       Stdcall,
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   NoMips16,
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:           },

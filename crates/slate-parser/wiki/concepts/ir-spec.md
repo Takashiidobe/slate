@@ -511,3 +511,11 @@ fn main() -> i32 {
    them, or special-case during lowering.
 2. What function "type parameters" represent in C.
 3. Metadata printer syntax (`[k=v]` trailing per node is the working form).
+
+## Explicit calling conventions at the AST boundary
+
+The AST carries typed calling-convention requests on declaration specifiers
+and nested/trailing declarator attributes, including unevaluated `regparm`
+expressions. Sema must combine these with the target and compiler options
+when resolving function and function-pointer ABIs. This parsing support
+does not yet implement ABI resolution or change the current IR schema.

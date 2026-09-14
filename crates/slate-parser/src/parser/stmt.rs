@@ -397,7 +397,12 @@ impl Parser {
             Some(Token::Ident(name))
                 if matches!(
                     name.as_str(),
-                    "_Alignas" | "alignas" | "__auto_type" | "__attribute__" | "__attribute"
+                    "_Alignas"
+                        | "alignas"
+                        | "__auto_type"
+                        | "__attribute__"
+                        | "__attribute"
+                        | "__declspec"
                 ) =>
             {
                 true

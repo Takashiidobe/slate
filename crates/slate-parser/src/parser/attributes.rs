@@ -108,7 +108,20 @@ pub(super) fn parse_attribute_groups(
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
     loop {
-        if cursor.consume(&Token::Ident("_Alignas".into()))
+        if let Some(convention) = keyword_calling_convention(cursor.peek()) {
+            cursor.pos += 1;
+            attributes.push(Attribute::CallingConvention(convention));
+        } else if cursor.consume(&Token::Ident("__declspec".into())) {
+            cursor.expect(Token::LParen, "expected `(` after __declspec")?;
+            while !cursor.consume(&Token::RParen) {
+                let name = cursor.expect_ident("expected declspec name")?;
+                let arguments = cursor
+                    .parse_parenthesized_arguments("expected `)` after declspec arguments")?;
+                let canonical = if name == "align" { "aligned" } else { &name };
+                attributes.push(parse_attribute(canonical, &arguments, biggest_alignment)?);
+                cursor.consume(&Token::Comma);
+            }
+        } else if cursor.consume(&Token::Ident("_Alignas".into()))
             || cursor.consume(&Token::Ident("alignas".into()))
         {
             let arguments =
@@ -337,12 +350,39 @@ pub(super) fn parse_attribute(
             .map(Attribute::Ifunc)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "dllimport" if arguments.is_empty() => Ok(Attribute::DllImport),
+        "dllexport" if arguments.is_empty() => Ok(Attribute::DllExport),
         "weak_import" if arguments.is_empty() => Ok(Attribute::WeakImport),
         "tls_model" => Ok(single_string()
             .map(Attribute::TlsModel)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "ms_struct" if arguments.is_empty() => Ok(Attribute::MsStruct),
-        "stdcall" if arguments.is_empty() => Ok(Attribute::Stdcall),
+        "cdecl" | "stdcall" | "fastcall" | "vectorcall" | "thiscall" | "ms_abi" | "sysv_abi"
+            if arguments.is_empty() =>
+        {
+            let convention = match canonical_name {
+                "cdecl" => CallingConvention::Cdecl,
+                "stdcall" => CallingConvention::Stdcall,
+                "fastcall" => CallingConvention::Fastcall,
+                "vectorcall" => CallingConvention::Vectorcall,
+                "thiscall" => CallingConvention::Thiscall,
+                "ms_abi" => CallingConvention::MsAbi,
+                _ => CallingConvention::SysVAbi,
+            };
+            Ok(Attribute::CallingConvention(convention))
+        }
+        "regparm" => Ok(match parse_attribute_expression(arguments) {
+            Ok(value) => Attribute::CallingConvention(CallingConvention::RegParm(value)),
+            Err(_) => invalid_attribute(name, arguments),
+        }),
+        "pcs" => Ok(match single_string().as_deref() {
+            Some("aapcs") => {
+                Attribute::CallingConvention(CallingConvention::Pcs(PcsConvention::Aapcs))
+            }
+            Some("aapcs-vfp") => {
+                Attribute::CallingConvention(CallingConvention::Pcs(PcsConvention::AapcsVfp))
+            }
+            _ => invalid_attribute(name, arguments),
+        }),
         "nomips16" if arguments.is_empty() => Ok(Attribute::NoMips16),
         "availability" => Ok(Attribute::Availability(attribute_arguments(arguments))),
         "ext_vector_type" => Ok(match parse_attribute_expression(arguments) {
@@ -482,6 +522,15 @@ impl AttributeName for str {
                 | "tls_model"
                 | "ms_struct"
                 | "stdcall"
+                | "cdecl"
+                | "fastcall"
+                | "vectorcall"
+                | "thiscall"
+                | "ms_abi"
+                | "sysv_abi"
+                | "regparm"
+                | "pcs"
+                | "dllexport"
                 | "nomips16"
                 | "availability"
                 | "ext_vector_type"
@@ -501,4 +550,18 @@ impl AttributeName for str {
                 | "fallthrough"
         )
     }
+}
+
+fn keyword_calling_convention(token: Option<&Token>) -> Option<CallingConvention> {
+    let Token::Ident(name) = token? else {
+        return None;
+    };
+    Some(match name.as_str() {
+        "__cdecl" | "_cdecl" => CallingConvention::Cdecl,
+        "__stdcall" | "_stdcall" => CallingConvention::Stdcall,
+        "__fastcall" | "_fastcall" => CallingConvention::Fastcall,
+        "__vectorcall" => CallingConvention::Vectorcall,
+        "__thiscall" | "_thiscall" => CallingConvention::Thiscall,
+        _ => return None,
+    })
 }

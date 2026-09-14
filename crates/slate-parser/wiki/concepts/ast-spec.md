@@ -499,3 +499,20 @@ the AST redesign epic.
 | bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                                                   | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                                                        |
 | `sema.rs` returns errors only; rejects tag definitions in parameter lists                                                                                                                     | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` |                                                                        |
 | parser calls name-based `filter_translation_unit` before resolution                                                                                                                           | IR pipeline prunes resolved symbol dependencies from explicit roots                           |                                                                        |
+
+## Calling conventions and Microsoft declaration attributes
+
+`Attribute::CallingConvention(CallingConvention)` preserves explicit `Cdecl`,
+`Stdcall`, `Fastcall`, `Vectorcall`, `Thiscall`, `MsAbi`, `SysVAbi`,
+`RegParm(Expr)`, and `Pcs(Aapcs | AapcsVfp)` requests. GNU attributes (including
+wrapped names) and Microsoft calling-convention keywords share these nodes.
+As with other attributes, declaration-specifier positions apply to the
+whole declaration; nested declarator positions remain on `Attributed` or
+`Pointer` nodes, and trailing positions remain in declarator attributes.
+`regparm` keeps its expression unevaluated. Target support, conflicts, and
+the effective ABI are sema responsibilities.
+
+`__declspec(...)` accepts single-parenthesis attribute groups, including
+space-separated entries. `dllimport` and `dllexport` become `DllImport` and
+`DllExport`; `align(expr)` becomes `Aligned(Expr)`. Unrecognized entries
+retain their name and argument tokens through `Unknown`.
