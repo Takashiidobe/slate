@@ -15,8 +15,10 @@ pub(crate) use attributes::apply_vector_attributes;
 pub(crate) use decl::matching_brace;
 pub use declarator::apply_abstract_declarator;
 pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
+use std::rc::Rc;
 
 fn lex(code: &str) -> Vec<Span<Token>> {
     Lexer::new(FileId(0), code).tokenize()
@@ -140,6 +142,9 @@ pub struct Parser {
     defines: Vec<String>,
     biggest_alignment: i64,
     flavor: CompilerFlavor,
+    tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
+    line_starts: HashMap<FileId, Vec<usize>>,
+    file_origins: HashMap<FileId, (HeaderKind, Option<FileId>)>,
 }
 
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
@@ -163,6 +168,9 @@ impl Parser {
             defines: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
             flavor: CompilerFlavor::default(),
+            tags: Rc::default(),
+            line_starts: HashMap::new(),
+            file_origins: HashMap::new(),
         }
     }
 
@@ -193,6 +201,7 @@ impl Parser {
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
+        self.line_starts = pp.line_starts.clone();
         let root_file = pp.main_file.expect("parse_str sets main_file");
         self.parse_nodes(&nodes, root_file)
             .map_err(FrontendError::Parse)
@@ -219,6 +228,7 @@ impl Parser {
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
+        self.line_starts = pp.line_starts.clone();
         let root_file = pp.main_file.expect("parse_file sets main_file");
         let ast = self.parse_nodes(&nodes, root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
@@ -322,6 +332,34 @@ impl Parser {
             .filter(|node| matches!(node.value, PPNodeKind::Code { .. }))
             .flat_map(|node| self.node_tokens(node))
             .collect()
+    }
+
+    pub(crate) fn define_tag(&self, mut definition: Span<TagDefinition>) -> TagId {
+        let mut tags = self.tags.borrow_mut();
+        let id = TagId(tags.len());
+        definition.value.id = id;
+        tags.push(definition);
+        id
+    }
+
+    pub(crate) fn token_provenance(&self, token: &Span<Token>) -> Provenance {
+        let loc = token.expansion;
+        let (kind, header) = self
+            .file_origins
+            .get(&loc.file)
+            .copied()
+            .unwrap_or((HeaderKind::System, None));
+        let line = self.line_starts.get(&loc.file).map_or(0, |starts| {
+            starts
+                .partition_point(|&start| start <= loc.offset)
+                .saturating_sub(1)
+        });
+        Provenance {
+            file: loc.file,
+            kind,
+            line,
+            header,
+        }
     }
 
     fn node_provenance(&self, node: &PPNode) -> Provenance {

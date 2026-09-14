@@ -42,23 +42,20 @@ impl TranslationUnit {
             .flatten()
             .collect::<HashSet<_>>();
         let mut tags = HashSet::new();
+        for tag in &self.tags {
+            if let Some(name) = &tag.value.name {
+                tags.insert(name.clone());
+            }
+            if let TagBody::Record(fields) = &tag.value.body {
+                for field_item in fields {
+                    if let FieldItem::Field(field) = &field_item.value {
+                        collect_tag_names(&field.specifiers.ty, &mut tags);
+                    }
+                }
+            }
+        }
         for decl in &self.decls {
             match &decl.value {
-                Decl::Record(record) => {
-                    if let Some(name) = &record.name {
-                        tags.insert(name.clone());
-                    }
-                    for field_item in &record.fields {
-                        if let FieldItem::Field(field) = &field_item.value {
-                            collect_tag_names(&field.specifiers.ty, &mut tags);
-                        }
-                    }
-                }
-                Decl::Enum(enumeration) => {
-                    if let Some(name) = &enumeration.name {
-                        tags.insert(name.clone());
-                    }
-                }
                 Decl::Function(function) => {
                     collect_tag_names(&function.ret_type, &mut tags);
                     for parameter in &function.parameters {
@@ -92,7 +89,7 @@ impl TranslationUnit {
                         &mut errors,
                     );
                     if flavor == CompilerFlavor::Clang {
-                        check_function_asm(function, &mut errors);
+                        check_function_asm(self, function, &mut errors);
                     }
                 }
                 Decl::Declaration {
@@ -100,6 +97,17 @@ impl TranslationUnit {
                     provenance,
                 } => {
                     let specifiers = &declaration.specifiers;
+                    if let CType::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
+                        && let Some(tag) = self.tag(*id)
+                    {
+                        check_tag_definition(
+                            &tag.value,
+                            &typedefs,
+                            &tags,
+                            decl.expansion,
+                            &mut errors,
+                        );
+                    }
                     check_type(
                         &specifiers.ty,
                         &typedefs,
@@ -146,6 +154,7 @@ impl TranslationUnit {
                         );
                         if flavor == CompilerFlavor::Clang {
                             check_register_variable(
+                                self,
                                 specifiers,
                                 init_declarator,
                                 true,
@@ -156,40 +165,6 @@ impl TranslationUnit {
                         }
                     }
                 }
-                Decl::Record(record) => {
-                    check_attributes(
-                        &record.attributes,
-                        record.provenance,
-                        decl.expansion,
-                        &mut errors,
-                    );
-                    for field_item in &record.fields {
-                        let FieldItem::Field(field) = &field_item.value else {
-                            continue;
-                        };
-                        check_type(
-                            &field.specifiers.ty,
-                            &typedefs,
-                            &tags,
-                            field.provenance,
-                            field_item.expansion,
-                            &mut errors,
-                        );
-                        let attributes = field.specifiers.attributes.iter().chain(
-                            field
-                                .declarators
-                                .iter()
-                                .flat_map(|declarator| &declarator.attributes),
-                        );
-                        check_attributes(
-                            &attributes.cloned().collect::<Vec<_>>(),
-                            field.provenance,
-                            field_item.expansion,
-                            &mut errors,
-                        );
-                    }
-                }
-                Decl::Enum(_) => {}
             }
         }
         let errors: Vec<SemaError> = errors
@@ -352,20 +327,48 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
     }
 }
 
+fn check_tag_definition(
+    tag: &TagDefinition,
+    typedefs: &HashSet<String>,
+    tags: &HashSet<String>,
+    loc: Loc,
+    errors: &mut Vec<SemaError>,
+) {
+    check_attributes(&tag.attributes, tag.provenance, loc, errors);
+    let TagBody::Record(fields) = &tag.body else {
+        return;
+    };
+    for field_item in fields {
+        let FieldItem::Field(field) = &field_item.value else {
+            continue;
+        };
+        check_type(
+            &field.specifiers.ty,
+            typedefs,
+            tags,
+            field.provenance,
+            field_item.expansion,
+            errors,
+        );
+        let attributes = field.specifiers.attributes.iter().chain(
+            field
+                .declarators
+                .iter()
+                .flat_map(|declarator| &declarator.attributes),
+        );
+        check_attributes(
+            &attributes.cloned().collect::<Vec<_>>(),
+            field.provenance,
+            field_item.expansion,
+            errors,
+        );
+    }
+}
+
 fn collect_tag_names(ty: &CType, tags: &mut HashSet<String>) {
     match ty {
-        CType::Tagged { name, body, .. } => {
-            if let Some(name) = name {
-                tags.insert(name.clone());
-            }
-            match body {
-                Some(TagBody::Fields(fields)) => {
-                    for field in fields {
-                        collect_tag_names(&field.specifiers.ty, tags);
-                    }
-                }
-                Some(TagBody::Enumerators(_)) | None => {}
-            }
+        CType::Tag(TagSpecifier::Reference { name, .. }) => {
+            tags.insert(name.clone());
         }
         CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => {
             collect_tag_names(ty, tags)
@@ -396,7 +399,8 @@ fn collect_tag_names(ty: &CType, tags: &mut HashSet<String>) {
         | CType::TypeOf(TypeOfOperand::Expression(_))
         | CType::TypeOfUnqual(TypeOfOperand::Expression(_))
         | CType::TargetBuiltin(_)
-        | CType::Named(_) => {}
+        | CType::Named(_)
+        | CType::Tag(TagSpecifier::Definition(_)) => {}
     }
 }
 
@@ -414,9 +418,7 @@ fn check_type(
             loc,
             format!("unknown type name `{name}`"),
         )),
-        CType::Tagged {
-            name: Some(name), ..
-        } if !tags.contains(name) => {
+        CType::Tag(TagSpecifier::Reference { name, .. }) if !tags.contains(name) => {
             errors.push(error(provenance, loc, format!("unknown tag `{name}`")))
         }
         CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => {
@@ -453,7 +455,7 @@ fn check_type(
         | CType::TypeOfUnqual(TypeOfOperand::Expression(_))
         | CType::TargetBuiltin(_)
         | CType::Named(_)
-        | CType::Tagged { .. } => {}
+        | CType::Tag(_) => {}
     }
 }
 
@@ -639,7 +641,11 @@ fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
     }
 }
 
-fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
+fn check_function_asm(
+    unit: &TranslationUnit,
+    function: &FunctionDecl,
+    errors: &mut Vec<SemaError>,
+) {
     let mut labels = HashMap::new();
     let mut scope = Vec::new();
     let mut next_scope = 0;
@@ -672,6 +678,7 @@ fn check_function_asm(function: &FunctionDecl, errors: &mut Vec<SemaError>) {
             Stmt::Decl(declaration) => {
                 for declarator in &declaration.declarators {
                     check_register_variable(
+                        unit,
                         &declaration.specifiers,
                         declarator,
                         false,
@@ -809,6 +816,7 @@ fn output_lvalue(expr: &Expr) -> OutputLvalue {
 }
 
 fn check_register_variable(
+    unit: &TranslationUnit,
     specifiers: &DeclarationSpecifiers,
     declarator: &InitDeclarator,
     file_scope: bool,
@@ -859,7 +867,7 @@ fn check_register_variable(
         }
         Register::X86(_) => {}
     }
-    if file_scope && !is_register_variable_type(specifiers, &declarator.declarator) {
+    if file_scope && !is_register_variable_type(unit, specifiers, &declarator.declarator) {
         errors.push(error(
             provenance,
             loc,
@@ -868,7 +876,11 @@ fn check_register_variable(
     }
 }
 
-fn is_register_variable_type(specifiers: &DeclarationSpecifiers, declarator: &Declarator) -> bool {
+fn is_register_variable_type(
+    unit: &TranslationUnit,
+    specifiers: &DeclarationSpecifiers,
+    declarator: &Declarator,
+) -> bool {
     let mut declarator = declarator;
     while let Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } = declarator {
         declarator = inner;
@@ -876,14 +888,14 @@ fn is_register_variable_type(specifiers: &DeclarationSpecifiers, declarator: &De
     match declarator {
         Declarator::Pointer { .. } => true,
         Declarator::Array { .. } | Declarator::Function { .. } => false,
-        Declarator::Name(_) | Declarator::Abstract => is_register_scalar_type(&specifiers.ty),
+        Declarator::Name(_) | Declarator::Abstract => is_register_scalar_type(&specifiers.ty, unit),
         Declarator::Grouped(_) | Declarator::Attributed { .. } => unreachable!(),
     }
 }
 
-fn is_register_scalar_type(ty: &CType) -> bool {
+fn is_register_scalar_type(ty: &CType, unit: &TranslationUnit) -> bool {
     match ty {
-        CType::Qualified { ty, .. } | CType::Atomic(ty) => is_register_scalar_type(ty),
+        CType::Qualified { ty, .. } | CType::Atomic(ty) => is_register_scalar_type(ty, unit),
         CType::Void
         | CType::Floating(_)
         | CType::Complex(_)
@@ -892,10 +904,13 @@ fn is_register_scalar_type(ty: &CType) -> bool {
         | CType::Vector(_)
         | CType::Array { .. }
         | CType::Function { .. }
-        | CType::Tagged {
+        | CType::Tag(TagSpecifier::Reference {
             kind: TagKind::Struct | TagKind::Union,
             ..
-        } => false,
+        }) => false,
+        CType::Tag(TagSpecifier::Definition(id)) => unit
+            .tag(*id)
+            .is_none_or(|tag| tag.value.kind == TagKind::Enum),
         _ => true,
     }
 }

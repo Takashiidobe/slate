@@ -312,9 +312,20 @@ impl Parser {
         nodes: &[PPNode],
         root_file: FileId,
     ) -> Result<TranslationUnit, ParseError> {
+        self.tags.borrow_mut().clear();
+        self.file_origins.clear();
+        for node in nodes {
+            if let PPNodeKind::Code { provenance, .. } = &node.value {
+                self.file_origins
+                    .entry(provenance.file)
+                    .or_insert((provenance.kind, provenance.header));
+            }
+        }
+        let decls = self.parse_decls(nodes)?;
         let ast = filter_translation_unit(
             &TranslationUnit {
-                decls: self.parse_decls(nodes)?,
+                decls,
+                tags: self.tags.take(),
                 flavor: self.flavor(),
             },
             root_file,
@@ -643,49 +654,8 @@ impl Parser {
                 .map_err(|error| self.error_at(Loc::whole(code), error))?;
             attributes.extend(trailing_attributes);
             let provenance = self.node_provenance(&nodes[0]);
-            let declaration = self.parse_tag_declaration(
-                &all_tokens[..node0_offset],
-                CType::Tagged {
-                    kind,
-                    name: name.clone(),
-                    body: None,
-                },
-                &trailing_tokens,
-                declarators_position,
-                provenance,
-            )?;
-            let tag_decl = if kind == TagKind::Enum {
-                let mut enumerators = Vec::new();
-                for segment in split_top_level(body_tokens, &Token::Comma) {
-                    let segment = segment
-                        .into_iter()
-                        .filter(|token| !matches!(token.value, Token::Comment(_)))
-                        .collect::<Vec<_>>();
-                    if segment.is_empty() {
-                        continue;
-                    }
-                    let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
-                        return Err(self.error_at(Loc::whole(code), "expected enumerator"));
-                    };
-                    let value = match segment.value_at(1) {
-                        None => None,
-                        Some(Token::Equal) => Some(self.parse_enumerator_value(&segment[2..])?),
-                        _ => {
-                            return Err(
-                                self.error_at(Loc::whole(code), "expected enumerator value")
-                            );
-                        }
-                    };
-                    enumerators.push(Enumerator {
-                        name: enumerator_name.clone(),
-                        value,
-                    });
-                }
-                Decl::Enum(EnumDecl {
-                    name: name.clone(),
-                    enumerators,
-                    provenance,
-                })
+            let body = if kind == TagKind::Enum {
+                TagBody::Enum(self.parse_enumerators(code, body_tokens)?)
             } else {
                 let mut fields = Vec::new();
                 for mut segment in split_top_level(body_tokens, &Token::Semi) {
@@ -699,23 +669,32 @@ impl Parser {
                         FieldItem::Field(FieldDecl {
                             specifiers,
                             declarators,
-                            provenance,
+                            provenance: self.token_provenance(&segment[0]),
                         }),
                         &segment,
                     ));
                 }
-                Decl::Record(RecordDecl {
+                TagBody::Record(fields)
+            };
+            let id = self.define_tag(span_tokens(
+                TagDefinition {
+                    id: TagId(0),
                     kind,
                     name,
-                    fields,
-                    provenance,
                     attributes,
-                })
-            };
-            return Ok((
-                vec![tag_decl].into_iter().chain(declaration).collect(),
-                consumed,
+                    body,
+                    provenance,
+                },
+                &tokens[..=same_line_close],
             ));
+            let declaration = self.parse_tag_declaration(
+                &all_tokens[..node0_offset],
+                CType::Tag(TagSpecifier::Definition(id)),
+                &trailing_tokens,
+                declarators_position,
+                provenance,
+            )?;
+            return Ok((vec![declaration], consumed));
         }
 
         let mut depth = 0i32;
@@ -765,62 +744,64 @@ impl Parser {
             1
         };
         let provenance = self.node_provenance(&nodes[0]);
+        let body = if kind == TagKind::Enum {
+            let body_tokens = self.nodes_tokens(&nodes[body_start..close]);
+            TagBody::Enum(self.parse_enumerators(code, &body_tokens)?)
+        } else {
+            TagBody::Record(self.parse_field_items(&nodes[body_start..close])?)
+        };
+        let id = self.define_tag(span_pp_nodes(
+            TagDefinition {
+                id: TagId(0),
+                kind,
+                name,
+                attributes,
+                body,
+                provenance,
+            },
+            &nodes[..=close],
+        ));
         let declaration = self.parse_tag_declaration(
             &all_tokens[..node0_offset],
-            CType::Tagged {
-                kind,
-                name: name.clone(),
-                body: None,
-            },
+            CType::Tag(TagSpecifier::Definition(id)),
             &trailing_tokens,
             position,
             provenance,
         )?;
-        let tag_decl = if kind == TagKind::Enum {
-            let mut enumerators = Vec::new();
-            let body_tokens = self.nodes_tokens(&nodes[body_start..close]);
-            for segment in split_top_level(&body_tokens, &Token::Comma) {
-                let segment = segment
-                    .into_iter()
-                    .filter(|token| !matches!(token.value, Token::Comment(_)))
-                    .collect::<Vec<_>>();
-                if segment.is_empty() {
-                    continue;
-                }
-                let Some(Token::Ident(enumerator_name)) = segment.value_at(0) else {
-                    return Err(self.error_at(Loc::whole(code), "expected enumerator"));
-                };
-                let value = match segment.value_at(1) {
-                    None => None,
-                    Some(Token::Equal) => Some(self.parse_enumerator_value(&segment[2..])?),
-                    _ => {
-                        return Err(self.error_at(Loc::whole(code), "expected enumerator value"));
-                    }
-                };
-                enumerators.push(Enumerator {
-                    name: enumerator_name.clone(),
-                    value,
-                });
+        Ok((vec![declaration], consumed))
+    }
+
+    fn parse_enumerators(
+        &self,
+        code: &str,
+        body_tokens: &[Span<Token>],
+    ) -> Result<Vec<Enumerator>, ParseError> {
+        let mut enumerators = Vec::new();
+        for segment in split_top_level(body_tokens, &Token::Comma) {
+            let segment = segment
+                .into_iter()
+                .filter(|token| !matches!(token.value, Token::Comment(_)))
+                .collect::<Vec<_>>();
+            if segment.is_empty() {
+                continue;
             }
-            Decl::Enum(EnumDecl {
+            let Some(Token::Ident(name)) = segment.value_at(0) else {
+                return Err(self.error_at(Loc::whole(code), "expected enumerator"));
+            };
+            let value = match segment.value_at(1) {
+                None => None,
+                Some(Token::Equal) => Some(self.parse_enumerator_value(&segment[2..])?),
+                _ => {
+                    return Err(self.error_at(Loc::whole(code), "expected enumerator value"));
+                }
+            };
+            enumerators.push(Enumerator {
                 name: name.clone(),
-                enumerators,
-                provenance,
-            })
-        } else {
-            let fields = self.parse_field_items(&nodes[body_start..close])?;
-            Decl::Record(RecordDecl {
-                kind,
-                name,
-                fields,
-                provenance,
-                attributes,
-            })
-        };
-        Ok((
-            vec![tag_decl].into_iter().chain(declaration).collect(),
-            consumed,
-        ))
+                value,
+                provenance: self.token_provenance(&segment[0]),
+            });
+        }
+        Ok(enumerators)
     }
 
     fn parse_enumerator_value(&self, tokens: &[Span<Token>]) -> Result<Expr, ParseError> {
@@ -835,27 +816,28 @@ impl Parser {
         trailing: &[Span<Token>],
         position: usize,
         provenance: Provenance,
-    ) -> Result<Option<Decl>, ParseError> {
-        if trailing.value_at(position) == Some(&Token::Semi) {
-            return Ok(None);
-        }
+    ) -> Result<Decl, ParseError> {
         let mut specifiers = specifiers_with_type(ty);
         self.parse_specifier_keywords(&mut self.declarator_parser(prefix, 0), &mut specifiers)?;
-        let mut parser = self.declarator_parser(trailing, position);
-        while let Some(qualifier) = parser.take_qualifier() {
-            set_qualifier(&mut specifiers.qualifiers, qualifier);
-        }
-        let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
-        Ok(Some(Decl::Declaration {
+        let declarators = if trailing.value_at(position) == Some(&Token::Semi) {
+            Vec::new()
+        } else {
+            let mut parser = self.declarator_parser(trailing, position);
+            while let Some(qualifier) = parser.take_qualifier() {
+                set_qualifier(&mut specifiers.qualifiers, qualifier);
+            }
+            self.parse_declarator_list(&mut parser, &mut specifiers, false)?
+                .into_iter()
+                .map(ParsedDeclarator::into_init_declarator)
+                .collect()
+        };
+        Ok(Decl::Declaration {
             declaration: Declaration {
                 specifiers,
-                declarators: declarators
-                    .into_iter()
-                    .map(ParsedDeclarator::into_init_declarator)
-                    .collect(),
+                declarators,
             },
             provenance,
-        }))
+        })
     }
 
     pub(super) fn parse_linkage_spec_block(

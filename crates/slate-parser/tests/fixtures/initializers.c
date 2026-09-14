@@ -22,7 +22,82 @@ int main() {
 // SLATE-FILECHECK-DEFINES ENABLED ENABLED
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration {
+// DEFAULT: tag[0]: TagDefinition {
+// DEFAULT-NEXT:       id: TagId(
+// DEFAULT-NEXT:           0,
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       kind: Struct,
+// DEFAULT-NEXT:       name: Some(
+// DEFAULT-NEXT:           "Point",
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       body: Record(
+// DEFAULT-NEXT:           [
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "x",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 4,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Field(
+// DEFAULT-NEXT:                   FieldDecl {
+// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                           ty: Integer(
+// DEFAULT-NEXT:                               Ranked {
+// DEFAULT-NEXT:                                   rank: Int,
+// DEFAULT-NEXT:                                   signed: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       declarators: [
+// DEFAULT-NEXT:                           FieldDeclarator {
+// DEFAULT-NEXT:                               declarator: Name(
+// DEFAULT-NEXT:                                   "y",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               3,
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: User,
+// DEFAULT-NEXT:                           line: 5,
+// DEFAULT-NEXT:                           header: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ],
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[0]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -189,87 +264,36 @@ int main() {
 // DEFAULT-NEXT:           header: None,
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[3]: Record(
-// DEFAULT-NEXT:       RecordDecl {
-// DEFAULT-NEXT:           kind: Struct,
-// DEFAULT-NEXT:           name: Some(
-// DEFAULT-NEXT:               "Point",
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           fields: [
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "x",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 4,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT: decl[3]: Declaration {
+// DEFAULT-NEXT:       declaration: Declaration {
+// DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:               ty: Tag(
+// DEFAULT-NEXT:                   Definition(
+// DEFAULT-NEXT:                       TagId(
+// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Field(
-// DEFAULT-NEXT:                   FieldDecl {
-// DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                           ty: Integer(
-// DEFAULT-NEXT:                               Ranked {
-// DEFAULT-NEXT:                                   rank: Int,
-// DEFAULT-NEXT:                                   signed: true,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       declarators: [
-// DEFAULT-NEXT:                           FieldDeclarator {
-// DEFAULT-NEXT:                               declarator: Name(
-// DEFAULT-NEXT:                                   "y",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               3,
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: User,
-// DEFAULT-NEXT:                           line: 5,
-// DEFAULT-NEXT:                           header: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ],
-// DEFAULT-NEXT:           provenance: Provenance {
-// DEFAULT-NEXT:               file: FileId(
-// DEFAULT-NEXT:                   3,
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               kind: User,
-// DEFAULT-NEXT:               line: 3,
-// DEFAULT-NEXT:               header: None,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   )
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               3,
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: User,
+// DEFAULT-NEXT:           line: 3,
+// DEFAULT-NEXT:           header: None,
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
 // DEFAULT-NEXT: decl[4]: Declaration {
 // DEFAULT-NEXT:       declaration: Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:               ty: Tagged {
-// DEFAULT-NEXT:                   kind: Struct,
-// DEFAULT-NEXT:                   name: Some(
-// DEFAULT-NEXT:                       "Point",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               ty: Tag(
+// DEFAULT-NEXT:                   Reference {
+// DEFAULT-NEXT:                       kind: Struct,
+// DEFAULT-NEXT:                       name: "Point",
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           declarators: [
 // DEFAULT-NEXT:               InitDeclarator {
@@ -448,7 +472,82 @@ int main() {
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN ENABLED
-// ENABLED: decl[0]: Declaration {
+// ENABLED: tag[0]: TagDefinition {
+// ENABLED-NEXT:       id: TagId(
+// ENABLED-NEXT:           0,
+// ENABLED-NEXT:       ),
+// ENABLED-NEXT:       kind: Struct,
+// ENABLED-NEXT:       name: Some(
+// ENABLED-NEXT:           "Point",
+// ENABLED-NEXT:       ),
+// ENABLED-NEXT:       body: Record(
+// ENABLED-NEXT:           [
+// ENABLED-NEXT:               Field(
+// ENABLED-NEXT:                   FieldDecl {
+// ENABLED-NEXT:                       specifiers: DeclarationSpecifiers {
+// ENABLED-NEXT:                           ty: Integer(
+// ENABLED-NEXT:                               Ranked {
+// ENABLED-NEXT:                                   rank: Int,
+// ENABLED-NEXT:                                   signed: true,
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                       },
+// ENABLED-NEXT:                       declarators: [
+// ENABLED-NEXT:                           FieldDeclarator {
+// ENABLED-NEXT:                               declarator: Name(
+// ENABLED-NEXT:                                   "x",
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           },
+// ENABLED-NEXT:                       ],
+// ENABLED-NEXT:                       provenance: Provenance {
+// ENABLED-NEXT:                           file: FileId(
+// ENABLED-NEXT:                               3,
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                           kind: User,
+// ENABLED-NEXT:                           line: 4,
+// ENABLED-NEXT:                           header: None,
+// ENABLED-NEXT:                       },
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:               ),
+// ENABLED-NEXT:               Field(
+// ENABLED-NEXT:                   FieldDecl {
+// ENABLED-NEXT:                       specifiers: DeclarationSpecifiers {
+// ENABLED-NEXT:                           ty: Integer(
+// ENABLED-NEXT:                               Ranked {
+// ENABLED-NEXT:                                   rank: Int,
+// ENABLED-NEXT:                                   signed: true,
+// ENABLED-NEXT:                               },
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                       },
+// ENABLED-NEXT:                       declarators: [
+// ENABLED-NEXT:                           FieldDeclarator {
+// ENABLED-NEXT:                               declarator: Name(
+// ENABLED-NEXT:                                   "y",
+// ENABLED-NEXT:                               ),
+// ENABLED-NEXT:                           },
+// ENABLED-NEXT:                       ],
+// ENABLED-NEXT:                       provenance: Provenance {
+// ENABLED-NEXT:                           file: FileId(
+// ENABLED-NEXT:                               3,
+// ENABLED-NEXT:                           ),
+// ENABLED-NEXT:                           kind: User,
+// ENABLED-NEXT:                           line: 5,
+// ENABLED-NEXT:                           header: None,
+// ENABLED-NEXT:                       },
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:               ),
+// ENABLED-NEXT:           ],
+// ENABLED-NEXT:       ),
+// ENABLED-NEXT:       provenance: Provenance {
+// ENABLED-NEXT:           file: FileId(
+// ENABLED-NEXT:               3,
+// ENABLED-NEXT:           ),
+// ENABLED-NEXT:           kind: User,
+// ENABLED-NEXT:           line: 3,
+// ENABLED-NEXT:           header: None,
+// ENABLED-NEXT:       },
+// ENABLED-NEXT:   }
+// ENABLED-NEXT: decl[0]: Declaration {
 // ENABLED-NEXT:       declaration: Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(
@@ -615,87 +714,36 @@ int main() {
 // ENABLED-NEXT:           header: None,
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   }
-// ENABLED-NEXT: decl[3]: Record(
-// ENABLED-NEXT:       RecordDecl {
-// ENABLED-NEXT:           kind: Struct,
-// ENABLED-NEXT:           name: Some(
-// ENABLED-NEXT:               "Point",
-// ENABLED-NEXT:           ),
-// ENABLED-NEXT:           fields: [
-// ENABLED-NEXT:               Field(
-// ENABLED-NEXT:                   FieldDecl {
-// ENABLED-NEXT:                       specifiers: DeclarationSpecifiers {
-// ENABLED-NEXT:                           ty: Integer(
-// ENABLED-NEXT:                               Ranked {
-// ENABLED-NEXT:                                   rank: Int,
-// ENABLED-NEXT:                                   signed: true,
-// ENABLED-NEXT:                               },
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                       declarators: [
-// ENABLED-NEXT:                           FieldDeclarator {
-// ENABLED-NEXT:                               declarator: Name(
-// ENABLED-NEXT:                                   "x",
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           },
-// ENABLED-NEXT:                       ],
-// ENABLED-NEXT:                       provenance: Provenance {
-// ENABLED-NEXT:                           file: FileId(
-// ENABLED-NEXT:                               3,
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                           kind: User,
-// ENABLED-NEXT:                           line: 4,
-// ENABLED-NEXT:                           header: None,
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                   },
+// ENABLED-NEXT: decl[3]: Declaration {
+// ENABLED-NEXT:       declaration: Declaration {
+// ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
+// ENABLED-NEXT:               ty: Tag(
+// ENABLED-NEXT:                   Definition(
+// ENABLED-NEXT:                       TagId(
+// ENABLED-NEXT:                           0,
+// ENABLED-NEXT:                       ),
+// ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
-// ENABLED-NEXT:               Field(
-// ENABLED-NEXT:                   FieldDecl {
-// ENABLED-NEXT:                       specifiers: DeclarationSpecifiers {
-// ENABLED-NEXT:                           ty: Integer(
-// ENABLED-NEXT:                               Ranked {
-// ENABLED-NEXT:                                   rank: Int,
-// ENABLED-NEXT:                                   signed: true,
-// ENABLED-NEXT:                               },
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                       declarators: [
-// ENABLED-NEXT:                           FieldDeclarator {
-// ENABLED-NEXT:                               declarator: Name(
-// ENABLED-NEXT:                                   "y",
-// ENABLED-NEXT:                               ),
-// ENABLED-NEXT:                           },
-// ENABLED-NEXT:                       ],
-// ENABLED-NEXT:                       provenance: Provenance {
-// ENABLED-NEXT:                           file: FileId(
-// ENABLED-NEXT:                               3,
-// ENABLED-NEXT:                           ),
-// ENABLED-NEXT:                           kind: User,
-// ENABLED-NEXT:                           line: 5,
-// ENABLED-NEXT:                           header: None,
-// ENABLED-NEXT:                       },
-// ENABLED-NEXT:                   },
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:           ],
-// ENABLED-NEXT:           provenance: Provenance {
-// ENABLED-NEXT:               file: FileId(
-// ENABLED-NEXT:                   3,
-// ENABLED-NEXT:               ),
-// ENABLED-NEXT:               kind: User,
-// ENABLED-NEXT:               line: 3,
-// ENABLED-NEXT:               header: None,
 // ENABLED-NEXT:           },
 // ENABLED-NEXT:       },
-// ENABLED-NEXT:   )
+// ENABLED-NEXT:       provenance: Provenance {
+// ENABLED-NEXT:           file: FileId(
+// ENABLED-NEXT:               3,
+// ENABLED-NEXT:           ),
+// ENABLED-NEXT:           kind: User,
+// ENABLED-NEXT:           line: 3,
+// ENABLED-NEXT:           header: None,
+// ENABLED-NEXT:       },
+// ENABLED-NEXT:   }
 // ENABLED-NEXT: decl[4]: Declaration {
 // ENABLED-NEXT:       declaration: Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
-// ENABLED-NEXT:               ty: Tagged {
-// ENABLED-NEXT:                   kind: Struct,
-// ENABLED-NEXT:                   name: Some(
-// ENABLED-NEXT:                       "Point",
-// ENABLED-NEXT:                   ),
-// ENABLED-NEXT:               },
+// ENABLED-NEXT:               ty: Tag(
+// ENABLED-NEXT:                   Reference {
+// ENABLED-NEXT:                       kind: Struct,
+// ENABLED-NEXT:                       name: "Point",
+// ENABLED-NEXT:                   },
+// ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
 // ENABLED-NEXT:           declarators: [
 // ENABLED-NEXT:               InitDeclarator {

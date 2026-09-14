@@ -12,8 +12,11 @@ impl<W: Write> Renderer<W> {
     }
 
     pub fn render(&mut self, ast: &TranslationUnit) -> io::Result<()> {
+        for tag in &ast.tags {
+            self.render_debug(&format!("tag[{}]", tag.value.id.0), &tag.value)?;
+        }
         for (index, decl) in ast.decls.iter().enumerate() {
-            self.render_debug(index, &decl.value)?;
+            self.render_debug(&format!("decl[{index}]"), &decl.value)?;
         }
         Ok(())
     }
@@ -22,11 +25,11 @@ impl<W: Write> Renderer<W> {
         self.out
     }
 
-    fn render_debug<T: Debug>(&mut self, index: usize, value: &T) -> io::Result<()> {
+    fn render_debug<T: Debug>(&mut self, label: &str, value: &T) -> io::Result<()> {
         let rendered = format!("{value:#?}");
         for (line_index, line) in rendered.lines().enumerate() {
             if line_index == 0 {
-                self.line(&format!("decl[{index}]: {line}"))?;
+                self.line(&format!("{label}: {line}"))?;
             } else {
                 self.line(&format!("  {line}"))?;
             }

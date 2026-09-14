@@ -1538,7 +1538,7 @@ fn ctype_size(ty: &CType) -> Result<u64, ConstExprError> {
         | CType::TypeOfUnqual(_)
         | CType::TargetBuiltin(_)
         | CType::Named(_)
-        | CType::Tagged { .. }
+        | CType::Tag(_)
         | CType::Function { .. }
         | CType::Vector(_)
         | CType::FixedPoint(_) => Err(ConstExprError::UnsupportedTypeSize),

@@ -12,14 +12,22 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
             .filter(|(id, _)| reachability.reachable.contains(id))
             .map(|(_, decl)| decl.clone())
             .collect(),
+        tags: tu
+            .tags
+            .iter()
+            .filter(|tag| reachability.reachable_tags.contains(&tag.value.id))
+            .cloned()
+            .collect(),
         flavor: tu.flavor,
     }
 }
 
 struct Reachability<'a> {
+    tu: &'a TranslationUnit,
     nodes: &'a [SpannedDecl],
     symbols: HashMap<String, Vec<usize>>,
     reachable: HashSet<usize>,
+    reachable_tags: HashSet<TagId>,
 }
 
 impl<'a> Reachability<'a> {
@@ -29,16 +37,30 @@ impl<'a> Reachability<'a> {
             for name in decl.names() {
                 symbols.entry(name.to_string()).or_default().push(id);
             }
-            if let Decl::Enum(enumeration) = &decl.value {
-                for enumerator in &enumeration.enumerators {
+            let Decl::Declaration { declaration, .. } = &decl.value else {
+                continue;
+            };
+            let CType::Tag(TagSpecifier::Definition(tag_id)) = &declaration.specifiers.ty else {
+                continue;
+            };
+            let Some(tag) = tu.tag(*tag_id) else {
+                continue;
+            };
+            if let Some(name) = &tag.value.name {
+                symbols.entry(name.clone()).or_default().push(id);
+            }
+            if let TagBody::Enum(enumerators) = &tag.value.body {
+                for enumerator in enumerators {
                     symbols.entry(enumerator.name.clone()).or_default().push(id);
                 }
             }
         }
         Self {
+            tu,
             nodes: &tu.decls,
             symbols,
             reachable: HashSet::new(),
+            reachable_tags: HashSet::new(),
         }
     }
 
@@ -62,8 +84,20 @@ impl<'a> Reachability<'a> {
             Decl::Comment(_) | Decl::StaticAssert { .. } | Decl::Asm { .. } => {}
             Decl::Function(function) => self.mark_function(function),
             Decl::Declaration { declaration, .. } => self.mark_declaration(declaration),
-            Decl::Record(record) => {
-                for field in &record.fields {
+        }
+    }
+
+    fn mark_tag(&mut self, id: TagId) {
+        if !self.reachable_tags.insert(id) {
+            return;
+        }
+        let tu = self.tu;
+        let Some(tag) = tu.tag(id) else {
+            return;
+        };
+        match &tag.value.body {
+            TagBody::Record(fields) => {
+                for field in fields {
                     if let FieldItem::Field(field) = &field.value {
                         self.mark_type(&field.specifiers.ty);
                         for declarator in &field.declarators {
@@ -72,12 +106,8 @@ impl<'a> Reachability<'a> {
                     }
                 }
             }
-            Decl::Enum(enumeration) => {
-                for value in enumeration
-                    .enumerators
-                    .iter()
-                    .filter_map(|e| e.value.as_ref())
-                {
+            TagBody::Enum(enumerators) => {
+                for value in enumerators.iter().filter_map(|e| e.value.as_ref()) {
                     self.mark_expr(value);
                 }
             }
@@ -333,11 +363,8 @@ impl<'a> Reachability<'a> {
     fn mark_type(&mut self, ty: &CType) {
         match ty {
             CType::Named(name) => self.mark_name(name),
-            CType::Tagged { name, .. } => {
-                if let Some(name) = name {
-                    self.mark_name(name);
-                }
-            }
+            CType::Tag(TagSpecifier::Reference { name, .. }) => self.mark_name(name),
+            CType::Tag(TagSpecifier::Definition(id)) => self.mark_tag(*id),
             CType::Qualified { ty, .. } | CType::Pointer { pointee: ty, .. } => self.mark_type(ty),
             CType::Atomic(ty) => self.mark_type(ty),
             CType::Vector(vector) => self.mark_type(&vector.element),

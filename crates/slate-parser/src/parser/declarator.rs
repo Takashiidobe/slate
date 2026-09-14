@@ -28,6 +28,8 @@ pub(crate) enum DeclaratorError {
     UnsupportedTypeofExpression,
     #[error("expected declarator")]
     ExpectedDeclarator,
+    #[error("tag definition is not allowed here")]
+    TagDefinitionNotAllowed,
     #[error("{0}")]
     Other(String),
 }
@@ -404,6 +406,7 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(super) fn parse_record_type(&mut self, kind: TagKind) -> Result<CType, DeclaratorError> {
+        let start = self.pos - 1;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
                 let name = name.clone();
@@ -412,18 +415,43 @@ impl<'a> DeclaratorParser<'a> {
             }
             _ => None,
         };
-        let body = if self.peek() == Some(&Token::LBrace) {
-            Some(TagBody::Fields(self.parse_field_list()?))
-        } else {
-            None
-        };
-        if name.is_none() && body.is_none() {
-            return Err(DeclaratorError::ExpectedTagNameOrBrace);
+        if self.peek() == Some(&Token::LBrace) {
+            let body = TagBody::Record(self.parse_field_list()?);
+            return self.define_tag(kind, name, body, start);
         }
-        Ok(CType::Tagged { kind, name, body })
+        tag_reference(kind, name)
+    }
+
+    fn define_tag(
+        &self,
+        kind: TagKind,
+        name: Option<String>,
+        body: TagBody,
+        start: usize,
+    ) -> Result<CType, DeclaratorError> {
+        let parser = self
+            .statements
+            .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
+        let definition = TagDefinition {
+            id: TagId(0),
+            kind,
+            name,
+            attributes: Vec::new(),
+            body,
+            provenance: parser.token_provenance(&self.tokens[start]),
+        };
+        let id = parser.define_tag(span_tokens(definition, &self.tokens[start..self.pos]));
+        Ok(CType::Tag(TagSpecifier::Definition(id)))
+    }
+
+    fn provenance_at(&self, index: usize) -> Provenance {
+        self.statements.map_or_else(Provenance::default, |parser| {
+            parser.token_provenance(&self.tokens[index])
+        })
     }
 
     pub(super) fn parse_enum_type(&mut self) -> Result<CType, DeclaratorError> {
+        let start = self.pos - 1;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
                 let name = name.clone();
@@ -440,22 +468,14 @@ impl<'a> DeclaratorParser<'a> {
                 self.pos = checkpoint;
             }
         }
-        let body = if self.peek() == Some(&Token::LBrace) {
-            Some(TagBody::Enumerators(self.parse_enumerator_list()?))
-        } else {
-            None
-        };
-        if name.is_none() && body.is_none() {
-            return Err(DeclaratorError::ExpectedTagNameOrBrace);
+        if self.peek() == Some(&Token::LBrace) {
+            let body = TagBody::Enum(self.parse_enumerator_list()?);
+            return self.define_tag(TagKind::Enum, name, body, start);
         }
-        Ok(CType::Tagged {
-            kind: TagKind::Enum,
-            name,
-            body,
-        })
+        tag_reference(TagKind::Enum, name)
     }
 
-    pub(super) fn parse_field_list(&mut self) -> Result<Vec<FieldDecl>, DeclaratorError> {
+    pub(super) fn parse_field_list(&mut self) -> Result<Vec<SpannedFieldItem>, DeclaratorError> {
         self.pos += 1;
         let mut fields = Vec::new();
         while self.peek() != Some(&Token::RBrace) {
@@ -465,6 +485,7 @@ impl<'a> DeclaratorParser<'a> {
                     "in struct/union body",
                 ));
             }
+            let start = self.pos;
             while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
                 self.pos += 1;
             }
@@ -507,11 +528,15 @@ impl<'a> DeclaratorParser<'a> {
                 )?;
                 break;
             }
-            fields.push(FieldDecl {
-                specifiers,
-                declarators,
-                provenance: Provenance::default(),
-            });
+            let provenance = self.provenance_at(start);
+            fields.push(span_tokens(
+                FieldItem::Field(FieldDecl {
+                    specifiers,
+                    declarators,
+                    provenance,
+                }),
+                &self.tokens[start..self.pos],
+            ));
         }
         self.pos += 1;
         Ok(fields)
@@ -527,6 +552,7 @@ impl<'a> DeclaratorParser<'a> {
             let Some(Token::Ident(name)) = self.peek().cloned() else {
                 return Err(DeclaratorError::ExpectedEnumerator);
             };
+            let provenance = self.provenance_at(self.pos);
             self.pos += 1;
             let value = if self.matches(Token::Equal) {
                 let (value, end) = const_expr::Parser::parse_one(
@@ -541,7 +567,11 @@ impl<'a> DeclaratorParser<'a> {
             } else {
                 None
             };
-            enumerators.push(Enumerator { name, value });
+            enumerators.push(Enumerator {
+                name,
+                value,
+                provenance,
+            });
             if self.matches(Token::Comma) {
                 continue;
             }
@@ -1063,4 +1093,9 @@ pub(crate) fn is_target_builtin_name(name: &str) -> bool {
             | "atomic_char8_t"
             | "nullptr_t"
     )
+}
+
+fn tag_reference(kind: TagKind, name: Option<String>) -> Result<CType, DeclaratorError> {
+    let name = name.ok_or(DeclaratorError::ExpectedTagNameOrBrace)?;
+    Ok(CType::Tag(TagSpecifier::Reference { kind, name }))
 }

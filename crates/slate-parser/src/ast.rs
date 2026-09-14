@@ -613,12 +613,7 @@ pub enum CType {
     Imaginary(Box<Self>),
     TargetBuiltin(String),
     Named(String),
-    Tagged {
-        kind: TagKind,
-        name: Option<String>,
-        #[debug(skip_if = Option::is_none)]
-        body: Option<TagBody>,
-    },
+    Tag(TagSpecifier),
     Qualified {
         #[debug(skip_if = Qualifiers::is_default)]
         qualifiers: Qualifiers,
@@ -717,12 +712,6 @@ pub enum TagKind {
     Struct,
     Union,
     Enum,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum TagBody {
-    Fields(Vec<FieldDecl>),
-    Enumerators(Vec<Enumerator>),
 }
 
 #[derive(CustomDebug, Clone, Copy, Default, PartialEq, Eq)]
@@ -899,15 +888,30 @@ pub struct StaticAssert {
     pub message: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct TagId(pub usize);
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum TagSpecifier {
+    Reference { kind: TagKind, name: String },
+    Definition(TagId),
+}
+
 #[derive(CustomDebug, Clone, PartialEq)]
-pub struct RecordDecl {
+pub struct TagDefinition {
+    pub id: TagId,
     pub kind: TagKind,
     pub name: Option<String>,
     #[debug(skip_if = Vec::is_empty)]
-    pub fields: Vec<SpannedFieldItem>,
-    pub provenance: Provenance,
-    #[debug(skip_if = Vec::is_empty)]
     pub attributes: Vec<Attribute>,
+    pub body: TagBody,
+    pub provenance: Provenance,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum TagBody {
+    Record(Vec<SpannedFieldItem>),
+    Enum(Vec<Enumerator>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -952,18 +956,11 @@ pub struct FieldDeclarator {
     pub attributes: Vec<Attribute>,
 }
 
-#[derive(CustomDebug, Clone, PartialEq)]
-pub struct EnumDecl {
-    pub name: Option<String>,
-    #[debug(skip_if = Vec::is_empty)]
-    pub enumerators: Vec<Enumerator>,
-    pub provenance: Provenance,
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Enumerator {
     pub name: String,
     pub value: Option<Expr>,
+    pub provenance: Provenance,
 }
 
 #[derive(CustomDebug, Clone, PartialEq)]
@@ -982,8 +979,6 @@ pub enum Decl {
         asm: GnuAsm,
         provenance: Provenance,
     },
-    Record(RecordDecl),
-    Enum(EnumDecl),
 }
 
 impl Decl {
@@ -992,8 +987,6 @@ impl Decl {
             Self::Comment(_) | Self::StaticAssert { .. } | Self::Asm { .. } => Vec::new(),
             Self::Function(function) => vec![&function.name],
             Self::Declaration { declaration, .. } => declaration.names().collect(),
-            Self::Record(record) => record.name.as_deref().into_iter().collect(),
-            Self::Enum(enumeration) => enumeration.name.as_deref().into_iter().collect(),
         }
     }
 
@@ -1004,8 +997,6 @@ impl Decl {
             Self::Declaration { provenance, .. }
             | Self::StaticAssert { provenance, .. }
             | Self::Asm { provenance, .. } => provenance.file,
-            Self::Record(record) => record.provenance.file,
-            Self::Enum(enumeration) => enumeration.provenance.file,
         }
     }
 }
@@ -1013,5 +1004,15 @@ impl Decl {
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
     pub decls: Vec<SpannedDecl>,
+    pub tags: Vec<Span<TagDefinition>>,
     pub flavor: crate::compiler_args::CompilerFlavor,
+}
+
+impl TranslationUnit {
+    pub fn tag(&self, id: TagId) -> Option<&Span<TagDefinition>> {
+        self.tags
+            .binary_search_by_key(&id, |tag| tag.value.id)
+            .ok()
+            .map(|index| &self.tags[index])
+    }
 }

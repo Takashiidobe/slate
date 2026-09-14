@@ -435,7 +435,8 @@ the AST redesign epic.
 | --- | --- | --- |
 | enum bodies drop comments | `CommentGroup` as an `EnumItem` (`lh7.3.11`) | |
 | `InitDeclarator` and `FieldDeclarator` carry no provenance; `Stmt::Decl` has none at all | provenance on every declarator | |
-| `Decl::Record`, `Decl::Enum` emitted before a `Declaration` whose specifier is a bodiless `CType::Tagged`; `CType::Tagged { body }` inline for local tags | `TagSpecifier::Definition(TagId)` + `TranslationUnit.tags` | anonymous tags unlinkable; local tag body duplicated per declarator; fields get default provenance (`lh7.1.17`) |
+| `CType::Tag(TagSpecifier)` inside `CType`; `Reference` has no attributes; `TagBody::Record` holds `FieldItem`; `TagBody::Enum` has no `fixed_type` | `TypeSpecifier` (`lh7.3.5`), `MemberItem`, `EnumItem` | |
+| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag` | indexed by `TagId` once pruning moves to the IR pipeline | |
 | `CType` mixes specifiers with derived types; `FunctionDecl.ret_type` pre-applied | `TypeSpecifier` + `Declarator` everywhere; `FunctionDefinition` with a declarator | two type encodings |
 | `FunctionDecl.parameters: []` for both `(void)` and `()` | `ParameterList::{Void, Empty, IdentifierList}` | |
 | `ExprKind` casts, `sizeof`, `_Alignof`, `offsetof`, `va_arg`, compound literals, `GenericControl::Type` and `GenericAssociation::Type` hold `ty: Box<CType>` + `declarator`; no `AlignOfExpr` | `TypeName`; `AlignOfExpr` (`lh7.3.5`) | |

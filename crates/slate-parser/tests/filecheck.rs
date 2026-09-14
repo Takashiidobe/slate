@@ -9,6 +9,11 @@ use std::process::Command;
 
 type ClangNode = Node<ClangKind>;
 
+thread_local! {
+    static TAGS: std::cell::RefCell<Vec<(TagId, TagKind, Option<String>)>> =
+        const { std::cell::RefCell::new(Vec::new()) };
+}
+
 #[derive(Debug, Deserialize)]
 enum ClangKind {
     FunctionDecl(ClangFunctionDecl),
@@ -432,6 +437,13 @@ fn run_clang_ast(fixture: &Path, defines: &[String], isystem: &[String]) -> Clan
 }
 
 fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
+    TAGS.with_borrow_mut(|tags| {
+        *tags = tu
+            .tags
+            .iter()
+            .map(|tag| (tag.value.id, tag.value.kind, tag.value.name.clone()))
+            .collect();
+    });
     tu.decls
         .iter()
         .flat_map(|decl| summarize_evaluated_decl(&decl.value))
@@ -479,25 +491,33 @@ fn summarize_evaluated_decl(decl: &Decl) -> Vec<DeclSummary> {
                 .collect(),
             signature: None,
         }],
-        Decl::Declaration { declaration, .. } if !declaration.specifiers.attributes.is_empty() => {
-            Vec::new()
+        Decl::Declaration { declaration, .. } => {
+            let mut summaries = Vec::new();
+            if let CType::Tag(TagSpecifier::Definition(id)) = &declaration.specifiers.ty {
+                let (kind, name) = defined_tag(*id);
+                let name = name.unwrap_or_else(|| "<anonymous>".into());
+                summaries.push(if kind == TagKind::Enum {
+                    DeclSummary::Enum { name }
+                } else {
+                    DeclSummary::Record {
+                        kind: tag_name(kind).into(),
+                        name,
+                    }
+                });
+            }
+            if declaration.specifiers.attributes.is_empty() {
+                summaries.extend(
+                    declaration
+                        .declarators
+                        .iter()
+                        .filter(|declarator| declarator.attributes.is_empty())
+                        .map(|declarator| {
+                            summarize_declarator(&declaration.specifiers, &declarator.declarator)
+                        }),
+                );
+            }
+            summaries
         }
-        Decl::Declaration { declaration, .. } => declaration
-            .declarators
-            .iter()
-            .filter(|declarator| declarator.attributes.is_empty())
-            .map(|declarator| summarize_declarator(&declaration.specifiers, &declarator.declarator))
-            .collect(),
-        Decl::Record(record) => vec![DeclSummary::Record {
-            kind: tag_name(record.kind).into(),
-            name: record.name.clone().unwrap_or_else(|| "<anonymous>".into()),
-        }],
-        Decl::Enum(enumeration) => vec![DeclSummary::Enum {
-            name: enumeration
-                .name
-                .clone()
-                .unwrap_or_else(|| "<anonymous>".into()),
-        }],
     }
 }
 
@@ -670,11 +690,17 @@ fn type_spelling(ty: &CType) -> String {
         CType::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
         CType::TargetBuiltin(name) => name.clone(),
         CType::Named(name) => name.clone(),
-        CType::Tagged { kind, name, .. } => format!(
-            "{} {}",
-            tag_name(*kind),
-            name.as_deref().unwrap_or("<anonymous>")
-        ),
+        CType::Tag(TagSpecifier::Reference { kind, name }) => {
+            format!("{} {name}", tag_name(*kind))
+        }
+        CType::Tag(TagSpecifier::Definition(id)) => {
+            let (kind, name) = defined_tag(*id);
+            format!(
+                "{} {}",
+                tag_name(kind),
+                name.as_deref().unwrap_or("<anonymous>")
+            )
+        }
         CType::Qualified { qualifiers, ty } => {
             let name = type_spelling(ty);
             let prefix = qualifier_spelling(*qualifiers);
@@ -843,6 +869,15 @@ fn array_size(size: &ArraySize) -> String {
             _ => panic!("array bound was not an integer"),
         },
     }
+}
+
+fn defined_tag(id: TagId) -> (TagKind, Option<String>) {
+    TAGS.with_borrow(|tags| {
+        tags.iter()
+            .find(|(tag_id, _, _)| *tag_id == id)
+            .map(|(_, kind, name)| (*kind, name.clone()))
+            .expect("tag definition is in the translation unit")
+    })
 }
 
 fn tag_name(kind: TagKind) -> &'static str {

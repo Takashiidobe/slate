@@ -63,7 +63,7 @@ pub struct Preprocessor<'a> {
     open_stack: Vec<PathBuf>,
     open_macro_states: Vec<(PathBuf, Vec<String>)>,
     sources: HashMap<FileId, String>,
-    line_starts: HashMap<FileId, Vec<usize>>,
+    pub(crate) line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashSet<PathBuf>,
     include_guards: HashMap<PathBuf, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,

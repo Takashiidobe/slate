@@ -487,7 +487,8 @@ impl Parser {
             index,
             &self.typedef_names,
             self.biggest_alignment,
-        );
+        )
+        .with_statements(Some(self));
         let Ok(mut ret_type) = return_type_parser.parse_base_type() else {
             return Ok(None);
         };
@@ -510,7 +511,8 @@ impl Parser {
             name_index + 1,
             &self.typedef_names,
             self.biggest_alignment,
-        );
+        )
+        .with_statements(Some(self));
         let Ok((parameters, variadic)) = declarator_parser.parse_parameters() else {
             return Ok(None);
         };
