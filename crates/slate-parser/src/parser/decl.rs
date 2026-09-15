@@ -111,7 +111,7 @@ impl Parser {
         DeclaratorParser {
             tokens,
             pos,
-            typedef_names: &self.typedef_names,
+            typedef_names: self.typedef_names_snapshot(),
             biggest_alignment: self.biggest_alignment,
             statements: Some(self),
             identifier_list: IdentifierList::Rejected,
@@ -195,9 +195,13 @@ impl Parser {
         };
         let bit_width = if is_field && parser.matches(Token::Colon) {
             let start = parser.pos;
-            let (width, end) =
-                const_expr::Parser::parse_one(tokens, start, &self.typedef_names, Some(self))
-                    .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
+            let (width, end) = const_expr::Parser::parse_one(
+                tokens,
+                start,
+                &self.typedef_names_snapshot(),
+                Some(self),
+            )
+            .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
             parser.pos = end;
             Some(width)
         } else {
@@ -241,7 +245,7 @@ impl Parser {
     ) -> Result<Initializer, ParseError> {
         let tokens = parser.tokens;
         parser
-            .parse_initializer(&self.typedef_names)
+            .parse_initializer(&self.typedef_names_snapshot())
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))
     }
 
@@ -447,15 +451,16 @@ impl Parser {
         }
     }
 
-    pub(super) fn record_declaration_typedefs(&mut self, declaration: &Declaration) {
-        if declaration.specifiers.storage == StorageClass::Typedef {
-            self.typedef_names
-                .extend(declaration.names().map(str::to_string));
-        } else {
-            for name in declaration.names() {
-                self.typedef_names.remove(name);
-            }
+    pub(super) fn record_declaration_typedefs(&self, declaration: &Declaration) {
+        let is_typedef = declaration.specifiers.storage == StorageClass::Typedef;
+        let mut names = self.names.borrow_mut();
+        for name in declaration.names() {
+            names.bind(name, is_typedef);
         }
+    }
+
+    pub(super) fn typedef_names_snapshot(&self) -> HashSet<String> {
+        self.names.borrow().typedef_names()
     }
 }
 
@@ -524,7 +529,7 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
     let alignment = tokens.get(alignment_start).and_then(|_token| {
         const_expr::Parser::parse_expression(
             &tokens[alignment_start..],
-            &parser.typedef_names,
+            &parser.typedef_names_snapshot(),
             Some(parser),
         )
         .ok()

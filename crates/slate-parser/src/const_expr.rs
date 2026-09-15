@@ -1232,8 +1232,9 @@ impl<'a> Parser<'a> {
     }
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<TypeName>, usize)> {
-        let mut declarator_parser = DeclaratorParser::new(self.tokens, start, &self.typedef_names)
-            .with_statements(self.statements);
+        let mut declarator_parser =
+            DeclaratorParser::new(self.tokens, start, self.typedef_names.clone())
+                .with_statements(self.statements);
         let type_name = declarator_parser.parse_type_name().ok()?;
         Some((Box::new(type_name), declarator_parser.position()))
     }

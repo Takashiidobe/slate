@@ -14,7 +14,7 @@ impl Parser {
             tokens,
             position,
             self.biggest_alignment,
-            &self.typedef_names,
+            &self.typedef_names_snapshot(),
             Some(self),
         )
     }

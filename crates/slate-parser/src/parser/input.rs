@@ -60,7 +60,8 @@ impl ParserInput {
         let address = tokens.as_ptr() as usize;
         let base = self.tokens.as_ptr() as usize;
         let end = base + self.tokens.len() * std::mem::size_of::<Span<Token>>();
-        if address >= base && address <= end
+        if address >= base
+            && address <= end
             && index <= tokens.len()
             && std::mem::size_of_val(tokens) <= end - address
         {

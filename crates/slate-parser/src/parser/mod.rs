@@ -125,7 +125,7 @@ pub struct Parser {
     source_name: String,
     source: String,
     files: Files,
-    typedef_names: HashSet<String>,
+    names: Rc<RefCell<NameEnvironment>>,
     input: Rc<ParserInput>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     defines: Vec<String>,
@@ -136,6 +136,40 @@ pub struct Parser {
     options: Option<crate::compiler_options::CompilerOptions>,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
     line_starts: HashMap<FileId, Vec<usize>>,
+}
+
+#[derive(Default)]
+struct NameEnvironment {
+    scopes: Vec<HashMap<String, bool>>,
+}
+
+impl NameEnvironment {
+    fn typedef_names(&self) -> HashSet<String> {
+        let mut visible = HashMap::new();
+        for scope in &self.scopes {
+            for (name, is_typedef) in scope {
+                visible.insert(name, *is_typedef);
+            }
+        }
+        visible
+            .into_iter()
+            .filter_map(|(name, is_typedef)| is_typedef.then(|| name.clone()))
+            .collect()
+    }
+
+    fn enter(&mut self) {
+        self.scopes.push(HashMap::new());
+    }
+
+    fn leave(&mut self) {
+        self.scopes.pop();
+    }
+
+    fn bind(&mut self, name: &str, is_typedef: bool) {
+        if let Some(scope) = self.scopes.last_mut() {
+            scope.insert(name.to_string(), is_typedef);
+        }
+    }
 }
 
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
@@ -154,7 +188,9 @@ impl Parser {
             source_name: "<source>".into(),
             source: String::new(),
             files: Files::new(),
-            typedef_names: HashSet::new(),
+            names: Rc::new(RefCell::new(NameEnvironment {
+                scopes: vec![HashMap::new()],
+            })),
             input: Rc::default(),
             directive_diagnostics: Vec::new(),
             defines: Vec::new(),

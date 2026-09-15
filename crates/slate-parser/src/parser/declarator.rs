@@ -50,7 +50,7 @@ impl From<String> for DeclaratorError {
 pub(crate) struct DeclaratorParser<'a> {
     pub(super) tokens: &'a [Span<Token>],
     pub(super) pos: usize,
-    pub(super) typedef_names: &'a HashSet<String>,
+    pub(super) typedef_names: HashSet<String>,
     pub(super) biggest_alignment: i64,
     pub(super) statements: Option<&'a Parser>,
     pub(super) identifier_list: IdentifierList,
@@ -67,7 +67,7 @@ impl<'a> DeclaratorParser<'a> {
     pub(crate) fn new(
         tokens: &'a [Span<Token>],
         pos: usize,
-        typedef_names: &'a HashSet<String>,
+        typedef_names: HashSet<String>,
     ) -> Self {
         Self::with_biggest_alignment(tokens, pos, typedef_names, FALLBACK_BIGGEST_ALIGNMENT)
     }
@@ -75,7 +75,7 @@ impl<'a> DeclaratorParser<'a> {
     pub(crate) fn with_biggest_alignment(
         tokens: &'a [Span<Token>],
         pos: usize,
-        typedef_names: &'a HashSet<String>,
+        typedef_names: HashSet<String>,
         biggest_alignment: i64,
     ) -> Self {
         Self {
@@ -102,7 +102,7 @@ impl<'a> DeclaratorParser<'a> {
             self.tokens,
             self.pos,
             self.biggest_alignment,
-            self.typedef_names,
+            &self.typedef_names,
             self.statements,
         )?;
         self.pos = position;
@@ -592,7 +592,7 @@ impl<'a> DeclaratorParser<'a> {
                 let (value, end) = const_expr::Parser::parse_one(
                     self.tokens,
                     self.pos,
-                    self.typedef_names,
+                    &self.typedef_names,
                     self.statements,
                 )
                 .map_err(|error| error.to_string())?;
@@ -707,7 +707,7 @@ impl<'a> DeclaratorParser<'a> {
             return Err(DeclaratorError::UnsupportedTypeofExpression);
         }
         let expression =
-            const_expr::Parser::parse_expression(tokens, self.typedef_names, self.statements)
+            const_expr::Parser::parse_expression(tokens, &self.typedef_names, self.statements)
                 .map_err(|error| DeclaratorError::Other(error.to_string()))?;
         Ok(TypeOfOperand::Expression(expression))
     }
@@ -753,7 +753,7 @@ impl<'a> DeclaratorParser<'a> {
         let (index, end) = const_expr::Parser::parse_one(
             self.tokens,
             self.pos,
-            self.typedef_names,
+            &self.typedef_names,
             self.statements,
         )?;
         self.pos = end;
@@ -919,7 +919,7 @@ impl<'a> DeclaratorParser<'a> {
                         let bound_tokens = &self.tokens[start..self.pos];
                         let size = const_expr::Parser::parse_expression(
                             bound_tokens,
-                            self.typedef_names,
+                            &self.typedef_names,
                             self.statements,
                         )
                         .map_err(|error| DeclaratorError::Other(error.to_string()))?;
@@ -1091,13 +1091,13 @@ impl<'a> DeclaratorParser<'a> {
             self.tokens,
             pos,
             self.biggest_alignment,
-            self.typedef_names,
+            &self.typedef_names,
             self.statements,
         )
         .map_or(pos, |(_, after_attributes)| after_attributes);
         match self.tokens.value_at(pos) {
             Some(Token::RParen | Token::Ellipsis | Token::Keyword(Keyword::Register)) => true,
-            Some(token) => const_expr::starts_type_name(token, self.typedef_names),
+            Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
             None => false,
         }
     }
@@ -1160,7 +1160,7 @@ impl<'a> DeclaratorParser<'a> {
                 self.tokens[open + 1..close]
                     .iter()
                     .map(|token| &token.value),
-                self.typedef_names,
+                &self.typedef_names,
             )
         {
             self.pos = close + 1;

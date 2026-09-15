@@ -17,10 +17,15 @@ impl Parser {
     ) -> Result<Vec<Stmt>, ParseError> {
         let close = matching_brace(tokens, *position)
             .ok_or_else(|| self.error_at_tokens(tokens, *position, "expected `}`"))?;
-        let mut scope = self.clone();
-        shadow_parameter_names(&mut scope, declarator.function_parameters());
-        let mut body = scope.parse_stmts_from_tokens("", &tokens[*position + 1..close])?;
-        body.extend(scope.statement_annotations(tokens, close, close)?);
+        self.names.borrow_mut().enter();
+        shadow_parameter_names(self, declarator.function_parameters());
+        let result = (|| {
+            let mut body = self.parse_stmts_from_tokens("", &tokens[*position + 1..close])?;
+            body.extend(self.statement_annotations(tokens, close, close)?);
+            Ok(body)
+        })();
+        self.names.borrow_mut().leave();
+        let body = result?;
         *position = close + 1;
         Ok(body)
     }
@@ -154,28 +159,33 @@ impl Parser {
         code: &str,
         tokens: &[Span<Token>],
     ) -> Result<Vec<Stmt>, ParseError> {
-        let mut parser = self.clone();
-        let mut position = 0;
-        let mut stmts = Vec::new();
-        while position < tokens.len() {
-            stmts.extend(parser.statement_annotations(tokens, position, position)?);
-            let start = position;
-            let mut fragment = Fragment::new(&parser, code, tokens, position);
-            let stmt = parser.parse_one_stmt(&mut fragment)?;
-            position = fragment.pos;
-            if let StmtKind::Decl(declaration) = &stmt {
-                parser.record_declaration_typedefs(declaration);
+        self.names.borrow_mut().enter();
+        let result = (|| {
+            let parser = self;
+            let mut position = 0;
+            let mut stmts = Vec::new();
+            while position < tokens.len() {
+                stmts.extend(parser.statement_annotations(tokens, position, position)?);
+                let start = position;
+                let mut fragment = Fragment::new(parser, code, tokens, position);
+                let stmt = parser.parse_one_stmt(&mut fragment)?;
+                position = fragment.pos;
+                if let StmtKind::Decl(declaration) = &stmt {
+                    parser.record_declaration_typedefs(declaration);
+                }
+                let (pragmas, comments): (Vec<_>, Vec<_>) = parser
+                    .statement_annotations(tokens, start, position - 1)?
+                    .into_iter()
+                    .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
+                stmts.extend(pragmas);
+                stmts.push(span_tokens(stmt, &tokens[start..position]));
+                stmts.extend(comments);
             }
-            let (pragmas, comments): (Vec<_>, Vec<_>) = parser
-                .statement_annotations(tokens, start, position - 1)?
-                .into_iter()
-                .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
-            stmts.extend(pragmas);
-            stmts.push(span_tokens(stmt, &tokens[start..position]));
-            stmts.extend(comments);
-        }
-        stmts.extend(parser.statement_annotations(tokens, tokens.len(), tokens.len())?);
-        Ok(stmts)
+            stmts.extend(parser.statement_annotations(tokens, tokens.len(), tokens.len())?);
+            Ok(stmts)
+        })();
+        self.names.borrow_mut().leave();
+        result
     }
 
     pub(crate) fn parse_statement_expression_body(
@@ -250,7 +260,7 @@ impl Parser {
             {
                 true
             }
-            Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
+            Some(token) => const_expr::starts_type_name(token, &self.typedef_names_snapshot()),
             None => false,
         }
     }
@@ -548,16 +558,16 @@ impl Parser {
         if tokens.is_empty() {
             return Err(self.error_at(Loc::whole(code), "expected expression"));
         }
-        const_expr::Parser::parse_expression(tokens, &self.typedef_names, Some(self))
+        const_expr::Parser::parse_expression(tokens, &self.typedef_names_snapshot(), Some(self))
             .map_err(|error| self.error_at_tokens(tokens, 0, error.to_string()))
     }
 }
 
-fn shadow_parameter_names(parser: &mut Parser, parameters: Option<&ParameterList>) {
+fn shadow_parameter_names(parser: &Parser, parameters: Option<&ParameterList>) {
     if let Some(parameters) = parameters {
         for parameter in parameters.parameters() {
             if let Some(name) = parameter.declarator.name() {
-                parser.typedef_names.remove(name);
+                parser.names.borrow_mut().bind(name, false);
             }
         }
     }
