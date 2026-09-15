@@ -295,7 +295,7 @@ semantics must remain visible when optional metadata is hidden; current
 examples that hide overflow behavior need adjustment.
 
 The first implementation seed now lives in `src/sema/`, which resolves AST
-numeric literals, same-type arithmetic, bitwise, and shift operators, and unary `-`/`~` directly into typed IR. `src/ir/`
+numeric literals, same-type arithmetic, bitwise, and shift operators, unary `-`/`~`, and comparisons and logical operators producing `bool` directly into typed IR. `src/ir/`
 owns nodes, spans, printing, and separate integer-overflow and floating-point
 properties. There is no intermediate semantic AST. `CompilerOptions` now
 groups operation settings, layout overrides, and ordered argument provenance.

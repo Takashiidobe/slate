@@ -55,7 +55,8 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point
 literals, parentheses, same-concrete-type `+`, `-`, `*`, `/`, `%`, `&`, `|`,
-`^`, integer `<<`/`>>`, unary `-`, integer `~`, and unary `+` directly to
+`^`, integer `<<`/`>>`, unary `-`, integer `~`, unary `+`, same-type
+comparisons, `!`, `&&`, `||`, and `true`/`false` directly to
 `ir::Value`. Integer literal selection uses the existing C candidate order
 and target integer widths. Floating constants retain their exact value bits.
 The dump prints f32/f64 numerically using round-trippable decimal formatting
@@ -92,7 +93,21 @@ so it prints no metadata: `neg<f64>(..)`. `not` prints no metadata and rejects
 floating operands. `ArithSema::Exact` marks operations with no overflow,
 rounding, or exception behavior (`and`/`or`/`xor`/`not`, floating `neg`).
 Unary `+` is pruned: it only promotes, and no promotions are needed yet.
-`!` returns an unsupported error until bool lowering exists. Assignment,
+Comparisons, `!`, `&&`, and `||` produce `ir::Type::Bool`, a type separate
+from `NumericType`. Comparisons lower to `ValueKind::Compare` keyed by
+`CompareOp` (`eq`/`ne`/`lt`/`le`/`gt`/`ge`); the printed type is the operand
+type (`lt<i32>(..)`), the result is always `bool`. Mixed-type comparisons
+return the conversion error. Floating comparisons print only
+`exceptions=`: relational ops are signaling and `eq`/`ne` quiet on NaN
+(Clang 22 `constrained.fcmps`/`fcmp` under `-ftrapping-math`), so the op
+implies which, and rounding never applies. A numeric operand of `!`, `&&`,
+or `||` lowers to `ne<T>(x, const<T>(0))`; the synthesized zero reuses the
+operand's span. `!` is `not<bool>(..)`; `&&`/`||` are
+`logical_and<bool>`/`logical_or<bool>`, distinct from bitwise `and`/`or`
+because they short-circuit. `true`/`false` are `const<bool>(..)`. A bool
+used as an integer operand (`(1 < 2) + 1`, `-true`, `(a < b) == (c < d)`)
+returns an unsupported error until `from_bool` lowering exists; a discarded
+or returned bool needs no conversion. Assignment,
 compound assignment, and `++`/`--` return unsupported errors until place
 lowering exists.
 
@@ -362,7 +377,7 @@ Each conversion node does exactly one thing; the reason is metadata.
 | `widen<i32>(x)`                                | value-preserving sign/zero extend (by source signedness) | `reason=promotion\|usual_arith\|assign\|arg\|vararg\|explicit` |
 | `truncate<i8>(x)`                              | keep low bits                                            | `fits=always\|unknown`                                         |
 | `reinterpret<u32>(x)`                          | same width, sign change                                  | `fits=always\|unknown`                                         |
-| `to_bool(x)` / `from_bool<i32>(b)`             | `!= 0` / 0-1                                             |                                                                |
+| `from_bool<i32>(b)`                            | 0-1 (truth conversion is `ne(x, 0)`, not a node)         |                                                                |
 | `float_widen<f64>(x)` / `float_narrow<f32>(x)` |                                                          |                                                                |
 | `int_to_float<f64>(x)`                         |                                                          | `exact=true\|false`                                            |
 | `float_to_int<i32>(x)`                         |                                                          | `out_of_range=ub`                                              |
@@ -408,7 +423,7 @@ Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
   only where the result is used as an integer.
 - Scalars in boolean context lower to `ne(x, 0)` / `is_non_null(p)`.
 - Short-circuit and `?:` with side-effect-free operands stay as expression
-  nodes (`and`, `or`, `select`); with side effects they become `if`
+  nodes (`logical_and`, `logical_or`, `select`); with side effects they become `if`
   statements (see hoisting).
 
 ## Pointers

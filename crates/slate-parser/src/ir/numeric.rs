@@ -2,6 +2,21 @@ use num_bigint::BigUint;
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Type {
+    Bool,
+    Numeric(NumericType),
+}
+
+impl fmt::Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Bool => f.write_str("bool"),
+            Self::Numeric(ty) => write!(f, "{ty}"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NumericType {
     Integer { width: u32, signed: bool },
     Float(FloatType),
@@ -114,6 +129,44 @@ impl fmt::Display for UnaryArithOp {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CompareOp {
+    Eq,
+    Ne,
+    Lt,
+    Le,
+    Gt,
+    Ge,
+}
+
+impl fmt::Display for CompareOp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Eq => "eq",
+            Self::Ne => "ne",
+            Self::Lt => "lt",
+            Self::Le => "le",
+            Self::Gt => "gt",
+            Self::Ge => "ge",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LogicalOp {
+    And,
+    Or,
+}
+
+impl fmt::Display for LogicalOp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::And => "logical_and",
+            Self::Or => "logical_or",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArithSema {
     Integer { overflow: Overflow },
     Floating(FloatingSemantics),
@@ -129,6 +182,7 @@ pub enum ShiftFill {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Number {
+    Bool(bool),
     Integer(BigUint),
     FloatBits(u128),
 }

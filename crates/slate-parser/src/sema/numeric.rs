@@ -5,10 +5,11 @@ use crate::const_expr::{
     resolve_float,
 };
 use crate::ir::{
-    ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
-    Rounding, ShiftFill, UnaryArithOp, Value, ValueKind,
+    ArithOp, ArithSema, CompareOp, Exceptions, FloatType, FloatingSemantics, LogicalOp, Number,
+    NumericType, Overflow, Rounding, ShiftFill, Type, UnaryArithOp, Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
+use num_bigint::BigUint;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -40,12 +41,16 @@ pub enum ResolveError {
 
 const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";
 const UNSUPPORTED_INCREMENT: &str = "increment and decrement (requires place lowering)";
+const UNSUPPORTED_BOOL_AS_INTEGER: &str =
+    "bool operand used as an integer (requires from_bool conversion)";
 
 pub struct Context {
     pub target: TargetInfo,
     pub signed_overflow: Overflow,
     pub floating: FloatingSemantics,
 }
+
+type Resolved = (Type, ValueKind);
 
 impl Context {
     pub fn with_options(mut self, options: &crate::compiler_options::CompilerOptions) -> Self {
@@ -79,7 +84,7 @@ impl Context {
                     })
                     .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
                 (
-                    NumericType::Integer { width, signed },
+                    Type::Numeric(NumericType::Integer { width, signed }),
                     ValueKind::Constant(Number::Integer(literal.value.clone())),
                 )
             }
@@ -101,138 +106,39 @@ impl Context {
                     }
                 };
                 (
-                    NumericType::Float(format),
+                    Type::Numeric(NumericType::Float(format)),
                     ValueKind::Constant(Number::FloatBits(bits)),
                 )
             }
+            ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
             ExprKind::Paren(inner) => return self.resolve(inner),
             ExprKind::Binary { op, left, right } => {
-                let arith = match op {
-                    BinaryOp::Add => ArithOp::Add,
-                    BinaryOp::Sub => ArithOp::Sub,
-                    BinaryOp::Mul => ArithOp::Mul,
-                    BinaryOp::Div => ArithOp::Div,
-                    BinaryOp::Rem => ArithOp::Rem,
-                    BinaryOp::BitAnd => ArithOp::And,
-                    BinaryOp::BitOr => ArithOp::Or,
-                    BinaryOp::BitXor => ArithOp::Xor,
-                    BinaryOp::ShiftLeft => ArithOp::Shl,
-                    BinaryOp::ShiftRight => ArithOp::Shr,
-                    _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
-                };
-                let operator = <&'static str>::from(*op);
                 let left = self.resolve(left)?;
                 let right = self.resolve(right)?;
-                let is_shift = matches!(arith, ArithOp::Shl | ArithOp::Shr);
-                if !is_shift && left.ty != right.ty {
-                    return Err(ResolveError::Conversion {
-                        left: left.ty,
-                        operator,
-                        right: right.ty,
-                    });
+                self.resolve_binary(*op, left, right)?
+            }
+            ExprKind::Unary { op, operand } => match op {
+                UnaryOp::Plus => {
+                    let operand = self.resolve(operand)?;
+                    numeric(&operand)?;
+                    return Ok(operand);
                 }
-                let invalid = ResolveError::InvalidOperands {
-                    left: left.ty,
-                    operator,
-                    right: right.ty,
-                };
-                let semantics = match (left.ty, arith) {
-                    (
-                        NumericType::Float(_),
-                        ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div,
-                    ) => ArithSema::Floating(self.floating),
-                    (NumericType::Float(_), _) => return Err(invalid),
-                    (_, ArithOp::Shl | ArithOp::Shr)
-                        if matches!(right.ty, NumericType::Float(_)) =>
-                    {
-                        return Err(invalid);
-                    }
-                    (
-                        NumericType::Integer { signed, .. },
-                        ArithOp::Add | ArithOp::Sub | ArithOp::Mul,
-                    ) => ArithSema::Integer {
-                        overflow: if signed {
-                            self.signed_overflow
-                        } else {
-                            Overflow::Wrap
-                        },
-                    },
-                    // clang and gcc apply -fwrapv/-ftrapv to add, sub, and mul only
-                    (
-                        NumericType::Integer { signed, .. },
-                        ArithOp::Div | ArithOp::Rem | ArithOp::Shl,
-                    ) => ArithSema::Integer {
-                        overflow: if signed {
-                            Overflow::Undefined
-                        } else {
-                            Overflow::Wrap
-                        },
-                    },
-                    (NumericType::Integer { .. }, ArithOp::And | ArithOp::Or | ArithOp::Xor) => {
-                        ArithSema::Exact
-                    }
-                    (NumericType::Integer { signed, .. }, ArithOp::Shr) => ArithSema::ShiftRight {
-                        fill: if signed {
-                            ShiftFill::SignExtend
-                        } else {
-                            ShiftFill::ZeroExtend
-                        },
-                    },
-                };
-                (
-                    left.ty,
-                    ValueKind::Arith {
-                        op: arith,
-                        left: Box::new(left),
-                        right: Box::new(right),
-                        semantics,
-                    },
-                )
-            }
-            ExprKind::Unary { op, operand } => {
-                let arith = match op {
-                    UnaryOp::Plus => return self.resolve(operand),
-                    UnaryOp::Minus => UnaryArithOp::Neg,
-                    UnaryOp::BitNot => UnaryArithOp::Not,
-                    UnaryOp::Not => {
-                        return Err(ResolveError::Unsupported(
-                            "logical not (requires bool lowering)",
-                        ));
-                    }
-                    UnaryOp::PreIncrement | UnaryOp::PreDecrement => {
-                        return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
-                    }
-                    _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
-                };
-                let operand = self.resolve(operand)?;
-                let semantics = match (operand.ty, arith) {
-                    (NumericType::Float(_), UnaryArithOp::Neg) => ArithSema::Exact,
-                    (NumericType::Float(_), UnaryArithOp::Not) => {
-                        return Err(ResolveError::InvalidOperand {
-                            operator: <&'static str>::from(*op),
-                            operand: operand.ty,
-                        });
-                    }
-                    (NumericType::Integer { signed, .. }, UnaryArithOp::Neg) => {
-                        ArithSema::Integer {
-                            overflow: if signed {
-                                self.signed_overflow
-                            } else {
-                                Overflow::Wrap
-                            },
-                        }
-                    }
-                    (NumericType::Integer { .. }, UnaryArithOp::Not) => ArithSema::Exact,
-                };
-                (
-                    operand.ty,
+                UnaryOp::Not => (
+                    Type::Bool,
                     ValueKind::Unary {
-                        op: arith,
-                        operand: Box::new(operand),
-                        semantics,
+                        op: UnaryArithOp::Not,
+                        operand: Box::new(self.condition(self.resolve(operand)?)),
+                        semantics: ArithSema::Exact,
                     },
-                )
-            }
+                ),
+                UnaryOp::Minus | UnaryOp::BitNot => {
+                    self.resolve_unary_arith(*op, self.resolve(operand)?)?
+                }
+                UnaryOp::PreIncrement | UnaryOp::PreDecrement => {
+                    return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
+                }
+                _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
+            },
             ExprKind::Postfix { .. } => {
                 return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
             }
@@ -254,6 +160,208 @@ impl Context {
                 macro_origin: expression.macro_origin.clone(),
             },
         })
+    }
+
+    fn resolve_binary(
+        &self,
+        op: BinaryOp,
+        left: Value,
+        right: Value,
+    ) -> Result<Resolved, ResolveError> {
+        let operator = <&'static str>::from(op);
+        let arith = match op {
+            BinaryOp::Add => ArithOp::Add,
+            BinaryOp::Sub => ArithOp::Sub,
+            BinaryOp::Mul => ArithOp::Mul,
+            BinaryOp::Div => ArithOp::Div,
+            BinaryOp::Rem => ArithOp::Rem,
+            BinaryOp::BitAnd => ArithOp::And,
+            BinaryOp::BitOr => ArithOp::Or,
+            BinaryOp::BitXor => ArithOp::Xor,
+            BinaryOp::ShiftLeft => ArithOp::Shl,
+            BinaryOp::ShiftRight => ArithOp::Shr,
+            BinaryOp::Equal => return self.compare(CompareOp::Eq, operator, left, right),
+            BinaryOp::NotEqual => return self.compare(CompareOp::Ne, operator, left, right),
+            BinaryOp::Less => return self.compare(CompareOp::Lt, operator, left, right),
+            BinaryOp::LessEqual => return self.compare(CompareOp::Le, operator, left, right),
+            BinaryOp::Greater => return self.compare(CompareOp::Gt, operator, left, right),
+            BinaryOp::GreaterEqual => return self.compare(CompareOp::Ge, operator, left, right),
+            BinaryOp::And => return Ok(self.logical(LogicalOp::And, left, right)),
+            BinaryOp::Or => return Ok(self.logical(LogicalOp::Or, left, right)),
+        };
+        let left_ty = numeric(&left)?;
+        let right_ty = numeric(&right)?;
+        let is_shift = matches!(arith, ArithOp::Shl | ArithOp::Shr);
+        if !is_shift && left_ty != right_ty {
+            return Err(ResolveError::Conversion {
+                left: left_ty,
+                operator,
+                right: right_ty,
+            });
+        }
+        let invalid = ResolveError::InvalidOperands {
+            left: left_ty,
+            operator,
+            right: right_ty,
+        };
+        let semantics = match (left_ty, arith) {
+            (NumericType::Float(_), ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div) => {
+                ArithSema::Floating(self.floating)
+            }
+            (NumericType::Float(_), _) => return Err(invalid),
+            (_, ArithOp::Shl | ArithOp::Shr) if matches!(right_ty, NumericType::Float(_)) => {
+                return Err(invalid);
+            }
+            (NumericType::Integer { signed, .. }, ArithOp::Add | ArithOp::Sub | ArithOp::Mul) => {
+                ArithSema::Integer {
+                    overflow: if signed {
+                        self.signed_overflow
+                    } else {
+                        Overflow::Wrap
+                    },
+                }
+            }
+            // clang and gcc apply -fwrapv/-ftrapv to add, sub, and mul only
+            (NumericType::Integer { signed, .. }, ArithOp::Div | ArithOp::Rem | ArithOp::Shl) => {
+                ArithSema::Integer {
+                    overflow: if signed {
+                        Overflow::Undefined
+                    } else {
+                        Overflow::Wrap
+                    },
+                }
+            }
+            (NumericType::Integer { .. }, ArithOp::And | ArithOp::Or | ArithOp::Xor) => {
+                ArithSema::Exact
+            }
+            (NumericType::Integer { signed, .. }, ArithOp::Shr) => ArithSema::ShiftRight {
+                fill: if signed {
+                    ShiftFill::SignExtend
+                } else {
+                    ShiftFill::ZeroExtend
+                },
+            },
+        };
+        Ok((
+            left.ty,
+            ValueKind::Arith {
+                op: arith,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics,
+            },
+        ))
+    }
+
+    fn resolve_unary_arith(&self, op: UnaryOp, operand: Value) -> Result<Resolved, ResolveError> {
+        let arith = match op {
+            UnaryOp::Minus => UnaryArithOp::Neg,
+            _ => UnaryArithOp::Not,
+        };
+        let semantics = match (numeric(&operand)?, arith) {
+            (NumericType::Float(_), UnaryArithOp::Neg) => ArithSema::Exact,
+            (ty @ NumericType::Float(_), UnaryArithOp::Not) => {
+                return Err(ResolveError::InvalidOperand {
+                    operator: <&'static str>::from(op),
+                    operand: ty,
+                });
+            }
+            (NumericType::Integer { signed, .. }, UnaryArithOp::Neg) => ArithSema::Integer {
+                overflow: if signed {
+                    self.signed_overflow
+                } else {
+                    Overflow::Wrap
+                },
+            },
+            (NumericType::Integer { .. }, UnaryArithOp::Not) => ArithSema::Exact,
+        };
+        Ok((
+            operand.ty,
+            ValueKind::Unary {
+                op: arith,
+                operand: Box::new(operand),
+                semantics,
+            },
+        ))
+    }
+
+    fn compare(
+        &self,
+        op: CompareOp,
+        operator: &'static str,
+        left: Value,
+        right: Value,
+    ) -> Result<Resolved, ResolveError> {
+        let left_ty = numeric(&left)?;
+        let right_ty = numeric(&right)?;
+        if left_ty != right_ty {
+            return Err(ResolveError::Conversion {
+                left: left_ty,
+                operator,
+                right: right_ty,
+            });
+        }
+        Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
+    }
+
+    fn comparison(&self, op: CompareOp, ty: NumericType, left: Value, right: Value) -> ValueKind {
+        ValueKind::Compare {
+            op,
+            left: Box::new(left),
+            right: Box::new(right),
+            exceptions: matches!(ty, NumericType::Float(_)).then_some(self.floating.exceptions),
+        }
+    }
+
+    fn logical(&self, op: LogicalOp, left: Value, right: Value) -> Resolved {
+        (
+            Type::Bool,
+            ValueKind::Logical {
+                op,
+                left: Box::new(self.condition(left)),
+                right: Box::new(self.condition(right)),
+            },
+        )
+    }
+
+    fn condition(&self, value: Value) -> Value {
+        let Type::Numeric(ty) = value.ty else {
+            return value;
+        };
+        let zero = match ty {
+            NumericType::Integer { .. } => Number::Integer(BigUint::default()),
+            NumericType::Float(_) => Number::FloatBits(0),
+        };
+        let node = derived_span(&value.node, ValueKind::Constant(zero));
+        let zero = Value {
+            ty: value.ty,
+            node: node.clone(),
+        };
+        Value {
+            ty: Type::Bool,
+            node: Span {
+                value: self.comparison(CompareOp::Ne, ty, value, zero),
+                ..node
+            },
+        }
+    }
+}
+
+fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
+    match value.ty {
+        Type::Numeric(ty) => Ok(ty),
+        Type::Bool => Err(ResolveError::Unsupported(UNSUPPORTED_BOOL_AS_INTEGER)),
+    }
+}
+
+fn derived_span(node: &Span<ValueKind>, value: ValueKind) -> Span<ValueKind> {
+    Span {
+        id: node.id,
+        value,
+        spelling: node.spelling,
+        expansion: node.expansion,
+        provenance: node.provenance,
+        macro_origin: node.macro_origin.clone(),
     }
 }
 
