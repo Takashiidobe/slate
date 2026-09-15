@@ -17,15 +17,10 @@ impl Parser {
     ) -> Result<Vec<Stmt>, ParseError> {
         let close = matching_brace(tokens, *position)
             .ok_or_else(|| self.error_at_tokens(tokens, *position, "expected `}`"))?;
-        self.names.borrow_mut().enter();
+        let _scope = self.enter_scope();
         shadow_parameter_names(self, declarator.function_parameters());
-        let result = (|| {
-            let mut body = self.parse_stmts_from_tokens("", &tokens[*position + 1..close])?;
-            body.extend(self.statement_annotations(tokens, close, close)?);
-            Ok(body)
-        })();
-        self.names.borrow_mut().leave();
-        let body = result?;
+        let mut body = self.parse_stmts_from_tokens("", &tokens[*position + 1..close])?;
+        body.extend(self.statement_annotations(tokens, close, close)?);
         *position = close + 1;
         Ok(body)
     }
@@ -159,33 +154,28 @@ impl Parser {
         code: &str,
         tokens: &[Span<Token>],
     ) -> Result<Vec<Stmt>, ParseError> {
-        self.names.borrow_mut().enter();
-        let result = (|| {
-            let parser = self;
-            let mut position = 0;
-            let mut stmts = Vec::new();
-            while position < tokens.len() {
-                stmts.extend(parser.statement_annotations(tokens, position, position)?);
-                let start = position;
-                let mut fragment = Fragment::new(parser, code, tokens, position);
-                let stmt = parser.parse_one_stmt(&mut fragment)?;
-                position = fragment.pos;
-                if let StmtKind::Decl(declaration) = &stmt {
-                    parser.record_declaration_typedefs(declaration);
-                }
-                let (pragmas, comments): (Vec<_>, Vec<_>) = parser
-                    .statement_annotations(tokens, start, position - 1)?
-                    .into_iter()
-                    .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
-                stmts.extend(pragmas);
-                stmts.push(span_tokens(stmt, &tokens[start..position]));
-                stmts.extend(comments);
+        let _scope = self.enter_scope();
+        let mut position = 0;
+        let mut stmts = Vec::new();
+        while position < tokens.len() {
+            stmts.extend(self.statement_annotations(tokens, position, position)?);
+            let start = position;
+            let mut fragment = Fragment::new(self, code, tokens, position);
+            let stmt = self.parse_one_stmt(&mut fragment)?;
+            position = fragment.pos;
+            if let StmtKind::Decl(declaration) = &stmt {
+                self.record_declaration_typedefs(declaration);
             }
-            stmts.extend(parser.statement_annotations(tokens, tokens.len(), tokens.len())?);
-            Ok(stmts)
-        })();
-        self.names.borrow_mut().leave();
-        result
+            let (pragmas, comments): (Vec<_>, Vec<_>) = self
+                .statement_annotations(tokens, start, position - 1)?
+                .into_iter()
+                .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
+            stmts.extend(pragmas);
+            stmts.push(span_tokens(stmt, &tokens[start..position]));
+            stmts.extend(comments);
+        }
+        stmts.extend(self.statement_annotations(tokens, tokens.len(), tokens.len())?);
+        Ok(stmts)
     }
 
     pub(crate) fn parse_statement_expression_body(
@@ -495,11 +485,14 @@ impl Parser {
                     .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;` in `for`"))?;
                 let condition_tokens = &rest[..second_semi];
                 let increment_tokens = &rest[second_semi + 1..];
+                let _scope = self.enter_scope();
                 let init = if init_tokens.is_empty() {
                     None
                 } else if self.starts_declaration(init_tokens, 0) {
+                    let declaration = self.parse_declaration_tokens(&clause[..=first_semi])?;
+                    self.record_declaration_typedefs(&declaration);
                     Some(Box::new(span_tokens(
-                        StmtKind::Decl(self.parse_declaration_tokens(&clause[..=first_semi])?),
+                        StmtKind::Decl(declaration),
                         init_tokens,
                     )))
                 } else {

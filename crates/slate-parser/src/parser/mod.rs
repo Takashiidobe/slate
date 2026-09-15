@@ -143,17 +143,27 @@ struct NameEnvironment {
     scopes: Vec<HashMap<String, bool>>,
 }
 
+pub(super) struct ScopeGuard {
+    names: Rc<RefCell<NameEnvironment>>,
+}
+
+impl Drop for ScopeGuard {
+    fn drop(&mut self) {
+        self.names.borrow_mut().leave();
+    }
+}
+
 impl NameEnvironment {
     fn typedef_names(&self) -> HashSet<String> {
         let mut visible = HashMap::new();
         for scope in &self.scopes {
             for (name, is_typedef) in scope {
-                visible.insert(name, *is_typedef);
+                visible.insert(name.clone(), *is_typedef);
             }
         }
         visible
             .into_iter()
-            .filter_map(|(name, is_typedef)| is_typedef.then(|| name.clone()))
+            .filter_map(|(name, is_typedef)| is_typedef.then_some(name))
             .collect()
     }
 
@@ -182,6 +192,13 @@ fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
 }
 
 impl Parser {
+    pub(super) fn enter_scope(&self) -> ScopeGuard {
+        self.names.borrow_mut().enter();
+        ScopeGuard {
+            names: Rc::clone(&self.names),
+        }
+    }
+
     pub fn new(search: SearchPaths) -> Self {
         Self {
             search,

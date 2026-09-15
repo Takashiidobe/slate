@@ -109,10 +109,11 @@ FileCheck expectations are generated. After changing a fixture or its
 renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.
 
-Testing is done via filecheck. Standard gate:
+Testing is done via filecheck. Standard gate (use release to run tests
+~10x faster):
 
 ```
-cargo nextest run
+cargo nextest run --release
 ```
 
 The AST can additionally be checked against clang-ast as an
