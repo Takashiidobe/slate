@@ -2,8 +2,9 @@ mod numeric;
 
 use crate::ast::Span;
 pub use numeric::{
-    ArithOp, ArithSema, CompareOp, Exceptions, FloatType, FloatingSemantics, LogicalOp, Number,
-    NumericType, Overflow, Rounding, ShiftFill, Type, UnaryArithOp,
+    ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
+    Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
+    ShiftFill, Type, UnaryArithOp,
 };
 use rustc_apfloat::{
     Float,
@@ -20,6 +21,12 @@ pub struct Value {
 #[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
+    Convert {
+        kind: ConversionKind,
+        operand: Box<Value>,
+        reason: ConversionReason,
+        semantics: ConversionSema,
+    },
     Arith {
         op: ArithOp,
         left: Box<Value>,
@@ -95,6 +102,36 @@ impl Value {
                 }
                 _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
             },
+            ValueKind::Convert {
+                kind,
+                operand,
+                reason,
+                semantics,
+            } => {
+                write!(f, "{kind}<{}, reason={reason}", self.ty)?;
+                match semantics {
+                    ConversionSema::Exact => {}
+                    ConversionSema::Fits(fits) => write!(
+                        f,
+                        ", fits={}",
+                        match fits {
+                            Fits::Always => "always",
+                            Fits::Unknown => "unknown",
+                        }
+                    )?,
+                    ConversionSema::IntToFloat { exact, floating } => {
+                        write!(f, ", exact={exact}")?;
+                        format_floating(f, *floating)?;
+                    }
+                    ConversionSema::Floating(floating) => format_floating(f, *floating)?,
+                    ConversionSema::Exceptions(exceptions) => write!(
+                        f,
+                        ", out_of_range=ub, exceptions={}",
+                        exceptions_name(*exceptions)
+                    )?,
+                }
+                write!(f, ">({})", operand.display(show_spans))
+            }
             ValueKind::Arith {
                 op,
                 left,
@@ -210,4 +247,16 @@ fn format_apfloat<T: Float>(f: &mut fmt::Formatter<'_>, ty: Type, bits: u128) ->
     } else {
         write!(f, "const<{ty}>({value})")
     }
+}
+
+fn format_floating(f: &mut fmt::Formatter<'_>, floating: FloatingSemantics) -> fmt::Result {
+    write!(
+        f,
+        ", rounding={}, exceptions={}",
+        match floating.rounding {
+            Rounding::NearestEven => "nearest_even",
+            Rounding::Environment => "environment",
+        },
+        exceptions_name(floating.exceptions)
+    )
 }

@@ -22,7 +22,7 @@ pub enum NumericType {
     Float(FloatType),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum FloatType {
     F16,
     F32,
@@ -178,6 +178,68 @@ pub enum ArithSema {
 pub enum ShiftFill {
     SignExtend,
     ZeroExtend,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConversionKind {
+    Widen,
+    Truncate,
+    Reinterpret,
+    FromBool,
+    IntToFloat,
+    FloatWiden,
+    FloatNarrow,
+    FloatToInt,
+}
+
+impl fmt::Display for ConversionKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Widen => "widen",
+            Self::Truncate => "truncate",
+            Self::Reinterpret => "reinterpret",
+            Self::FromBool => "from_bool",
+            Self::IntToFloat => "int_to_float",
+            Self::FloatWiden => "float_widen",
+            Self::FloatNarrow => "float_narrow",
+            Self::FloatToInt => "float_to_int",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConversionReason {
+    Promotion,
+    UsualArith,
+    Explicit,
+}
+
+impl fmt::Display for ConversionReason {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Promotion => "promotion",
+            Self::UsualArith => "usual_arith",
+            Self::Explicit => "explicit",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Fits {
+    Always,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConversionSema {
+    Exact,
+    Fits(Fits),
+    IntToFloat {
+        exact: bool,
+        floating: FloatingSemantics,
+    },
+    Floating(FloatingSemantics),
+    Exceptions(Exceptions),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

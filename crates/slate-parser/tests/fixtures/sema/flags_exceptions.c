@@ -10,6 +10,10 @@ void operations(void) {
     1.0f == 2.0f;
     !1.0;
     1 < 2;
+    (bool)0.5;
+    (float)true;
+    (int)0.5;
+    (float)1.5;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -21,4 +25,8 @@ void operations(void) {
 // CHECK-NEXT: eq<f32, exceptions=observable>(const<f32>(1.0), const<f32>(2.0))
 // CHECK-NEXT: not<bool>(ne<f64, exceptions=observable>(const<f64>(1.0), const<f64>(0.0)))
 // CHECK-NEXT: lt<i32>(const<i32>(1), const<i32>(2))
+// CHECK-NEXT: ne<f64, exceptions=observable>(const<f64>(0.5), const<f64>(0.0))
+// CHECK-NEXT: int_to_float<f32, reason=explicit, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=explicit>(const<bool>(true)))
+// CHECK-NEXT: float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(const<f64>(0.5))
+// CHECK-NEXT: float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f64>(1.5))
 // SLATE-FILECHECK-END CHECK

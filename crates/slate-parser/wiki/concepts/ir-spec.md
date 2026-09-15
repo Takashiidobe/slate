@@ -83,8 +83,8 @@ operand's type and the amount keeps its own. Clang 22 emits plain
 `shl`/`ashr`/`lshr` under `-fwrapv` and `-ftrapv`, so signed `shl` is always
 `overflow=undefined` (unsigned wraps). `shr` prints `fill=sign_extend` for
 signed and `fill=zero_extend` for unsigned operands; out-of-range amounts are
-always undefined and not printed. Operand promotions are not yet needed:
-every literal type already has at least `int` rank. Unary `-` and `~` lower
+always undefined and not printed. Both shift operands independently undergo
+integer promotion. Unary `-` and `~` lower
 to `ValueKind::Unary` keyed by `UnaryArithOp` (`neg`/`not`). Signed `neg`
 uses the context's signed-overflow policy (Clang 22: `sub nsw 0, x`, plain
 `sub` under `-fwrapv`, `ssub.with.overflow` under `-ftrapv`); unsigned wraps.
@@ -92,12 +92,13 @@ Floating `neg` is exact and quiet (`fneg`, unaffected by `-frounding-math`),
 so it prints no metadata: `neg<f64>(..)`. `not` prints no metadata and rejects
 floating operands. `ArithSema::Exact` marks operations with no overflow,
 rounding, or exception behavior (`and`/`or`/`xor`/`not`, floating `neg`).
-Unary `+` is pruned: it only promotes, and no promotions are needed yet.
+Unary `+` retains only integer promotion; bool promotes to target `int`,
+and integer types narrower than `int` widen before arithmetic.
 Comparisons, `!`, `&&`, and `||` produce `ir::Type::Bool`, a type separate
 from `NumericType`. Comparisons lower to `ValueKind::Compare` keyed by
 `CompareOp` (`eq`/`ne`/`lt`/`le`/`gt`/`ge`); the printed type is the operand
 type (`lt<i32>(..)`), the result is always `bool`. Mixed-type comparisons
-return the conversion error. Floating comparisons print only
+use the usual arithmetic conversions. Floating comparisons print only
 `exceptions=`: relational ops are signaling and `eq`/`ne` quiet on NaN
 (Clang 22 `constrained.fcmps`/`fcmp` under `-ftrapping-math`), so the op
 implies which, and rounding never applies. A numeric operand of `!`, `&&`,
@@ -106,8 +107,12 @@ operand's span. `!` is `not<bool>(..)`; `&&`/`||` are
 `logical_and<bool>`/`logical_or<bool>`, distinct from bitwise `and`/`or`
 because they short-circuit. `true`/`false` are `const<bool>(..)`. A bool
 used as an integer operand (`(1 < 2) + 1`, `-true`, `(a < b) == (c < d)`)
-returns an unsupported error until `from_bool` lowering exists; a discarded
-or returned bool needs no conversion. Assignment,
+promotes through `from_bool<int>` before the usual arithmetic conversions.
+Explicit casts to bool use the same truth comparison, preserving fractional
+nonzero floats and treating both signed zeros as false. Casts from bool to
+integers produce 0 or 1 directly; casts to floats use `from_bool<int>` then
+`int_to_float`, marked exact. A discarded or returned bool currently needs
+no conversion because return-type resolution is not implemented. Assignment,
 compound assignment, and `++`/`--` return unsupported errors until place
 lowering exists.
 
@@ -118,7 +123,12 @@ the current x86-64 Linux baseline uses f80; `-mlong-double-64/80/128`
 selects the corresponding format. Literal digits are parsed directly into
 that format, never rounded through an intermediate f80 or f64 value.
 It does not yet implement the full type/storage metadata proposed below.
-Mixed-type arithmetic requiring conversions, `_BitInt`, decimal/imaginary
+Builtin scalar casts and mixed-type arithmetic insert conversion nodes with
+`reason=promotion|usual_arith|explicit`. Integer width changes precede sign
+changes. Float narrowing and integer-to-float conversions carry rounding
+and exception settings; float-to-int truncates toward zero and records
+`out_of_range=ub` plus exception settings. Widening floats is exact.
+Typedef and non-scalar casts, `_BitInt`, decimal/imaginary
 literals, target-dependent `f64x` suffixes, and other expressions return
 explicit unsupported errors.
 Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
@@ -179,7 +189,7 @@ filter after resolution is required for this design.
 ### Remaining prerequisites
 
 - **Scopes and general typing.** The numeric seed does not resolve names,
-  declarations, promotions, or conversions.
+  declarations, or assignment/argument/return conversions.
 - **Target data layout.** `TargetInfo` has integer/pointer widths and
   character signedness, but no complete object layout or calling ABI.
 - **Full provenance model.** Existing spans and macro origins survive the
