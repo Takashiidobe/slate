@@ -2,7 +2,8 @@ mod numeric;
 
 use crate::ast::Span;
 pub use numeric::{
-    ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow, Rounding,
+    ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
+    Rounding,
 };
 use rustc_apfloat::{
     Float,
@@ -19,12 +20,8 @@ pub struct Value {
 #[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
-    Add {
-        left: Box<Value>,
-        right: Box<Value>,
-        semantics: ArithSema,
-    },
-    Sub {
+    Arith {
+        op: ArithOp,
         left: Box<Value>,
         right: Box<Value>,
         semantics: ArithSema,
@@ -73,16 +70,12 @@ impl Value {
                 NumericType::Float(FloatType::F128) => format_apfloat::<Quad>(f, self.ty, *bits),
                 _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
             },
-            ValueKind::Add {
+            ValueKind::Arith {
+                op,
                 left,
                 right,
                 semantics,
-            } => self.format_arithmetic(f, "add", left, right, *semantics, show_spans),
-            ValueKind::Sub {
-                left,
-                right,
-                semantics,
-            } => self.format_arithmetic(f, "sub", left, right, *semantics, show_spans),
+            } => self.format_arithmetic(f, *op, left, right, *semantics, show_spans),
         }?;
         if show_spans {
             let spelling = self.node.spelling;
@@ -104,13 +97,13 @@ impl Value {
     fn format_arithmetic(
         &self,
         f: &mut fmt::Formatter<'_>,
-        name: &str,
+        op: ArithOp,
         left: &Value,
         right: &Value,
         semantics: ArithSema,
         show_spans: bool,
     ) -> fmt::Result {
-        write!(f, "{name}<{}", self.ty)?;
+        write!(f, "{op}<{}", self.ty)?;
         match semantics {
             ArithSema::Integer { overflow } => write!(
                 f,

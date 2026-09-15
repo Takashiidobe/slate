@@ -33,6 +33,19 @@ void numbers(void) {
     1.0f16 - 2.0f16;
     1.0f128 - 2.0f128;
     1.0L - 2.0L;
+    2 * (3 / 4);
+    7 % 3;
+    7U * 3U;
+    7U / 3U;
+    7U % 3U;
+    7L / 3L;
+    7L % 3L;
+    1.0f * 2.0f;
+    1.0f / 2.0f;
+    1.0 * (2.0 / 3.0);
+    1.0f16 / 2.0f16;
+    1.0f128 * 2.0f128;
+    1.0L / 2.0L;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -67,4 +80,17 @@ void numbers(void) {
 // CHECK-NEXT: sub<f16, rounding=nearest_even, exceptions=ignore>(const<f16>(1), const<f16>(2))
 // CHECK-NEXT: sub<f128, rounding=nearest_even, exceptions=ignore>(const<f128>(1), const<f128>(2))
 // CHECK-NEXT: sub<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(1), const<f80>(2))
+// CHECK-NEXT: mul<i32, overflow=undefined>(const<i32>(2), div<i32, overflow=undefined>(const<i32>(3), const<i32>(4)))
+// CHECK-NEXT: rem<i32, overflow=undefined>(const<i32>(7), const<i32>(3))
+// CHECK-NEXT: mul<u32, overflow=wrap>(const<u32>(7), const<u32>(3))
+// CHECK-NEXT: div<u32, overflow=wrap>(const<u32>(7), const<u32>(3))
+// CHECK-NEXT: rem<u32, overflow=wrap>(const<u32>(7), const<u32>(3))
+// CHECK-NEXT: div<i64, overflow=undefined>(const<i64>(7), const<i64>(3))
+// CHECK-NEXT: rem<i64, overflow=undefined>(const<i64>(7), const<i64>(3))
+// CHECK-NEXT: mul<f32, rounding=nearest_even, exceptions=ignore>(const<f32>(1.0), const<f32>(2.0))
+// CHECK-NEXT: div<f32, rounding=nearest_even, exceptions=ignore>(const<f32>(1.0), const<f32>(2.0))
+// CHECK-NEXT: mul<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), div<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0), const<f64>(3.0)))
+// CHECK-NEXT: div<f16, rounding=nearest_even, exceptions=ignore>(const<f16>(1), const<f16>(2))
+// CHECK-NEXT: mul<f128, rounding=nearest_even, exceptions=ignore>(const<f128>(1), const<f128>(2))
+// CHECK-NEXT: div<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(1), const<f80>(2))
 // SLATE-FILECHECK-END CHECK

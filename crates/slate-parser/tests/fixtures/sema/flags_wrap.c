@@ -6,6 +6,9 @@ void operations(void) {
     1U + 2U;
     1.0f + 2.0f;
     1.0L + 2.0L;
+    1 * 2;
+    1 / 2;
+    1 % 2;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -13,4 +16,7 @@ void operations(void) {
 // CHECK-NEXT: add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
 // CHECK-NEXT: add<f32, rounding=nearest_even, exceptions=ignore>(const<f32>(1.0), const<f32>(2.0))
 // CHECK-NEXT: add<f80, rounding=nearest_even, exceptions=ignore>(const<f80>(1), const<f80>(2))
+// CHECK-NEXT: mul<i32, overflow=wrap>(const<i32>(1), const<i32>(2))
+// CHECK-NEXT: div<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
+// CHECK-NEXT: rem<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
 // SLATE-FILECHECK-END CHECK

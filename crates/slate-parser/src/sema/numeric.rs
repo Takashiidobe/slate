@@ -5,8 +5,8 @@ use crate::const_expr::{
     resolve_float,
 };
 use crate::ir::{
-    ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow, Rounding,
-    Value, ValueKind,
+    ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
+    Rounding, Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
 use thiserror::Error;
@@ -20,12 +20,20 @@ pub enum ResolveError {
     #[error("arithmetic requires conversions not yet implemented: {left} {operator} {right}")]
     Conversion {
         left: NumericType,
-        operator: char,
+        operator: &'static str,
+        right: NumericType,
+    },
+    #[error("invalid operands to binary expression: {left} {operator} {right}")]
+    InvalidOperands {
+        left: NumericType,
+        operator: &'static str,
         right: NumericType,
     },
     #[error(transparent)]
     Literal(#[from] crate::const_expr::ConstExprError),
 }
+
+const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";
 
 pub struct Context {
     pub target: TargetInfo,
@@ -92,53 +100,54 @@ impl Context {
                 )
             }
             ExprKind::Paren(inner) => return self.resolve(inner),
-            ExprKind::Binary {
-                op: op @ (BinaryOp::Add | BinaryOp::Sub),
-                left,
-                right,
-            } => {
+            ExprKind::Binary { op, left, right } => {
+                let arith = match op {
+                    BinaryOp::Add => ArithOp::Add,
+                    BinaryOp::Sub => ArithOp::Sub,
+                    BinaryOp::Mul => ArithOp::Mul,
+                    BinaryOp::Div => ArithOp::Div,
+                    BinaryOp::Rem => ArithOp::Rem,
+                    _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
+                };
+                let operator = <&'static str>::from(*op);
                 let left = self.resolve(left)?;
                 let right = self.resolve(right)?;
                 if left.ty != right.ty {
                     return Err(ResolveError::Conversion {
                         left: left.ty,
-                        operator: if *op == BinaryOp::Add { '+' } else { '-' },
+                        operator,
                         right: right.ty,
                     });
                 }
                 let semantics = match left.ty {
                     NumericType::Integer { signed, .. } => ArithSema::Integer {
-                        overflow: if signed {
-                            self.signed_overflow
-                        } else {
-                            Overflow::Wrap
+                        overflow: match (signed, arith) {
+                            (false, _) => Overflow::Wrap,
+                            // clang and gcc apply -fwrapv/-ftrapv to add, sub, and mul only
+                            (true, ArithOp::Div | ArithOp::Rem) => Overflow::Undefined,
+                            (true, _) => self.signed_overflow,
                         },
                     },
+                    NumericType::Float(_) if arith == ArithOp::Rem => {
+                        return Err(ResolveError::InvalidOperands {
+                            left: left.ty,
+                            operator,
+                            right: right.ty,
+                        });
+                    }
                     NumericType::Float(_) => ArithSema::Floating(self.floating),
                 };
-                let ty = left.ty;
-                let left = Box::new(left);
-                let right = Box::new(right);
-                let kind = if *op == BinaryOp::Add {
-                    ValueKind::Add {
-                        left,
-                        right,
+                (
+                    left.ty,
+                    ValueKind::Arith {
+                        op: arith,
+                        left: Box::new(left),
+                        right: Box::new(right),
                         semantics,
-                    }
-                } else {
-                    ValueKind::Sub {
-                        left,
-                        right,
-                        semantics,
-                    }
-                };
-                (ty, kind)
+                    },
+                )
             }
-            _ => {
-                return Err(ResolveError::Unsupported(
-                    "expression (expected a number, addition, or subtraction)",
-                ));
-            }
+            _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
         };
         Ok(Value {
             ty,
