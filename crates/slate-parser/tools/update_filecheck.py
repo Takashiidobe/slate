@@ -122,7 +122,11 @@ def render(
 ) -> str:
     with tempfile.TemporaryDirectory(prefix=f".{fixture.stem}.filecheck.") as directory:
         parsed_fixture = write_isolated_fixture(Path(directory), fixture, source)
-        command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
+        example = next((line.strip().removeprefix("// SLATE-FILECHECK-EXAMPLE ").strip()
+                        for line in source.splitlines()
+                        if line.strip().startswith("// SLATE-FILECHECK-EXAMPLE ")), None)
+        command = (["cargo", "run", "--quiet", "--example", example, "--"] if example
+                   else ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)])
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(flavor_args(source))

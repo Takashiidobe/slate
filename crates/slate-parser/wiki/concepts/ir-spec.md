@@ -61,12 +61,37 @@ numeric expression statements, returns, and nested blocks. Return conversions
 are explicit and carry `reason=return`; spans retain the original AST node
 identity and provenance. The printer preserves function and block boundaries.
 
-This slice accepts functions without parameters. Other declarations, parameter
-lists, derived return types, unsupported statements, and function attributes
-are diagnosed instead of omitted. Type tables, aliases, records, enums, places,
-globals, full signatures, and optional metadata printing remain work under
-`slate-parser-lh7.2`. The name-resolution dump remains a separate diagnostic
-view, not the module declaration representation.
+The module node model includes named aliases, pointer/array types, records
+with field layouts, enums with typed enumerators, globals, and function
+prototypes or definitions. `Type::Defined(TypeId)` references the module's
+type table, preserving recursive and incomplete type identity. Variables and
+parameters have binding IDs; root places use those IDs and concrete types.
+Statements support declarations and writes as well as the numeric seed.
+Pointer nulls, address-of values, byte-array constants, array decay, and
+direct calls through function binding IDs are represented explicitly.
+
+`Module::display(false)` prints required semantics, including the available
+target properties, record layout, linkage, storage duration, and operation
+contracts. `display(true)` additionally prints source context from the
+`NodeId`-keyed metadata table, including metadata on nested values.
+The CLI enables this with `--show-metadata`; spans continue to belong to
+individual nodes rather than being duplicated into the table. Metadata
+entries are ordered within each node and string values are escaped.
+
+AST lowering still accepts only functions without parameters. Other
+declarations, parameter lists, derived return types, unsupported statements,
+and function attributes are diagnosed instead of omitted. Populating the
+expanded nodes from C belongs to `lh7.2.2` and subsequent lowering tasks.
+The constructed module in `examples/ir_module.rs` exercises the declarations,
+the complete worked `add`/`printf`/`main` example and both printer modes through
+generated FileCheck expectations. `SLATE-FILECHECK-EXAMPLE ir_module` selects
+that renderer in the harness and expectation generator.
+
+The initial record layout represents ordinary fields; bit-field storage,
+full qualifiers, callable types/ABI contracts, projected places, structured
+aggregate initializers, and complete target data layout remain in their
+respective type/layout and lowering tasks. The name-resolution dump remains
+a separate diagnostic view, not the module declaration representation.
 
 ### Implemented numeric seed
 
@@ -157,8 +182,9 @@ for future pointer lowering; it is not attached to numeric operations.
 
 `CompilerOptions` groups operation and layout settings and preserves ordered
 compiler arguments on the translation unit. Argument provenance supplies no
-missing operation semantics. There is no IR module header yet: the current
-CLI dumps only expression roots. Other flag families remain unsupported.
+missing operation semantics. The module dump retains the effective target;
+the expression-only diagnostic mode does not print a module header.
+Other flag families remain unsupported.
 
 Each `Value` owns `Span<ValueKind>`, retaining node identity, spelling and
 expansion locations, header provenance, and macro origin from its AST node.
@@ -536,41 +562,32 @@ int add(int a, int b) { int c = a + b; return c; }
 int main(void) { printf("%d\n", add(2, 3)); }
 ```
 
-x86_64-linux, metadata shown:
+The executable version is `cargo run --example ir_module`; its generated
+FileCheck fixture is `tests/fixtures/ir/module.c`. It includes additional
+declarations to exercise the module tables. These excerpts omit those
+tables and the target header for readability. IDs identify declarations;
+source names remain available beside them.
 
-```
-module target=x86_64-unknown-linux-gnu
+Source metadata shown (excerpt):
 
-extern fn printf(format: *const i8 [c=const char *, restrict], ...) -> i32 [c=int]
-    [origin=system:<stdio.h>:170]
-
-fn add(a: i32 [c=int], b: i32 [c=int]) -> i32 [c=int]
-    [origin=user:add.c:2]
-{
-    let c: i32 [c=int] = add(a, b) [overflow=ub];
-    return c;
-}
-
-fn main() -> i32 [c=int, entry]
-    [origin=user:add.c:7]
-{
-    printf(c"%d\n" [c=char[4], decay[len=4], add_const],
-           add(2i32, 3i32) [reason=vararg, promote=none]);
-    return 0i32 [implicit=main_return];
+```text
+fn %10 @add(%0 a: i32 [c="int"], %1 b: i32) -> i32 [linkage=external] [source="add.c"] {
+    let %2 c: i32 [storage=automatic] = add<i32, overflow=undefined>(read<i32>(%0) [c="a"], read<i32>(%1)) [source="a + b"] [c="int c"];
+    return read<i32>(%2);
 }
 ```
 
-Metadata hidden (printer flag):
+Source metadata hidden (required semantics remain visible):
 
-```
-fn add(a: i32, b: i32) -> i32 {
-    let c: i32 = add(a, b);
-    return c;
+```text
+fn %10 @add(%0 a: i32, %1 b: i32) -> i32 [linkage=external] {
+    let %2 c: i32 [storage=automatic] = add<i32, overflow=undefined>(read<i32>(%0), read<i32>(%1));
+    return read<i32>(%2);
 }
 
-fn main() -> i32 {
-    printf(c"%d\n", add(2i32, 3i32));
-    return 0i32;
+fn %17 @main() -> i32 [linkage=external] {
+    call<i32>(%15, array_decay<@type11>(%14), call<i32>(%10, const<i32>(2), const<i32>(3)));
+    return const<i32>(0);
 }
 ```
 

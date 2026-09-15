@@ -3,14 +3,11 @@ use crate::ast::{
     DeclKind, Declarator, Span, Stmt, StmtKind, StorageClass, TranslationUnit, TypeName,
     TypeSpecifier,
 };
-use crate::ir::{ConversionReason, Function, Linkage, Module, Statement, Type};
+use crate::ir::{ConversionReason, Function, Linkage, Module, Parameters, Statement, Type};
 
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     let context = Context::new(unit.target).with_options(&unit.options);
-    let mut module = Module {
-        target: context.target,
-        functions: Vec::new(),
-    };
+    let mut module = Module::new(context.target);
     for declaration in &unit.decls {
         let function = match &declaration.value {
             DeclKind::Comment(_) => continue,
@@ -49,14 +46,32 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
             StorageClass::None | StorageClass::Extern => Linkage::External,
             _ => return Err(ResolveError::Unsupported("function storage class")),
         };
-        module
-            .functions
-            .push(declaration.clone().with_value(Function {
+        module.metadata.insert(
+            declaration.id,
+            vec![
+                (
+                    "c_storage".into(),
+                    function.specifiers.storage.as_str().into(),
+                ),
+                ("c_return".into(), format!("{:?}", function.specifiers.ty)),
+            ],
+        );
+        module.functions.push(
+            declaration.clone().with_value(Function {
+                id: crate::ir::BindingId(
+                    u32::try_from(module.functions.len())
+                        .map_err(|_| ResolveError::Unsupported("too many functions"))?,
+                ),
                 name: name.clone(),
+                parameters: Parameters::Prototype {
+                    fixed: Vec::new(),
+                    variadic: false,
+                },
                 return_type,
                 linkage,
-                body: lower_statements(&context, &function.body, return_type)?,
-            }));
+                body: Some(lower_statements(&context, &function.body, return_type)?),
+            }),
+        );
     }
     Ok(module)
 }

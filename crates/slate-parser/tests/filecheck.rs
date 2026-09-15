@@ -254,10 +254,26 @@ fn run_fixture(
         ))
     };
     std::fs::write(&parsed_fixture, &source).expect("write fixture without FileCheck metadata");
-    let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
+    let original = decode_source_bytes(&std::fs::read(fixture).expect("read fixture renderer"));
+    let example = original
+        .lines()
+        .find_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-EXAMPLE "));
+    let mut command = if let Some(example) = example {
+        let mut command = Command::new("cargo");
+        command.current_dir(env!("CARGO_MANIFEST_DIR")).args([
+            "run",
+            "--quiet",
+            "--example",
+            example.trim(),
+            "--",
+        ]);
+        command
+    } else {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
+        command.arg("parse").arg(&parsed_fixture);
+        command
+    };
     command
-        .arg("parse")
-        .arg(&parsed_fixture)
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1");

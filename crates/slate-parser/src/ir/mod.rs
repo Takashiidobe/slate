@@ -1,8 +1,14 @@
+mod declarations;
 mod module;
+mod module_print;
 mod names;
 mod numeric;
 
-pub use module::{Function, Linkage, Module, Statement};
+pub use declarations::{
+    Enumerator, Field, Global, Parameter, Parameters, Place, RecordKind, RecordLayout,
+    StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
+};
+pub use module::{Function, Linkage, Metadata, Module, Statement};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 
@@ -27,6 +33,15 @@ pub struct Value {
 #[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
+    Null,
+    Bytes(Vec<u8>),
+    ArrayDecay(Place),
+    Call {
+        function: BindingId,
+        arguments: Vec<Value>,
+    },
+    Read(Place),
+    AddressOf(Place),
     Convert {
         kind: ConversionKind,
         operand: Box<Value>,
@@ -59,18 +74,19 @@ pub enum ValueKind {
 
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.format(f, false)
+        self.format(f, false, None)
     }
 }
 
 pub struct DisplayValue<'a> {
     value: &'a Value,
     show_spans: bool,
+    metadata: Option<&'a Metadata>,
 }
 
 impl fmt::Display for DisplayValue<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.value.format(f, self.show_spans)
+        self.value.format(f, self.show_spans, self.metadata)
     }
 }
 
@@ -79,11 +95,46 @@ impl Value {
         DisplayValue {
             value: self,
             show_spans,
+            metadata: None,
         }
     }
 
-    fn format(&self, f: &mut fmt::Formatter<'_>, show_spans: bool) -> fmt::Result {
+    pub fn display_metadata<'a>(
+        &'a self,
+        show_spans: bool,
+        metadata: Option<&'a Metadata>,
+    ) -> DisplayValue<'a> {
+        DisplayValue {
+            value: self,
+            show_spans,
+            metadata,
+        }
+    }
+
+    fn format(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        show_spans: bool,
+        metadata: Option<&Metadata>,
+    ) -> fmt::Result {
         match &self.node.value {
+            ValueKind::Bytes(bytes) => write!(f, "bytes<{}>({bytes:?})", self.ty),
+            ValueKind::ArrayDecay(place) => {
+                write!(f, "array_decay<{}>(%{})", self.ty, place.binding.0)
+            }
+            ValueKind::Call {
+                function,
+                arguments,
+            } => {
+                write!(f, "call<{}>(%{}", self.ty, function.0)?;
+                for argument in arguments {
+                    write!(f, ", {}", argument.display_metadata(show_spans, metadata))?;
+                }
+                f.write_str(")")
+            }
+            ValueKind::Null => write!(f, "null<{}>", self.ty),
+            ValueKind::Read(place) => write!(f, "read<{}>(%{})", place.ty, place.binding.0),
+            ValueKind::AddressOf(place) => write!(f, "addr_of<{}>(%{})", self.ty, place.binding.0),
             ValueKind::Constant(Number::Bool(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::FloatBits(bits)) => match self.ty {
@@ -136,7 +187,7 @@ impl Value {
                         exceptions_name(*exceptions)
                     )?,
                 }
-                write!(f, ">({})", operand.display(show_spans))
+                write!(f, ">({})", operand.display_metadata(show_spans, metadata))
             }
             ValueKind::Arith {
                 op,
@@ -149,8 +200,8 @@ impl Value {
                 write!(
                     f,
                     "({}, {})",
-                    left.display(show_spans),
-                    right.display(show_spans)
+                    left.display_metadata(show_spans, metadata),
+                    right.display_metadata(show_spans, metadata)
                 )
             }
             ValueKind::Unary {
@@ -160,7 +211,7 @@ impl Value {
             } => {
                 write!(f, "{op}")?;
                 self.format_semantics(f, *semantics)?;
-                write!(f, "({})", operand.display(show_spans))
+                write!(f, "({})", operand.display_metadata(show_spans, metadata))
             }
             ValueKind::Compare {
                 op,
@@ -175,18 +226,19 @@ impl Value {
                 write!(
                     f,
                     ">({}, {})",
-                    left.display(show_spans),
-                    right.display(show_spans)
+                    left.display_metadata(show_spans, metadata),
+                    right.display_metadata(show_spans, metadata)
                 )
             }
             ValueKind::Logical { op, left, right } => write!(
                 f,
                 "{op}<{}>({}, {})",
                 self.ty,
-                left.display(show_spans),
-                right.display(show_spans)
+                left.display_metadata(show_spans, metadata),
+                right.display_metadata(show_spans, metadata)
             ),
         }?;
+        module_print::metadata(f, metadata, self.node.id)?;
         if show_spans {
             let spelling = self.node.spelling;
             let expansion = self.node.expansion;

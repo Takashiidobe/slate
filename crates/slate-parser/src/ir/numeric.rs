@@ -5,11 +5,13 @@ use std::fmt;
 pub enum Type {
     Bool,
     Numeric(NumericType),
+    Defined(super::TypeId),
 }
 
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Defined(id) => write!(f, "@type{}", id.0),
             Self::Bool => f.write_str("bool"),
             Self::Numeric(ty) => write!(f, "{ty}"),
         }
