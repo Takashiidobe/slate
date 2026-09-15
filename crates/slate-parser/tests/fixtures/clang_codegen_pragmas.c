@@ -260,20 +260,6 @@ int main(void) {
 // DEFAULT-NEXT:               parameters: Void,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "unroll ( 4 )",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Opaque(
-// DEFAULT-NEXT:                           "clang loop vectorize ( enable ) interleave ( enable )",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {
@@ -306,6 +292,20 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Pragma(
+// DEFAULT-NEXT:                   Pragma {
+// DEFAULT-NEXT:                       kind: Opaque(
+// DEFAULT-NEXT:                           "unroll ( 4 )",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:               Pragma(
+// DEFAULT-NEXT:                   Pragma {
+// DEFAULT-NEXT:                       kind: Opaque(
+// DEFAULT-NEXT:                           "clang loop vectorize ( enable ) interleave ( enable )",
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               For {

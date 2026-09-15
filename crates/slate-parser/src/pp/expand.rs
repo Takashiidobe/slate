@@ -21,24 +21,6 @@ fn origin_for_expansion(
 }
 
 impl Preprocessor<'_> {
-    pub(super) fn strip_pragma_operator(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
-        let mut result = Vec::with_capacity(tokens.len());
-        let mut i = 0;
-        while i < tokens.len() {
-            if tokens.value_at(i) == Some(&Token::Ident("_Pragma".to_string()))
-                && tokens.value_at(i + 1) == Some(&Token::LParen)
-                && matches!(tokens.value_at(i + 2), Some(Token::StringLit(_)))
-                && tokens.value_at(i + 3) == Some(&Token::RParen)
-            {
-                i += 4;
-                continue;
-            }
-            result.push(tokens[i].clone());
-            i += 1;
-        }
-        result
-    }
-
     fn expand_builtin_macro(&self, name: &str, token: &Span<Token>) -> Option<Span<Token>> {
         let loc = token.expansion;
         match name {

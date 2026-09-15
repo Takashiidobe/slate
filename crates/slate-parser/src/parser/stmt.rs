@@ -117,7 +117,57 @@ impl Parser {
 
         let mut body_parser = self.clone();
         shadow_parameter_names(&mut body_parser, declarator.function_parameters());
-        let body = body_parser.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
+        let mut body_nodes = nodes[sig_node_count..=close_idx].to_vec();
+        if body_index + 1 < sig_tokens.len() {
+            let tokens = sig_tokens[body_index + 1..].to_vec();
+            body_nodes.insert(
+                0,
+                nodes[0].clone().with_value(PPNodeKind::Code {
+                    text: tokens
+                        .values()
+                        .map(String::from)
+                        .collect::<Vec<_>>()
+                        .join(" "),
+                    tokens,
+                    provenance: nodes[0].provenance,
+                }),
+            );
+        }
+        let closing_tokens = self.node_tokens(&nodes[close_idx]);
+        let mut depth = 1i32;
+        for node in &nodes[sig_node_count..close_idx] {
+            if let PPNodeKind::Code { tokens, .. } = &node.value {
+                for token in tokens {
+                    match token.value {
+                        Token::LBrace => depth += 1,
+                        Token::RBrace => depth -= 1,
+                        _ => {}
+                    }
+                }
+            }
+        }
+        let close = closing_tokens
+            .iter()
+            .position(|token| {
+                match token.value {
+                    Token::LBrace => depth += 1,
+                    Token::RBrace => depth -= 1,
+                    _ => {}
+                }
+                depth == 0
+            })
+            .unwrap_or(closing_tokens.len());
+        if let Some(last) = body_nodes.last_mut()
+            && let PPNodeKind::Code { text, tokens, .. } = &mut last.value
+        {
+            *tokens = closing_tokens[..close].to_vec();
+            *text = tokens
+                .values()
+                .map(String::from)
+                .collect::<Vec<_>>()
+                .join(" ");
+        }
+        let body = body_parser.parse_stmt_list(&body_nodes)?;
         Ok((
             FunctionDefinition {
                 specifiers,
@@ -233,6 +283,7 @@ impl Parser {
     }
 
     pub(super) fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<Stmt>, ParseError> {
+        let mut scope = self.clone();
         let mut stmts = Vec::new();
         let mut pending_comments = Vec::new();
         let mut run_text = String::new();
@@ -243,8 +294,13 @@ impl Parser {
             match &node.value {
                 PPNodeKind::Comment { provenance, .. } => {
                     if !run_tokens.is_empty()
-                        && let Ok(parsed) = self.parse_stmts_from_tokens(&run_text, &run_tokens)
+                        && let Ok(parsed) = scope.parse_stmts_from_tokens(&run_text, &run_tokens)
                     {
+                        for statement in &parsed {
+                            if let StmtKind::Decl(declaration) = &statement.value {
+                                scope.record_declaration_typedefs(declaration);
+                            }
+                        }
                         stmts.extend(parsed);
                         stmts.append(&mut pending_comments);
                         run_text.clear();
@@ -260,6 +316,25 @@ impl Parser {
                     index += consumed;
                 }
                 PPNodeKind::Pragma { tokens, .. } => {
+                    let mut position = 0;
+                    while position < run_tokens.len() {
+                        let start = position;
+                        let mut fragment = Fragment::new(&scope, &run_text, &run_tokens, position);
+                        let Ok(statement) = scope.parse_one_stmt(&mut fragment) else {
+                            break;
+                        };
+                        position = fragment.pos;
+                        if let StmtKind::Decl(declaration) = &statement {
+                            scope.record_declaration_typedefs(declaration);
+                        }
+                        stmts.push(span_tokens(statement, &run_tokens[start..position]));
+                    }
+                    run_tokens.drain(..position);
+                    run_text = run_tokens
+                        .values()
+                        .map(String::from)
+                        .collect::<Vec<_>>()
+                        .join(" ");
                     stmts.push(
                         node.clone()
                             .with_value(StmtKind::Pragma(self.parse_pragma_tokens(tokens)?)),
@@ -278,7 +353,7 @@ impl Parser {
             }
         }
         if !run_tokens.is_empty() {
-            stmts.extend(self.parse_stmts_from_tokens(&run_text, &run_tokens)?);
+            stmts.extend(scope.parse_stmts_from_tokens(&run_text, &run_tokens)?);
         }
         stmts.append(&mut pending_comments);
         Ok(stmts)

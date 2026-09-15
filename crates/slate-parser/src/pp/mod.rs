@@ -380,7 +380,15 @@ impl<'a> Preprocessor<'a> {
                 Item::Directive(directive) => match directive.name {
                     DirectiveName::Define => self.record_define(directive)?,
                     DirectiveName::Include | DirectiveName::IncludeNext => {
-                        let include = include_target(self.source(directive.loc.file), directive)?;
+                        let mut expanded = directive.clone();
+                        if !matches!(
+                            directive.arguments.value_at(0),
+                            Some(Token::StringLit(_) | Token::Less)
+                        ) {
+                            expanded.arguments =
+                                self.expand_macros(&directive.arguments, &mut HashSet::new());
+                        }
+                        let include = include_target(self.source(directive.loc.file), &expanded)?;
                         nodes.extend(
                             self.resolve_and_parse_include(&include, directive.arguments_loc())?,
                         );
@@ -412,7 +420,7 @@ impl<'a> Preprocessor<'a> {
         Ok(nodes)
     }
 
-    fn expand_line(&self, source_tokens: &[Span<Token>]) -> Vec<PPNode> {
+    fn expand_line(&mut self, source_tokens: &[Span<Token>]) -> Vec<PPNode> {
         let loc = Span::cover((), source_tokens).spelling;
         let provenance = self.provenance(loc);
         let expanded = self
@@ -420,38 +428,80 @@ impl<'a> Preprocessor<'a> {
             .into_iter()
             .map(|token| token.with_provenance(provenance))
             .collect::<Vec<_>>();
-        if let [_, Token::LParen, Token::StringLit(value), Token::RParen] = expanded
-            .iter()
-            .map(|token| &token.value)
-            .collect::<Vec<_>>()
-            .as_slice()
-        {
-            let pragma_tokens = Lexer::new(FileId(0), value).tokenize();
-            return vec![
+        let mut nodes = Vec::new();
+        let mut code_start = 0;
+        let mut index = 0;
+        while index < expanded.len() {
+            if expanded.value_at(index) == Some(&Token::Ident("_Pragma".into()))
+                && expanded.value_at(index + 1) == Some(&Token::LParen)
+                && let Some(Token::StringLit(value)) = expanded.value_at(index + 2)
+                && expanded.value_at(index + 3) == Some(&Token::RParen)
+            {
+                if code_start < index {
+                    let code = expanded[code_start..index].to_vec();
+                    nodes.push(
+                        Span::new(
+                            PPNodeKind::Code {
+                                text: tokens_source(code.values()),
+                                tokens: code,
+                                provenance,
+                            },
+                            loc,
+                            loc,
+                        )
+                        .with_provenance(provenance),
+                    );
+                }
+                let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
+                let origin = Span::cover((), &expanded[index..index + 4]);
+                let pragma_tokens = Lexer::new(FileId(0), &decoded)
+                    .tokenize()
+                    .into_iter()
+                    .map(|token| origin.clone().with_value(token.value))
+                    .collect::<Vec<_>>();
+                let pragma_loc = expanded[index]
+                    .spelling
+                    .through(expanded[index + 3].spelling);
+                self.record_pragma(&Directive {
+                    name: DirectiveName::Pragma,
+                    arguments: pragma_tokens.clone(),
+                    name_loc: origin.expansion,
+                    loc: origin.expansion,
+                });
+                nodes.push(
+                    Span::new(
+                        PPNodeKind::Pragma {
+                            text: tokens_source(pragma_tokens.values()),
+                            tokens: pragma_tokens,
+                            provenance,
+                        },
+                        pragma_loc,
+                        origin.expansion,
+                    )
+                    .with_provenance(provenance),
+                );
+                index += 4;
+                code_start = index;
+            } else {
+                index += 1;
+            }
+        }
+        if code_start < expanded.len() {
+            let code = expanded[code_start..].to_vec();
+            nodes.push(
                 Span::new(
-                    PPNodeKind::Pragma {
-                        text: tokens_source(pragma_tokens.values()),
-                        tokens: pragma_tokens,
+                    PPNodeKind::Code {
+                        text: tokens_source(code.values()),
+                        tokens: code,
                         provenance,
                     },
                     loc,
                     loc,
                 )
                 .with_provenance(provenance),
-            ];
+            );
         }
-        vec![
-            Span::new(
-                PPNodeKind::Code {
-                    text: tokens_source(expanded.values()),
-                    tokens: Self::strip_pragma_operator(&expanded),
-                    provenance,
-                },
-                loc,
-                loc,
-            )
-            .with_provenance(provenance),
-        ]
+        nodes
     }
 
     fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {

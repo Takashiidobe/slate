@@ -35,9 +35,22 @@ pub(super) fn include_target(
                 ..
             },
         ] => Some((name.clone(), false)),
-        [open, .., close] if open.value == Token::Less && close.value == Token::Greater => src
-            .get(open.spelling.offset + open.spelling.length..close.spelling.offset)
-            .map(|name| (name.to_string(), true)),
+        [open, middle @ .., close]
+            if open.value == Token::Less && close.value == Token::Greater =>
+        {
+            let name = if open.macro_origin.is_none() && close.macro_origin.is_none() {
+                src.get(open.spelling.offset + open.spelling.length..close.spelling.offset)
+                    .map(str::to_string)
+            } else {
+                Some(
+                    middle
+                        .iter()
+                        .map(|token| String::from(&token.value))
+                        .collect(),
+                )
+            };
+            name.map(|name| (name, true))
+        }
         _ => None,
     };
     let Some((name, angled)) = target else {
