@@ -1,12 +1,12 @@
 use super::validate::{fits_rank, integer_candidates, integer_rank_width};
 use crate::ast::{Expr, ExprKind, Span};
 use crate::const_expr::{
-    BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat,
+    BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat, UnaryOp,
     resolve_float,
 };
 use crate::ir::{
     ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
-    Rounding, ShiftFill, Value, ValueKind,
+    Rounding, ShiftFill, UnaryArithOp, Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
 use thiserror::Error;
@@ -29,11 +29,17 @@ pub enum ResolveError {
         operator: &'static str,
         right: NumericType,
     },
+    #[error("invalid argument type to unary expression: {operator}{operand}")]
+    InvalidOperand {
+        operator: &'static str,
+        operand: NumericType,
+    },
     #[error(transparent)]
     Literal(#[from] crate::const_expr::ConstExprError),
 }
 
 const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";
+const UNSUPPORTED_INCREMENT: &str = "increment and decrement (requires place lowering)";
 
 pub struct Context {
     pub target: TargetInfo,
@@ -163,7 +169,7 @@ impl Context {
                         },
                     },
                     (NumericType::Integer { .. }, ArithOp::And | ArithOp::Or | ArithOp::Xor) => {
-                        ArithSema::Bitwise
+                        ArithSema::Exact
                     }
                     (NumericType::Integer { signed, .. }, ArithOp::Shr) => ArithSema::ShiftRight {
                         fill: if signed {
@@ -182,6 +188,53 @@ impl Context {
                         semantics,
                     },
                 )
+            }
+            ExprKind::Unary { op, operand } => {
+                let arith = match op {
+                    UnaryOp::Plus => return self.resolve(operand),
+                    UnaryOp::Minus => UnaryArithOp::Neg,
+                    UnaryOp::BitNot => UnaryArithOp::Not,
+                    UnaryOp::Not => {
+                        return Err(ResolveError::Unsupported(
+                            "logical not (requires bool lowering)",
+                        ));
+                    }
+                    UnaryOp::PreIncrement | UnaryOp::PreDecrement => {
+                        return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
+                    }
+                    _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
+                };
+                let operand = self.resolve(operand)?;
+                let semantics = match (operand.ty, arith) {
+                    (NumericType::Float(_), UnaryArithOp::Neg) => ArithSema::Exact,
+                    (NumericType::Float(_), UnaryArithOp::Not) => {
+                        return Err(ResolveError::InvalidOperand {
+                            operator: <&'static str>::from(*op),
+                            operand: operand.ty,
+                        });
+                    }
+                    (NumericType::Integer { signed, .. }, UnaryArithOp::Neg) => {
+                        ArithSema::Integer {
+                            overflow: if signed {
+                                self.signed_overflow
+                            } else {
+                                Overflow::Wrap
+                            },
+                        }
+                    }
+                    (NumericType::Integer { .. }, UnaryArithOp::Not) => ArithSema::Exact,
+                };
+                (
+                    operand.ty,
+                    ValueKind::Unary {
+                        op: arith,
+                        operand: Box::new(operand),
+                        semantics,
+                    },
+                )
+            }
+            ExprKind::Postfix { .. } => {
+                return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
             }
             ExprKind::Assign { .. } => {
                 return Err(ResolveError::Unsupported(

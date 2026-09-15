@@ -56,6 +56,22 @@ void numbers(void) {
     2147483647 >> 1;
     0xffffffff >> 4;
     9223372036854775807L >> 2UL;
+    -1;
+    -2147483648;
+    -(1 + 2);
+    -1U;
+    -1L;
+    +1;
+    +-1;
+    ~0;
+    ~0U;
+    ~-1L;
+    -1.0f;
+    -0.0;
+    -1.0f16;
+    -1.0L;
+    -1.0f128;
+    - -1.0;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -113,4 +129,20 @@ void numbers(void) {
 // CHECK-NEXT: shr<i32, fill=sign_extend>(const<i32>(2147483647), const<i32>(1))
 // CHECK-NEXT: shr<u32, fill=zero_extend>(const<u32>(4294967295), const<i32>(4))
 // CHECK-NEXT: shr<i64, fill=sign_extend>(const<i64>(9223372036854775807), const<u64>(2))
+// CHECK-NEXT: neg<i32, overflow=undefined>(const<i32>(1))
+// CHECK-NEXT: neg<i64, overflow=undefined>(const<i64>(2147483648))
+// CHECK-NEXT: neg<i32, overflow=undefined>(add<i32, overflow=undefined>(const<i32>(1), const<i32>(2)))
+// CHECK-NEXT: neg<u32, overflow=wrap>(const<u32>(1))
+// CHECK-NEXT: neg<i64, overflow=undefined>(const<i64>(1))
+// CHECK-NEXT: const<i32>(1)
+// CHECK-NEXT: neg<i32, overflow=undefined>(const<i32>(1))
+// CHECK-NEXT: not<i32>(const<i32>(0))
+// CHECK-NEXT: not<u32>(const<u32>(0))
+// CHECK-NEXT: not<i64>(neg<i64, overflow=undefined>(const<i64>(1)))
+// CHECK-NEXT: neg<f32>(const<f32>(1.0))
+// CHECK-NEXT: neg<f64>(const<f64>(0.0))
+// CHECK-NEXT: neg<f16>(const<f16>(1))
+// CHECK-NEXT: neg<f80>(const<f80>(1))
+// CHECK-NEXT: neg<f128>(const<f128>(1))
+// CHECK-NEXT: neg<f64>(neg<f64>(const<f64>(1.0)))
 // SLATE-FILECHECK-END CHECK

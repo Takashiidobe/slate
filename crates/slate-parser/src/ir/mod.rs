@@ -3,7 +3,7 @@ mod numeric;
 use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
-    Rounding, ShiftFill,
+    Rounding, ShiftFill, UnaryArithOp,
 };
 use rustc_apfloat::{
     Float,
@@ -24,6 +24,11 @@ pub enum ValueKind {
         op: ArithOp,
         left: Box<Value>,
         right: Box<Value>,
+        semantics: ArithSema,
+    },
+    Unary {
+        op: UnaryArithOp,
+        operand: Box<Value>,
         semantics: ArithSema,
     },
 }
@@ -75,7 +80,25 @@ impl Value {
                 left,
                 right,
                 semantics,
-            } => self.format_arithmetic(f, *op, left, right, *semantics, show_spans),
+            } => {
+                write!(f, "{op}")?;
+                self.format_semantics(f, *semantics)?;
+                write!(
+                    f,
+                    "({}, {})",
+                    left.display(show_spans),
+                    right.display(show_spans)
+                )
+            }
+            ValueKind::Unary {
+                op,
+                operand,
+                semantics,
+            } => {
+                write!(f, "{op}")?;
+                self.format_semantics(f, *semantics)?;
+                write!(f, "({})", operand.display(show_spans))
+            }
         }?;
         if show_spans {
             let spelling = self.node.spelling;
@@ -94,16 +117,8 @@ impl Value {
         Ok(())
     }
 
-    fn format_arithmetic(
-        &self,
-        f: &mut fmt::Formatter<'_>,
-        op: ArithOp,
-        left: &Value,
-        right: &Value,
-        semantics: ArithSema,
-        show_spans: bool,
-    ) -> fmt::Result {
-        write!(f, "{op}<{}", self.ty)?;
+    fn format_semantics(&self, f: &mut fmt::Formatter<'_>, semantics: ArithSema) -> fmt::Result {
+        write!(f, "<{}", self.ty)?;
         match semantics {
             ArithSema::Integer { overflow } => write!(
                 f,
@@ -126,7 +141,7 @@ impl Value {
                     Exceptions::Observable => "observable",
                 }
             )?,
-            ArithSema::Bitwise => {}
+            ArithSema::Exact => {}
             ArithSema::ShiftRight { fill } => write!(
                 f,
                 ", fill={}",
@@ -136,12 +151,7 @@ impl Value {
                 }
             )?,
         }
-        write!(
-            f,
-            ">({}, {})",
-            left.display(show_spans),
-            right.display(show_spans)
-        )
+        f.write_str(">")
     }
 }
 

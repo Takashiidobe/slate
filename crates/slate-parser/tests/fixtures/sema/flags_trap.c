@@ -11,6 +11,9 @@ void operations(void) {
     1 % 2;
     1 << 2;
     1 & 2;
+    -1;
+    -1U;
+    ~1;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -23,4 +26,7 @@ void operations(void) {
 // CHECK-NEXT: rem<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: shl<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: and<i32>(const<i32>(1), const<i32>(2))
+// CHECK-NEXT: neg<i32, overflow=trap>(const<i32>(1))
+// CHECK-NEXT: neg<u32, overflow=wrap>(const<u32>(1))
+// CHECK-NEXT: not<i32>(const<i32>(1))
 // SLATE-FILECHECK-END CHECK

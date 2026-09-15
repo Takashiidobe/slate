@@ -55,7 +55,7 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point
 literals, parentheses, same-concrete-type `+`, `-`, `*`, `/`, `%`, `&`, `|`,
-`^`, and integer `<<`/`>>` directly to
+`^`, integer `<<`/`>>`, unary `-`, integer `~`, and unary `+` directly to
 `ir::Value`. Integer literal selection uses the existing C candidate order
 and target integer widths. Floating constants retain their exact value bits.
 The dump prints f32/f64 numerically using round-trippable decimal formatting
@@ -83,8 +83,18 @@ operand's type and the amount keeps its own. Clang 22 emits plain
 `overflow=undefined` (unsigned wraps). `shr` prints `fill=sign_extend` for
 signed and `fill=zero_extend` for unsigned operands; out-of-range amounts are
 always undefined and not printed. Operand promotions are not yet needed:
-every literal type already has at least `int` rank. Assignment and compound
-assignment return an unsupported error until place lowering exists.
+every literal type already has at least `int` rank. Unary `-` and `~` lower
+to `ValueKind::Unary` keyed by `UnaryArithOp` (`neg`/`not`). Signed `neg`
+uses the context's signed-overflow policy (Clang 22: `sub nsw 0, x`, plain
+`sub` under `-fwrapv`, `ssub.with.overflow` under `-ftrapv`); unsigned wraps.
+Floating `neg` is exact and quiet (`fneg`, unaffected by `-frounding-math`),
+so it prints no metadata: `neg<f64>(..)`. `not` prints no metadata and rejects
+floating operands. `ArithSema::Exact` marks operations with no overflow,
+rounding, or exception behavior (`and`/`or`/`xor`/`not`, floating `neg`).
+Unary `+` is pruned: it only promotes, and no promotions are needed yet.
+`!` returns an unsupported error until bool lowering exists. Assignment,
+compound assignment, and `++`/`--` return unsupported errors until place
+lowering exists.
 
 The initial numeric type stores integer width/signedness or one of five
 floating formats: f16, f32, f64, f80, f128. These denote value formats, not

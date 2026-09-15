@@ -99,10 +99,25 @@ impl fmt::Display for ArithOp {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UnaryArithOp {
+    Neg,
+    Not,
+}
+
+impl fmt::Display for UnaryArithOp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Neg => "neg",
+            Self::Not => "not",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArithSema {
     Integer { overflow: Overflow },
     Floating(FloatingSemantics),
-    Bitwise,
+    Exact,
     ShiftRight { fill: ShiftFill },
 }
 
