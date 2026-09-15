@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES MIXED MIXED
+// SLATE-FILECHECK-DEFINES MIXED_SUB MIXED_SUB
 // SLATE-FILECHECK-DEFINES OPERATOR OPERATOR
 // SLATE-FILECHECK-DEFINES BITINT BITINT
 // SLATE-FILECHECK-DEFINES DECIMAL DECIMAL
@@ -6,6 +7,7 @@
 // SLATE-FILECHECK-ERROR DECIMAL
 // SLATE-FILECHECK-ERROR EXTENDED
 // SLATE-FILECHECK-ERROR MIXED
+// SLATE-FILECHECK-ERROR MIXED_SUB
 // SLATE-FILECHECK-ERROR OPERATOR
 // SLATE-FILECHECK-ERROR BITINT
 // SLATE-FILECHECK-ARGS --dump-ir-expressions
@@ -13,6 +15,9 @@
 void unsupported(void) {
 #ifdef MIXED
     1 + 2U;
+#endif
+#ifdef MIXED_SUB
+    1.0f - 2.0;
 #endif
 #ifdef OPERATOR
     1 * 2;
@@ -35,10 +40,13 @@ void unsupported(void) {
 // EXTENDED: Error:   × unsupported in numeric IR lowering: target-dependent f64x literals
 // SLATE-FILECHECK-END EXTENDED
 // SLATE-FILECHECK-BEGIN MIXED
-// MIXED: Error:   × addition requires conversions not yet implemented: i32 + u32
+// MIXED: Error:   × arithmetic requires conversions not yet implemented: i32 + u32
 // SLATE-FILECHECK-END MIXED
+// SLATE-FILECHECK-BEGIN MIXED_SUB
+// MIXED_SUB: Error:   × arithmetic requires conversions not yet implemented: f32 - f64
+// SLATE-FILECHECK-END MIXED_SUB
 // SLATE-FILECHECK-BEGIN OPERATOR
-// OPERATOR: Error:   × unsupported in numeric IR lowering: expression (expected a number or
+// OPERATOR: Error:   × unsupported in numeric IR lowering: expression (expected a number,
 // SLATE-FILECHECK-END OPERATOR
 // SLATE-FILECHECK-BEGIN BITINT
 // BITINT: Error:   × unsupported in numeric IR lowering: bit-precise integer literals

@@ -54,21 +54,22 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 ### Implemented numeric seed
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point
-literals, parentheses, and same-concrete-type addition directly to
+literals, parentheses, and same-concrete-type addition and subtraction directly to
 `ir::Value`. Integer literal selection uses the existing C candidate order
 and target integer widths. Floating constants retain their exact value bits.
 The dump prints f32/f64 numerically using round-trippable decimal formatting
 (including signed zero); NaNs retain hexadecimal bits to preserve payloads.
 The f16, f80, and f128 printer uses `rustc_apfloat` directly, without an f64
 conversion. NaNs retain hexadecimal bits in every format.
-Addition is not folded or reassociated. Signed overflow defaults to
-`undefined`, unsigned overflow to `wrap`; floating addition defaults to
+Addition and subtraction are not folded or reassociated; both carry the
+same `ArithSema` metadata. Signed overflow defaults to
+`undefined`, unsigned overflow to `wrap`; floating arithmetic defaults to
 nearest-even rounding with ignored exceptions for the default Clang flavor
 (observable exceptions for GCC). Translation-unit operation options
 initialize the context's independent integer and floating semantic settings.
 Overflow metadata describes the operation's behavior if overflow occurs,
-not a prediction that these operands overflow. Both i32 and i64 additions
-use the context's signed-overflow policy; u32 and u64 additions wrap.
+not a prediction that these operands overflow. Both i32 and i64 operations
+use the context's signed-overflow policy; u32 and u64 operations wrap.
 
 The initial numeric type stores integer width/signedness or one of five
 floating formats: f16, f32, f64, f80, f128. These denote value formats, not
@@ -77,7 +78,7 @@ the current x86-64 Linux baseline uses f80; `-mlong-double-64/80/128`
 selects the corresponding format. Literal digits are parsed directly into
 that format, never rounded through an intermediate f80 or f64 value.
 It does not yet implement the full type/storage metadata proposed below.
-Mixed-type additions requiring conversions, `_BitInt`, decimal/imaginary
+Mixed-type additions or subtractions requiring conversions, `_BitInt`, decimal/imaginary
 literals, target-dependent `f64x` suffixes, and other expressions return
 explicit unsupported errors.
 Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
@@ -113,6 +114,7 @@ arguments to both the test harness and expectation generator.
 add<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
 add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
 add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), const<f64>(2.0))
+sub<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
 ```
 
 ### Validation and declaration pruning

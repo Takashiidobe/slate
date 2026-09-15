@@ -2,7 +2,7 @@ mod numeric;
 
 use crate::ast::Span;
 pub use numeric::{
-    AddSemantics, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow, Rounding,
+    ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow, Rounding,
 };
 use rustc_apfloat::{
     Float,
@@ -22,7 +22,12 @@ pub enum ValueKind {
     Add {
         left: Box<Value>,
         right: Box<Value>,
-        semantics: AddSemantics,
+        semantics: ArithSema,
+    },
+    Sub {
+        left: Box<Value>,
+        right: Box<Value>,
+        semantics: ArithSema,
     },
 }
 
@@ -72,38 +77,12 @@ impl Value {
                 left,
                 right,
                 semantics,
-            } => {
-                write!(f, "add<{}", self.ty)?;
-                match semantics {
-                    AddSemantics::Integer { overflow } => write!(
-                        f,
-                        ", overflow={}",
-                        match overflow {
-                            Overflow::Undefined => "undefined",
-                            Overflow::Wrap => "wrap",
-                            Overflow::Trap => "trap",
-                        }
-                    )?,
-                    AddSemantics::Floating(properties) => write!(
-                        f,
-                        ", rounding={}, exceptions={}",
-                        match properties.rounding {
-                            Rounding::NearestEven => "nearest_even",
-                            Rounding::Environment => "environment",
-                        },
-                        match properties.exceptions {
-                            Exceptions::Ignore => "ignore",
-                            Exceptions::Observable => "observable",
-                        }
-                    )?,
-                }
-                write!(
-                    f,
-                    ">({}, {})",
-                    left.display(show_spans),
-                    right.display(show_spans)
-                )
-            }
+            } => self.format_arithmetic(f, "add", left, right, *semantics, show_spans),
+            ValueKind::Sub {
+                left,
+                right,
+                semantics,
+            } => self.format_arithmetic(f, "sub", left, right, *semantics, show_spans),
         }?;
         if show_spans {
             let spelling = self.node.spelling;
@@ -120,6 +99,47 @@ impl Value {
             )?;
         }
         Ok(())
+    }
+
+    fn format_arithmetic(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        name: &str,
+        left: &Value,
+        right: &Value,
+        semantics: ArithSema,
+        show_spans: bool,
+    ) -> fmt::Result {
+        write!(f, "{name}<{}", self.ty)?;
+        match semantics {
+            ArithSema::Integer { overflow } => write!(
+                f,
+                ", overflow={}",
+                match overflow {
+                    Overflow::Undefined => "undefined",
+                    Overflow::Wrap => "wrap",
+                    Overflow::Trap => "trap",
+                }
+            )?,
+            ArithSema::Floating(properties) => write!(
+                f,
+                ", rounding={}, exceptions={}",
+                match properties.rounding {
+                    Rounding::NearestEven => "nearest_even",
+                    Rounding::Environment => "environment",
+                },
+                match properties.exceptions {
+                    Exceptions::Ignore => "ignore",
+                    Exceptions::Observable => "observable",
+                }
+            )?,
+        }
+        write!(
+            f,
+            ">({}, {})",
+            left.display(show_spans),
+            right.display(show_spans)
+        )
     }
 }
 

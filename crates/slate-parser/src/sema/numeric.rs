@@ -5,8 +5,8 @@ use crate::const_expr::{
     resolve_float,
 };
 use crate::ir::{
-    AddSemantics, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
-    Rounding, Value, ValueKind,
+    ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow, Rounding,
+    Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
 use thiserror::Error;
@@ -17,9 +17,10 @@ pub enum ResolveError {
     Unsupported(&'static str),
     #[error("integer literal `{0}` has no supported target type")]
     IntegerLiteral(String),
-    #[error("addition requires conversions not yet implemented: {left} + {right}")]
+    #[error("arithmetic requires conversions not yet implemented: {left} {operator} {right}")]
     Conversion {
         left: NumericType,
+        operator: char,
         right: NumericType,
     },
     #[error(transparent)]
@@ -92,7 +93,7 @@ impl Context {
             }
             ExprKind::Paren(inner) => return self.resolve(inner),
             ExprKind::Binary {
-                op: BinaryOp::Add,
+                op: op @ (BinaryOp::Add | BinaryOp::Sub),
                 left,
                 right,
             } => {
@@ -101,31 +102,41 @@ impl Context {
                 if left.ty != right.ty {
                     return Err(ResolveError::Conversion {
                         left: left.ty,
+                        operator: if *op == BinaryOp::Add { '+' } else { '-' },
                         right: right.ty,
                     });
                 }
                 let semantics = match left.ty {
-                    NumericType::Integer { signed, .. } => AddSemantics::Integer {
+                    NumericType::Integer { signed, .. } => ArithSema::Integer {
                         overflow: if signed {
                             self.signed_overflow
                         } else {
                             Overflow::Wrap
                         },
                     },
-                    NumericType::Float(_) => AddSemantics::Floating(self.floating),
+                    NumericType::Float(_) => ArithSema::Floating(self.floating),
                 };
-                (
-                    left.ty,
+                let ty = left.ty;
+                let left = Box::new(left);
+                let right = Box::new(right);
+                let kind = if *op == BinaryOp::Add {
                     ValueKind::Add {
-                        left: Box::new(left),
-                        right: Box::new(right),
+                        left,
+                        right,
                         semantics,
-                    },
-                )
+                    }
+                } else {
+                    ValueKind::Sub {
+                        left,
+                        right,
+                        semantics,
+                    }
+                };
+                (ty, kind)
             }
             _ => {
                 return Err(ResolveError::Unsupported(
-                    "expression (expected a number or addition)",
+                    "expression (expected a number, addition, or subtraction)",
                 ));
             }
         };

@@ -65,7 +65,7 @@ pub struct FloatingSemantics {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AddSemantics {
+pub enum ArithSema {
     Integer { overflow: Overflow },
     Floating(FloatingSemantics),
 }
