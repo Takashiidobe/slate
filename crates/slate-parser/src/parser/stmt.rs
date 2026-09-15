@@ -65,8 +65,10 @@ impl Parser {
         }
 
         if let Some(same_line_close) = matching_brace(&sig_tokens, body_index) {
-            let body =
-                self.parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
+            let mut body_parser = self.clone();
+            shadow_parameter_names(&mut body_parser, declarator.function_parameters());
+            let body = body_parser
+                .parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
             return Ok((
                 FunctionDefinition {
                     specifiers,
@@ -113,7 +115,9 @@ impl Parser {
             attributes.extend(trailing_attributes);
         }
 
-        let body = self.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
+        let mut body_parser = self.clone();
+        shadow_parameter_names(&mut body_parser, declarator.function_parameters());
+        let body = body_parser.parse_stmt_list(&nodes[sig_node_count..close_idx])?;
         Ok((
             FunctionDefinition {
                 specifiers,
@@ -719,6 +723,16 @@ impl Parser {
         let tokens = coalesce_string_literals(tokens);
         const_expr::Parser::parse_expression(&tokens, &self.typedef_names, Some(self))
             .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))
+    }
+}
+
+fn shadow_parameter_names(parser: &mut Parser, parameters: Option<&ParameterList>) {
+    if let Some(parameters) = parameters {
+        for parameter in parameters.parameters() {
+            if let Some(name) = parameter.declarator.name() {
+                parser.typedef_names.remove(name);
+            }
+        }
     }
 }
 

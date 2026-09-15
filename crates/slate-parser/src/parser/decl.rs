@@ -897,6 +897,10 @@ impl Parser {
         if declaration.specifiers.storage == StorageClass::Typedef {
             self.typedef_names
                 .extend(declaration.names().map(str::to_string));
+        } else {
+            for name in declaration.names() {
+                self.typedef_names.remove(name);
+            }
         }
     }
 }
