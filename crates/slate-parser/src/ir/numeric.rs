@@ -209,6 +209,7 @@ impl fmt::Display for ConversionKind {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ConversionReason {
+    Return,
     Promotion,
     UsualArith,
     Explicit,
@@ -217,6 +218,7 @@ pub enum ConversionReason {
 impl fmt::Display for ConversionReason {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
+            Self::Return => "return",
             Self::Promotion => "promotion",
             Self::UsualArith => "usual_arith",
             Self::Explicit => "explicit",

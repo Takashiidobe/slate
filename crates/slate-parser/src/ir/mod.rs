@@ -1,5 +1,8 @@
+mod module;
 mod names;
 mod numeric;
+
+pub use module::{Function, Linkage, Module, Statement};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 

@@ -1,7 +1,9 @@
+mod module;
 pub mod names;
 pub mod numeric;
 mod validate;
 
+pub use module::resolve_module;
 pub use validate::{SemaError, SemaErrors};
 
 use crate::ast::{DeclKind, Expr, StmtKind, TranslationUnit};

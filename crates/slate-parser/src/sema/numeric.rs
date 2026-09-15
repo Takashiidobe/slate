@@ -316,7 +316,7 @@ impl Context {
         )
     }
 
-    fn cast_type(&self, ty: &TypeName) -> Result<Type, ResolveError> {
+    pub(super) fn cast_type(&self, ty: &TypeName) -> Result<Type, ResolveError> {
         let mut declarator = &ty.declarator;
         while let Declarator::Grouped(inner) = declarator {
             declarator = inner;
@@ -402,7 +402,7 @@ impl Context {
         })
     }
 
-    fn convert(&self, value: Value, to: Type, reason: ConversionReason) -> Value {
+    pub(super) fn convert(&self, value: Value, to: Type, reason: ConversionReason) -> Value {
         if value.ty == to {
             return value;
         }

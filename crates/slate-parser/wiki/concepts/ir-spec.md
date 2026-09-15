@@ -51,6 +51,23 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 - `src/ir/` — typed node definitions, required semantic properties, source
   spans, and text printing. Does not interpret AST nodes or compiler flags.
 
+### Implemented module seed
+
+`slate-parser ir <source.c>` (also `parse <source.c> --dump-ir`) invokes
+`sema::resolve_module`. The first module slice retains the effective target
+and spanned function definitions and statements. Functions have concrete
+scalar or void returns, internal/external linkage, and bodies containing
+numeric expression statements, returns, and nested blocks. Return conversions
+are explicit and carry `reason=return`; spans retain the original AST node
+identity and provenance. The printer preserves function and block boundaries.
+
+This slice accepts functions without parameters. Other declarations, parameter
+lists, derived return types, unsupported statements, and function attributes
+are diagnosed instead of omitted. Type tables, aliases, records, enums, places,
+globals, full signatures, and optional metadata printing remain work under
+`slate-parser-lh7.2`. The name-resolution dump remains a separate diagnostic
+view, not the module declaration representation.
+
 ### Implemented numeric seed
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point

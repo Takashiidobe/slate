@@ -11,9 +11,10 @@ use std::path::{Path, PathBuf};
 
 fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
-    if args.next().as_deref() != Some("parse") {
+    let command = args.next();
+    if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir-expressions] [--dump-ir-names] [--show-spans]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-expressions] [--dump-ir-names] [--show-spans]"
         ));
     }
     let path = args
@@ -23,10 +24,14 @@ fn main() -> miette::Result<()> {
     let mut show_ids = false;
     let mut dump_ir_expressions = false;
     let mut dump_ir_names = false;
+    let mut dump_ir = command.as_deref() == Some("ir");
     let mut show_spans = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
-            if arg == "--show-spans" {
+            if arg == "--dump-ir" {
+                dump_ir = true;
+                false
+            } else if arg == "--show-spans" {
                 show_spans = true;
                 false
             } else if arg == "--dump-ir-expressions" {
@@ -48,6 +53,9 @@ fn main() -> miette::Result<()> {
         .collect();
     let compiler_args =
         CompilerArgParser::parse(remaining).map_err(|error| miette::miette!(error))?;
+    if u8::from(dump_ir) + u8::from(dump_ir_names) + u8::from(dump_ir_expressions) > 1 {
+        return Err(miette::miette!("IR dump modes are mutually exclusive"));
+    }
     if show_spans && !dump_ir_expressions {
         return Err(miette::miette!(
             "--show-spans requires --dump-ir-expressions"
@@ -71,6 +79,12 @@ fn main() -> miette::Result<()> {
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
     ast.analyze(&files)?;
+    if dump_ir {
+        let module =
+            slate_parser::sema::resolve_module(&ast).map_err(|error| miette::miette!("{error}"))?;
+        print!("{module}");
+        return Ok(());
+    }
     if dump_ir_names {
         let resolution =
             slate_parser::sema::names::resolve(&ast).map_err(|error| miette::miette!("{error}"))?;
