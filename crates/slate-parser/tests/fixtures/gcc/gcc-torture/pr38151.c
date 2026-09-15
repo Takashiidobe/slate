@@ -51,6 +51,21 @@ int main(void) {
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: None,
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           Aligned(
+// DEFAULT-NEXT:               IntegerLiteral(
+// DEFAULT-NEXT:                   IntegerLiteral {
+// DEFAULT-NEXT:                       value: 16,
+// DEFAULT-NEXT:                       radix: Decimal,
+// DEFAULT-NEXT:                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                           unsigned: false,
+// DEFAULT-NEXT:                           size: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       spelling: "16",
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:       body: Record(
 // DEFAULT-NEXT:           [],
 // DEFAULT-NEXT:       ),
@@ -115,21 +130,6 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           attributes: [
-// DEFAULT-NEXT:                               Aligned(
-// DEFAULT-NEXT:                                   IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 16,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "16",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
 // DEFAULT-NEXT:                           FieldDeclaratorKind {

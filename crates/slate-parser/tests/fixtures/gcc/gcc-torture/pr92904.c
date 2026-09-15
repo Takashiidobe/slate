@@ -900,9 +900,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[7]: TagDefinition {
+// DEFAULT-NEXT: tag[6]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           7,
+// DEFAULT-NEXT:           6,
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: Some(
@@ -3396,7 +3396,7 @@ int main() {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       7,
+// DEFAULT-NEXT:                                       6,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),

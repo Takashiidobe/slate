@@ -3673,7 +3673,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       10,
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   pieces: [
-// DEFAULT-NEXT:                                       "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\\n",
+// DEFAULT-NEXT:                                       "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d ",
+// DEFAULT-NEXT:                                       "%d %d %d %d %d %d %d %d %d\\n",
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),

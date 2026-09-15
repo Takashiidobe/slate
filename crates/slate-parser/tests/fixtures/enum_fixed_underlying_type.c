@@ -278,9 +278,9 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[6]: TagDefinition {
+// DEFAULT-NEXT: tag[5]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           6,
+// DEFAULT-NEXT:           5,
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Enum,
 // DEFAULT-NEXT:       name: Some(
@@ -442,7 +442,7 @@ int main(void) {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       6,
+// DEFAULT-NEXT:                                       5,
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),

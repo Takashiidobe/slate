@@ -1,182 +1,49 @@
 use super::decl::{
-    join_node_text, matching_brace, matching_paren, signature_node_span, specifiers_with_type,
-    split_top_level, top_level_semi,
+    matching_brace, matching_paren, specifiers_with_type, split_top_level, top_level_semi,
 };
-use super::declarator::IdentifierList;
-use super::{
-    Cursor, Fragment, Loc, Parser, coalesce_string_literals, lex, span_tokens, synthetic,
-    synthetic_span,
-};
+use super::{Annotation, Cursor, Fragment, Loc, Parser, span_tokens, synthetic_span};
 use crate::ast::*;
 use crate::const_expr;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
-use crate::pp::{PPNode, PPNodeKind};
 use std::collections::HashMap;
 
 impl Parser {
-    pub(super) fn parse_function(
+    pub(super) fn parse_function_body(
         &self,
-        nodes: &[PPNode],
-    ) -> Result<(FunctionDefinition, usize), ParseError> {
-        let sig_node_count = signature_node_span(nodes, &self.typedef_names);
-        let joined_code;
-        let code: &str = if sig_node_count == 1 {
-            self.node_text(&nodes[0])
-        } else {
-            joined_code = join_node_text(&nodes[..sig_node_count]);
-            &joined_code
-        };
-        let sig_tokens = self.nodes_tokens(&nodes[..sig_node_count]);
-        let mut parser = self.declarator_parser(&sig_tokens, 0);
-        parser.identifier_list = IdentifierList::Accepted;
-        let specifiers = self.parse_declaration_specifiers(&mut parser, true)?;
-        let mut declarator = parser
-            .parse_declarator(false)
-            .map_err(|error| self.error_at_tokens(&sig_tokens, parser.pos, error.to_string()))?;
-        if declarator.function_parameters().is_none() {
-            return Err(self.error_at_tokens(
-                &sig_tokens,
-                parser.pos,
-                "expected function declarator",
-            ));
-        }
-        let (mut attributes, body_index) = if let IdentifierList::Parsed(names) =
-            std::mem::replace(&mut parser.identifier_list, IdentifierList::Rejected)
-        {
-            let (parameters, body_index) =
-                self.parse_kr_parameter_declarations(code, &sig_tokens, parser.pos, &names)?;
-            if let Some(list) = declarator.function_parameters_mut() {
-                *list = ParameterList::Prototype {
-                    parameters,
-                    variadic: false,
+        tokens: &[Span<Token>],
+        position: &mut usize,
+        declarator: &Declarator,
+    ) -> Result<Vec<Stmt>, ParseError> {
+        let close = matching_brace(tokens, *position)
+            .ok_or_else(|| self.error_at_tokens(tokens, *position, "expected `}`"))?;
+        let mut scope = self.clone();
+        shadow_parameter_names(&mut scope, declarator.function_parameters());
+        let mut body = scope.parse_stmts_from_tokens("", &tokens[*position + 1..close])?;
+        body.extend(scope.statement_annotations(tokens, close, close)?);
+        *position = close + 1;
+        Ok(body)
+    }
+
+    fn statement_annotations(
+        &self,
+        tokens: &[Span<Token>],
+        start: usize,
+        end: usize,
+    ) -> Result<Vec<Stmt>, ParseError> {
+        self.input
+            .take(tokens, start, end)
+            .into_iter()
+            .map(|annotation| {
+                let kind = match &annotation.value {
+                    Annotation::Comment(group) => StmtKind::Comment(group.clone()),
+                    Annotation::Pragma(tokens) => {
+                        StmtKind::Pragma(self.parse_pragma_tokens(tokens)?)
+                    }
                 };
-            }
-            (Vec::new(), body_index)
-        } else {
-            self.parse_attribute_groups(&sig_tokens, parser.pos)
-                .map_err(|error| self.error_at(Loc::whole(code), error))?
-        };
-        if sig_tokens.value_at(body_index) != Some(&Token::LBrace) {
-            return Err(self.error_at(
-                Loc::at(code, code.len().saturating_sub(1), 1),
-                "expected function body",
-            ));
-        }
-
-        if let Some(same_line_close) = matching_brace(&sig_tokens, body_index) {
-            let mut body_parser = self.clone();
-            shadow_parameter_names(&mut body_parser, declarator.function_parameters());
-            let body = body_parser
-                .parse_stmts_from_tokens(code, &sig_tokens[body_index + 1..same_line_close])?;
-            return Ok((
-                FunctionDefinition {
-                    specifiers,
-                    declarator,
-                    attributes,
-                    body,
-                },
-                sig_node_count,
-            ));
-        }
-
-        let mut depth = 1i32;
-        let mut close_idx = None;
-        for (offset, node) in nodes[sig_node_count..].iter().enumerate() {
-            if let PPNodeKind::Code { .. } = &node.value {
-                for token in self.node_tokens(node) {
-                    match token.value {
-                        Token::LBrace => depth += 1,
-                        Token::RBrace => depth -= 1,
-                        _ => {}
-                    }
-                    if depth == 0 {
-                        break;
-                    }
-                }
-            }
-            if depth == 0 {
-                close_idx = Some(sig_node_count + offset);
-                break;
-            }
-        }
-        let close_idx = close_idx.ok_or_else(|| {
-            self.error_at(
-                Loc::at(code, code.len().saturating_sub(1), 1),
-                "expected `}`",
-            )
-        })?;
-
-        if let PPNodeKind::Code { text, .. } = &nodes[close_idx].value {
-            let closing_tokens = self.node_tokens(&nodes[close_idx]);
-            let (trailing_attributes, _) = self
-                .parse_attribute_groups(&closing_tokens, 1)
-                .map_err(|error| self.error_at(Loc::whole(text), error))?;
-            attributes.extend(trailing_attributes);
-        }
-
-        let mut body_parser = self.clone();
-        shadow_parameter_names(&mut body_parser, declarator.function_parameters());
-        let mut body_nodes = nodes[sig_node_count..=close_idx].to_vec();
-        if body_index + 1 < sig_tokens.len() {
-            let tokens = sig_tokens[body_index + 1..].to_vec();
-            body_nodes.insert(
-                0,
-                nodes[0].clone().with_value(PPNodeKind::Code {
-                    text: tokens
-                        .values()
-                        .map(String::from)
-                        .collect::<Vec<_>>()
-                        .join(" "),
-                    tokens,
-                    provenance: nodes[0].provenance,
-                }),
-            );
-        }
-        let closing_tokens = self.node_tokens(&nodes[close_idx]);
-        let mut depth = 1i32;
-        for node in &nodes[sig_node_count..close_idx] {
-            if let PPNodeKind::Code { tokens, .. } = &node.value {
-                for token in tokens {
-                    match token.value {
-                        Token::LBrace => depth += 1,
-                        Token::RBrace => depth -= 1,
-                        _ => {}
-                    }
-                }
-            }
-        }
-        let close = closing_tokens
-            .iter()
-            .position(|token| {
-                match token.value {
-                    Token::LBrace => depth += 1,
-                    Token::RBrace => depth -= 1,
-                    _ => {}
-                }
-                depth == 0
+                Ok(annotation.with_value(kind))
             })
-            .unwrap_or(closing_tokens.len());
-        if let Some(last) = body_nodes.last_mut()
-            && let PPNodeKind::Code { text, tokens, .. } = &mut last.value
-        {
-            *tokens = closing_tokens[..close].to_vec();
-            *text = tokens
-                .values()
-                .map(String::from)
-                .collect::<Vec<_>>()
-                .join(" ");
-        }
-        let body = body_parser.parse_stmt_list(&body_nodes)?;
-        Ok((
-            FunctionDefinition {
-                specifiers,
-                declarator,
-                attributes,
-                body,
-            },
-            close_idx + 1,
-        ))
+            .collect()
     }
 
     pub(super) fn parse_kr_parameter_declarations(
@@ -282,83 +149,6 @@ impl Parser {
         Ok((parameters, pos))
     }
 
-    pub(super) fn parse_stmt_list(&self, nodes: &[PPNode]) -> Result<Vec<Stmt>, ParseError> {
-        let mut scope = self.clone();
-        let mut stmts = Vec::new();
-        let mut pending_comments = Vec::new();
-        let mut run_text = String::new();
-        let mut run_tokens = Vec::new();
-        let mut index = 0;
-        while index < nodes.len() {
-            let node = &nodes[index];
-            match &node.value {
-                PPNodeKind::Comment { provenance, .. } => {
-                    if !run_tokens.is_empty()
-                        && let Ok(parsed) = scope.parse_stmts_from_tokens(&run_text, &run_tokens)
-                    {
-                        for statement in &parsed {
-                            if let StmtKind::Decl(declaration) = &statement.value {
-                                scope.record_declaration_typedefs(declaration);
-                            }
-                        }
-                        stmts.extend(parsed);
-                        stmts.append(&mut pending_comments);
-                        run_text.clear();
-                        run_tokens.clear();
-                    }
-                    let (group, consumed) = self.comment_group(&nodes[index..], *provenance);
-                    let comment = group.map(StmtKind::Comment);
-                    if run_tokens.is_empty() {
-                        stmts.push(comment);
-                    } else {
-                        pending_comments.push(comment);
-                    }
-                    index += consumed;
-                }
-                PPNodeKind::Pragma { tokens, .. } => {
-                    let mut position = 0;
-                    while position < run_tokens.len() {
-                        let start = position;
-                        let mut fragment = Fragment::new(&scope, &run_text, &run_tokens, position);
-                        let Ok(statement) = scope.parse_one_stmt(&mut fragment) else {
-                            break;
-                        };
-                        position = fragment.pos;
-                        if let StmtKind::Decl(declaration) = &statement {
-                            scope.record_declaration_typedefs(declaration);
-                        }
-                        stmts.push(span_tokens(statement, &run_tokens[start..position]));
-                    }
-                    run_tokens.drain(..position);
-                    run_text = run_tokens
-                        .values()
-                        .map(String::from)
-                        .collect::<Vec<_>>()
-                        .join(" ");
-                    stmts.push(
-                        node.clone()
-                            .with_value(StmtKind::Pragma(self.parse_pragma_tokens(tokens)?)),
-                    );
-                    index += 1;
-                }
-                PPNodeKind::Code { text, .. } if !lex(text).is_empty() => {
-                    if !run_text.is_empty() {
-                        run_text.push(' ');
-                    }
-                    run_text.push_str(text);
-                    run_tokens.extend(self.node_tokens(node));
-                    index += 1;
-                }
-                PPNodeKind::Code { .. } => index += 1,
-            }
-        }
-        if !run_tokens.is_empty() {
-            stmts.extend(scope.parse_stmts_from_tokens(&run_text, &run_tokens)?);
-        }
-        stmts.append(&mut pending_comments);
-        Ok(stmts)
-    }
-
     pub(super) fn parse_stmts_from_tokens(
         &self,
         code: &str,
@@ -368,6 +158,7 @@ impl Parser {
         let mut position = 0;
         let mut stmts = Vec::new();
         while position < tokens.len() {
+            stmts.extend(parser.statement_annotations(tokens, position, position)?);
             let start = position;
             let mut fragment = Fragment::new(&parser, code, tokens, position);
             let stmt = parser.parse_one_stmt(&mut fragment)?;
@@ -375,8 +166,15 @@ impl Parser {
             if let StmtKind::Decl(declaration) = &stmt {
                 parser.record_declaration_typedefs(declaration);
             }
+            let (pragmas, comments): (Vec<_>, Vec<_>) = parser
+                .statement_annotations(tokens, start, position - 1)?
+                .into_iter()
+                .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
+            stmts.extend(pragmas);
             stmts.push(span_tokens(stmt, &tokens[start..position]));
+            stmts.extend(comments);
         }
+        stmts.extend(parser.statement_annotations(tokens, tokens.len(), tokens.len())?);
         Ok(stmts)
     }
 
@@ -391,10 +189,11 @@ impl Parser {
         if fragment.peek() == Some(&Token::LBrace) {
             let close = matching_brace(fragment.tokens, fragment.pos)
                 .ok_or_else(|| fragment.error("expected `}`"))?;
-            let body = self.parse_stmts_from_tokens(
+            let mut body = self.parse_stmts_from_tokens(
                 fragment.code,
                 &fragment.tokens[fragment.pos + 1..close],
             )?;
+            body.extend(self.statement_annotations(fragment.tokens, close, close)?);
             fragment.pos = close + 1;
             Ok(body)
         } else {
@@ -427,49 +226,6 @@ impl Parser {
         fragment.pos += 1;
         fragment.expect(Token::Semi, "expected `;`")?;
         Ok(stmt)
-    }
-
-    pub(super) fn try_parse_nested_function(
-        &self,
-        code: &str,
-        tokens: &[Span<Token>],
-        start: usize,
-    ) -> Result<Option<(FunctionDefinition, usize)>, ParseError> {
-        let fragment = Fragment::new(self, code, tokens, start);
-        let mut parser = self.declarator_parser(tokens, start);
-        let Ok(specifiers) = self.parse_declaration_specifiers(&mut parser, false) else {
-            return Ok(None);
-        };
-        if !matches!(
-            parser.peek(),
-            Some(Token::Ident(_) | Token::LParen | Token::Star)
-        ) {
-            return Ok(None);
-        }
-        let Ok(declarator) = parser.parse_declarator(false) else {
-            return Ok(None);
-        };
-        if declarator.function_parameters().is_none() {
-            return Ok(None);
-        }
-        let (attributes, body_index) = self
-            .parse_attribute_groups(tokens, parser.pos)
-            .map_err(|error| fragment.error(error))?;
-        if tokens.value_at(body_index) != Some(&Token::LBrace) {
-            return Ok(None);
-        }
-        let close =
-            matching_brace(tokens, body_index).ok_or_else(|| fragment.error("expected `}`"))?;
-        let body = self.parse_stmts_from_tokens(code, &tokens[body_index + 1..close])?;
-        Ok(Some((
-            FunctionDefinition {
-                specifiers,
-                declarator,
-                attributes,
-                body,
-            },
-            close + 1,
-        )))
     }
 
     pub(super) fn starts_declaration(&self, tokens: &[Span<Token>], pos: usize) -> bool {
@@ -570,26 +326,18 @@ impl Parser {
         if tokens.value_at(fragment.pos) == Some(&Token::LBrace) {
             let close = matching_brace(tokens, fragment.pos)
                 .ok_or_else(|| self.error_at(Loc::whole(code), "expected `}`"))?;
-            let body = self.parse_stmts_from_tokens(code, &tokens[fragment.pos + 1..close])?;
+            let mut body = self.parse_stmts_from_tokens(code, &tokens[fragment.pos + 1..close])?;
+            body.extend(self.statement_annotations(tokens, close, close)?);
             fragment.pos = close + 1;
             return Ok(StmtKind::Block(body));
         }
 
-        if self.starts_declaration(tokens, fragment.pos)
-            && let Some((function, next)) =
-                self.try_parse_nested_function(code, tokens, fragment.pos)?
-        {
-            fragment.pos = next;
-            return Ok(StmtKind::NestedFunction(Box::new(function)));
-        }
-
         if self.starts_declaration(tokens, fragment.pos) {
-            let end = top_level_semi(&tokens[fragment.pos..])
-                .map(|position| fragment.pos + position)
-                .ok_or_else(|| self.error_at(Loc::whole(code), "expected `;`"))?;
-            let declaration = self.parse_declaration_tokens(&tokens[fragment.pos..=end])?;
-            fragment.pos = end + 1;
-            return Ok(StmtKind::Decl(declaration));
+            return match self.parse_external_item(tokens, &mut fragment.pos)? {
+                DeclKind::Declaration(declaration) => Ok(StmtKind::Decl(declaration)),
+                DeclKind::Function(function) => Ok(StmtKind::NestedFunction(Box::new(function))),
+                _ => Err(fragment.error("expected declaration")),
+            };
         }
 
         match tokens.value_at(fragment.pos) {
@@ -740,10 +488,8 @@ impl Parser {
                 let init = if init_tokens.is_empty() {
                     None
                 } else if self.starts_declaration(init_tokens, 0) {
-                    let mut decl_tokens = init_tokens.to_vec();
-                    decl_tokens.push(synthetic(Token::Semi));
                     Some(Box::new(span_tokens(
-                        StmtKind::Decl(self.parse_declaration_tokens(&decl_tokens)?),
+                        StmtKind::Decl(self.parse_declaration_tokens(&clause[..=first_semi])?),
                         init_tokens,
                     )))
                 } else {
@@ -802,9 +548,8 @@ impl Parser {
         if tokens.is_empty() {
             return Err(self.error_at(Loc::whole(code), "expected expression"));
         }
-        let tokens = coalesce_string_literals(tokens);
-        const_expr::Parser::parse_expression(&tokens, &self.typedef_names, Some(self))
-            .map_err(|error| self.error_at(Loc::whole(code), error.to_string()))
+        const_expr::Parser::parse_expression(tokens, &self.typedef_names, Some(self))
+            .map_err(|error| self.error_at_tokens(tokens, 0, error.to_string()))
     }
 }
 

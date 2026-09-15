@@ -18,13 +18,6 @@ impl Parser {
             Some(self),
         )
     }
-
-    pub(super) fn parse_record_attributes(
-        &self,
-        tokens: &[Span<Token>],
-    ) -> Result<(Vec<Attribute>, usize), String> {
-        self.parse_attribute_groups(tokens, 1)
-    }
 }
 
 pub(super) struct AttrCursor<'a> {

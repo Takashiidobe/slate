@@ -53,6 +53,9 @@ int main(void) {
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "packed_struct1",
 // DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           Packed,
+// DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:       body: Record(
 // DEFAULT-NEXT:           [
 // DEFAULT-NEXT:               Field(
@@ -106,6 +109,9 @@ int main(void) {
 // DEFAULT-NEXT:       name: Some(
 // DEFAULT-NEXT:           "packed_struct2",
 // DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       attributes: [
+// DEFAULT-NEXT:           Packed,
+// DEFAULT-NEXT:       ],
 // DEFAULT-NEXT:       body: Record(
 // DEFAULT-NEXT:           [
 // DEFAULT-NEXT:               Field(
@@ -243,9 +249,6 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           attributes: [
-// DEFAULT-NEXT:                               Packed,
-// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
 // DEFAULT-NEXT:                           FieldDeclaratorKind {
@@ -266,9 +269,6 @@ int main(void) {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           attributes: [
-// DEFAULT-NEXT:                               Packed,
-// DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       declarators: [
 // DEFAULT-NEXT:                           FieldDeclaratorKind {

@@ -882,7 +882,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -1160,7 +1161,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -1438,7 +1440,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -1715,7 +1718,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -1992,7 +1996,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -2271,7 +2276,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -2550,7 +2556,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -2827,7 +2834,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -3531,7 +3539,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -3810,7 +3819,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -4089,7 +4099,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -4367,7 +4378,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -4645,7 +4657,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -4925,7 +4938,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -5205,7 +5219,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -5483,7 +5498,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -5817,7 +5833,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -6154,7 +6171,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -6491,7 +6509,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -7039,7 +7058,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -7299,7 +7319,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -7559,7 +7580,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
@@ -7819,7 +7841,8 @@ int main(void) {
 // DEFAULT-NEXT:                                                               10,
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                           pieces: [
-// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\")) == %u failed\\n",
+// DEFAULT-NEXT:                                                               "line %i: strlen ((%s) = (\\\"%s\\\"))",
+// DEFAULT-NEXT:                                                               " == %u failed\\n",
 // DEFAULT-NEXT:                                                           ],
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),

@@ -79,9 +79,9 @@ int main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[1]: TagDefinition {
+// DEFAULT: tag[0]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           1,
+// DEFAULT-NEXT:           0,
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: None,
@@ -138,9 +138,9 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[3]: TagDefinition {
+// DEFAULT-NEXT: tag[1]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           3,
+// DEFAULT-NEXT:           1,
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: None,
@@ -759,7 +759,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ty: Tag(
 // DEFAULT-NEXT:                                                                       Definition(
 // DEFAULT-NEXT:                                                                           TagId(
-// DEFAULT-NEXT:                                                                               1,
+// DEFAULT-NEXT:                                                                               0,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
@@ -860,7 +860,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   ty: Tag(
 // DEFAULT-NEXT:                                                                       Definition(
 // DEFAULT-NEXT:                                                                           TagId(
-// DEFAULT-NEXT:                                                                               3,
+// DEFAULT-NEXT:                                                                               1,
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),

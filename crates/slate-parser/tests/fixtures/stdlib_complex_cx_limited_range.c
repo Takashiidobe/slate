@@ -613,16 +613,16 @@ int main(void) {
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Stdc {
-// DEFAULT-NEXT:                           option: CxLimitedRange,
-// DEFAULT-NEXT:                           enabled: true,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       Pragma(
+// DEFAULT-NEXT:                           Pragma {
+// DEFAULT-NEXT:                               kind: Stdc {
+// DEFAULT-NEXT:                                   option: CxLimitedRange,
+// DEFAULT-NEXT:                                   enabled: true,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Assign {
 // DEFAULT-NEXT:                               op: Assign,
@@ -642,16 +642,16 @@ int main(void) {
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ],
 // DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:               Pragma(
-// DEFAULT-NEXT:                   Pragma {
-// DEFAULT-NEXT:                       kind: Stdc {
-// DEFAULT-NEXT:                           option: CxLimitedRange,
-// DEFAULT-NEXT:                           enabled: false,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Block(
 // DEFAULT-NEXT:                   [
+// DEFAULT-NEXT:                       Pragma(
+// DEFAULT-NEXT:                           Pragma {
+// DEFAULT-NEXT:                               kind: Stdc {
+// DEFAULT-NEXT:                                   option: CxLimitedRange,
+// DEFAULT-NEXT:                                   enabled: false,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       Expr(
 // DEFAULT-NEXT:                           Assign {
 // DEFAULT-NEXT:                               op: Assign,

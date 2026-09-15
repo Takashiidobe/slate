@@ -8070,7 +8070,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       10,
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   pieces: [
-// DEFAULT-NEXT:                                       "bitint_b101=%lld bitint_ub150=%llu bitint_b256_lo=%lld bitint_ub300_lo=%llu\\n",
+// DEFAULT-NEXT:                                       "bitint_b101=%lld bitint_ub150=%llu bitint_b256_lo=%lld ",
+// DEFAULT-NEXT:                                       "bitint_ub300_lo=%llu\\n",
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -10931,7 +10932,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       10,
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   pieces: [
-// DEFAULT-NEXT:                                       "isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d isunordered_v=%d isunordered_ok=%d\\n",
+// DEFAULT-NEXT:                                       "isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d ",
+// DEFAULT-NEXT:                                       "isunordered_v=%d isunordered_ok=%d\\n",
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
@@ -11554,7 +11556,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       10,
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   pieces: [
-// DEFAULT-NEXT:                                       "ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d ldbl_min_10_exp=%d ldbl_max_10_exp=%d\\n",
+// DEFAULT-NEXT:                                       "ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d ",
+// DEFAULT-NEXT:                                       "ldbl_min_10_exp=%d ldbl_max_10_exp=%d\\n",
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),

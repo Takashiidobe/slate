@@ -30,6 +30,20 @@ Early checks require no resolved names or types. Validation that depends on
 resolution belongs to `src/sema/`; surviving the early pass does not prove
 that a program is semantically valid.
 
+The parser boundary is `ParserInput`: one expanded token buffer with comments
+and pragmas anchored between tokens. `PPNode` code chunks are flattened once;
+their text and physical-line boundaries do not participate in the grammar.
+Declaration, function, record and statement parsing consume token positions
+and delimiters. Expression parsing borrows the same tokens, including inside
+GNU statement expressions. Original token spans and macro/header provenance
+survive this boundary without re-lexing or synthesized declaration tokens.
+
+Nested item parsers claim annotations within their token ranges. Remaining
+pragmas inside an item precede that containing item; interleaved comments follow
+it. Comments at item boundaries retain their position, including empty bodies.
+This token-input change does not replace typedef tracking with an explicit scope
+stack; that is the next phase (`slate-parser-ixa.33`).
+
 ## Invariants
 
 - **Single configuration.** Preprocessing ran for one set of `-D` defines

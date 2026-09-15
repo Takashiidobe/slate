@@ -98,7 +98,8 @@ int main(void) {
 // DEFAULT-NEXT:                                       98,
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   pieces: [
-// DEFAULT-NEXT:                                       "ab",
+// DEFAULT-NEXT:                                       "a",
+// DEFAULT-NEXT:                                       "b",
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),

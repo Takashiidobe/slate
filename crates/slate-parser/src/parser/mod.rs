@@ -2,6 +2,7 @@ mod asm;
 mod attributes;
 mod decl;
 mod declarator;
+mod input;
 mod stmt;
 
 use crate::ast::*;
@@ -10,10 +11,11 @@ use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::{Lexer, Token};
-use crate::pp::{DirectiveDiagnostic, MacroEntry, PPNode, PPNodeKind, Preprocessor};
+use crate::pp::{DirectiveDiagnostic, MacroEntry, Preprocessor};
 use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
 pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
+use input::{Annotation, ParserInput};
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
@@ -21,11 +23,6 @@ use std::rc::Rc;
 
 fn lex(code: &str) -> Vec<Span<Token>> {
     Lexer::new(FileId(0), code).tokenize()
-}
-
-fn synthetic(token: Token) -> Span<Token> {
-    let loc = crate::ast::Loc::new(FileId(0), 0, 0);
-    Span::new(token, loc, loc)
 }
 
 struct Loc<'a> {
@@ -40,14 +37,6 @@ impl<'a> Loc<'a> {
             code,
             offset: 0,
             length: code.len(),
-        }
-    }
-
-    fn at(code: &'a str, offset: usize, length: usize) -> Self {
-        Self {
-            code,
-            offset,
-            length,
         }
     }
 }
@@ -137,6 +126,7 @@ pub struct Parser {
     source: String,
     files: Files,
     typedef_names: HashSet<String>,
+    input: Rc<ParserInput>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     defines: Vec<String>,
     biggest_alignment: i64,
@@ -165,6 +155,7 @@ impl Parser {
             source: String::new(),
             files: Files::new(),
             typedef_names: HashSet::new(),
+            input: Rc::default(),
             directive_diagnostics: Vec::new(),
             defines: Vec::new(),
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
@@ -242,7 +233,7 @@ impl Parser {
                 "preprocessor did not produce a main file",
             ))
         })?;
-        self.parse_nodes(&nodes, root_file)
+        self.parse_input(ParserInput::new(nodes), root_file)
             .map_err(FrontendError::Parse)
     }
 
@@ -280,7 +271,7 @@ impl Parser {
                 "preprocessor did not produce a main file",
             ))
         })?;
-        let ast = self.parse_nodes(&nodes, root_file);
+        let ast = self.parse_input(ParserInput::new(nodes), root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
 
@@ -362,84 +353,12 @@ impl Parser {
         )
     }
 
-    fn node_text<'a>(&self, node: &'a PPNode) -> &'a str {
-        match &node.value {
-            PPNodeKind::Comment { text, .. } => text,
-            PPNodeKind::Code { text, .. } => text,
-            PPNodeKind::Pragma { text, .. } => text,
-        }
-    }
-
-    fn node_tokens(&self, node: &PPNode) -> Vec<Span<Token>> {
-        let PPNodeKind::Code { tokens, .. } = &node.value else {
-            return lex(self.node_text(node));
-        };
-        tokens.clone()
-    }
-
-    fn nodes_tokens(&self, nodes: &[PPNode]) -> Vec<Span<Token>> {
-        nodes
-            .iter()
-            .filter(|node| matches!(node.value, PPNodeKind::Code { .. }))
-            .flat_map(|node| self.node_tokens(node))
-            .collect()
-    }
-
     pub(crate) fn define_tag(&self, mut definition: Span<TagDefinition>) -> TagId {
         let mut tags = self.tags.borrow_mut();
         let id = TagId(tags.len());
         definition.value.id = id;
         tags.push(definition);
         id
-    }
-
-    fn node_provenance(&self, node: &PPNode) -> Provenance {
-        match &node.value {
-            PPNodeKind::Comment { provenance, .. } => *provenance,
-            PPNodeKind::Code { provenance, .. } => *provenance,
-            PPNodeKind::Pragma { provenance, .. } => *provenance,
-        }
-    }
-
-    fn comment_group(
-        &self,
-        nodes: &[PPNode],
-        _provenance: Provenance,
-    ) -> (Span<CommentGroup>, usize) {
-        let file = nodes[0].expansion.file;
-        let mut texts = Vec::new();
-        let mut loc: Option<crate::ast::Loc> = None;
-        let mut consumed = 0;
-        for (index, node) in nodes.iter().enumerate() {
-            match &node.value {
-                PPNodeKind::Comment { text, .. } if node.expansion.file == file => {
-                    texts.push(text.clone());
-                    loc = Some(match loc {
-                        Some(loc) => {
-                            let start = loc.offset.min(node.expansion.offset);
-                            let end = (loc.offset + loc.length)
-                                .max(node.expansion.offset + node.expansion.length);
-                            crate::ast::Loc {
-                                file: loc.file,
-                                offset: start,
-                                length: end - start,
-                            }
-                        }
-                        None => node.expansion,
-                    });
-                    consumed = index + 1;
-                }
-                PPNodeKind::Code { .. } if self.node_tokens(node).is_empty() => {}
-                _ => break,
-            }
-        }
-        let group = CommentGroup {
-            comment: Comment {
-                text: texts,
-                loc: loc.unwrap_or_else(|| nodes[0].expansion),
-            },
-        };
-        (Span::cover(group, &nodes[..consumed]), consumed)
     }
 }
 
@@ -454,80 +373,8 @@ pub(crate) fn string_literal_content(token: &Token) -> Option<&str> {
     }
 }
 
-pub(crate) fn concatenated_string_literal(
-    previous: &Token,
-    next: &Token,
-    content: String,
-) -> Token {
-    match (previous, next) {
-        (Token::StringLit(_), Token::StringLit(_)) => Token::StringLit(content),
-        (Token::StringLit(_), other) => match other {
-            Token::Utf8StringLit(_) => Token::Utf8StringLit(content),
-            Token::Utf16StringLit(_) => Token::Utf16StringLit(content),
-            Token::Utf32StringLit(_) => Token::Utf32StringLit(content),
-            Token::WideStringLit(_) => Token::WideStringLit(content),
-            _ => previous.clone(),
-        },
-        (Token::Utf8StringLit(_), _) => Token::Utf8StringLit(content),
-        (Token::Utf16StringLit(_), _) => Token::Utf16StringLit(content),
-        (Token::Utf32StringLit(_), _) => Token::Utf32StringLit(content),
-        (Token::WideStringLit(_), _) => Token::WideStringLit(content),
-        _ => previous.clone(),
-    }
-}
-
-fn coalesce_string_literals(tokens: &[Span<Token>]) -> Vec<Span<Token>> {
-    let mut result: Vec<Span<Token>> = Vec::with_capacity(tokens.len());
-    for token in tokens {
-        let Some(previous) = result.last_mut() else {
-            result.push(token.clone());
-            continue;
-        };
-        match (
-            string_literal_content(&previous.value),
-            string_literal_content(&token.value),
-        ) {
-            (Some(left), Some(right)) => {
-                let content = format!("{left}{right}");
-                previous.value =
-                    concatenated_string_literal(&previous.value, &token.value, content);
-                previous.spelling = previous.spelling.through(token.spelling);
-                previous.expansion = previous.expansion.through(token.expansion);
-            }
-            _ => result.push(token.clone()),
-        }
-    }
-    result
-}
-
 fn span_tokens<T>(value: T, tokens: &[Span<Token>]) -> Span<T> {
     Span::cover(value, tokens)
-}
-
-fn span_pp_nodes<T>(value: T, nodes: &[PPNode]) -> Span<T> {
-    let Some(first) = nodes.first() else {
-        return synthetic_span(value);
-    };
-    let Some(last) = nodes.last() else {
-        return synthetic_span(value);
-    };
-    Span::new(
-        value,
-        first.spelling.through(last.spelling),
-        first.expansion.through(last.expansion),
-    )
-    .with_provenance(first.provenance)
-}
-
-fn span_decl_result(result: (Vec<DeclKind>, usize), nodes: &[PPNode]) -> (Vec<Decl>, usize) {
-    let (decls, consumed) = result;
-    (
-        decls
-            .into_iter()
-            .map(|decl| span_pp_nodes(decl, &nodes[..consumed]))
-            .collect(),
-        consumed,
-    )
 }
 
 fn synthetic_span<T>(value: T) -> Span<T> {

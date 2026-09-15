@@ -650,7 +650,7 @@ pub struct LocatedConstExprError {
 }
 
 pub struct Parser<'a> {
-    tokens: Vec<Span<Token>>,
+    tokens: &'a [Span<Token>],
     position: usize,
     typedef_names: HashSet<String>,
     statements: Option<&'a crate::parser::Parser>,
@@ -662,7 +662,7 @@ impl<'a> Parser<'a> {
             .map_or_else(LanguageStandard::default, |parser| parser.standard())
     }
 
-    pub fn parse(tokens: &[Span<Token>]) -> Result<Expr, ConstExprError> {
+    pub fn parse(tokens: &'a [Span<Token>]) -> Result<Expr, ConstExprError> {
         let mut parser = Self::new(tokens, &HashSet::new(), None);
         let expression = parser.parse_conditional()?;
         if parser.peek().is_some() {
@@ -672,7 +672,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_expression(
-        tokens: &[Span<Token>],
+        tokens: &'a [Span<Token>],
         typedef_names: &HashSet<String>,
         statements: Option<&'a crate::parser::Parser>,
     ) -> Result<Expr, ConstExprError> {
@@ -685,7 +685,7 @@ impl<'a> Parser<'a> {
     }
 
     pub(crate) fn parse_one(
-        tokens: &[Span<Token>],
+        tokens: &'a [Span<Token>],
         start: usize,
         typedef_names: &HashSet<String>,
         statements: Option<&'a crate::parser::Parser>,
@@ -695,7 +695,7 @@ impl<'a> Parser<'a> {
         Ok((expression, start + parser.position))
     }
 
-    pub fn evaluate(tokens: &[Span<Token>]) -> Result<i64, ConstExprError> {
+    pub fn evaluate(tokens: &'a [Span<Token>]) -> Result<i64, ConstExprError> {
         Self::evaluate_expr(&Self::parse(tokens)?, None)
     }
 
@@ -704,7 +704,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn evaluate_with_defined(
-        tokens: &[Span<Token>],
+        tokens: &'a [Span<Token>],
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
         let mut parser = Self::new(tokens, &HashSet::new(), None);
@@ -979,12 +979,12 @@ impl<'a> Parser<'a> {
     }
 
     fn new(
-        tokens: &[Span<Token>],
+        tokens: &'a [Span<Token>],
         typedef_names: &HashSet<String>,
         statements: Option<&'a crate::parser::Parser>,
     ) -> Self {
         Self {
-            tokens: tokens.to_vec(),
+            tokens,
             position: 0,
             typedef_names: typedef_names.clone(),
             statements,
@@ -1232,14 +1232,14 @@ impl<'a> Parser<'a> {
     }
 
     fn try_parse_type_name(&self, start: usize) -> Option<(Box<TypeName>, usize)> {
-        let mut declarator_parser = DeclaratorParser::new(&self.tokens, start, &self.typedef_names)
+        let mut declarator_parser = DeclaratorParser::new(self.tokens, start, &self.typedef_names)
             .with_statements(self.statements);
         let type_name = declarator_parser.parse_type_name().ok()?;
         Some((Box::new(type_name), declarator_parser.position()))
     }
 
     pub(crate) fn try_parse_full_type_name(
-        tokens: &[Span<Token>],
+        tokens: &'a [Span<Token>],
         typedef_names: &HashSet<String>,
         statements: Option<&'a crate::parser::Parser>,
     ) -> Option<Box<TypeName>> {
@@ -1517,7 +1517,7 @@ impl<'a> Parser<'a> {
         let start = self.position;
         self.expect(Token::LParen)?;
         let open = self.position;
-        let close = crate::parser::matching_brace(&self.tokens, open)
+        let close = crate::parser::matching_brace(self.tokens, open)
             .ok_or(ConstExprError::ExpectedIntegerExpression)?;
         let statements = self
             .statements

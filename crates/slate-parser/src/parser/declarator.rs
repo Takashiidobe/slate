@@ -1,6 +1,6 @@
 use super::attributes::{apply_vector_attributes, parse_attribute_groups};
 use super::decl::{bare_identifier_names, matching_paren, set_qualifier, specifiers_with_type};
-use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, coalesce_string_literals, span_tokens};
+use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, Parser, span_tokens};
 use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
@@ -8,8 +8,11 @@ use miette::Diagnostic;
 use std::collections::HashSet;
 use thiserror::Error;
 
-#[derive(Debug, Clone, PartialEq, Eq, Error, Diagnostic)]
+#[derive(Debug, Error, Diagnostic)]
 pub(crate) enum DeclaratorError {
+    #[error(transparent)]
+    #[diagnostic(transparent)]
+    Parse(#[from] crate::error::ParseError),
     #[error("expected declaration type")]
     ExpectedDeclarationType,
     #[error("expected declaration type, found {0:?}")]
@@ -428,6 +431,7 @@ impl<'a> DeclaratorParser<'a> {
         kind: TagKind,
     ) -> Result<TypeSpecifier, DeclaratorError> {
         let start = self.pos - 1;
+        let mut attributes = self.parse_attributes()?;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
                 let name = name.clone();
@@ -438,7 +442,8 @@ impl<'a> DeclaratorParser<'a> {
         };
         if self.peek() == Some(&Token::LBrace) {
             let body = TagBody::Record(self.parse_field_list()?);
-            return self.define_tag(kind, name, body, start);
+            attributes.extend(self.parse_attributes()?);
+            return self.define_tag(kind, name, attributes, body, start);
         }
         tag_reference(kind, name, None)
     }
@@ -447,6 +452,7 @@ impl<'a> DeclaratorParser<'a> {
         &self,
         kind: TagKind,
         name: Option<String>,
+        attributes: Vec<Attribute>,
         body: TagBody,
         start: usize,
     ) -> Result<TypeSpecifier, DeclaratorError> {
@@ -457,7 +463,7 @@ impl<'a> DeclaratorParser<'a> {
             id: TagId(0),
             kind,
             name,
-            attributes: Vec::new(),
+            attributes,
             body,
         };
         let id = parser.define_tag(span_tokens(definition, &self.tokens[start..self.pos]));
@@ -466,6 +472,7 @@ impl<'a> DeclaratorParser<'a> {
 
     pub(super) fn parse_enum_type(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
         let start = self.pos - 1;
+        let mut attributes = self.parse_attributes()?;
         let name = match self.peek() {
             Some(Token::Ident(name)) => {
                 let name = name.clone();
@@ -488,7 +495,8 @@ impl<'a> DeclaratorParser<'a> {
                 fixed_type,
                 enumerators: self.parse_enumerator_list()?,
             };
-            return self.define_tag(TagKind::Enum, name, body, start);
+            attributes.extend(self.parse_attributes()?);
+            return self.define_tag(TagKind::Enum, name, attributes, body, start);
         }
         tag_reference(TagKind::Enum, name, fixed_type.map(Box::new))
     }
@@ -496,69 +504,59 @@ impl<'a> DeclaratorParser<'a> {
     pub(super) fn parse_field_list(&mut self) -> Result<Vec<FieldItem>, DeclaratorError> {
         self.pos += 1;
         let mut fields = Vec::new();
-        while self.peek() != Some(&Token::RBrace) {
-            if self.peek().is_none() {
-                return Err(DeclaratorError::ExpectedToken(
-                    Token::RBrace,
-                    "in struct/union body",
-                ));
-            }
-            let start = self.pos;
-            while self.peek() == Some(&Token::Ident("__extension__".to_string())) {
-                self.pos += 1;
-            }
-            let qualifiers = self.take_qualifiers();
-            let mut specifiers = specifiers_with_type(self.parse_base_type()?);
-            specifiers.qualifiers = qualifiers;
-            let mut declarators = Vec::new();
-            while !self.matches(Token::Semi) {
-                let declarator_start = self.pos;
-                let declarator = if self.peek() == Some(&Token::Colon) {
-                    Declarator::Abstract
-                } else {
-                    self.parse_declarator(true)?
-                };
-                let bit_width = if self.matches(Token::Colon) {
-                    let start = self.pos;
-                    let (expression, end) = const_expr::Parser::parse_one(
-                        self.tokens,
-                        start,
-                        self.typedef_names,
-                        self.statements,
-                    )
-                    .map_err(|error| DeclaratorError::Other(error.to_string()))?;
-                    self.pos = end;
-                    Some(expression)
-                } else {
-                    None
-                };
-                let attributes = self.parse_attributes()?;
-                declarators.push(span_tokens(
-                    FieldDeclaratorKind {
-                        declarator,
-                        bit_width,
-                        attributes,
-                    },
-                    &self.tokens[declarator_start..self.pos],
-                ));
-                if self.matches(Token::Comma) {
-                    continue;
-                }
-                self.expect(
-                    Token::Semi,
-                    DeclaratorError::ExpectedToken(Token::Semi, "in struct/union field"),
-                )?;
+        let parser = self
+            .statements
+            .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
+        loop {
+            fields.extend(
+                parser
+                    .input
+                    .take_comments(self.tokens, self.pos, self.pos)
+                    .into_iter()
+                    .filter_map(|annotation| match &annotation.value {
+                        super::Annotation::Comment(group) => Some(
+                            annotation
+                                .clone()
+                                .with_value(FieldItemKind::Comment(group.clone())),
+                        ),
+                        _ => None,
+                    }),
+            );
+            if self.matches(Token::RBrace) {
                 break;
             }
+            let start = self.pos;
+            let end = start
+                + super::decl::top_level_semi(&self.tokens[start..]).ok_or(
+                    DeclaratorError::ExpectedToken(Token::Semi, "in struct/union body"),
+                )?
+                + 1;
+            let (specifiers, declarators) = parser
+                .parse_field_declaration_tokens(&self.tokens[start..end])
+                .map_err(DeclaratorError::Parse)?;
+            self.pos = end;
             fields.push(span_tokens(
                 FieldItemKind::Field(FieldDecl {
                     specifiers,
                     declarators,
                 }),
-                &self.tokens[start..self.pos],
+                &self.tokens[start..end],
             ));
+            fields.extend(
+                parser
+                    .input
+                    .take_comments(self.tokens, start, end - 1)
+                    .into_iter()
+                    .filter_map(|annotation| match &annotation.value {
+                        super::Annotation::Comment(group) => Some(
+                            annotation
+                                .clone()
+                                .with_value(FieldItemKind::Comment(group.clone())),
+                        ),
+                        _ => None,
+                    }),
+            );
         }
-        self.pos += 1;
         Ok(fields)
     }
 
@@ -566,6 +564,22 @@ impl<'a> DeclaratorParser<'a> {
         self.pos += 1;
         let mut items = Vec::new();
         loop {
+            if let Some(parser) = self.statements {
+                items.extend(
+                    parser
+                        .input
+                        .take_comments(self.tokens, self.pos, self.pos)
+                        .into_iter()
+                        .filter_map(|annotation| match &annotation.value {
+                            super::Annotation::Comment(group) => Some(
+                                annotation
+                                    .clone()
+                                    .with_value(EnumItemKind::Comment(group.clone())),
+                            ),
+                            _ => None,
+                        }),
+                );
+            }
             if self.matches(Token::RBrace) {
                 break;
             }
@@ -692,9 +706,8 @@ impl<'a> DeclaratorParser<'a> {
         if tokens.is_empty() {
             return Err(DeclaratorError::UnsupportedTypeofExpression);
         }
-        let tokens = coalesce_string_literals(tokens);
         let expression =
-            const_expr::Parser::parse_expression(&tokens, self.typedef_names, self.statements)
+            const_expr::Parser::parse_expression(tokens, self.typedef_names, self.statements)
                 .map_err(|error| DeclaratorError::Other(error.to_string()))?;
         Ok(TypeOfOperand::Expression(expression))
     }
