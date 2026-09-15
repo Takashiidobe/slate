@@ -30,7 +30,7 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
    - run `cargo clippy --allow-dirty --fix` to fix what can be fixed
      first.
    - afterwards, run `cargo fmt` to clean up code
-   - run `cargo nextest` to run tests afterwards
+   - run `cargo nextest run` to run tests afterwards
 3. **Update issue status** - Close finished work, update in-progress items
 4. **Every change must have a corresponding log**: - create a new log
    with `llog new` for every change made, summarizing the change, no
@@ -112,7 +112,7 @@ do not write `CHECK` lines by hand.
 Testing is done via filecheck. Standard gate:
 
 ```
-cargo nextest
+cargo nextest run
 ```
 
 The AST can additionally be checked against clang-ast as an
