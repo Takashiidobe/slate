@@ -9,6 +9,8 @@ void operations(void) {
     1 * 2;
     1 / 2;
     1 % 2;
+    1 << 2;
+    1 & 2;
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
@@ -19,4 +21,6 @@ void operations(void) {
 // CHECK-NEXT: mul<i32, overflow=wrap>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: div<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: rem<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
+// CHECK-NEXT: shl<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
+// CHECK-NEXT: and<i32>(const<i32>(1), const<i32>(2))
 // SLATE-FILECHECK-END CHECK

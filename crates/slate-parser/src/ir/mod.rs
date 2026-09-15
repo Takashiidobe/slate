@@ -3,7 +3,7 @@ mod numeric;
 use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
-    Rounding,
+    Rounding, ShiftFill,
 };
 use rustc_apfloat::{
     Float,
@@ -124,6 +124,15 @@ impl Value {
                 match properties.exceptions {
                     Exceptions::Ignore => "ignore",
                     Exceptions::Observable => "observable",
+                }
+            )?,
+            ArithSema::Bitwise => {}
+            ArithSema::ShiftRight { fill } => write!(
+                f,
+                ", fill={}",
+                match fill {
+                    ShiftFill::SignExtend => "sign_extend",
+                    ShiftFill::ZeroExtend => "zero_extend",
                 }
             )?,
         }

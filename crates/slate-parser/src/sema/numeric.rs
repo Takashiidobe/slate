@@ -6,7 +6,7 @@ use crate::const_expr::{
 };
 use crate::ir::{
     ArithOp, ArithSema, Exceptions, FloatType, FloatingSemantics, Number, NumericType, Overflow,
-    Rounding, Value, ValueKind,
+    Rounding, ShiftFill, Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
 use thiserror::Error;
@@ -107,35 +107,71 @@ impl Context {
                     BinaryOp::Mul => ArithOp::Mul,
                     BinaryOp::Div => ArithOp::Div,
                     BinaryOp::Rem => ArithOp::Rem,
+                    BinaryOp::BitAnd => ArithOp::And,
+                    BinaryOp::BitOr => ArithOp::Or,
+                    BinaryOp::BitXor => ArithOp::Xor,
+                    BinaryOp::ShiftLeft => ArithOp::Shl,
+                    BinaryOp::ShiftRight => ArithOp::Shr,
                     _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
                 };
                 let operator = <&'static str>::from(*op);
                 let left = self.resolve(left)?;
                 let right = self.resolve(right)?;
-                if left.ty != right.ty {
+                let is_shift = matches!(arith, ArithOp::Shl | ArithOp::Shr);
+                if !is_shift && left.ty != right.ty {
                     return Err(ResolveError::Conversion {
                         left: left.ty,
                         operator,
                         right: right.ty,
                     });
                 }
-                let semantics = match left.ty {
-                    NumericType::Integer { signed, .. } => ArithSema::Integer {
-                        overflow: match (signed, arith) {
-                            (false, _) => Overflow::Wrap,
-                            // clang and gcc apply -fwrapv/-ftrapv to add, sub, and mul only
-                            (true, ArithOp::Div | ArithOp::Rem) => Overflow::Undefined,
-                            (true, _) => self.signed_overflow,
+                let invalid = ResolveError::InvalidOperands {
+                    left: left.ty,
+                    operator,
+                    right: right.ty,
+                };
+                let semantics = match (left.ty, arith) {
+                    (
+                        NumericType::Float(_),
+                        ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div,
+                    ) => ArithSema::Floating(self.floating),
+                    (NumericType::Float(_), _) => return Err(invalid),
+                    (_, ArithOp::Shl | ArithOp::Shr)
+                        if matches!(right.ty, NumericType::Float(_)) =>
+                    {
+                        return Err(invalid);
+                    }
+                    (
+                        NumericType::Integer { signed, .. },
+                        ArithOp::Add | ArithOp::Sub | ArithOp::Mul,
+                    ) => ArithSema::Integer {
+                        overflow: if signed {
+                            self.signed_overflow
+                        } else {
+                            Overflow::Wrap
                         },
                     },
-                    NumericType::Float(_) if arith == ArithOp::Rem => {
-                        return Err(ResolveError::InvalidOperands {
-                            left: left.ty,
-                            operator,
-                            right: right.ty,
-                        });
+                    // clang and gcc apply -fwrapv/-ftrapv to add, sub, and mul only
+                    (
+                        NumericType::Integer { signed, .. },
+                        ArithOp::Div | ArithOp::Rem | ArithOp::Shl,
+                    ) => ArithSema::Integer {
+                        overflow: if signed {
+                            Overflow::Undefined
+                        } else {
+                            Overflow::Wrap
+                        },
+                    },
+                    (NumericType::Integer { .. }, ArithOp::And | ArithOp::Or | ArithOp::Xor) => {
+                        ArithSema::Bitwise
                     }
-                    NumericType::Float(_) => ArithSema::Floating(self.floating),
+                    (NumericType::Integer { signed, .. }, ArithOp::Shr) => ArithSema::ShiftRight {
+                        fill: if signed {
+                            ShiftFill::SignExtend
+                        } else {
+                            ShiftFill::ZeroExtend
+                        },
+                    },
                 };
                 (
                     left.ty,
@@ -146,6 +182,11 @@ impl Context {
                         semantics,
                     },
                 )
+            }
+            ExprKind::Assign { .. } => {
+                return Err(ResolveError::Unsupported(
+                    "assignment (requires place lowering)",
+                ));
             }
             _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
         };

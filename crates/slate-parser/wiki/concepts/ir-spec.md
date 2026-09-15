@@ -54,7 +54,8 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 ### Implemented numeric seed
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point
-literals, parentheses, and same-concrete-type `+`, `-`, `*`, `/`, and `%` directly to
+literals, parentheses, same-concrete-type `+`, `-`, `*`, `/`, `%`, `&`, `|`,
+`^`, and integer `<<`/`>>` directly to
 `ir::Value`. Integer literal selection uses the existing C candidate order
 and target integer widths. Floating constants retain their exact value bits.
 The dump prints f32/f64 numerically using round-trippable decimal formatting
@@ -62,7 +63,7 @@ The dump prints f32/f64 numerically using round-trippable decimal formatting
 The f16, f80, and f128 printer uses `rustc_apfloat` directly, without an f64
 conversion. NaNs retain hexadecimal bits in every format.
 These lower to one `ValueKind::Arith` node keyed by `ArithOp`
-(`add`/`sub`/`mul`/`div`/`rem`), all carrying `ArithSema` metadata. They are
+(`add`/`sub`/`mul`/`div`/`rem`/`and`/`or`/`xor`/`shl`/`shr`), all carrying `ArithSema` metadata. They are
 not folded or reassociated. Signed overflow defaults to
 `undefined`, unsigned overflow to `wrap`; floating arithmetic defaults to
 nearest-even rounding with ignored exceptions for the default Clang flavor
@@ -75,6 +76,15 @@ are always `overflow=undefined`: Clang 22 emits plain `sdiv`/`srem` under both
 `-fwrapv` and `-ftrapv`, and GCC documents those flags only for add/sub/mul.
 Integer division by zero is always undefined and is implied by the op, not
 printed. `%` on floating operands is rejected as invalid operands.
+`and`/`or`/`xor` carry no overflow metadata and reject floating operands.
+Shift operands are not converted to a common type: the node takes the left
+operand's type and the amount keeps its own. Clang 22 emits plain
+`shl`/`ashr`/`lshr` under `-fwrapv` and `-ftrapv`, so signed `shl` is always
+`overflow=undefined` (unsigned wraps). `shr` prints `fill=sign_extend` for
+signed and `fill=zero_extend` for unsigned operands; out-of-range amounts are
+always undefined and not printed. Operand promotions are not yet needed:
+every literal type already has at least `int` rank. Assignment and compound
+assignment return an unsupported error until place lowering exists.
 
 The initial numeric type stores integer width/signedness or one of five
 floating formats: f16, f32, f64, f80, f128. These denote value formats, not
@@ -383,7 +393,7 @@ Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
 - `div`/`rem`: `by_zero=ub`; signed also `min_by_neg_one=ub`.
 - `shl`/`shr`: amount type kept separately; `amount_out_of_range=ub`; `shl` of
   a negative signed value is `ub`. Right shift of negative signed values is
-  resolved by target (`shr [arithmetic]`).
+  resolved by target (`shr<i32, fill=sign_extend>`).
 - Comparisons, `!`, `&&`, `||` produce `bool`; `from_bool<i32>` is inserted
   only where the result is used as an integer.
 - Scalars in boolean context lower to `ne(x, 0)` / `is_non_null(p)`.

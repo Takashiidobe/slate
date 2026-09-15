@@ -74,6 +74,11 @@ pub enum ArithOp {
     Mul,
     Div,
     Rem,
+    And,
+    Or,
+    Xor,
+    Shl,
+    Shr,
 }
 
 impl fmt::Display for ArithOp {
@@ -84,6 +89,11 @@ impl fmt::Display for ArithOp {
             Self::Mul => "mul",
             Self::Div => "div",
             Self::Rem => "rem",
+            Self::And => "and",
+            Self::Or => "or",
+            Self::Xor => "xor",
+            Self::Shl => "shl",
+            Self::Shr => "shr",
         })
     }
 }
@@ -92,6 +102,14 @@ impl fmt::Display for ArithOp {
 pub enum ArithSema {
     Integer { overflow: Overflow },
     Floating(FloatingSemantics),
+    Bitwise,
+    ShiftRight { fill: ShiftFill },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ShiftFill {
+    SignExtend,
+    ZeroExtend,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
