@@ -126,7 +126,10 @@ impl WideInt {
                 0
             },
         );
-        i64::from_le_bytes(bytes[..8].try_into().unwrap())
+        let mut result = [0u8; 8];
+        let length = bytes.len().min(result.len());
+        result[..length].copy_from_slice(&bytes[..length]);
+        i64::from_le_bytes(result)
     }
 }
 
@@ -559,7 +562,7 @@ fn parse_integer_literal(spelling: &str) -> IntegerLiteral {
     let value = if digits.is_empty() {
         BigUint::default()
     } else {
-        BigUint::parse_bytes(digits.as_bytes(), radix_num).expect("lexer only emits valid digits")
+        BigUint::parse_bytes(digits.as_bytes(), radix_num).unwrap_or_default()
     };
     IntegerLiteral {
         value,
@@ -576,7 +579,7 @@ fn string_literal_encoding(token: &Token) -> Encoding {
         Token::Utf16StringLit(_) => Encoding::Utf16,
         Token::Utf32StringLit(_) => Encoding::Utf32,
         Token::WideStringLit(_) => Encoding::Wide,
-        _ => unreachable!("caller only inspects string literal tokens"),
+        _ => Encoding::Plain,
     }
 }
 
@@ -806,9 +809,7 @@ impl<'a> Parser<'a> {
                     UnaryOp::AddrOf
                     | UnaryOp::Deref
                     | UnaryOp::PreIncrement
-                    | UnaryOp::PreDecrement => {
-                        unreachable!("rejected above")
-                    }
+                    | UnaryOp::PreDecrement => Err(ConstExprError::InvalidIntegerConstant),
                 }
             }
             ExprKind::Binary { op, left, right } => {
@@ -944,9 +945,10 @@ impl<'a> Parser<'a> {
                     | BinaryOp::Greater
                     | BinaryOp::GreaterEqual
                     | BinaryOp::Equal
-                    | BinaryOp::NotEqual => Ok(WideInt::from_i64(
-                        left.compare(&right, *op).expect("comparison op"),
-                    )),
+                    | BinaryOp::NotEqual => left
+                        .compare(&right, *op)
+                        .map(WideInt::from_i64)
+                        .ok_or(ConstExprError::InvalidIntegerConstant),
                 }
             }
             ExprKind::Cast { ty, value, .. } => {
@@ -1170,7 +1172,13 @@ impl<'a> Parser<'a> {
     fn parse_initializer_list(&mut self) -> Result<Vec<InitializerItem>, ConstExprError> {
         let opening = self.take();
         if opening != Some(Token::LBrace) {
-            return Err(ConstExprError::UnexpectedToken(opening.unwrap()));
+            return Err(opening.map_or(
+                ConstExprError::Expected {
+                    expected: Token::LBrace,
+                    found: None,
+                },
+                ConstExprError::UnexpectedToken,
+            ));
         }
         let mut items = Vec::new();
         while self.peek() != Some(&Token::RBrace) {
@@ -1420,10 +1428,11 @@ impl<'a> Parser<'a> {
             ) => {
                 let first_index = self.position - 1;
                 let mut encoding = string_literal_encoding(token);
+                let Some(content) = crate::parser::string_literal_content(token) else {
+                    return Err(ConstExprError::UnexpectedToken(token.clone()));
+                };
                 let mut pieces = vec![Span::new(
-                    crate::parser::string_literal_content(token)
-                        .unwrap()
-                        .to_string(),
+                    content.to_string(),
                     self.tokens[first_index].spelling,
                     self.tokens[first_index].expansion,
                 )];
@@ -1463,7 +1472,7 @@ impl<'a> Parser<'a> {
                     Token::Utf16CharLit(spelling, units) => (Encoding::Utf16, spelling, units),
                     Token::Utf32CharLit(spelling, units) => (Encoding::Utf32, spelling, units),
                     Token::WideCharLit(spelling, units) => (Encoding::Wide, spelling, units),
-                    _ => unreachable!("matched above"),
+                    _ => return Err(ConstExprError::UnexpectedToken(token.clone())),
                 };
                 ExprKind::CharLiteral(CharLiteral {
                     encoding,

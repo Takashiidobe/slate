@@ -70,12 +70,18 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_roots(&mut self, root_file: FileId) {
-        let roots = self
+        let mut roots = self
             .nodes
             .iter()
             .enumerate()
             .filter_map(|(id, decl)| (decl.provenance.file == root_file).then_some(id))
             .collect::<Vec<_>>();
+        roots.extend(
+            self.nodes
+                .iter()
+                .enumerate()
+                .filter_map(|(id, decl)| self.has_retention_attribute(decl).then_some(id)),
+        );
         for id in roots {
             self.mark(id);
         }
@@ -132,6 +138,7 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_function(&mut self, function: &FunctionDefinition) {
+        self.mark_attributes(&function.specifiers.attributes);
         self.mark_type(&function.specifiers.ty);
         self.mark_declarator(&function.declarator);
         self.mark_stmts(&function.body);
@@ -143,9 +150,11 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_declaration(&mut self, declaration: &Declaration) {
+        self.mark_attributes(&declaration.specifiers.attributes);
         self.mark_type(&declaration.specifiers.ty);
         for declarator in &declaration.declarators {
             self.mark_declarator(&declarator.declarator);
+            self.mark_attributes(&declarator.attributes);
             if let Some(initializer) = &declarator.initializer {
                 self.mark_initializer(initializer);
             }
@@ -373,9 +382,17 @@ impl<'a> Reachability<'a> {
     fn mark_declarator(&mut self, declarator: &Declarator) {
         match declarator {
             Declarator::Abstract | Declarator::Name(_) => {}
-            Declarator::Grouped(inner)
-            | Declarator::Attributed { inner, .. }
-            | Declarator::Pointer { inner, .. } => self.mark_declarator(inner),
+            Declarator::Grouped(inner) => self.mark_declarator(inner),
+            Declarator::Attributed { inner, attributes } => {
+                self.mark_attributes(attributes);
+                self.mark_declarator(inner);
+            }
+            Declarator::Pointer {
+                inner, attributes, ..
+            } => {
+                self.mark_attributes(attributes);
+                self.mark_declarator(inner);
+            }
             Declarator::Array { inner, size, .. } => {
                 self.mark_declarator(inner);
                 if let ArraySize::Expression(size) = size {
@@ -389,6 +406,72 @@ impl<'a> Reachability<'a> {
                 for parameter in parameters.parameters() {
                     self.mark_parameter(parameter);
                 }
+            }
+        }
+    }
+
+    fn has_retention_attribute(&self, decl: &Decl) -> bool {
+        match &decl.value {
+            DeclKind::Function(function) => {
+                self.attributes_retain(&function.specifiers.attributes)
+                    || self.declarator_has_retention_attribute(&function.declarator)
+            }
+            DeclKind::Declaration(declaration) => {
+                self.attributes_retain(&declaration.specifiers.attributes)
+                    || declaration.declarators.iter().any(|declarator| {
+                        self.attributes_retain(&declarator.attributes)
+                            || self.declarator_has_retention_attribute(&declarator.declarator)
+                    })
+            }
+            DeclKind::Comment(_)
+            | DeclKind::StaticAssert(_)
+            | DeclKind::Asm(_)
+            | DeclKind::Pragma(_) => false,
+        }
+    }
+
+    fn declarator_has_retention_attribute(&self, declarator: &Declarator) -> bool {
+        match declarator {
+            Declarator::Abstract | Declarator::Name(_) => false,
+            Declarator::Grouped(inner) | Declarator::Function { inner, .. } => {
+                self.declarator_has_retention_attribute(inner)
+            }
+            Declarator::Attributed { inner, attributes }
+            | Declarator::Pointer {
+                inner, attributes, ..
+            } => {
+                self.attributes_retain(attributes) || self.declarator_has_retention_attribute(inner)
+            }
+            Declarator::Array { inner, .. } => self.declarator_has_retention_attribute(inner),
+        }
+    }
+
+    fn attributes_retain(&self, attributes: &[Attribute]) -> bool {
+        attributes.iter().any(|attribute| {
+            matches!(
+                attribute,
+                Attribute::Used
+                    | Attribute::Retain
+                    | Attribute::Constructor(_)
+                    | Attribute::Destructor(_)
+                    | Attribute::Alias(_)
+                    | Attribute::WeakRef(_)
+                    | Attribute::Ifunc(_)
+            )
+        })
+    }
+
+    fn mark_attributes(&mut self, attributes: &[Attribute]) {
+        for attribute in attributes {
+            let target = match attribute {
+                Attribute::Alias(name)
+                | Attribute::WeakRef(name)
+                | Attribute::Ifunc(name)
+                | Attribute::Cleanup(name) => Some(name.as_str()),
+                _ => None,
+            };
+            if let Some(target) = target {
+                self.mark_name(target);
             }
         }
     }

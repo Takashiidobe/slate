@@ -233,7 +233,15 @@ impl Parser {
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
         self.line_starts = pp.line_starts.clone();
-        let root_file = pp.main_file.expect("parse_str sets main_file");
+        let root_file = pp.main_file.ok_or_else(|| {
+            FrontendError::Parse(ParseError::new(
+                self.source_name.clone(),
+                self.source.clone(),
+                0,
+                0,
+                "preprocessor did not produce a main file",
+            ))
+        })?;
         self.parse_nodes(&nodes, root_file)
             .map_err(FrontendError::Parse)
     }
@@ -263,7 +271,15 @@ impl Parser {
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros);
         self.line_starts = pp.line_starts.clone();
-        let root_file = pp.main_file.expect("parse_file sets main_file");
+        let root_file = pp.main_file.ok_or_else(|| {
+            FrontendError::Parse(ParseError::new(
+                self.source_name.clone(),
+                self.source.clone(),
+                0,
+                0,
+                "preprocessor did not produce a main file",
+            ))
+        })?;
         let ast = self.parse_nodes(&nodes, root_file);
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
@@ -420,7 +436,7 @@ impl Parser {
         let group = CommentGroup {
             comment: Comment {
                 text: texts,
-                loc: loc.expect("comment_group requires at least one comment"),
+                loc: loc.unwrap_or_else(|| nodes[0].expansion),
             },
         };
         (Span::cover(group, &nodes[..consumed]), consumed)
@@ -450,13 +466,13 @@ pub(crate) fn concatenated_string_literal(
             Token::Utf16StringLit(_) => Token::Utf16StringLit(content),
             Token::Utf32StringLit(_) => Token::Utf32StringLit(content),
             Token::WideStringLit(_) => Token::WideStringLit(content),
-            _ => unreachable!("caller only merges string literal tokens"),
+            _ => previous.clone(),
         },
         (Token::Utf8StringLit(_), _) => Token::Utf8StringLit(content),
         (Token::Utf16StringLit(_), _) => Token::Utf16StringLit(content),
         (Token::Utf32StringLit(_), _) => Token::Utf32StringLit(content),
         (Token::WideStringLit(_), _) => Token::WideStringLit(content),
-        _ => unreachable!("caller only merges string literal tokens"),
+        _ => previous.clone(),
     }
 }
 
@@ -492,7 +508,9 @@ fn span_pp_nodes<T>(value: T, nodes: &[PPNode]) -> Span<T> {
     let Some(first) = nodes.first() else {
         return synthetic_span(value);
     };
-    let last = nodes.last().unwrap();
+    let Some(last) = nodes.last() else {
+        return synthetic_span(value);
+    };
     Span::new(
         value,
         first.spelling.through(last.spelling),

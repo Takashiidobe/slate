@@ -120,13 +120,12 @@ impl<'a> Preprocessor<'a> {
     fn seed_builtin_macros(&mut self) {
         for (name, source) in BUILTIN_PREDEFINES {
             let file = self.files.intern(PathBuf::from(name), HeaderKind::System);
-            let nodes = self
-                .parse_source(source, file)
-                .expect("builtin predefines must parse cleanly");
-            debug_assert!(
-                nodes.is_empty(),
-                "predefines should only contain #define directives"
-            );
+            let Ok(nodes) = self.parse_source(source, file) else {
+                continue;
+            };
+            if !nodes.is_empty() {
+                continue;
+            }
         }
     }
 
@@ -145,9 +144,7 @@ impl<'a> Preprocessor<'a> {
             (None, _) => {
                 self.macros.remove("__STDC_VERSION__");
             }
-            (Some(_), None) => {
-                unreachable!("__STDC_VERSION__ is always seeded by BUILTIN_PREDEFINES")
-            }
+            (Some(_), None) => {}
         }
     }
 

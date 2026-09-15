@@ -1097,7 +1097,7 @@ pub(super) fn set_qualifier(qualifiers: &mut Qualifiers, qualifier: Keyword) {
         Keyword::Volatile => qualifiers.is_volatile = true,
         Keyword::Restrict => qualifiers.is_restrict = true,
         Keyword::Atomic => qualifiers.is_atomic = true,
-        _ => unreachable!(),
+        _ => {}
     }
 }
 

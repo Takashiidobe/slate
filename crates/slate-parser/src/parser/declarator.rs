@@ -267,7 +267,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::BitInt)) => {
                     self.pos += 1;
-                    self.parse_bit_int(false)
+                    self.parse_bit_int(false)?
                 }
                 Some(Token::Keyword(Keyword::Int)) => {
                     self.pos += 1;
@@ -321,7 +321,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 Some(Token::Keyword(Keyword::BitInt)) => {
                     self.pos += 1;
-                    self.parse_bit_int(true)
+                    self.parse_bit_int(true)?
                 }
                 Some(Token::Keyword(Keyword::Int)) => {
                     self.pos += 1;
@@ -389,7 +389,7 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Imaginary) => {
                 TypeSpecifier::Imaginary(Box::new(TypeSpecifier::Floating(FloatingType::Double)))
             }
-            Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false),
+            Token::Keyword(Keyword::BitInt) => self.parse_bit_int(false)?,
             Token::Keyword(Keyword::Typeof) => self.parse_typeof()?,
             Token::Keyword(Keyword::TypeofUnqual) => {
                 TypeSpecifier::TypeOfUnqual(self.parse_typeof_operand()?)
@@ -629,20 +629,31 @@ impl<'a> DeclaratorParser<'a> {
         })
     }
 
-    pub(super) fn parse_bit_int(&mut self, is_unsigned: bool) -> TypeSpecifier {
-        assert!(self.matches(Token::LParen), "expected `(` after _BitInt");
+    pub(super) fn parse_bit_int(
+        &mut self,
+        is_unsigned: bool,
+    ) -> Result<TypeSpecifier, DeclaratorError> {
+        self.expect(
+            Token::LParen,
+            DeclaratorError::ExpectedToken(Token::LParen, "after `_BitInt`"),
+        )?;
         let start = self.pos;
-        while self.peek() != Some(&Token::RParen) {
-            assert!(self.peek().is_some(), "expected `)` after _BitInt width");
+        while self.peek().is_some() && self.peek() != Some(&Token::RParen) {
             self.pos += 1;
         }
+        if self.peek().is_none() {
+            return Err(DeclaratorError::ExpectedToken(
+                Token::RParen,
+                "after `_BitInt` width",
+            ));
+        }
         let width = const_expr::Parser::parse(&self.tokens[start..self.pos])
-            .expect("invalid _BitInt width expression");
+            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
         self.pos += 1;
-        TypeSpecifier::Integer(IntegerType::BitInt {
+        Ok(TypeSpecifier::Integer(IntegerType::BitInt {
             width,
             signed: !is_unsigned,
-        })
+        }))
     }
 
     pub(super) fn parse_typeof(&mut self) -> Result<TypeSpecifier, DeclaratorError> {
@@ -753,10 +764,19 @@ impl<'a> DeclaratorParser<'a> {
                         } else {
                             designators.push(Designator::Array(index));
                         }
-                        assert!(self.matches(Token::RBracket), "expected `]` in designator");
+                        self.expect(
+                            Token::RBracket,
+                            DeclaratorError::ExpectedToken(
+                                Token::RBracket,
+                                "in initializer designator",
+                            ),
+                        )
+                        .map_err(|error| {
+                            const_expr::ConstExprError::StatementExpression(error.to_string())
+                        })?;
                     } else if self.matches(Token::Dot) {
                         let Some(Token::Ident(name)) = self.peek().cloned() else {
-                            panic!("field designator must name a field")
+                            return Err(const_expr::ConstExprError::ExpectedIdentifier);
                         };
                         let start = self.pos;
                         self.pos += 1;
@@ -784,11 +804,11 @@ impl<'a> DeclaratorParser<'a> {
                     designators,
                     value: self.parse_initializer(typedef_names)?,
                 });
-                if !self.matches(Token::Comma) {
-                    assert!(
-                        self.peek() == Some(&Token::RBrace),
-                        "expected `,` in initializer"
-                    );
+                if !self.matches(Token::Comma) && self.peek() != Some(&Token::RBrace) {
+                    return Err(const_expr::ConstExprError::Expected {
+                        expected: Token::Comma,
+                        found: self.tokens.get(self.pos).cloned(),
+                    });
                 }
             }
             Ok(Initializer::List(items))
@@ -870,7 +890,12 @@ impl<'a> DeclaratorParser<'a> {
                         let start = self.pos;
                         let mut depth = 0i32;
                         while !matches!(self.peek(), Some(Token::RBracket) if depth == 0) {
-                            assert!(self.peek().is_some(), "expected `]` in array declarator");
+                            if self.peek().is_none() {
+                                return Err(DeclaratorError::ExpectedToken(
+                                    Token::RBracket,
+                                    "in array declarator",
+                                ));
+                            }
                             match self.peek() {
                                 Some(Token::LParen | Token::LBrace | Token::LBracket) => depth += 1,
                                 Some(Token::RParen | Token::RBrace | Token::RBracket) => depth -= 1,
@@ -884,13 +909,13 @@ impl<'a> DeclaratorParser<'a> {
                             self.typedef_names,
                             self.statements,
                         )
-                        .unwrap_or_else(|error| panic!("invalid array bound: {error}"));
+                        .map_err(|error| DeclaratorError::Other(error.to_string()))?;
                         ArraySize::Expression(size)
                     };
-                    assert!(
-                        self.matches(Token::RBracket),
-                        "expected `]` in array declarator"
-                    );
+                    self.expect(
+                        Token::RBracket,
+                        DeclaratorError::ExpectedToken(Token::RBracket, "in array declarator"),
+                    )?;
                     Declarator::Array {
                         inner: Box::new(declarator),
                         size,
@@ -1054,7 +1079,7 @@ impl<'a> DeclaratorParser<'a> {
                 Keyword::Volatile => qualifiers.is_volatile = true,
                 Keyword::Restrict => qualifiers.is_restrict = true,
                 Keyword::Atomic => qualifiers.is_atomic = true,
-                _ => unreachable!(),
+                _ => return qualifiers,
             }
         }
         qualifiers
