@@ -1,3 +1,4 @@
+pub mod names;
 pub mod numeric;
 mod validate;
 

@@ -1,4 +1,7 @@
+mod names;
 mod numeric;
+
+pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 
 use crate::ast::Span;
 pub use numeric::{

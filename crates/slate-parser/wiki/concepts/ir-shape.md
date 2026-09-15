@@ -178,6 +178,14 @@ every qualifier from the source object.
 have storage duration and object identity. Distinguish this from type
 storage metadata, which describes representation.
 
+**Decided:** semantic bindings and resolved references are IR nodes, not AST
+annotations. Sema consumes unresolved AST names and emits `Span<Binding>` and
+`Span<Reference>` records with stable `BindingId`s. The span on a binding is
+its declaration site; the span on a reference is the individual use site.
+Objects, functions, parameters, typedefs, enumerators, tags, and labels use
+the same spanned-node convention while retaining their separate C namespaces.
+Source names and shadow-disambiguated printer names are not identity.
+
 ```text
 Variable {
     id: VariableId,

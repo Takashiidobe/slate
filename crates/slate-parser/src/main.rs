@@ -13,7 +13,7 @@ fn main() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     if args.next().as_deref() != Some("parse") {
         return Err(miette::miette!(
-            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir-expressions] [--show-spans]"
+            "usage: slate-parser parse <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir-expressions] [--dump-ir-names] [--show-spans]"
         ));
     }
     let path = args
@@ -22,6 +22,7 @@ fn main() -> miette::Result<()> {
     let mut show_comments = false;
     let mut show_ids = false;
     let mut dump_ir_expressions = false;
+    let mut dump_ir_names = false;
     let mut show_spans = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
@@ -30,6 +31,9 @@ fn main() -> miette::Result<()> {
                 false
             } else if arg == "--dump-ir-expressions" {
                 dump_ir_expressions = true;
+                false
+            } else if arg == "--dump-ir-names" {
+                dump_ir_names = true;
                 false
             } else if arg == "--show-comments" {
                 show_comments = true;
@@ -67,6 +71,12 @@ fn main() -> miette::Result<()> {
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
     ast.analyze(&files)?;
+    if dump_ir_names {
+        let resolution =
+            slate_parser::sema::names::resolve(&ast).map_err(|error| miette::miette!("{error}"))?;
+        print!("{resolution}");
+        return Ok(());
+    }
     if dump_ir_expressions {
         let expressions = slate_parser::sema::resolve_expression_roots(&ast)
             .map_err(|error| miette::miette!("{error}"))?;
