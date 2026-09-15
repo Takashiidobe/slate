@@ -39,26 +39,29 @@ impl fmt::Display for NumericType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Overflow {
+    #[default]
     Undefined,
     Wrap,
     Trap,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Rounding {
+    #[default]
     NearestEven,
     Environment,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Exceptions {
+    #[default]
     Ignore,
     Observable,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct FloatingSemantics {
     pub rounding: Rounding,
     pub exceptions: Exceptions,

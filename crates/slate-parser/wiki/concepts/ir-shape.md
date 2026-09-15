@@ -1105,3 +1105,94 @@ These references are background; the shapes above are our design proposals.
 3. Which contracts and execution requirements need concrete variants first?
 4. Old-style definition entry, missing non-void results, GNU nested-function
    captures/static chains, and nonlocal exits need dedicated follow-up shapes.
+
+```mlir
+c.record @A struct {
+    @x : c.char
+    @y : c.int
+}
+```
+
+Layout information on a struct
+
+```mlir
+#c.layout<
+    size = 8,
+    alignment = 4,
+    fields = [
+        #c.field_layout<@x, offset = 0, size = 1>,
+        #c.padding<offset = 1, size = 3>,
+        #c.field_layout<@y, offset = 4, size = 4>
+    ]
+>
+```
+
+Bitfields might look like:
+
+```mlir
+c.record @Flags struct {
+  @a : c.bitfield<c.uint,
+      width = 3,
+      storage_unit = c.uint,
+      bit_offset = 0>
+
+  @b : c.bitfield<c.uint,
+      width = 5,
+      storage_unit = c.uint,
+      bit_offset = 3>
+}
+```
+
+Attributes can be typed:
+
+```mlir
+c.func @foo ... attributes {
+    c.noreturn,
+    c.visibility = #c.visibility<hidden>,
+    c.nonnull_args = [0]
+}
+
+c.global @x ... attributes {
+    c.alignment = 32,
+    c.section = ".foo"
+}
+
+And you can keep original source provenance for debugging:
+
+c.source_attr = #c.source_attr<
+    spelling = "__attribute__((aligned(32)))",
+    kind = aligned,
+    source_range = ...
+>
+```
+
+Module info should keep the compiler flags, standard, default semantics,
+target info?
+
+```mlir
+module {
+    c.invocation = #c.invocation<
+        argv = [
+          "-std=gnu11",
+          "-fwrapv",
+          "-fno-strict-aliasing",
+          "-march=haswell"
+        ]
+    >
+
+    c.lang = #c.lang<
+        standard = gnu11
+    >
+
+    c.semantics = #c.semantics<
+        signed_overflow = wrap,
+        strict_aliasing = false
+    >
+
+    c.target = #c.target<
+        triple = "x86_64-unknown-linux-gnu",
+        cpu = "haswell",
+        features = [...]
+    >
+}
+```

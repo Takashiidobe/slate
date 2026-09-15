@@ -2,6 +2,7 @@
 .llog/index
 .llog/state.json
 __pycache__
+scratch
 
 # Beads / Dolt files (added by bd init)
 .dolt/
