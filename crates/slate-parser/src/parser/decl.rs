@@ -16,7 +16,8 @@ impl Parser {
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
-        let mut specifiers = self.parse_declaration_specifiers(&mut parser, false)?;
+        let mut specifiers =
+            self.parse_declaration_specifiers(&mut parser, self.standard().allows_implicit_int())?;
         let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
         Ok(Declaration {
             specifiers,

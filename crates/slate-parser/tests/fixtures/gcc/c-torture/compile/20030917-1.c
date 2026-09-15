@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT gnu89
 
 /* { dg-additional-options "-std=gnu89" } */
 

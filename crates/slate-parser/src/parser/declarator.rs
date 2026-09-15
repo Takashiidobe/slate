@@ -953,10 +953,28 @@ impl<'a> DeclaratorParser<'a> {
             specifiers.storage = StorageClass::None;
         }
         let implicit_int = implicit_int_function
+            && self
+                .statements
+                .is_some_and(|parser| parser.standard().allows_implicit_int())
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.typedef_names.contains(name))
             && matches!(
-                (self.peek(), self.tokens.value_at(self.pos + 1)),
-                (Some(Token::Ident(name)), Some(Token::LParen)) if !self.typedef_names.contains(name)
+                self.tokens.value_at(self.pos + 1),
+                Some(Token::LParen | Token::Semi | Token::Comma | Token::Equal)
             );
+        if !implicit_int
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.typedef_names.contains(name))
+            && matches!(
+                self.tokens.value_at(self.pos + 1),
+                Some(Token::LParen | Token::Semi)
+            )
+            && self
+                .statements
+                .is_some_and(|parser| !parser.standard().allows_implicit_int())
+        {
+            return Err(DeclaratorError::Other(
+                "a type specifier is required for all declarations".into(),
+            ));
+        }
         specifiers.ty = if gnu_auto_type || c23_auto_inference {
             TypeSpecifier::TargetBuiltin("__auto_type".into())
         } else if implicit_int {

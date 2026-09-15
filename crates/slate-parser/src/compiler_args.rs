@@ -53,6 +53,10 @@ impl LanguageStandard {
     pub fn is_c23_or_later(self) -> bool {
         matches!(self, Self::C23 | Self::Gnu23)
     }
+
+    pub fn allows_implicit_int(self) -> bool {
+        matches!(self, Self::C89 | Self::Gnu89)
+    }
 }
 
 impl FromStr for LanguageStandard {
