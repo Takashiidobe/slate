@@ -1180,9 +1180,14 @@ pub struct StaticAssert {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TagId(pub usize);
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(CustomDebug, Clone, PartialEq)]
 pub enum TagSpecifier {
-    Reference { kind: TagKind, name: String },
+    Reference {
+        kind: TagKind,
+        name: String,
+        #[debug(skip_if = Option::is_none)]
+        fixed_type: Option<Box<TypeName>>,
+    },
     Definition(TagId),
 }
 

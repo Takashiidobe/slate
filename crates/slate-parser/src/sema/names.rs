@@ -389,8 +389,14 @@ impl Resolver {
     ) -> Result<(), ResolveError> {
         match ty {
             TypeSpecifier::Named(name) => self.reference_typedef(name, span),
-            TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) => {
-                self.reference_tag(name, span)
+            TypeSpecifier::Tag(TagSpecifier::Reference {
+                name, fixed_type, ..
+            }) => {
+                self.reference_tag(name, span)?;
+                if let Some(fixed_type) = fixed_type {
+                    self.type_name(fixed_type, span)?;
+                }
+                Ok(())
             }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => self.define_tag(*id, span),
             TypeSpecifier::Atomic(ty) => self.type_name(ty, span),

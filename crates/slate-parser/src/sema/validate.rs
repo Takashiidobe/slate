@@ -446,8 +446,15 @@ fn check_type(
             loc,
             format!("unknown type name `{name}`"),
         )),
-        TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) if !tags.contains(name) => {
-            errors.push(error(provenance, loc, format!("unknown tag `{name}`")))
+        TypeSpecifier::Tag(TagSpecifier::Reference {
+            name, fixed_type, ..
+        }) => {
+            if !tags.contains(name) {
+                errors.push(error(provenance, loc, format!("unknown tag `{name}`")));
+            }
+            if let Some(fixed_type) = fixed_type {
+                check_type_name(fixed_type, typedefs, tags, provenance, loc, errors);
+            }
         }
         TypeSpecifier::Atomic(ty) => check_type_name(ty, typedefs, tags, provenance, loc, errors),
         TypeSpecifier::Vector(vector) => {

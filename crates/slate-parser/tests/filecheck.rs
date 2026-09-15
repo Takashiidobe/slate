@@ -770,7 +770,7 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
         TypeSpecifier::Imaginary(element) => format!("_Imaginary {}", type_spelling(element)),
         TypeSpecifier::TargetBuiltin(name) => name.clone(),
         TypeSpecifier::Named(name) => name.clone(),
-        TypeSpecifier::Tag(TagSpecifier::Reference { kind, name }) => {
+        TypeSpecifier::Tag(TagSpecifier::Reference { kind, name, .. }) => {
             format!("{} {name}", tag_name(*kind))
         }
         TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {

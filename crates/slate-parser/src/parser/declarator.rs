@@ -440,7 +440,7 @@ impl<'a> DeclaratorParser<'a> {
             let body = TagBody::Record(self.parse_field_list()?);
             return self.define_tag(kind, name, body, start);
         }
-        tag_reference(kind, name)
+        tag_reference(kind, name, None)
     }
 
     fn define_tag(
@@ -490,7 +490,7 @@ impl<'a> DeclaratorParser<'a> {
             };
             return self.define_tag(TagKind::Enum, name, body, start);
         }
-        tag_reference(TagKind::Enum, name)
+        tag_reference(TagKind::Enum, name, fixed_type.map(Box::new))
     }
 
     pub(super) fn parse_field_list(&mut self) -> Result<Vec<FieldItem>, DeclaratorError> {
@@ -1252,7 +1252,15 @@ pub(crate) fn is_target_builtin_name(name: &str) -> bool {
     )
 }
 
-fn tag_reference(kind: TagKind, name: Option<String>) -> Result<TypeSpecifier, DeclaratorError> {
+fn tag_reference(
+    kind: TagKind,
+    name: Option<String>,
+    fixed_type: Option<Box<TypeName>>,
+) -> Result<TypeSpecifier, DeclaratorError> {
     let name = name.ok_or(DeclaratorError::ExpectedTagNameOrBrace)?;
-    Ok(TypeSpecifier::Tag(TagSpecifier::Reference { kind, name }))
+    Ok(TypeSpecifier::Tag(TagSpecifier::Reference {
+        kind,
+        name,
+        fixed_type,
+    }))
 }

@@ -282,7 +282,7 @@ GNU nested functions are `FunctionDefinition`s in block item position.
 
 ```
 TagSpecifier =
-    | Reference { kind: Struct | Union | Enum, name: String, attributes }
+    | Reference { kind: Struct | Union | Enum, name: String, fixed_type: Option<Box<TypeName>> }
     | Definition(TagId)
 
 TagDefinition {
@@ -507,7 +507,7 @@ the AST redesign epic.
 
 | Current                                                                                                                                                                                       | Target                                                                                        | Also fixes                                                             |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `TagSpecifier::Reference` has no attributes; `TagBody::Record` holds `FieldItem`                                                                                                              | `MemberItem`, `EnumItem`                                                                      |                                                                        |
+| `TagSpecifier::Reference` stores an optional boxed fixed enum underlying type; `TagBody::Record` holds `FieldItem`                                                                        | `MemberItem`, `EnumItem`                                                                      | opaque C23 enum declarations retain `: type`                                                  |
 | `TypeSpecifier` variants use `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` instead of the table above                     | variant names and shapes in the `TypeSpecifier` table                                         |                                                                        |
 | `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                                             | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                                                        |
 | `Designator::Array`/`ArrayRange`                                                                                                                                                              | `Index`/`IndexRange`                                                                          |                                                                        |

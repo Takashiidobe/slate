@@ -360,7 +360,14 @@ impl<'a> Reachability<'a> {
     fn mark_type(&mut self, ty: &TypeSpecifier) {
         match ty {
             TypeSpecifier::Named(name) => self.mark_name(name),
-            TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) => self.mark_name(name),
+            TypeSpecifier::Tag(TagSpecifier::Reference {
+                name, fixed_type, ..
+            }) => {
+                self.mark_name(name);
+                if let Some(fixed_type) = fixed_type {
+                    self.mark_type_name(fixed_type);
+                }
+            }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => self.mark_tag(*id),
             TypeSpecifier::Atomic(ty) => self.mark_type_name(ty),
             TypeSpecifier::Vector(vector) => self.mark_type(&vector.element),
