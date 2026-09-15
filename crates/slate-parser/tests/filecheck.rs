@@ -532,7 +532,10 @@ fn summarize_evaluated(tu: &TranslationUnit) -> Vec<DeclSummary> {
 
 fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
     match decl {
-        DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => Vec::new(),
+        DeclKind::Comment(_)
+        | DeclKind::StaticAssert { .. }
+        | DeclKind::Asm { .. }
+        | DeclKind::Pragma(_) => Vec::new(),
         DeclKind::Function(function) => vec![DeclSummary::Function {
             name: declarator_identifier(&function.declarator),
             returns: function
@@ -562,6 +565,7 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::Labeled { .. }
                     | StmtKind::LocalLabelDecl(_)
                     | StmtKind::Asm(_)
+                    | StmtKind::Pragma(_)
                     | StmtKind::Goto(_)
                     | StmtKind::ComputedGoto(_)
                     | StmtKind::NestedFunction(_)

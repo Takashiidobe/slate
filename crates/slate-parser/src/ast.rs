@@ -28,6 +28,60 @@ pub type FieldItem = Span<FieldItemKind>;
 pub type EnumItem = Span<EnumItemKind>;
 pub type Decl = Span<DeclKind>;
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct Pragma {
+    pub kind: PragmaKind,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PragmaKind {
+    Pack {
+        action: PragmaStackAction,
+        alignment: Option<Expr>,
+    },
+    Weak {
+        name: String,
+        alias: Option<String>,
+    },
+    Visibility {
+        action: PragmaStackAction,
+        visibility: Option<String>,
+    },
+    Stdc {
+        option: StdcPragmaOption,
+        enabled: bool,
+    },
+    FloatControl {
+        option: FloatControlOption,
+        enabled: bool,
+    },
+    MsStruct {
+        action: PragmaStackAction,
+    },
+    Opaque(String),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PragmaStackAction {
+    Push,
+    Pop,
+    Show,
+    Set,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StdcPragmaOption {
+    FenvAccess,
+    FpContract,
+    CxLimitedRange,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FloatControlOption {
+    Precise,
+    Except,
+}
+
 #[derive(CustomDebug, Clone, PartialEq)]
 pub enum ExprKind {
     Identifier(String),
@@ -273,6 +327,7 @@ pub enum StmtKind {
     Goto(Span<String>),
     ComputedGoto(Expr),
     NestedFunction(Box<FunctionDefinition>),
+    Pragma(Pragma),
     Break,
     Continue,
 }
@@ -1205,12 +1260,13 @@ pub enum DeclKind {
     Declaration(Declaration),
     StaticAssert(StaticAssert),
     Asm(GnuAsm),
+    Pragma(Pragma),
 }
 
 impl DeclKind {
     pub fn names(&self) -> Vec<&str> {
         match self {
-            Self::Comment(_) | Self::StaticAssert(_) | Self::Asm(_) => Vec::new(),
+            Self::Comment(_) | Self::StaticAssert(_) | Self::Asm(_) | Self::Pragma(_) => Vec::new(),
             Self::Function(function) => function.declarator.name().into_iter().collect(),
             Self::Declaration(declaration) => declaration.names().collect(),
         }

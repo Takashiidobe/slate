@@ -34,7 +34,21 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT: decl[1]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "push_macro ( \"_\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "pop_macro ( \"_\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(

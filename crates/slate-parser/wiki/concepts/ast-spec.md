@@ -103,6 +103,7 @@ ExternalItem =
     | Declaration
     | StaticAssert
     | Asm(GnuAsm)                   // file-scope asm("...")
+    | Pragma(Pragma)                // semantic preprocessor state change
     | CommentGroup
 ```
 
@@ -112,6 +113,12 @@ with predefine generation. Semantic lowering resolves these inputs into
 operation contracts and concrete numeric formats; later IR consumers do not
 interpret the arguments. Long-double literal spelling remains unresolved
 in the AST and is interpreted at the target precision by sema.
+
+Semantic pragmas are preserved at their source position as `DeclKind::Pragma`
+at file scope or `StmtKind::Pragma` inside a function. Pack, weak, visibility,
+STDC floating-point, `float_control`, and `ms_struct` forms have typed payloads;
+other pragma spellings use `PragmaKind::Opaque` so preprocessing information is
+never discarded.
 
 There is no `Typedef`, `Record` or `Enum` item. `typedef` is a storage
 class, and tag definitions live in the specifiers that wrote them (see

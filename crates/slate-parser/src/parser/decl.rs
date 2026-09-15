@@ -24,6 +24,71 @@ impl Parser {
         })
     }
 
+    pub(super) fn parse_pragma_tokens(&self, tokens: &[Span<Token>]) -> Result<Pragma, ParseError> {
+        let text = tokens
+            .values()
+            .map(String::from)
+            .collect::<Vec<_>>()
+            .join(" ");
+        let values = tokens.as_tokens();
+        let kind = match values.as_slice() {
+            [Token::Ident(name), Token::LParen, .., Token::RParen] if name == "pack" => {
+                parse_pack(self, &tokens[2..tokens.len() - 1])?
+            }
+            [Token::Ident(name), Token::Ident(symbol)] if name == "weak" => PragmaKind::Weak {
+                name: symbol.clone(),
+                alias: None,
+            },
+            [
+                Token::Ident(name),
+                Token::Ident(symbol),
+                Token::Equal,
+                Token::Ident(alias),
+            ] if name == "weak" => PragmaKind::Weak {
+                name: symbol.clone(),
+                alias: Some(alias.clone()),
+            },
+            [
+                Token::Ident(gcc),
+                Token::Ident(visibility),
+                Token::Ident(action),
+                rest @ ..,
+            ] if gcc == "GCC" && visibility == "visibility" => {
+                let value = match rest {
+                    [Token::LParen, Token::Ident(value), Token::RParen] => Some(value.clone()),
+                    _ => None,
+                };
+                PragmaKind::Visibility {
+                    action: parse_stack_action(action)?,
+                    visibility: value,
+                }
+            }
+            [Token::Ident(std), Token::Ident(option), Token::Ident(value)] if std == "STDC" => {
+                match (parse_stdc_option(option), parse_on_off(value)) {
+                    (Some(option), Ok(enabled)) => PragmaKind::Stdc { option, enabled },
+                    _ => PragmaKind::Opaque(text.clone()),
+                }
+            }
+            [
+                Token::Ident(name),
+                Token::Ident(option),
+                Token::Ident(value),
+            ] if name == "float_control" => {
+                match (parse_float_control_option(option), parse_on_off(value)) {
+                    (Some(option), Ok(enabled)) => PragmaKind::FloatControl { option, enabled },
+                    _ => PragmaKind::Opaque(text.clone()),
+                }
+            }
+            [Token::Ident(name), Token::Ident(action)] if name == "ms_struct" => {
+                PragmaKind::MsStruct {
+                    action: parse_stack_action(action)?,
+                }
+            }
+            _ => PragmaKind::Opaque(text),
+        };
+        Ok(Pragma { kind })
+    }
+
     pub(super) fn parse_field_declaration_tokens(
         &self,
         tokens: &[Span<Token>],
@@ -294,6 +359,14 @@ impl Parser {
             }
         }
         match &nodes[0].value {
+            PPNodeKind::Pragma { tokens, .. } => Ok((
+                vec![
+                    nodes[0]
+                        .clone()
+                        .with_value(DeclKind::Pragma(self.parse_pragma_tokens(tokens)?)),
+                ],
+                1,
+            )),
             PPNodeKind::Comment { provenance, .. } => {
                 let (group, consumed) = self.comment_group(nodes, *provenance);
                 Ok((vec![group.map(DeclKind::Comment)], consumed))
@@ -754,6 +827,7 @@ impl Parser {
                     let chunk_tokens = self.nodes_tokens(&nodes[start..index]);
                     items.extend(self.parse_enumerators(code, &chunk_tokens)?);
                 }
+                PPNodeKind::Pragma { .. } => index += 1,
             }
         }
         Ok(items)
@@ -882,6 +956,7 @@ impl Parser {
                         ));
                     }
                 }
+                PPNodeKind::Pragma { .. } => index += 1,
             }
         }
         Ok(fields)
@@ -903,6 +978,79 @@ impl Parser {
             }
         }
     }
+}
+
+fn parse_stack_action(token: &str) -> Result<PragmaStackAction, ParseError> {
+    match token {
+        "push" => Ok(PragmaStackAction::Push),
+        "pop" => Ok(PragmaStackAction::Pop),
+        "show" => Ok(PragmaStackAction::Show),
+        _ => Ok(PragmaStackAction::Set),
+    }
+}
+
+fn parse_stack_action_token(token: &Token) -> Result<PragmaStackAction, ParseError> {
+    match token {
+        Token::Ident(value) => parse_stack_action(value),
+        _ => Err(ParseError::new(
+            "<pragma>",
+            "",
+            0,
+            1,
+            "expected pragma stack action",
+        )),
+    }
+}
+
+fn parse_on_off(token: &str) -> Result<bool, ParseError> {
+    match token {
+        value if value.eq_ignore_ascii_case("on") => Ok(true),
+        value if value.eq_ignore_ascii_case("off") => Ok(false),
+        _ => Err(ParseError::new(
+            "<pragma>",
+            "",
+            0,
+            1,
+            "expected `on` or `off`",
+        )),
+    }
+}
+
+fn parse_stdc_option(token: &str) -> Option<StdcPragmaOption> {
+    match token {
+        "FENV_ACCESS" => Some(StdcPragmaOption::FenvAccess),
+        "FP_CONTRACT" => Some(StdcPragmaOption::FpContract),
+        "CX_LIMITED_RANGE" => Some(StdcPragmaOption::CxLimitedRange),
+        _ => None,
+    }
+}
+
+fn parse_float_control_option(token: &str) -> Option<FloatControlOption> {
+    match token {
+        "precise" => Some(FloatControlOption::Precise),
+        "except" => Some(FloatControlOption::Except),
+        _ => None,
+    }
+}
+
+fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, ParseError> {
+    let action = tokens.first().map_or(PragmaStackAction::Set, |token| {
+        parse_stack_action_token(&token.value).unwrap_or(PragmaStackAction::Set)
+    });
+    let alignment_start = match action {
+        PragmaStackAction::Push => 2,
+        PragmaStackAction::Set => 0,
+        PragmaStackAction::Pop | PragmaStackAction::Show => tokens.len(),
+    };
+    let alignment = tokens.get(alignment_start).and_then(|_token| {
+        const_expr::Parser::parse_expression(
+            &tokens[alignment_start..],
+            &parser.typedef_names,
+            Some(parser),
+        )
+        .ok()
+    });
+    Ok(PragmaKind::Pack { action, alignment })
 }
 
 struct ParsedDeclarator {
@@ -1053,7 +1201,7 @@ pub(super) fn tag_trailing_tokens(
     for (node_index, node) in nodes.iter().enumerate().skip(start_node) {
         let node_tokens = match &node.value {
             PPNodeKind::Code { tokens, .. } => tokens,
-            PPNodeKind::Comment { .. } => continue,
+            PPNodeKind::Comment { .. } | PPNodeKind::Pragma { .. } => continue,
         };
         let token_start = if node_index == start_node {
             start_token
@@ -1082,6 +1230,7 @@ pub(super) fn join_node_text(nodes: &[PPNode]) -> String {
         .map(|node| match &node.value {
             PPNodeKind::Comment { text, .. } => text.as_str(),
             PPNodeKind::Code { text, .. } => text.as_str(),
+            PPNodeKind::Pragma { .. } => "",
         })
         .collect::<Vec<_>>()
         .join("\n")

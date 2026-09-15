@@ -86,7 +86,10 @@ impl<'a> Reachability<'a> {
             return;
         }
         match &self.nodes[id].value {
-            DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => {}
+            DeclKind::Comment(_)
+            | DeclKind::StaticAssert { .. }
+            | DeclKind::Asm { .. }
+            | DeclKind::Pragma(_) => {}
             DeclKind::Function(function) => self.mark_function(function),
             DeclKind::Declaration(declaration) => self.mark_declaration(declaration),
         }
@@ -243,7 +246,8 @@ impl<'a> Reachability<'a> {
             | StmtKind::Asm(_)
             | StmtKind::Goto(_)
             | StmtKind::Break
-            | StmtKind::Continue => {}
+            | StmtKind::Continue
+            | StmtKind::Pragma(_) => {}
         }
     }
 

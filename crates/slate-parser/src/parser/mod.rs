@@ -350,6 +350,7 @@ impl Parser {
         match &node.value {
             PPNodeKind::Comment { text, .. } => text,
             PPNodeKind::Code { text, .. } => text,
+            PPNodeKind::Pragma { text, .. } => text,
         }
     }
 
@@ -380,6 +381,7 @@ impl Parser {
         match &node.value {
             PPNodeKind::Comment { provenance, .. } => *provenance,
             PPNodeKind::Code { provenance, .. } => *provenance,
+            PPNodeKind::Pragma { provenance, .. } => *provenance,
         }
     }
 

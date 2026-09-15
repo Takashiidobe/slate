@@ -213,6 +213,14 @@ int main(void) {
 // DEFAULT-NEXT:               parameters: Void,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:           body: [
+// DEFAULT-NEXT:               Pragma(
+// DEFAULT-NEXT:                   Pragma {
+// DEFAULT-NEXT:                       kind: Stdc {
+// DEFAULT-NEXT:                           option: FenvAccess,
+// DEFAULT-NEXT:                           enabled: true,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Decl(
 // DEFAULT-NEXT:                   Declaration {
 // DEFAULT-NEXT:                       specifiers: DeclarationSpecifiers {

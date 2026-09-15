@@ -420,7 +420,27 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[1]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Set,
+// DEFAULT-NEXT:               alignment: Some(
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 3,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "3",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -433,7 +453,40 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[3]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Set,
+// DEFAULT-NEXT:               alignment: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[4]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Push,
+// DEFAULT-NEXT:               alignment: Some(
+// DEFAULT-NEXT:                   Comma {
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "lbl",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: IntegerLiteral(
+// DEFAULT-NEXT:                           IntegerLiteral {
+// DEFAULT-NEXT:                               value: 1,
+// DEFAULT-NEXT:                               radix: Decimal,
+// DEFAULT-NEXT:                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                   unsigned: false,
+// DEFAULT-NEXT:                                   size: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               spelling: "1",
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[5]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -446,7 +499,15 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[6]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Pop,
+// DEFAULT-NEXT:               alignment: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[7]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -459,7 +520,15 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Declaration(
+// DEFAULT-NEXT: decl[8]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Pop,
+// DEFAULT-NEXT:               alignment: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[9]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -472,7 +541,27 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Declaration(
+// DEFAULT-NEXT: decl[10]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Push,
+// DEFAULT-NEXT:               alignment: Some(
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 1,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "1",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[11]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -485,7 +574,15 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Function(
+// DEFAULT-NEXT: decl[12]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Pop,
+// DEFAULT-NEXT:               alignment: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[13]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(

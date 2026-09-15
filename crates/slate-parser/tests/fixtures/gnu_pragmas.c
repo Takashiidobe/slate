@@ -199,7 +199,28 @@ int main(void) {
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[1]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "message ( \"GNU pragma message probe\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[2]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "GCC warning \"GNU pragma warning probe\"",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "push_macro ( \"GNU_PRAGMA_MACRO\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[4]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -234,7 +255,14 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[5]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "pop_macro ( \"GNU_PRAGMA_MACRO\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[6]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -269,7 +297,27 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[7]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Push,
+// DEFAULT-NEXT:               alignment: Some(
+// DEFAULT-NEXT:                   IntegerLiteral(
+// DEFAULT-NEXT:                       IntegerLiteral {
+// DEFAULT-NEXT:                           value: 1,
+// DEFAULT-NEXT:                           radix: Decimal,
+// DEFAULT-NEXT:                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                               unsigned: false,
+// DEFAULT-NEXT:                               size: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           spelling: "1",
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[8]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -282,7 +330,25 @@ int main(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Function(
+// DEFAULT-NEXT: decl[9]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Pack {
+// DEFAULT-NEXT:               action: Pop,
+// DEFAULT-NEXT:               alignment: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[10]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Visibility {
+// DEFAULT-NEXT:               action: Push,
+// DEFAULT-NEXT:               visibility: Some(
+// DEFAULT-NEXT:                   "hidden",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[11]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -337,7 +403,15 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT: decl[12]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Visibility {
+// DEFAULT-NEXT:               action: Pop,
+// DEFAULT-NEXT:               visibility: None,
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[13]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -370,7 +444,17 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Declaration(
+// DEFAULT-NEXT: decl[14]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Weak {
+// DEFAULT-NEXT:               name: "gnu_pragma_weak_alias",
+// DEFAULT-NEXT:               alias: Some(
+// DEFAULT-NEXT:                   "gnu_pragma_weak_target",
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[15]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -393,7 +477,14 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Function(
+// DEFAULT-NEXT: decl[16]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "redefine_extname gnu_pragma_renamed gnu_pragma_actual",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[17]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -426,7 +517,21 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[8]: Function(
+// DEFAULT-NEXT: decl[18]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "GCC diagnostic push",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[19]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "GCC diagnostic ignored \"-Wunused-variable\"",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[20]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -479,7 +584,21 @@ int main(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[9]: Function(
+// DEFAULT-NEXT: decl[21]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "GCC diagnostic pop",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[22]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "GCC poison gnu_pragma_poisoned_identifier",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[23]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(

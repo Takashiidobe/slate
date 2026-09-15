@@ -25,7 +25,14 @@ int after[WIDTH];
 // SLATE-FILECHECK-DEFINES WIDE WIDE
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[0]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "push_macro ( \"WIDTH\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[1]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -59,7 +66,14 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[2]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "pop_macro ( \"WIDTH\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[3]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -93,7 +107,28 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[4]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "push_macro ( \"FRESH\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[5]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "pop_macro ( \"FRESH\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[6]: Pragma(
+// DEFAULT-NEXT:       Pragma {
+// DEFAULT-NEXT:           kind: Opaque(
+// DEFAULT-NEXT:               "pop_macro ( \"WIDTH\" )",
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   )
+// DEFAULT-NEXT: decl[7]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -127,7 +162,7 @@ int after[WIDTH];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[8]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -163,7 +198,14 @@ int after[WIDTH];
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIDE
-// WIDE: decl[0]: Declaration(
+// WIDE: decl[0]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "push_macro ( \"WIDTH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[1]: Declaration(
 // WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
@@ -197,7 +239,14 @@ int after[WIDTH];
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:   )
-// WIDE-NEXT: decl[1]: Declaration(
+// WIDE-NEXT: decl[2]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "pop_macro ( \"WIDTH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[3]: Declaration(
 // WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
@@ -231,7 +280,28 @@ int after[WIDTH];
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:   )
-// WIDE-NEXT: decl[2]: Declaration(
+// WIDE-NEXT: decl[4]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "push_macro ( \"FRESH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[5]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "pop_macro ( \"FRESH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[6]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "pop_macro ( \"WIDTH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[7]: Declaration(
 // WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
@@ -265,7 +335,14 @@ int after[WIDTH];
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:   )
-// WIDE-NEXT: decl[3]: Declaration(
+// WIDE-NEXT: decl[8]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "push_macro ( \"WIDTH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[9]: Declaration(
 // WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(
@@ -299,7 +376,14 @@ int after[WIDTH];
 // WIDE-NEXT:           ],
 // WIDE-NEXT:       },
 // WIDE-NEXT:   )
-// WIDE-NEXT: decl[4]: Declaration(
+// WIDE-NEXT: decl[10]: Pragma(
+// WIDE-NEXT:       Pragma {
+// WIDE-NEXT:           kind: Opaque(
+// WIDE-NEXT:               "pop_macro ( \"WIDTH\" )",
+// WIDE-NEXT:           ),
+// WIDE-NEXT:       },
+// WIDE-NEXT:   )
+// WIDE-NEXT: decl[11]: Declaration(
 // WIDE-NEXT:       Declaration {
 // WIDE-NEXT:           specifiers: DeclarationSpecifiers {
 // WIDE-NEXT:               ty: Integer(

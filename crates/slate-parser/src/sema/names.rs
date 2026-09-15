@@ -69,7 +69,7 @@ impl Resolver {
 
     fn declaration_node(&mut self, declaration: &Decl) -> Result<(), ResolveError> {
         match &declaration.value {
-            DeclKind::Comment(_) | DeclKind::Asm(_) => Ok(()),
+            DeclKind::Comment(_) | DeclKind::Asm(_) | DeclKind::Pragma(_) => Ok(()),
             DeclKind::StaticAssert(assertion) => self.expr(&assertion.condition),
             DeclKind::Declaration(inner) => self.declaration(inner, declaration),
             DeclKind::Function(function) => {
@@ -134,6 +134,7 @@ impl Resolver {
             | StmtKind::Attribute(_)
             | StmtKind::Break
             | StmtKind::Continue
+            | StmtKind::Pragma(_)
             | StmtKind::LocalLabelDecl(_) => Ok(()),
             StmtKind::Return(value) | StmtKind::Expr(value) | StmtKind::ComputedGoto(value) => {
                 self.expr(value)

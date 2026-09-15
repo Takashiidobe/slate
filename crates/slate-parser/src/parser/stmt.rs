@@ -259,6 +259,13 @@ impl Parser {
                     }
                     index += consumed;
                 }
+                PPNodeKind::Pragma { tokens, .. } => {
+                    stmts.push(
+                        node.clone()
+                            .with_value(StmtKind::Pragma(self.parse_pragma_tokens(tokens)?)),
+                    );
+                    index += 1;
+                }
                 PPNodeKind::Code { text, .. } if !lex(text).is_empty() => {
                     if !run_text.is_empty() {
                         run_text.push(' ');

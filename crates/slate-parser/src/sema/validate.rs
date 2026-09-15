@@ -71,14 +71,20 @@ impl TranslationUnit {
                 DeclKind::Declaration(declaration) => {
                     collect_tag_names(&declaration.specifiers.ty, &mut tags);
                 }
-                DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => {}
+                DeclKind::Comment(_)
+                | DeclKind::StaticAssert { .. }
+                | DeclKind::Asm { .. }
+                | DeclKind::Pragma(_) => {}
             }
         }
 
         let mut errors = Vec::new();
         for decl in &self.decls {
             match &decl.value {
-                DeclKind::Comment(_) | DeclKind::StaticAssert { .. } | DeclKind::Asm { .. } => {}
+                DeclKind::Comment(_)
+                | DeclKind::StaticAssert { .. }
+                | DeclKind::Asm { .. }
+                | DeclKind::Pragma(_) => {}
                 DeclKind::Function(function) => {
                     let provenance = decl.provenance;
                     check_attributes(
@@ -585,7 +591,8 @@ fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
         | StmtKind::Asm(_)
         | StmtKind::Goto(_)
         | StmtKind::Break
-        | StmtKind::Continue => {}
+        | StmtKind::Continue
+        | StmtKind::Pragma(_) => {}
     }
 }
 

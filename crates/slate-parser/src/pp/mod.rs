@@ -33,6 +33,11 @@ pub enum PPNodeKind {
         tokens: Vec<Span<Token>>,
         provenance: Provenance,
     },
+    Pragma {
+        text: String,
+        tokens: Vec<Span<Token>>,
+        provenance: Provenance,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -370,7 +375,7 @@ impl<'a> Preprocessor<'a> {
                         .with_provenance(provenance),
                     );
                 }
-                Item::Text(tokens) => nodes.push(self.expand_line(tokens)),
+                Item::Text(tokens) => nodes.extend(self.expand_line(tokens)),
                 Item::Conditional(section) => nodes.extend(self.walk_conditional(section)?),
                 Item::Directive(directive) => match directive.name {
                     DirectiveName::Define => self.record_define(directive)?,
@@ -382,7 +387,10 @@ impl<'a> Preprocessor<'a> {
                     }
                     DirectiveName::Embed => nodes.push(self.expand_embed(directive)?),
                     DirectiveName::Undef => self.record_undef(directive)?,
-                    DirectiveName::Pragma => self.record_pragma(directive),
+                    DirectiveName::Pragma => {
+                        self.record_pragma(directive);
+                        nodes.push(self.pragma_node(directive));
+                    }
                     DirectiveName::Error => {
                         self.record_directive_diagnostic(directive, Severity::Error)
                     }
@@ -404,24 +412,46 @@ impl<'a> Preprocessor<'a> {
         Ok(nodes)
     }
 
-    fn expand_line(&self, source_tokens: &[Span<Token>]) -> PPNode {
+    fn expand_line(&self, source_tokens: &[Span<Token>]) -> Vec<PPNode> {
         let loc = Span::cover((), source_tokens).spelling;
         let provenance = self.provenance(loc);
-        let expanded =
-            Self::strip_pragma_operator(&self.expand_macros(source_tokens, &mut HashSet::new()))
-                .into_iter()
-                .map(|token| token.with_provenance(provenance))
-                .collect::<Vec<_>>();
-        Span::new(
-            PPNodeKind::Code {
-                text: tokens_source(expanded.values()),
-                tokens: expanded,
-                provenance,
-            },
-            loc,
-            loc,
-        )
-        .with_provenance(provenance)
+        let expanded = self
+            .expand_macros(source_tokens, &mut HashSet::new())
+            .into_iter()
+            .map(|token| token.with_provenance(provenance))
+            .collect::<Vec<_>>();
+        if let [_, Token::LParen, Token::StringLit(value), Token::RParen] = expanded
+            .iter()
+            .map(|token| &token.value)
+            .collect::<Vec<_>>()
+            .as_slice()
+        {
+            let pragma_tokens = Lexer::new(FileId(0), value).tokenize();
+            return vec![
+                Span::new(
+                    PPNodeKind::Pragma {
+                        text: tokens_source(pragma_tokens.values()),
+                        tokens: pragma_tokens,
+                        provenance,
+                    },
+                    loc,
+                    loc,
+                )
+                .with_provenance(provenance),
+            ];
+        }
+        vec![
+            Span::new(
+                PPNodeKind::Code {
+                    text: tokens_source(expanded.values()),
+                    tokens: Self::strip_pragma_operator(&expanded),
+                    provenance,
+                },
+                loc,
+                loc,
+            )
+            .with_provenance(provenance),
+        ]
     }
 
     fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {
@@ -710,6 +740,20 @@ impl<'a> Preprocessor<'a> {
             }
             _ => {}
         }
+    }
+
+    fn pragma_node(&self, directive: &Directive) -> PPNode {
+        let provenance = self.provenance(directive.loc);
+        Span::new(
+            PPNodeKind::Pragma {
+                text: self.spelling(directive.loc).to_string(),
+                tokens: directive.arguments.clone(),
+                provenance,
+            },
+            directive.loc,
+            directive.loc,
+        )
+        .with_provenance(provenance)
     }
 
     fn spelling(&self, loc: Loc) -> &str {
