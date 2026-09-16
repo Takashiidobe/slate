@@ -1055,7 +1055,7 @@ fn check_register_variable(
                 ),
             ));
         }
-        Register::X86(_) => {}
+        Register::X86(_) | Register::Aarch64(_) => {}
     }
     if file_scope && !is_register_variable_type(unit, specifiers, &declarator.declarator) {
         errors.push(error(

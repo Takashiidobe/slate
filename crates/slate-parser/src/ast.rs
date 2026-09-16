@@ -550,7 +550,8 @@ pub enum AsmLabel {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Register {
-    X86(X86Register),
+    X86(RegisterInfo<X86RegisterWidth>),
+    Aarch64(RegisterInfo<AArch64RegisterWidth>),
     Other(String),
 }
 
@@ -644,11 +645,11 @@ pub enum AsmClobber {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct X86Register {
+pub struct RegisterInfo<RW> {
     pub spelling: String,
     pub number: usize,
     pub canonical: &'static str,
-    pub width: Option<X86RegisterWidth>,
+    pub width: Option<RW>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -658,6 +659,17 @@ pub enum X86RegisterWidth {
     Bits16,
     Bits32,
     Bits64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AArch64RegisterWidth {
+    Bits8,
+    Bits16,
+    Bits32,
+    Bits64,
+    Bits128,
+    ScalableVector,
+    ScalablePredicate,
 }
 
 #[derive(Debug, Clone, PartialEq)]

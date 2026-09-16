@@ -1,5 +1,7 @@
-use crate::ast::{Register, X86Register, X86RegisterWidth};
+use crate::ast::{Register, RegisterInfo, X86RegisterWidth};
 use X86RegisterWidth::{Bits16, Bits32, Bits64, High8, Low8};
+
+pub type X86Register = RegisterInfo<X86RegisterWidth>;
 
 pub const GCC_REGISTER_NAMES: &[&str] = &[
     "ax", "dx", "cx", "bx", "si", "di", "bp", "sp", //
@@ -164,7 +166,7 @@ fn canonical_width(number: usize) -> Option<X86RegisterWidth> {
     }
 }
 
-fn parse_auto_radix(text: &str) -> Option<usize> {
+pub(crate) fn parse_auto_radix(text: &str) -> Option<usize> {
     let (digits, radix) =
         if let Some(rest) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
             (rest, 16)
