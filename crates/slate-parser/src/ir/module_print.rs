@@ -231,6 +231,36 @@ impl fmt::Display for DisplayModule<'_> {
                     }
                     f.write_str(">")?;
                 }
+                TypeDefinitionKind::Function {
+                    return_type,
+                    parameters,
+                    variadic,
+                    prototyped,
+                } => {
+                    f.write_str(" = fn(")?;
+                    if !prototyped {
+                        f.write_str("unprototyped")?;
+                    } else {
+                        for (index, parameter) in parameters.iter().enumerate() {
+                            if index != 0 {
+                                f.write_str(", ")?;
+                            }
+                            write!(f, "{parameter}")?;
+                        }
+                        if *variadic {
+                            f.write_str(if parameters.is_empty() {
+                                "..."
+                            } else {
+                                ", ..."
+                            })?;
+                        }
+                    }
+                    write!(
+                        f,
+                        ") -> {}",
+                        return_type.map_or("void".to_owned(), |ty| ty.to_string())
+                    )?;
+                }
                 TypeDefinitionKind::Record {
                     kind,
                     fields,

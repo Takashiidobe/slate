@@ -24,7 +24,7 @@ static int answer(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @answer() -> i32 [linkage=internal] [c_storage="static"] [c_return="Integer(Ranked { rank: Int, signed: true })"] {
+// IR-NEXT:     fn %0 @answer() -> i32 [linkage=internal] [c_storage="static"] [c_return="int"] [c="int"] {
 // IR-NEXT:         return const<i32>(42);
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -571,7 +571,7 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
     match value.ty {
         Type::Numeric(ty) => Ok(ty),
         Type::Bool => Err(ResolveError::Unsupported("unpromoted boolean operand")),
-        Type::Defined(_) => Err(ResolveError::Unsupported("non-numeric operand")),
+        Type::Defined(_) | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
     }
 }
 

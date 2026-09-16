@@ -22,6 +22,12 @@ pub enum TypeDefinitionKind {
         element: Type,
         length: Option<u64>,
     },
+    Function {
+        return_type: Option<Type>,
+        parameters: Vec<Type>,
+        variadic: bool,
+        prototyped: bool,
+    },
     Record {
         kind: RecordKind,
         fields: Option<Vec<Span<Field>>>,

@@ -14,7 +14,7 @@ fn main() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--target=x86_64-unknown-linux-gnu] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--target=x86_64-unknown-linux-gnu] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -24,6 +24,7 @@ fn main() -> miette::Result<()> {
     let mut show_ids = false;
     let mut dump_ir_expressions = false;
     let mut dump_ir_names = false;
+    let mut dump_ir_types = false;
     let mut dump_ir = command.as_deref() == Some("ir");
     let mut show_spans = false;
     let mut show_metadata = false;
@@ -38,6 +39,9 @@ fn main() -> miette::Result<()> {
                 false
             } else if arg == "--dump-ir" {
                 dump_ir = true;
+                false
+            } else if arg == "--dump-ir-types" {
+                dump_ir_types = true;
                 false
             } else if arg == "--show-spans" {
                 show_spans = true;
@@ -60,7 +64,12 @@ fn main() -> miette::Result<()> {
         })
         .collect();
     let compiler_args = CompilerArgParser::parse(remaining).map_err(miette::Report::new)?;
-    if u8::from(dump_ir) + u8::from(dump_ir_names) + u8::from(dump_ir_expressions) > 1 {
+    if u8::from(dump_ir)
+        + u8::from(dump_ir_types)
+        + u8::from(dump_ir_names)
+        + u8::from(dump_ir_expressions)
+        > 1
+    {
         return Err(miette::miette!("IR dump modes are mutually exclusive"));
     }
     if show_spans && !dump_ir_expressions {
@@ -68,11 +77,15 @@ fn main() -> miette::Result<()> {
             "--show-spans requires --dump-ir-expressions"
         ));
     }
-    if show_metadata && !dump_ir {
-        return Err(miette::miette!("--show-metadata requires ir or --dump-ir"));
+    if show_metadata && !(dump_ir || dump_ir_types) {
+        return Err(miette::miette!(
+            "--show-metadata requires ir, --dump-ir, or --dump-ir-types"
+        ));
     }
-    if compact_ir && !dump_ir {
-        return Err(miette::miette!("--compact-ir requires ir or --dump-ir"));
+    if compact_ir && !(dump_ir || dump_ir_types) {
+        return Err(miette::miette!(
+            "--compact-ir requires ir, --dump-ir, or --dump-ir-types"
+        ));
     }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
@@ -93,9 +106,13 @@ fn main() -> miette::Result<()> {
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
     ast.analyze(&files)?;
-    if dump_ir {
-        let module =
-            slate_parser::sema::resolve_module(&ast).map_err(|error| miette::miette!("{error}"))?;
+    if dump_ir || dump_ir_types {
+        let module = if dump_ir_types {
+            slate_parser::sema::types::resolve_type_module(&ast)
+        } else {
+            slate_parser::sema::resolve_module(&ast)
+        }
+        .map_err(|error| miette::miette!("{error}"))?;
         let display = module.display(show_metadata);
         print!(
             "{}",

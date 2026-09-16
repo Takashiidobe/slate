@@ -1,6 +1,7 @@
 mod module;
 pub mod names;
 pub mod numeric;
+pub mod types;
 mod validate;
 
 pub use module::resolve_module;

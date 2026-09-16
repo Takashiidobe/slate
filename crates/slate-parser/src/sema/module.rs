@@ -1,4 +1,5 @@
 use super::numeric::{Context, ResolveError};
+use super::types::TypeResolver;
 use crate::ast::{
     DeclKind, Declarator, Expr, ExprKind, IntegerRank, IntegerType, Span, Stmt, StmtKind,
     StorageClass, TranslationUnit, TypeName, TypeSpecifier,
@@ -8,9 +9,29 @@ use crate::ir::{ConversionReason, Function, Linkage, Module, Parameters, Stateme
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     let context = Context::new(unit.target.clone()).with_options(&unit.options);
     let mut module = Module::new(context.target.clone());
+    let mut types = TypeResolver::new(context.target.clone());
     for declaration in &unit.decls {
         let function = match &declaration.value {
             DeclKind::Comment(_) => continue,
+            DeclKind::Declaration(item) if item.specifiers.storage == StorageClass::Typedef => {
+                for declarator in &item.declarators {
+                    let start = types.definitions.len();
+                    let name = declarator
+                        .declarator
+                        .name()
+                        .ok_or(ResolveError::Unsupported("anonymous typedef"))?
+                        .to_owned();
+                    let resolved = types.resolve(&item.specifiers, &declarator.declarator)?;
+                    module.metadata.insert(declarator.id, resolved.c.entries());
+                    types.define_alias(name, resolved)?;
+                    for definition in &types.definitions[start..] {
+                        module
+                            .types
+                            .push(declarator.clone().with_value(definition.clone()));
+                    }
+                }
+                continue;
+            }
             DeclKind::Function(function) => function,
             _ => return Err(ResolveError::Unsupported("module declaration")),
         };
@@ -33,14 +54,8 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         if !parameters.parameters().is_empty() || parameters.is_variadic() {
             return Err(ResolveError::Unsupported("function parameters"));
         }
-        let return_type = if function.specifiers.ty == TypeSpecifier::Void {
-            None
-        } else {
-            Some(context.cast_type(&TypeName {
-                specifiers: function.specifiers.clone(),
-                declarator: Declarator::Abstract,
-            })?)
-        };
+        let resolved_return = types.resolve(&function.specifiers, inner)?;
+        let return_type = resolved_return.ty;
         let linkage = match function.specifiers.storage {
             StorageClass::Static => Linkage::Internal,
             StorageClass::None | StorageClass::Extern => Linkage::External,
@@ -53,9 +68,14 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     "c_storage".into(),
                     function.specifiers.storage.as_str().into(),
                 ),
-                ("c_return".into(), format!("{:?}", function.specifiers.ty)),
+                ("c_return".into(), resolved_return.c.spelling.clone()),
             ],
         );
+        module
+            .metadata
+            .get_mut(&declaration.id)
+            .ok_or(ResolveError::Unsupported("missing function metadata"))?
+            .extend(resolved_return.c.entries());
         for statement in &function.body {
             collect_layout_metadata(statement, &mut module.metadata);
         }

@@ -83,6 +83,15 @@ The canonical semantic module dump is `slate-parser ir source.c` or
 spelling for source annotations. These commands share the same lowering and
 printer, and lowering must succeed for the whole module before output is
 printed. The expression and name dump modes are separate diagnostic views.
+`slate-parser parse source.c --dump-ir-types --show-metadata` resolves and
+prints type aliases and function signatures without lowering function bodies.
+This declaration view works for `tests/fixtures/add.c` while its statements
+and calls await general module lowering. Derived pointer, array, and function
+types use `TypeId` definitions. Each resolved declaration carries `c`,
+`c_canon` when different, and `typedef_chain` metadata; qualifiers are kept
+as `c_const`, `c_volatile`, `c_restrict`, and `c_atomic` metadata. The shown
+type is target concrete, so `size_t` and `unsigned long` both display as
+`u64` on x86_64 SysV while their C metadata remains distinct.
 Add `--compact-ir` to either module command for a typed view that hides
 conversion reasons and operation policies such as overflow, rounding,
 exceptions, and shift fill. This affects only printing; the default dump

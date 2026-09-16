@@ -1,0 +1,59 @@
+// SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-ARGS --dump-ir --show-metadata
+
+typedef unsigned long size_t;
+typedef unsigned int uint32_t;
+typedef uint32_t word;
+typedef const char *cstring;
+typedef int vector[4];
+typedef int callback(int value);
+typedef int (*fnptr)(int value);
+typedef char plain_char;
+typedef signed char signed_char;
+typedef unsigned char unsigned_char;
+
+word value(void) { return 7; }
+size_t count(void) { return 1; }
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type0 size_t = u64 [c="unsigned long"];
+// DEFAULT-NEXT:     type @type1 uint32_t = u32 [c="unsigned int"];
+// DEFAULT-NEXT:     type @type2 word = u32 [c="uint32_t"] [c_canon="unsigned int"] [typedef_chain="uint32_t"];
+// DEFAULT-NEXT:     type @type3 = ptr<const i8> [c="const char *"];
+// DEFAULT-NEXT:     type @type4 cstring = @type3 [c="const char *"];
+// DEFAULT-NEXT:     type @type5 = array<i32, 4> [c="int[4]"];
+// DEFAULT-NEXT:     type @type6 vector = @type5 [c="int[4]"];
+// DEFAULT-NEXT:     type @type7 = fn(i32) -> i32 [c="int(int)"];
+// DEFAULT-NEXT:     type @type8 callback = @type7 [c="int(int)"];
+// DEFAULT-NEXT:     type @type9 = fn(i32) -> i32 [c="int (*)(int)"];
+// DEFAULT-NEXT:     type @type10 = ptr<@type9> [c="int (*)(int)"];
+// DEFAULT-NEXT:     type @type11 fnptr = @type10 [c="int (*)(int)"];
+// DEFAULT-NEXT:     type @type12 plain_char = i8 [c="char"];
+// DEFAULT-NEXT:     type @type13 signed_char = i8 [c="signed char"];
+// DEFAULT-NEXT:     type @type14 unsigned_char = u8 [c="unsigned char"];
+// DEFAULT-NEXT:     fn %0 @value() -> u32 [linkage=external] [c_storage="none"] [c_return="word"] [c="word"] [c_canon="unsigned int"] [typedef_chain="word -> uint32_t"] {
+// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(7));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %1 @count() -> u64 [linkage=external] [c_storage="none"] [c_return="size_t"] [c="size_t"] [c_canon="unsigned long"] [typedef_chain="size_t"] {
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(1)));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
+// SLATE-FILECHECK-END DEFAULT

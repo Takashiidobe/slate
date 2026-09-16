@@ -3,6 +3,7 @@ use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Type {
+    Void,
     Bool,
     Numeric(NumericType),
     Defined(super::TypeId),
@@ -11,6 +12,7 @@ pub enum Type {
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Void => f.write_str("void"),
             Self::Defined(id) => write!(f, "@type{}", id.0),
             Self::Bool => f.write_str("bool"),
             Self::Numeric(ty) => write!(f, "{ty}"),
