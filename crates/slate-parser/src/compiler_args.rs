@@ -1,4 +1,8 @@
-use std::iter::Peekable;
+use crate::compiler_options::{CompilerOptions, LayoutOptions};
+use crate::ir::Overflow;
+use crate::rules::{Rule, Rules};
+use crate::target_info::{LongDoubleFormat, TargetInfo};
+use std::collections::BTreeSet;
 use std::str::FromStr;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -17,9 +21,7 @@ impl FromStr for CompilerFlavor {
             "gcc" => Ok(Self::Gcc),
             "clang" => Ok(Self::Clang),
             "msvc" => Ok(Self::Msvc),
-            _ => Err(format!(
-                "unknown compiler flavor: {name} (expected gcc, clang, or msvc)"
-            )),
+            _ => Err(format!("unknown compiler flavor: {name}")),
         }
     }
 }
@@ -78,75 +80,437 @@ impl FromStr for LanguageStandard {
             "gnu17" => Ok(Self::Gnu17),
             "c23" => Ok(Self::C23),
             "gnu23" => Ok(Self::Gnu23),
-            _ => Err(format!(
-                "unknown language standard: {name} (expected c89, gnu89, c99, gnu99, c11, gnu11, c17, gnu17, c23, or gnu23)"
-            )),
+            _ => Err(format!("unknown language standard: {name}")),
         }
     }
 }
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct CompilerArgs {
-    pub options: crate::compiler_options::CompilerOptions,
+    pub options: CompilerOptions,
     pub defines: Vec<String>,
     pub standard: LanguageStandard,
     pub isystem: Vec<String>,
     pub flavor: CompilerFlavor,
+    pub target: TargetInfo,
 }
+
+#[derive(Debug, thiserror::Error)]
+pub enum CompilerArgError {
+    #[error("invalid compiler argument `{argument}`: {reason}")]
+    Invalid { argument: String, reason: String },
+    #[error(transparent)]
+    Target(#[from] crate::target_info::TargetError),
+    #[error(transparent)]
+    Rule(#[from] crate::rules::RuleError),
+}
+
+impl miette::Diagnostic for CompilerArgError {}
+
+#[derive(Debug, Default)]
+struct ParsedCompilerArgs {
+    defines: Vec<String>,
+    standard: Option<LanguageStandard>,
+    isystem: Vec<String>,
+    flavor: CompilerFlavor,
+    target: String,
+    preferred_stack_boundary: Option<u32>,
+    stack_alignment: Option<u32>,
+    wrapv: Option<bool>,
+    trapv: Option<bool>,
+    signed_overflow: Overflow,
+    strict_overflow: Option<bool>,
+    rounding_math: Option<bool>,
+    trapping_math: Option<bool>,
+    long_double: Option<LongDoubleFormat>,
+    present: BTreeSet<Opt>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum Opt {
+    Define,
+    Standard,
+    Isystem,
+    Flavor,
+    Target,
+    PreferredStackBoundary,
+    StackAlignment,
+    Wrapv,
+    Trapv,
+    StrictOverflow,
+    RoundingMath,
+    TrappingMath,
+    LongDouble,
+}
+
+impl std::fmt::Display for Opt {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            Self::Define => "define",
+            Self::Standard => "std",
+            Self::Isystem => "isystem",
+            Self::Flavor => "flavor",
+            Self::Target => "target",
+            Self::PreferredStackBoundary => "preferred-stack-boundary",
+            Self::StackAlignment => "stack-alignment",
+            Self::Wrapv => "wrapv",
+            Self::Trapv => "trapv",
+            Self::StrictOverflow => "strict-overflow",
+            Self::RoundingMath => "rounding-math",
+            Self::TrappingMath => "trapping-math",
+            Self::LongDouble => "long-double",
+        };
+        formatter.write_str(name)
+    }
+}
+
+impl Opt {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Wrapv => "wrapv",
+            Self::Trapv => "trapv",
+            Self::StrictOverflow => "strict-overflow",
+            Self::RoundingMath => "rounding-math",
+            Self::TrappingMath => "trapping-math",
+            _ => "",
+        }
+    }
+
+    fn parse_flag(self, argument: &str) -> Option<bool> {
+        let name = self.name();
+        if argument == format!("-f{name}") || argument == format!("--f{name}") {
+            Some(true)
+        } else if argument == format!("-fno-{name}") || argument == format!("--fno-{name}") {
+            Some(false)
+        } else {
+            None
+        }
+    }
+}
+
+const FLAG_OPTS: [Opt; 5] = [
+    Opt::Wrapv,
+    Opt::Trapv,
+    Opt::StrictOverflow,
+    Opt::RoundingMath,
+    Opt::TrappingMath,
+];
 
 pub struct CompilerArgParser;
 
 impl CompilerArgParser {
-    pub fn parse<I>(args: I) -> Result<CompilerArgs, String>
+    pub fn parse<I>(args: I) -> Result<CompilerArgs, CompilerArgError>
     where
         I: IntoIterator<Item = String>,
     {
-        let arguments: Vec<String> = args.into_iter().collect();
-        let mut args = arguments.clone().into_iter().peekable();
-        let mut parsed = CompilerArgs::default();
-        while let Some(arg) = args.next() {
-            if let Some(define) = arg.strip_prefix("-D") {
-                parsed.defines.push(Self::value(define, &mut args, "-D")?);
-            } else if let Some(standard) = arg.strip_prefix("-std=") {
-                parsed.standard = standard.parse()?;
-            } else if arg == "-std" {
-                parsed.standard = Self::next_value(&mut args, "-std")?.parse()?;
-            } else if let Some(isystem) = arg.strip_prefix("-isystem") {
-                parsed
-                    .isystem
-                    .push(Self::value(isystem, &mut args, "-isystem")?);
-            } else if let Some(flavor) = arg.strip_prefix("--flavor=") {
-                parsed.flavor = flavor.parse()?;
-            } else if arg == "--flavor" {
-                parsed.flavor = Self::next_value(&mut args, "--flavor")?.parse()?;
-            } else if crate::compiler_options::CompilerOptions::recognizes(&arg) {
-            } else {
-                return Err(format!("unsupported argument: {arg}"));
+        let arguments = args.into_iter().collect::<Vec<_>>();
+        let raw = parse_arguments(&arguments)?;
+        let target = TargetInfo::for_triple(&raw.target)?;
+        validate_rules(&target).check(&raw)?;
+        let flavor = raw.flavor;
+        let layout = LayoutOptions {
+            long_double: raw.long_double,
+            preferred_stack_alignment: raw
+                .preferred_stack_boundary
+                .map(|exponent| 1u32 << exponent)
+                .or(raw.stack_alignment),
+        };
+        Ok(CompilerArgs {
+            options: CompilerOptions::from_values(
+                flavor,
+                layout,
+                arguments,
+                raw.signed_overflow,
+                raw.strict_overflow,
+                raw.rounding_math,
+                raw.trapping_math,
+            ),
+            defines: raw.defines,
+            standard: raw.standard.unwrap_or_default(),
+            isystem: raw.isystem,
+            flavor,
+            target,
+        })
+    }
+}
+
+fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerArgError> {
+    let mut parsed = ParsedCompilerArgs {
+        flavor: CompilerFlavor::Clang,
+        target: "x86_64-unknown-linux-gnu".into(),
+        ..ParsedCompilerArgs::default()
+    };
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = &arguments[index];
+        if let Some((opt, value)) = FLAG_OPTS
+            .iter()
+            .find_map(|opt| opt.parse_flag(argument).map(|value| (*opt, value)))
+        {
+            parsed.present.insert(opt);
+            match opt {
+                Opt::Wrapv => parsed.wrapv = Some(value),
+                Opt::Trapv => parsed.trapv = Some(value),
+                Opt::StrictOverflow => parsed.strict_overflow = Some(value),
+                Opt::RoundingMath => parsed.rounding_math = Some(value),
+                Opt::TrappingMath => parsed.trapping_math = Some(value),
+                _ => return Err(invalid(argument, "unknown flag")),
             }
-        }
-        parsed.options =
-            crate::compiler_options::CompilerOptions::resolve(arguments, parsed.flavor)
-                .map_err(|error| error.to_string())?;
-        Ok(parsed)
-    }
-
-    fn value<I>(value: &str, args: &mut Peekable<I>, option: &str) -> Result<String, String>
-    where
-        I: Iterator<Item = String>,
-    {
-        if value.is_empty() {
-            Self::next_value(args, option)
+        } else if let Some(value) = option_value(argument, "D") {
+            parsed.present.insert(Opt::Define);
+            parsed
+                .defines
+                .push(next_value(arguments, &mut index, argument, value)?);
+        } else if let Some(value) = option_value(argument, "std") {
+            parsed.present.insert(Opt::Standard);
+            parsed.standard = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "language standard",
+            )?);
+        } else if let Some(value) = option_value(argument, "isystem") {
+            parsed.present.insert(Opt::Isystem);
+            parsed
+                .isystem
+                .push(next_value(arguments, &mut index, argument, value)?);
+        } else if let Some(value) = option_value(argument, "flavor") {
+            parsed.present.insert(Opt::Flavor);
+            parsed.flavor = parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "compiler flavor",
+            )?;
+        } else if let Some(value) = option_value(argument, "target") {
+            parsed.present.insert(Opt::Target);
+            parsed.target = next_value(arguments, &mut index, argument, value)?;
+        } else if let Some(value) = option_value(argument, "mpreferred-stack-boundary") {
+            parsed.present.insert(Opt::PreferredStackBoundary);
+            parsed.preferred_stack_boundary = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "integer exponent",
+            )?);
+        } else if let Some(value) = option_value(argument, "mstack-alignment") {
+            parsed.present.insert(Opt::StackAlignment);
+            parsed.stack_alignment = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "byte alignment",
+            )?);
+        } else if let Some(value) = option_value(argument, "long-double") {
+            parsed.present.insert(Opt::LongDouble);
+            parsed.long_double = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "long double format",
+            )?);
+        } else if let Some(format) = long_double_flag(argument) {
+            parsed.present.insert(Opt::LongDouble);
+            parsed.long_double = Some(format);
         } else {
-            Ok(value.to_string())
+            return Err(invalid(argument, "unknown option"));
         }
+        index += 1;
     }
+    parsed.signed_overflow = signed_overflow(parsed.flavor, arguments);
+    Ok(parsed)
+}
 
-    fn next_value<I>(args: &mut Peekable<I>, option: &str) -> Result<String, String>
-    where
-        I: Iterator<Item = String>,
-    {
-        args.next()
-            .filter(|value| !value.starts_with('-'))
-            .ok_or_else(|| format!("missing value for {option}"))
+fn signed_overflow(flavor: CompilerFlavor, arguments: &[String]) -> Overflow {
+    let wrap = match (
+        last_flag(arguments, "wrapv"),
+        last_flag(arguments, "strict-overflow"),
+    ) {
+        (Some(wrap), Some(strict)) if strict.0 > wrap.0 => Some((strict.0, !strict.1)),
+        (None, Some(strict)) => Some((strict.0, !strict.1)),
+        (wrap, _) => wrap,
+    };
+    let trap = last_flag(arguments, "trapv");
+    match (
+        wrap.filter(|(_, value)| *value),
+        trap.filter(|(_, value)| *value),
+    ) {
+        (_, Some(_)) if flavor == CompilerFlavor::Clang => Overflow::Trap,
+        (Some(wrap), Some(trap)) if trap.0 > wrap.0 => Overflow::Trap,
+        (Some(_), _) => Overflow::Wrap,
+        (_, Some(_)) => Overflow::Trap,
+        _ => Overflow::Undefined,
     }
+}
+
+fn last_flag(arguments: &[String], name: &str) -> Option<(usize, bool)> {
+    arguments
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(index, argument)| {
+            let positive = format!("-f{name}");
+            let positive_long = format!("--f{name}");
+            let negative = format!("-fno-{name}");
+            let negative_long = format!("--fno-{name}");
+            if argument == &positive || argument == &positive_long {
+                Some((index, true))
+            } else if argument == &negative || argument == &negative_long {
+                Some((index, false))
+            } else {
+                None
+            }
+        })
+}
+
+fn option_value<'a>(argument: &'a str, name: &str) -> Option<&'a str> {
+    let short = format!("-{name}");
+    let long = format!("--{name}");
+    [short, long].iter().find_map(|spelling| {
+        argument.strip_prefix(spelling).and_then(|rest| {
+            rest.strip_prefix('=')
+                .or_else(|| (name == "isystem" || name == "D").then_some(rest))
+        })
+    })
+}
+
+fn next_value(
+    arguments: &[String],
+    index: &mut usize,
+    argument: &str,
+    attached: &str,
+) -> Result<String, CompilerArgError> {
+    if !attached.is_empty() {
+        return Ok(attached.into());
+    }
+    *index += 1;
+    arguments
+        .get(*index)
+        .filter(|value| !value.starts_with('-'))
+        .cloned()
+        .ok_or_else(|| invalid(argument, "missing value"))
+}
+
+fn parse_value<T>(value: String, argument: &str, description: &str) -> Result<T, CompilerArgError>
+where
+    T: FromStr,
+    T::Err: std::fmt::Display,
+{
+    value
+        .parse()
+        .map_err(|error| invalid(argument, &format!("invalid {description}: {error}")))
+}
+
+fn long_double_flag(argument: &str) -> Option<LongDoubleFormat> {
+    match argument {
+        "-mlong-double-64" | "--mlong-double-64" => Some(LongDoubleFormat::Binary64),
+        "-mlong-double-80" | "--mlong-double-80" => Some(LongDoubleFormat::X87),
+        "-mlong-double-128" | "--mlong-double-128" => Some(LongDoubleFormat::Binary128),
+        _ => None,
+    }
+}
+
+fn invalid(argument: &str, reason: &str) -> CompilerArgError {
+    CompilerArgError::Invalid {
+        argument: argument.into(),
+        reason: reason.into(),
+    }
+}
+
+fn validate_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
+    Rules::pipeline([common_rules(), flavor_rules(target)])
+}
+
+fn common_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
+    Rule::validate("stack alignment options", |args: &ParsedCompilerArgs| {
+        if args.preferred_stack_boundary.is_some() && args.stack_alignment.is_some() {
+            Err("preferred stack boundary and stack alignment are mutually exclusive".into())
+        } else {
+            Ok(())
+        }
+    })
+}
+
+fn flavor_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
+    Rules::branch(
+        |args: &ParsedCompilerArgs| args.flavor,
+        [
+            (CompilerFlavor::Gcc, gcc_rules(target)),
+            (CompilerFlavor::Clang, clang_rules()),
+            (CompilerFlavor::Msvc, msvc_rules()),
+        ],
+    )
+}
+
+fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
+    Rules::pipeline([
+        Rule::validate("GCC stack alignment", |args: &ParsedCompilerArgs| {
+            if args.stack_alignment.is_some() {
+                Err("stack alignment is a Clang option".into())
+            } else {
+                Ok(())
+            }
+        }),
+        Rules::when(
+            |args: &ParsedCompilerArgs| args.preferred_stack_boundary.is_some(),
+            Rule::validate(
+                "GCC preferred stack boundary",
+                move |args: &ParsedCompilerArgs| {
+                    let value = args.preferred_stack_boundary.unwrap_or_default();
+                    let minimum = if target.triple.starts_with("x86_64-") {
+                        4
+                    } else {
+                        2
+                    };
+                    if (minimum..=12).contains(&value) {
+                        Ok(())
+                    } else {
+                        Err(format!(
+                            "expected an exponent in {minimum}..=12 for target {}",
+                            target.triple
+                        ))
+                    }
+                },
+            ),
+        ),
+    ])
+}
+
+fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
+    Rules::pipeline([
+        Rule::validate("Clang stack alignment", |args: &ParsedCompilerArgs| {
+            if args.preferred_stack_boundary.is_some() {
+                Err("preferred stack boundary is a GCC option".into())
+            } else {
+                Ok(())
+            }
+        }),
+        Rules::when(
+            |args: &ParsedCompilerArgs| args.stack_alignment.is_some(),
+            Rule::validate("Clang stack alignment", |args: &ParsedCompilerArgs| {
+                let value = args.stack_alignment.unwrap_or_default();
+                if value.is_power_of_two() {
+                    Ok(())
+                } else {
+                    Err(format!("expected a power of two, found {value}"))
+                }
+            }),
+        ),
+    ])
+}
+
+fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
+    const UNSUPPORTED: [Opt; 8] = [
+        Opt::Wrapv,
+        Opt::Trapv,
+        Opt::StrictOverflow,
+        Opt::RoundingMath,
+        Opt::TrappingMath,
+        Opt::LongDouble,
+        Opt::PreferredStackBoundary,
+        Opt::StackAlignment,
+    ];
+    Rule::validate(
+        "MSVC stack alignment options",
+        |args: &ParsedCompilerArgs| match UNSUPPORTED.iter().find(|opt| args.present.contains(opt))
+        {
+            Some(opt) => Err(format!("MSVC does not support `{opt}`")),
+            None => Ok(()),
+        },
+    )
 }

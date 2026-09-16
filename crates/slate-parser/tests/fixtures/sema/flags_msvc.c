@@ -7,5 +7,5 @@ void operations(void) {
 }
 
 // SLATE-FILECHECK-BEGIN CHECK
-// CHECK: Error:   × unsupported argument for msvc flavor: -fwrapv
+// CHECK: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support
 // SLATE-FILECHECK-END CHECK

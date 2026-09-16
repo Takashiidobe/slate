@@ -312,7 +312,7 @@ impl Parser {
                 decls,
                 tags: self.tags.take(),
                 flavor: self.flavor(),
-                target: options.effective_target(self.target),
+                target: options.effective_target(self.target.clone()),
             },
             root_file,
         ))

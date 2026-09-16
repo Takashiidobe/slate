@@ -2,12 +2,6 @@ use crate::compiler_args::CompilerFlavor;
 use crate::ir::{Exceptions, FloatingSemantics, Overflow, Rounding};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
-#[derive(Debug, thiserror::Error)]
-pub enum OptionError {
-    #[error("unsupported argument for msvc flavor: {0}")]
-    UnsupportedMsvc(String),
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompilerOptions {
     pub operations: OperationOptions,
@@ -25,6 +19,7 @@ pub struct OperationOptions {
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct LayoutOptions {
     pub long_double: Option<LongDoubleFormat>,
+    pub preferred_stack_alignment: Option<u32>,
 }
 
 impl Default for CompilerOptions {
@@ -53,76 +48,45 @@ impl CompilerOptions {
         options
     }
 
-    pub fn recognizes(arg: &str) -> bool {
-        matches!(
-            arg,
-            "-fwrapv"
-                | "-fno-wrapv"
-                | "-ftrapv"
-                | "-fno-trapv"
-                | "-fstrict-overflow"
-                | "-fno-strict-overflow"
-                | "-frounding-math"
-                | "-fno-rounding-math"
-                | "-ftrapping-math"
-                | "-fno-trapping-math"
-                | "-mlong-double-64"
-                | "-mlong-double-80"
-                | "-mlong-double-128"
-        )
-    }
-
-    pub fn resolve(arguments: Vec<String>, flavor: CompilerFlavor) -> Result<Self, OptionError> {
+    pub fn from_values(
+        flavor: CompilerFlavor,
+        layout: LayoutOptions,
+        arguments: Vec<String>,
+        signed_overflow: Overflow,
+        strict_overflow: Option<bool>,
+        rounding_math: Option<bool>,
+        trapping_math: Option<bool>,
+    ) -> Self {
         let mut options = Self::for_flavor(flavor);
-        let mut wrap = None;
-        let mut trap = None;
-        for (index, arg) in arguments.iter().enumerate() {
-            if Self::recognizes(arg) && flavor == CompilerFlavor::Msvc {
-                return Err(OptionError::UnsupportedMsvc(arg.clone()));
-            }
-            match arg.as_str() {
-                "-fwrapv" => wrap = Some(index),
-                "-fno-wrapv" => wrap = None,
-                "-ftrapv" => trap = Some(index),
-                "-fno-trapv" => trap = None,
-                "-fstrict-overflow" => {
-                    wrap = None;
-                    options.operations.pointer_wrap = false;
-                }
-                "-fno-strict-overflow" => {
-                    wrap = Some(index);
-                    options.operations.pointer_wrap = true;
-                }
-                "-frounding-math" => options.operations.floating.rounding = Rounding::Environment,
-                "-fno-rounding-math" => {
-                    options.operations.floating.rounding = Rounding::NearestEven
-                }
-                "-ftrapping-math" => {
-                    options.operations.floating.exceptions = Exceptions::Observable
-                }
-                "-fno-trapping-math" => options.operations.floating.exceptions = Exceptions::Ignore,
-                "-mlong-double-64" => options.layout.long_double = Some(LongDoubleFormat::Binary64),
-                "-mlong-double-80" => options.layout.long_double = Some(LongDoubleFormat::X87),
-                "-mlong-double-128" => {
-                    options.layout.long_double = Some(LongDoubleFormat::Binary128)
-                }
-                _ => {}
-            }
+        options.layout = layout;
+        if let Some(value) = strict_overflow {
+            options.operations.pointer_wrap = !value;
         }
-        options.operations.signed_overflow = match (wrap, trap) {
-            (_, Some(_)) if flavor == CompilerFlavor::Clang => Overflow::Trap,
-            (Some(w), Some(t)) if t > w => Overflow::Trap,
-            (Some(_), _) => Overflow::Wrap,
-            (_, Some(_)) => Overflow::Trap,
-            _ => Overflow::Undefined,
-        };
+        if let Some(value) = rounding_math {
+            options.operations.floating.rounding = if value {
+                Rounding::Environment
+            } else {
+                Rounding::NearestEven
+            };
+        }
+        if let Some(value) = trapping_math {
+            options.operations.floating.exceptions = if value {
+                Exceptions::Observable
+            } else {
+                Exceptions::Ignore
+            };
+        }
+        options.operations.signed_overflow = signed_overflow;
         options.arguments = arguments;
-        Ok(options)
+        options
     }
 
     pub fn effective_target(&self, mut target: TargetInfo) -> TargetInfo {
         if let Some(format) = self.layout.long_double {
-            target.long_double = format;
+            target = target.with_long_double(format);
+        }
+        if let Some(alignment) = self.layout.preferred_stack_alignment {
+            target = target.with_preferred_stack_alignment(alignment);
         }
         target
     }

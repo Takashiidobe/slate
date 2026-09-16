@@ -6,3 +6,4 @@
 - [IR Spec](concepts/ir-spec.md)
 - [IR Shape](concepts/ir-shape.md)
 - [Compiler flags](concepts/compiler-flags.md)
+- [Compiler argument rules](concepts/compiler-arg-rules.md)

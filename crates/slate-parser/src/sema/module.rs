@@ -1,13 +1,13 @@
 use super::numeric::{Context, ResolveError};
 use crate::ast::{
-    DeclKind, Declarator, Span, Stmt, StmtKind, StorageClass, TranslationUnit, TypeName,
-    TypeSpecifier,
+    DeclKind, Declarator, Expr, ExprKind, IntegerRank, IntegerType, Span, Stmt, StmtKind,
+    StorageClass, TranslationUnit, TypeName, TypeSpecifier,
 };
 use crate::ir::{ConversionReason, Function, Linkage, Module, Parameters, Statement, Type};
 
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
-    let context = Context::new(unit.target).with_options(&unit.options);
-    let mut module = Module::new(context.target);
+    let context = Context::new(unit.target.clone()).with_options(&unit.options);
+    let mut module = Module::new(context.target.clone());
     for declaration in &unit.decls {
         let function = match &declaration.value {
             DeclKind::Comment(_) => continue,
@@ -56,6 +56,9 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 ("c_return".into(), format!("{:?}", function.specifiers.ty)),
             ],
         );
+        for statement in &function.body {
+            collect_layout_metadata(statement, &mut module.metadata);
+        }
         module.functions.push(
             declaration.clone().with_value(Function {
                 id: crate::ir::BindingId(
@@ -74,6 +77,78 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         );
     }
     Ok(module)
+}
+
+fn collect_layout_metadata(statement: &Stmt, metadata: &mut crate::ir::Metadata) {
+    let expression = match &statement.value {
+        StmtKind::Return(expression) | StmtKind::Expr(expression) => Some(expression),
+        _ => None,
+    };
+    if let Some(expression) = expression {
+        collect_expression_metadata(expression, metadata);
+    }
+}
+
+fn collect_expression_metadata(expression: &Expr, metadata: &mut crate::ir::Metadata) {
+    match &expression.value {
+        ExprKind::SizeOfType { ty } => {
+            metadata.insert(
+                expression.id,
+                vec![("size_of".into(), scalar_type_name(ty))],
+            );
+        }
+        ExprKind::AlignOf { ty } => {
+            metadata.insert(
+                expression.id,
+                vec![("align_of".into(), scalar_type_name(ty))],
+            );
+        }
+        ExprKind::Paren(inner)
+        | ExprKind::SizeOfExpr(inner)
+        | ExprKind::AlignOfExpr(inner)
+        | ExprKind::Unary { operand: inner, .. }
+        | ExprKind::Postfix { operand: inner, .. } => collect_expression_metadata(inner, metadata),
+        ExprKind::Binary { left, right, .. }
+        | ExprKind::Assign {
+            target: left,
+            value: right,
+            ..
+        }
+        | ExprKind::Comma { left, right } => {
+            collect_expression_metadata(left, metadata);
+            collect_expression_metadata(right, metadata);
+        }
+        _ => {}
+    }
+}
+
+fn scalar_type_name(ty: &TypeName) -> String {
+    match &ty.specifiers.ty {
+        TypeSpecifier::Floating(crate::ast::FloatingType::LongDouble) => "long double".into(),
+        TypeSpecifier::Floating(crate::ast::FloatingType::Double) => "double".into(),
+        TypeSpecifier::Floating(crate::ast::FloatingType::Float) => "float".into(),
+        TypeSpecifier::Bool => "_Bool".into(),
+        TypeSpecifier::Integer(IntegerType::Char { signed: None }) => "char".into(),
+        TypeSpecifier::Integer(IntegerType::Char { signed: Some(true) }) => "signed char".into(),
+        TypeSpecifier::Integer(IntegerType::Char {
+            signed: Some(false),
+        }) => "unsigned char".into(),
+        TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
+            let name = match rank {
+                IntegerRank::Short => "short",
+                IntegerRank::Int => "int",
+                IntegerRank::Long => "long",
+                IntegerRank::LongLong => "long long",
+                IntegerRank::Int128 => "__int128",
+            };
+            if *signed {
+                name.into()
+            } else {
+                format!("unsigned {name}")
+            }
+        }
+        _ => format!("{:?}", ty.specifiers.ty),
+    }
 }
 
 fn lower_statements(

@@ -293,8 +293,12 @@ impl Parser {
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search, self.standard);
         let options = self.effective_options();
-        pp.configure(options.effective_target(self.target), &options, self.flavor)
-            .map_err(FrontendError::PP)?;
+        pp.configure(
+            options.effective_target(self.target.clone()),
+            &options,
+            self.flavor,
+        )
+        .map_err(FrontendError::PP)?;
         pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_str("<main>", src).map_err(FrontendError::PP)?;
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
@@ -330,8 +334,12 @@ impl Parser {
         let search = self.search.clone();
         let mut pp = Preprocessor::new(&search, self.standard);
         let options = self.effective_options();
-        pp.configure(options.effective_target(self.target), &options, self.flavor)
-            .map_err(FrontendError::PP)?;
+        pp.configure(
+            options.effective_target(self.target.clone()),
+            &options,
+            self.flavor,
+        )
+        .map_err(FrontendError::PP)?;
         pp.define_all(&self.defines).map_err(FrontendError::PP)?;
         let nodes = pp.parse_file(path).map_err(FrontendError::PP)?;
         self.files = pp.files.clone();

@@ -14,7 +14,7 @@ fn main() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--target=x86_64-unknown-linux-gnu] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata]"
         ));
     }
     let path = args
@@ -55,8 +55,7 @@ fn main() -> miette::Result<()> {
             }
         })
         .collect();
-    let compiler_args =
-        CompilerArgParser::parse(remaining).map_err(|error| miette::miette!(error))?;
+    let compiler_args = CompilerArgParser::parse(remaining).map_err(miette::Report::new)?;
     if u8::from(dump_ir) + u8::from(dump_ir_names) + u8::from(dump_ir_expressions) > 1 {
         return Err(miette::miette!("IR dump modes are mutually exclusive"));
     }
@@ -79,6 +78,7 @@ fn main() -> miette::Result<()> {
     };
     let mut parser = Parser::new(search)
         .with_defines(compiler_args.defines)
+        .with_target(compiler_args.target)
         .with_flavor(compiler_args.flavor)
         .with_options(compiler_args.options)
         .with_standard(compiler_args.standard);

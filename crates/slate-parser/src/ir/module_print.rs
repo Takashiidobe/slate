@@ -1,6 +1,6 @@
 use super::{
-    Linkage, Metadata, Module, Parameters, RecordKind, Statement, StorageDuration,
-    TypeDefinitionKind, Variable,
+    FloatType, Linkage, Metadata, Module, NumericType, Parameters, RecordKind, Statement,
+    StorageDuration, Type, TypeDefinitionKind, Variable,
 };
 use crate::ast::{NodeId, Span};
 use std::fmt;
@@ -117,20 +117,75 @@ impl DisplayModule<'_> {
 impl fmt::Display for DisplayModule<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "module {{")?;
-        let target = self.module.target;
+        let target = &self.module.target;
+        writeln!(f, "    target \"{}\" {{", target.triple)?;
+        writeln!(f, "        endian = {};", target.endian.as_str())?;
         writeln!(
             f,
-            "    target [char_signed={}, short_width={}, int_width={}, long_width={}, long_long_width={}, pointer_width={}, wchar_signed={}, wchar_width={}, long_double={:?}];",
-            target.char_signed,
-            target.short_width,
-            target.int_width,
-            target.long_width,
-            target.long_long_width,
-            target.pointer_width,
-            target.wchar_signed,
-            target.wchar_width,
-            target.long_double
+            "        pointer [size={}, align={}];",
+            target.pointer.size_bytes, target.pointer.alignment_bytes
         )?;
+        writeln!(
+            f,
+            "        stack_alignment = {};",
+            target.abi.preferred_stack_alignment
+        )?;
+        writeln!(
+            f,
+            "        long_double = {};",
+            target.long_double.float_type()
+        )?;
+        for (names, ty) in [
+            ("bool", Type::Bool),
+            (
+                "i8, u8",
+                Type::Numeric(NumericType::Integer {
+                    width: 8,
+                    signed: true,
+                }),
+            ),
+            (
+                "i16, u16",
+                Type::Numeric(NumericType::Integer {
+                    width: 16,
+                    signed: true,
+                }),
+            ),
+            (
+                "i32, u32",
+                Type::Numeric(NumericType::Integer {
+                    width: 32,
+                    signed: true,
+                }),
+            ),
+            (
+                "i64, u64",
+                Type::Numeric(NumericType::Integer {
+                    width: 64,
+                    signed: true,
+                }),
+            ),
+            (
+                "i128, u128",
+                Type::Numeric(NumericType::Integer {
+                    width: 128,
+                    signed: true,
+                }),
+            ),
+            ("f16", Type::Numeric(NumericType::Float(FloatType::F16))),
+            ("f32", Type::Numeric(NumericType::Float(FloatType::F32))),
+            ("f64", Type::Numeric(NumericType::Float(FloatType::F64))),
+            ("f80", Type::Numeric(NumericType::Float(FloatType::F80))),
+            ("f128", Type::Numeric(NumericType::Float(FloatType::F128))),
+        ] {
+            let layout = target.storage_of(ty).map_err(|_| fmt::Error)?;
+            writeln!(
+                f,
+                "        storage {names} [size={}, align={}];",
+                layout.size_bytes, layout.alignment_bytes
+            )?;
+        }
+        writeln!(f, "    }}")?;
         for definition in &self.module.types {
             write!(f, "    type @type{}", definition.value.id.0)?;
             if let Some(name) = &definition.name {

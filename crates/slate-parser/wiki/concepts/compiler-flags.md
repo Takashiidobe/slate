@@ -318,8 +318,13 @@ MSVC flavor rejects these spellings rather than claiming compatible behavior.
 `-mlong-double-64/80/128` changes the effective `TargetInfo.long_double` and
 the current x86-64 Linux baseline's long-double predefines together, before
 user `-D` definitions. Sema parses the original literal directly at the
-selected precision. f80 has 80 value bits but 16-byte storage in this baseline;
-the options do not select a different target triple or implement full layouts.
+selected precision. f80 has 80 value bits but 16-byte storage in this baseline.
+The target layout is selected by the supported target triple and is printed in
+the IR module header. GCC's `-mpreferred-stack-boundary` and Clang's
+`-mstack-alignment` update the target's stack ABI policy after validating their
+compiler-specific value rules; they do not change ordinary scalar object
+storage alignment. Local `aligned` and `_Alignas` attributes remain layout
+overrides on individual objects, fields, and aggregate types.
 
 ```sh
 cargo run -- parse tests/fixtures/sema/numeric_seed.c --dump-ir-expressions -fwrapv -frounding-math -ftrapping-math

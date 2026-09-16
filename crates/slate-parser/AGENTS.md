@@ -61,6 +61,8 @@ re-deriving something from scratch:
   where a new variant needs handling.
 - `wiki/index.md` and `wiki/log/` — chronological log of past changes and
   decisions; `llog search <keyword>` to query it.
+- If working on adding a compiler arg, refer to
+  [`wiki/concepts/compiler-arg-rules.md`](wiki/concepts/compiler-arg-rules.md).
 
 ### Goal
 

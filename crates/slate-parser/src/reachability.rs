@@ -21,7 +21,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
             .cloned()
             .collect(),
         flavor: tu.flavor,
-        target: tu.target,
+        target: tu.target.clone(),
     }
 }
 

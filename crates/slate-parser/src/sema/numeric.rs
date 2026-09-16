@@ -34,6 +34,8 @@ pub enum ResolveError {
     },
     #[error(transparent)]
     Literal(#[from] crate::const_expr::ConstExprError),
+    #[error(transparent)]
+    Layout(#[from] crate::target_info::LayoutError),
 }
 
 const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";
@@ -106,6 +108,20 @@ impl Context {
                 )
             }
             ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
+            ExprKind::SizeOfType { ty } => {
+                let value = self.storage_of(ty)?.size_bytes;
+                (
+                    self.size_type(),
+                    ValueKind::Constant(Number::Integer(BigUint::from(value))),
+                )
+            }
+            ExprKind::AlignOf { ty } => {
+                let value = self.storage_of(ty)?.alignment_bytes;
+                (
+                    self.size_type(),
+                    ValueKind::Constant(Number::Integer(BigUint::from(value))),
+                )
+            }
             ExprKind::Cast { ty, value } => {
                 let converted = self.convert(
                     self.resolve(value)?,
@@ -349,6 +365,17 @@ impl Context {
             _ => return Err(ResolveError::Unsupported("cast type")),
         };
         Ok(Type::Numeric(numeric))
+    }
+
+    fn storage_of(&self, ty: &TypeName) -> Result<crate::target_info::StorageLayout, ResolveError> {
+        Ok(self.target.storage_of(self.cast_type(ty)?)?)
+    }
+
+    fn size_type(&self) -> Type {
+        Type::Numeric(NumericType::Integer {
+            width: self.target.long_width,
+            signed: false,
+        })
     }
 
     fn promote(&self, value: Value) -> Value {

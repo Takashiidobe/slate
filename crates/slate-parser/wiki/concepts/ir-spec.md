@@ -242,8 +242,9 @@ filter after resolution is required for this design.
 
 - **Scopes and general typing.** The numeric seed does not resolve names,
   declarations, or assignment/argument/return conversions.
-- **Target data layout.** `TargetInfo` has integer/pointer widths and
-  character signedness, but no complete object layout or calling ABI.
+- **Target data layout.** The initial `x86_64-unknown-linux-gnu` target now
+  exposes endian, pointer, scalar storage, long-double, and preferred-stack
+  alignment data. Aggregate layout and calling ABI details remain future work.
 - **Full provenance model.** Existing spans and macro origins survive the
   numeric lowering. The expansion records proposed below remain future work.
 
@@ -251,7 +252,7 @@ filter after resolution is required for this design.
 
 ```
 Module
-  target:    triple + data layout
+  target:    triple + endian + scalar/pointer storage + stack ABI policy
   types:     records (with computed layout), enums
   globals:   name, type, linkage, initializer, metadata
   functions: name, linkage, parameters, return type, variadic, body, metadata

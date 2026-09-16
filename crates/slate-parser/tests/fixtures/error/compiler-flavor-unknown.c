@@ -4,5 +4,5 @@ int value;
 // SLATE-FILECHECK-ERROR PARSE
 
 // SLATE-FILECHECK-BEGIN PARSE
-// PARSE: Error:   × unknown compiler flavor: bogus (expected gcc, clang, or msvc)
+// PARSE: Error:   × invalid compiler argument `--flavor=bogus`: invalid compiler flavor:
 // SLATE-FILECHECK-END PARSE
