@@ -1,6 +1,6 @@
 use super::decl::matching_paren;
 use super::declarator::DeclaratorParser;
-use super::{Cursor, Fragment, Parser, span_tokens};
+use super::{Cursor, Parser, TokenCursor, span_tokens};
 use crate::ast::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmLabel, AsmOperand, AsmOperands, AsmQualifier, AsmTemplatePiece, Expr,
@@ -110,52 +110,51 @@ struct RawOperand {
 impl Parser {
     pub(super) fn parse_file_scope_asm(
         &self,
-        code: &str,
         tokens: &[Span<Token>],
     ) -> Result<Option<GnuAsm>, ParseError> {
-        let mut fragment = Fragment::new(self, code, tokens, 0);
-        let Some(asm) = self.parse_asm(&mut fragment, true)? else {
+        let mut cursor = TokenCursor::new(self, tokens, 0);
+        let Some(asm) = self.parse_asm(&mut cursor, true)? else {
             return Ok(None);
         };
-        if fragment.pos != tokens.len() {
-            return Err(fragment.error("expected `;` after top-level asm block"));
+        if cursor.pos != tokens.len() {
+            return Err(cursor.error("expected `;` after top-level asm block"));
         }
         Ok(Some(asm))
     }
 
     pub(super) fn parse_asm_stmt(
         &self,
-        fragment: &mut Fragment<'_, '_>,
+        cursor: &mut TokenCursor<'_, '_>,
     ) -> Result<Option<GnuAsm>, ParseError> {
-        self.parse_asm(fragment, false)
+        self.parse_asm(cursor, false)
     }
 
     fn parse_asm(
         &self,
-        fragment: &mut Fragment<'_, '_>,
+        cursor: &mut TokenCursor<'_, '_>,
         at_file_scope: bool,
     ) -> Result<Option<GnuAsm>, ParseError> {
-        if !is_asm_keyword(fragment.peek()) {
+        if !is_asm_keyword(cursor.peek()) {
             return Ok(None);
         }
-        let tokens = fragment.tokens;
-        let mut cursor = fragment.pos + 1;
+        let tokens = cursor.tokens;
+        let mut position = cursor.pos + 1;
         let mut qualifiers = Vec::new();
-        while let Some(qualifier) = asm_qualifier(tokens.get(cursor).map(|token| &token.value)) {
-            qualifiers.push(span_tokens(qualifier, &tokens[cursor..=cursor]));
-            cursor += 1;
+        while let Some(qualifier) = asm_qualifier(tokens.get(position).map(|token| &token.value)) {
+            qualifiers.push(span_tokens(qualifier, &tokens[position..=position]));
+            position += 1;
         }
-        if tokens.get(cursor).map(|token| &token.value) != Some(&Token::LParen) {
+        if tokens.get(position).map(|token| &token.value) != Some(&Token::LParen) {
             return Ok(None);
         }
         if at_file_scope {
-            if !is_string_literal(tokens.get(cursor + 1).map(|token| &token.value)) {
+            if !is_string_literal(tokens.get(position + 1).map(|token| &token.value)) {
                 return Ok(None);
             }
             if let Some(qualifier) = qualifiers.first() {
                 return Err(self.error_at_tokens(
                     tokens,
-                    fragment.pos + 1,
+                    cursor.pos + 1,
                     format!(
                         "meaningless `{}` on asm outside function",
                         qualifier_spelling(qualifier.value)
@@ -166,24 +165,21 @@ impl Parser {
         let is_goto = qualifiers
             .iter()
             .any(|qualifier| qualifier.value == AsmQualifier::Goto);
-        fragment.pos = cursor + 1;
-        let template_pos = fragment.pos;
-        let template =
-            asm_string(tokens, &mut fragment.pos).map_err(|error| fragment.error(error))?;
-        if is_goto
-            && self.flavor() == CompilerFlavor::Gcc
-            && fragment.peek() == Some(&Token::RParen)
+        cursor.pos = position + 1;
+        let template_pos = cursor.pos;
+        let template = asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
+        if is_goto && self.flavor() == CompilerFlavor::Gcc && cursor.peek() == Some(&Token::RParen)
         {
-            return Err(fragment.error("expected `:`"));
+            return Err(cursor.error("expected `:`"));
         }
         if at_file_scope
             && self.flavor() == CompilerFlavor::Clang
-            && fragment.peek() != Some(&Token::RParen)
+            && cursor.peek() != Some(&Token::RParen)
         {
-            return Err(fragment.error("expected `)`"));
+            return Err(cursor.error("expected `)`"));
         }
-        if fragment.consume(Token::RParen) {
-            fragment.consume(Token::Semi);
+        if cursor.consume(Token::RParen) {
+            cursor.consume(Token::Semi);
             return Ok(Some(GnuAsm {
                 qualifiers,
                 template,
@@ -195,43 +191,43 @@ impl Parser {
         let mut inputs = Vec::new();
         let mut clobbers = Vec::new();
         let mut labels = Vec::new();
-        if fragment.consume(Token::Colon) {
-            outputs = self.parse_asm_operands(fragment)?;
+        if cursor.consume(Token::Colon) {
+            outputs = self.parse_asm_operands(cursor)?;
         }
-        if fragment.consume(Token::Colon) {
-            inputs = self.parse_asm_operands(fragment)?;
+        if cursor.consume(Token::Colon) {
+            inputs = self.parse_asm_operands(cursor)?;
         }
-        if fragment.consume(Token::Colon) && is_string_literal(fragment.peek()) {
+        if cursor.consume(Token::Colon) && is_string_literal(cursor.peek()) {
             loop {
                 let clobber =
-                    asm_string(tokens, &mut fragment.pos).map_err(|error| fragment.error(error))?;
+                    asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
                 clobbers.push(Span::new(
                     decode_clobber(&clobber.value),
                     clobber.spelling,
                     clobber.expansion,
                 ));
-                if !fragment.consume(Token::Comma) {
+                if !cursor.consume(Token::Comma) {
                     break;
                 }
             }
         }
-        if !is_goto && fragment.peek() != Some(&Token::RParen) {
-            return Err(fragment.error("expected `)`"));
+        if !is_goto && cursor.peek() != Some(&Token::RParen) {
+            return Err(cursor.error("expected `)`"));
         }
-        if fragment.consume(Token::Colon) {
+        if cursor.consume(Token::Colon) {
             loop {
-                let start = fragment.pos;
-                let label = fragment.expect_ident("expected identifier")?;
-                labels.push(span_tokens(label, &tokens[start..fragment.pos]));
-                if !fragment.consume(Token::Comma) {
+                let start = cursor.pos;
+                let label = cursor.expect_ident("expected identifier")?;
+                labels.push(span_tokens(label, &tokens[start..cursor.pos]));
+                if !cursor.consume(Token::Comma) {
                     break;
                 }
             }
         } else if is_goto {
-            return Err(fragment.error("expected `:`"));
+            return Err(cursor.error("expected `:`"));
         }
-        fragment.expect(Token::RParen, "expected `)`")?;
-        fragment.consume(Token::Semi);
+        cursor.expect(Token::RParen, "expected `)`")?;
+        cursor.consume(Token::Semi);
 
         let output_names = operand_names(&outputs);
         let mut names = output_names.clone();
@@ -289,40 +285,40 @@ impl Parser {
 
     fn parse_asm_operands(
         &self,
-        fragment: &mut Fragment<'_, '_>,
+        cursor: &mut TokenCursor<'_, '_>,
     ) -> Result<Vec<RawOperand>, ParseError> {
         let mut operands = Vec::new();
-        if matches!(fragment.peek(), Some(Token::Colon | Token::RParen)) {
+        if matches!(cursor.peek(), Some(Token::Colon | Token::RParen)) {
             return Ok(operands);
         }
-        let tokens = fragment.tokens;
+        let tokens = cursor.tokens;
         loop {
-            let name = if fragment.consume(Token::LBracket) {
-                let start = fragment.pos;
-                let name = fragment.expect_ident("expected identifier")?;
-                let name = span_tokens(name, &tokens[start..fragment.pos]);
-                fragment.expect(Token::RBracket, "expected `]`")?;
+            let name = if cursor.consume(Token::LBracket) {
+                let start = cursor.pos;
+                let name = cursor.expect_ident("expected identifier")?;
+                let name = span_tokens(name, &tokens[start..cursor.pos]);
+                cursor.expect(Token::RBracket, "expected `]`")?;
                 Some(name)
             } else {
                 None
             };
-            let constraint_pos = fragment.pos;
+            let constraint_pos = cursor.pos;
             let constraint =
-                asm_string(tokens, &mut fragment.pos).map_err(|error| fragment.error(error))?;
-            if fragment.peek() != Some(&Token::LParen) {
-                return Err(fragment.error("expected `(` after asm operand"));
+                asm_string(tokens, &mut cursor.pos).map_err(|error| cursor.error(error))?;
+            if cursor.peek() != Some(&Token::LParen) {
+                return Err(cursor.error("expected `(` after asm operand"));
             }
-            let close = matching_paren(tokens, fragment.pos)
-                .ok_or_else(|| fragment.error("expected `)`"))?;
-            let expr = self.parse_expression(fragment.code, &tokens[fragment.pos + 1..close])?;
-            fragment.pos = close + 1;
+            let close =
+                matching_paren(tokens, cursor.pos).ok_or_else(|| cursor.error("expected `)`"))?;
+            let expr = self.parse_expression(&tokens[cursor.pos + 1..close])?;
+            cursor.pos = close + 1;
             operands.push(RawOperand {
                 name,
                 constraint,
                 constraint_pos,
                 expr,
             });
-            if !fragment.consume(Token::Comma) {
+            if !cursor.consume(Token::Comma) {
                 return Ok(operands);
             }
         }

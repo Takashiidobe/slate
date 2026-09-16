@@ -109,12 +109,15 @@ impl<'a> Reachability<'a> {
         let Some(tag) = tu.tag(id) else {
             return;
         };
+        self.mark_attributes(&tag.attributes);
         match &tag.value.body {
             TagBody::Record(fields) => {
                 for field in fields {
                     if let FieldItemKind::Field(field) = &field.value {
+                        self.mark_attributes(&field.specifiers.attributes);
                         self.mark_type(&field.specifiers.ty);
                         for declarator in &field.declarators {
+                            self.mark_attributes(&declarator.attributes);
                             self.mark_declarator(&declarator.declarator);
                         }
                     }
@@ -138,6 +141,7 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_function(&mut self, function: &FunctionDefinition) {
+        self.mark_attributes(&function.attributes);
         self.mark_attributes(&function.specifiers.attributes);
         self.mark_type(&function.specifiers.ty);
         self.mark_declarator(&function.declarator);
@@ -145,6 +149,8 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_parameter(&mut self, parameter: &ParameterDeclaration) {
+        self.mark_attributes(&parameter.specifiers.attributes);
+        self.mark_attributes(&parameter.attributes);
         self.mark_type(&parameter.specifiers.ty);
         self.mark_declarator(&parameter.declarator);
     }
@@ -162,6 +168,7 @@ impl<'a> Reachability<'a> {
     }
 
     fn mark_type_name(&mut self, ty: &TypeName) {
+        self.mark_attributes(&ty.specifiers.attributes);
         self.mark_type(&ty.specifiers.ty);
         self.mark_declarator(&ty.declarator);
     }
@@ -247,10 +254,10 @@ impl<'a> Reachability<'a> {
                 self.mark_stmts(body);
             }
             StmtKind::NestedFunction(function) => self.mark_function(function),
+            StmtKind::Attribute(attributes) => self.mark_attributes(attributes),
             StmtKind::Comment(_)
             | StmtKind::ReturnVoid
             | StmtKind::StaticAssert(_)
-            | StmtKind::Attribute(_)
             | StmtKind::LocalLabelDecl(_)
             | StmtKind::Asm(_)
             | StmtKind::Goto(_)
@@ -470,15 +477,26 @@ impl<'a> Reachability<'a> {
 
     fn mark_attributes(&mut self, attributes: &[Attribute]) {
         for attribute in attributes {
-            let target = match attribute {
+            match attribute {
                 Attribute::Alias(name)
                 | Attribute::WeakRef(name)
                 | Attribute::Ifunc(name)
-                | Attribute::Cleanup(name) => Some(name.as_str()),
-                _ => None,
-            };
-            if let Some(target) = target {
-                self.mark_name(target);
+                | Attribute::Cleanup(name) => self.mark_name(name),
+                Attribute::AddressSpace(value)
+                | Attribute::PassObjectSize { size_type: value, .. }
+                | Attribute::Aligned(value)
+                | Attribute::VectorSize(value)
+                | Attribute::AllocAlign(value)
+                | Attribute::ExtVectorType(value)
+                | Attribute::CallingConvention(CallingConvention::RegParm(value))
+                | Attribute::AlignAs(AlignAsOperand::Expr(value)) => self.mark_expr(value),
+                Attribute::AlignAs(AlignAsOperand::Type { ty }) => self.mark_type_name(ty),
+                Attribute::AssumeAligned(values) | Attribute::AllocSize(values) => {
+                    for value in values {
+                        self.mark_expr(value);
+                    }
+                }
+                _ => {}
             }
         }
     }

@@ -10,10 +10,12 @@ pub(super) enum Annotation {
     Pragma(Vec<Span<Token>>),
 }
 
+pub(super) type Annotations = BTreeMap<usize, Vec<Span<Annotation>>>;
+
 #[derive(Default)]
 pub(super) struct ParserInput {
     pub tokens: Vec<Span<Token>>,
-    annotations: RefCell<BTreeMap<usize, Vec<Span<Annotation>>>>,
+    pub(super) annotations: RefCell<Annotations>,
 }
 
 impl ParserInput {

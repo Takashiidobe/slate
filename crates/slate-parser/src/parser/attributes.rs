@@ -63,9 +63,9 @@ impl<'a> AttrCursor<'a> {
     pub(super) fn parse_parenthesized_arguments(
         &mut self,
         message: &str,
-    ) -> Result<Vec<Span<Token>>, String> {
+    ) -> Result<&'a [Span<Token>], String> {
         if !self.consume(&Token::LParen) {
-            return Ok(Vec::new());
+            return Ok(&[]);
         }
         let start = self.pos;
         let mut depth = 0;
@@ -78,7 +78,7 @@ impl<'a> AttrCursor<'a> {
             }
             self.pos += 1;
         }
-        let arguments = self.tokens[start..self.pos].to_vec();
+        let arguments = &self.tokens[start..self.pos];
         self.expect(Token::RParen, message)?;
         Ok(arguments)
     }
@@ -110,7 +110,7 @@ pub(super) fn parse_attribute_groups(
                 attributes.push(parse_attribute_spelling(
                     &name,
                     canonical,
-                    &arguments,
+                    arguments,
                     biggest_alignment,
                     context,
                 )?);
@@ -124,9 +124,9 @@ pub(super) fn parse_attribute_groups(
             if arguments.is_empty() {
                 return Err("expected `(` after `_Alignas`".into());
             }
-            let operand = match const_expr::Parser::try_parse_full_type_name(&arguments, context) {
+            let operand = match const_expr::Parser::try_parse_full_type_name(arguments, context) {
                 Some(ty) => AlignAsOperand::Type { ty },
-                None => AlignAsOperand::Expr(parse_attribute_expression(&arguments, context)?),
+                None => AlignAsOperand::Expr(parse_attribute_expression(arguments, context)?),
             };
             attributes.push(Attribute::AlignAs(operand));
         } else if cursor.consume(&Token::Ident("__attribute__".into()))
@@ -144,7 +144,7 @@ pub(super) fn parse_attribute_groups(
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
                 attributes.push(parse_attribute(
                     &name,
-                    &arguments,
+                    arguments,
                     biggest_alignment,
                     context,
                 )?);
@@ -180,11 +180,11 @@ pub(super) fn parse_attribute_groups(
                     Some(canonical) => parse_attribute_spelling(
                         &name,
                         canonical,
-                        &arguments,
+                        arguments,
                         biggest_alignment,
                         context,
                     )?,
-                    None => unknown_attribute(&name, &arguments),
+                    None => unknown_attribute(&name, arguments),
                 });
                 if cursor.consume(&Token::Comma) {
                     continue;
@@ -201,6 +201,22 @@ pub(super) fn parse_attribute_groups(
 }
 
 pub(super) fn parse_attribute(
+    name: &str,
+    arguments: &[Span<Token>],
+    biggest_alignment: i64,
+    context: Option<&Parser>,
+) -> Result<Attribute, String> {
+    let checkpoint = context.map(Parser::checkpoint);
+    let attribute = parse_attribute_value(name, arguments, biggest_alignment, context)?;
+    if !matches!(attribute, Attribute::Invalid { .. })
+        && let Some(checkpoint) = checkpoint
+    {
+        checkpoint.commit();
+    }
+    Ok(attribute)
+}
+
+fn parse_attribute_value(
     name: &str,
     arguments: &[Span<Token>],
     biggest_alignment: i64,

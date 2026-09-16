@@ -9,6 +9,12 @@ use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::reachability::filter_translation_unit;
 use std::rc::Rc;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum DeclarationContext {
+    Ordinary,
+    Field,
+}
+
 impl Parser {
     pub(super) fn parse_declaration_tokens(
         &self,
@@ -17,7 +23,8 @@ impl Parser {
         let mut parser = self.declarator_parser(tokens, 0);
         let mut specifiers =
             self.parse_declaration_specifiers(&mut parser, self.standard().allows_implicit_int())?;
-        let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, false)?;
+        let declarators =
+            self.parse_declarator_list(&mut parser, &mut specifiers, DeclarationContext::Ordinary)?;
         Ok(Declaration {
             specifiers,
             declarators: declarators.into_iter().map(into_init_declarator).collect(),
@@ -95,7 +102,8 @@ impl Parser {
     ) -> Result<(DeclarationSpecifiers, Vec<FieldDeclarator>), ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
         let mut specifiers = self.parse_declaration_specifiers(&mut parser, false)?;
-        let declarators = self.parse_declarator_list(&mut parser, &mut specifiers, true)?;
+        let declarators =
+            self.parse_declarator_list(&mut parser, &mut specifiers, DeclarationContext::Field)?;
         Ok((
             specifiers,
             declarators.into_iter().map(into_field_declarator).collect(),
@@ -127,47 +135,56 @@ impl Parser {
         &self,
         parser: &mut DeclaratorParser,
         specifiers: &mut DeclarationSpecifiers,
-        is_field: bool,
+        context: DeclarationContext,
     ) -> Result<Vec<Span<ParsedDeclarator>>, ParseError> {
-        let tokens = parser.tokens;
         let mut declarators = Vec::new();
         if parser.peek() != Some(&Token::Semi) {
-            loop {
-                declarators.push(self.parse_one_declarator(parser, specifiers, is_field)?);
-                if !parser.matches(Token::Comma) {
-                    break;
-                }
-            }
+            declarators.push(self.parse_one_declarator(parser, specifiers, context)?);
         }
-        if parser.peek() != Some(&Token::Semi) {
-            return Err(self.error_at_tokens(tokens, parser.pos, "expected `;`"));
-        }
-        parser.pos += 1;
+        self.finish_declaration(parser, specifiers, context, &mut declarators)?;
         if parser.peek().is_some() {
             return Err(self.error_at_tokens(
-                tokens,
+                parser.tokens,
                 parser.pos,
                 "unexpected tokens after declaration",
             ));
         }
-        let vector_attributes = specifiers
+        Ok(declarators)
+    }
+
+    fn finish_declaration(
+        &self,
+        parser: &mut DeclaratorParser,
+        specifiers: &mut DeclarationSpecifiers,
+        context: DeclarationContext,
+        declarators: &mut Vec<Span<ParsedDeclarator>>,
+    ) -> Result<(), ParseError> {
+        while !declarators.is_empty() && parser.matches(Token::Comma) {
+            declarators.push(self.parse_one_declarator(parser, specifiers, context)?);
+        }
+        if !parser.matches(Token::Semi) {
+            return Err(self.error_at_tokens(parser.tokens, parser.pos, "expected `;`"));
+        }
+        let attributes = specifiers
             .attributes
             .iter()
             .chain(declarators.iter().flat_map(|parsed| &parsed.attributes))
             .cloned()
             .collect::<Vec<_>>();
-        specifiers.ty = apply_vector_attributes(specifiers.ty.clone(), &vector_attributes);
-        Ok(declarators)
+        let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
+        specifiers.ty = apply_vector_attributes(ty, &attributes);
+        Ok(())
     }
 
     fn parse_one_declarator(
         &self,
         parser: &mut DeclaratorParser,
         specifiers: &DeclarationSpecifiers,
-        is_field: bool,
+        context: DeclarationContext,
     ) -> Result<Span<ParsedDeclarator>, ParseError> {
         let tokens = parser.tokens;
         let start = parser.pos;
+        let is_field = context == DeclarationContext::Field;
         let (mut attributes, position) = self
             .parse_attribute_groups(tokens, parser.pos)
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error))?;
@@ -242,7 +259,6 @@ impl Parser {
 
     pub(super) fn parse_static_assert(
         &self,
-        code: &str,
         tokens: &[Span<Token>],
     ) -> Result<StaticAssert, ParseError> {
         if tokens.value_at(1) != Some(&Token::LParen) {
@@ -256,7 +272,7 @@ impl Parser {
         let arguments = &tokens[2..close];
         let comma = top_level_token(arguments, &Token::Comma);
         let condition_end = comma.unwrap_or(arguments.len());
-        let condition = self.parse_expression(code, &arguments[..condition_end])?;
+        let condition = self.parse_expression(&arguments[..condition_end])?;
         let message = comma
             .map(|comma| {
                 if let [message] = &arguments[comma + 1..]
@@ -371,12 +387,10 @@ impl Parser {
             *position = end;
             let item = &tokens[start..end];
             if tokens.value_at(start) == Some(&Token::Keyword(Keyword::StaticAssert)) {
-                return self
-                    .parse_static_assert("", item)
-                    .map(DeclKind::StaticAssert);
+                return self.parse_static_assert(item).map(DeclKind::StaticAssert);
             }
             return self
-                .parse_file_scope_asm("", item)?
+                .parse_file_scope_asm(item)?
                 .map(DeclKind::Asm)
                 .ok_or_else(|| self.error_at_tokens(tokens, start, "expected asm"));
         }
@@ -386,12 +400,13 @@ impl Parser {
             self.parse_declaration_specifiers(&mut parser, self.standard().allows_implicit_int())?;
         let mut declarators = Vec::new();
         if parser.peek() != Some(&Token::Semi) {
-            let mut first = self.parse_one_declarator(&mut parser, &specifiers, false)?;
+            let mut first =
+                self.parse_one_declarator(&mut parser, &specifiers, DeclarationContext::Ordinary)?;
             let identifier_list =
                 std::mem::replace(&mut parser.identifier_list, IdentifierList::Rejected);
             if let IdentifierList::Parsed(names) = identifier_list {
                 let (parameters, end) =
-                    self.parse_kr_parameter_declarations("", tokens, parser.pos, &names)?;
+                    self.parse_kr_parameter_declarations(tokens, parser.pos, &names)?;
                 if let Some(list) = first.value.declarator.function_parameters_mut() {
                     *list = ParameterList::Prototype {
                         parameters,
@@ -419,21 +434,14 @@ impl Parser {
                 }));
             }
             declarators.push(first);
-            while parser.matches(Token::Comma) {
-                declarators.push(self.parse_one_declarator(&mut parser, &specifiers, false)?);
-            }
         }
-        if !parser.matches(Token::Semi) {
-            return Err(self.error_at_tokens(tokens, parser.pos, "expected `;`"));
-        }
+        self.finish_declaration(
+            &mut parser,
+            &mut specifiers,
+            DeclarationContext::Ordinary,
+            &mut declarators,
+        )?;
         *position = parser.pos;
-        let attributes = specifiers
-            .attributes
-            .iter()
-            .chain(declarators.iter().flat_map(|parsed| &parsed.attributes))
-            .cloned()
-            .collect::<Vec<_>>();
-        specifiers.ty = apply_vector_attributes(specifiers.ty, &attributes);
         Ok(DeclKind::Declaration(Declaration {
             specifiers,
             declarators: declarators.into_iter().map(into_init_declarator).collect(),
@@ -504,7 +512,10 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
         PragmaStackAction::Pop | PragmaStackAction::Show => tokens.len(),
     };
     let alignment = tokens.get(alignment_start).and_then(|_token| {
-        const_expr::Parser::parse_expression(&tokens[alignment_start..], Some(parser)).ok()
+        let checkpoint = parser.checkpoint();
+        let expression = const_expr::Parser::parse_expression(&tokens[alignment_start..], Some(parser)).ok()?;
+        checkpoint.commit();
+        Some(expression)
     });
     Ok(PragmaKind::Pack { action, alignment })
 }
@@ -596,28 +607,26 @@ pub(crate) fn matching_brace(tokens: &[Span<Token>], open: usize) -> Option<usiz
     None
 }
 
-pub(super) fn split_top_level(tokens: &[Span<Token>], delimiter: &Token) -> Vec<Vec<Span<Token>>> {
+pub(super) fn split_top_level<'a>(
+    tokens: &'a [Span<Token>],
+    delimiter: &Token,
+) -> Vec<&'a [Span<Token>]> {
     let mut segments = Vec::new();
     let mut depth = 0i32;
-    let mut current = Vec::new();
-    for token in tokens {
+    let mut start = 0;
+    for (position, token) in tokens.iter().enumerate() {
         match &token.value {
-            Token::LBrace | Token::LParen | Token::LBracket => {
-                depth += 1;
-                current.push(token.clone());
-            }
-            Token::RBrace | Token::RParen | Token::RBracket => {
-                depth -= 1;
-                current.push(token.clone());
-            }
+            Token::LBrace | Token::LParen | Token::LBracket => depth += 1,
+            Token::RBrace | Token::RParen | Token::RBracket => depth -= 1,
             value if depth == 0 && value == delimiter => {
-                segments.push(std::mem::take(&mut current));
+                segments.push(&tokens[start..position]);
+                start = position + 1;
             }
-            _ => current.push(token.clone()),
+            _ => {}
         }
     }
-    if !current.is_empty() {
-        segments.push(current);
+    if start < tokens.len() {
+        segments.push(&tokens[start..]);
     }
     segments
 }

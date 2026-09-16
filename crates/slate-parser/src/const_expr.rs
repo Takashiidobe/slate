@@ -691,6 +691,17 @@ impl<'a> Parser<'a> {
         Ok((expression, start + parser.position))
     }
 
+    pub(crate) fn parse_initializer(
+        tokens: &'a [Span<Token>],
+        start: usize,
+        context: Option<&'a crate::parser::Parser>,
+    ) -> Result<(Initializer, usize), ConstExprError> {
+        let mut parser = Self::new(tokens, context);
+        parser.position = start;
+        let initializer = parser.parse_initializer_value()?;
+        Ok((initializer, parser.position))
+    }
+
     pub fn evaluate(tokens: &'a [Span<Token>]) -> Result<i64, ConstExprError> {
         Self::evaluate_expr(&Self::parse(tokens)?, None)
     }
@@ -1122,9 +1133,10 @@ impl<'a> Parser<'a> {
         if self.peek() == Some(&Token::LParen)
             && let Some(next) = self.peek_at(1)
             && starts_type_name(next, self.context)
-            && let Some((ty, end)) = self.try_parse_type_name(self.position + 1)
-            && self.token_at(end) == Some(&Token::RParen)
-            && self.token_at(end + 1) != Some(&Token::LBrace)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 1, |end| {
+                self.token_at(end) == Some(&Token::RParen)
+                    && self.token_at(end + 1) != Some(&Token::LBrace)
+            })
         {
             self.position = end + 1;
             let value = self.parse_cast()?;
@@ -1144,14 +1156,12 @@ impl<'a> Parser<'a> {
         if !starts_type_name(next, self.context) {
             return Ok(None);
         }
-        let Some((ty, end)) = self.try_parse_type_name(self.position + 1) else {
+        let Some((ty, end)) = self.try_parse_type_name(self.position + 1, |end| {
+            self.token_at(end) == Some(&Token::RParen)
+                && self.token_at(end + 1) == Some(&Token::LBrace)
+        }) else {
             return Ok(None);
         };
-        if self.token_at(end) != Some(&Token::RParen)
-            || self.token_at(end + 1) != Some(&Token::LBrace)
-        {
-            return Ok(None);
-        }
         self.position = end + 1;
         let initializer = self.parse_initializer_list()?;
         Ok(Some(self.node(
@@ -1222,10 +1232,22 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn try_parse_type_name(&self, start: usize) -> Option<(Box<TypeName>, usize)> {
+    fn try_parse_type_name(
+        &self,
+        start: usize,
+        accepts: impl FnOnce(usize) -> bool,
+    ) -> Option<(Box<TypeName>, usize)> {
+        let checkpoint = self.context.map(crate::parser::Parser::checkpoint);
         let mut declarator_parser = DeclaratorParser::new(self.tokens, start, self.context);
         let type_name = declarator_parser.parse_type_name().ok()?;
-        Some((Box::new(type_name), declarator_parser.position()))
+        let end = declarator_parser.position();
+        if !accepts(end) {
+            return None;
+        }
+        if let Some(checkpoint) = checkpoint {
+            checkpoint.commit();
+        }
+        Some((Box::new(type_name), end))
     }
 
     pub(crate) fn try_parse_full_type_name(
@@ -1237,8 +1259,8 @@ impl<'a> Parser<'a> {
             return None;
         }
         let parser = Self::new(tokens, context);
-        let (ty, end) = parser.try_parse_type_name(0)?;
-        (end == tokens.len()).then_some(ty)
+        let (ty, _) = parser.try_parse_type_name(0, |end| end == tokens.len())?;
+        Some(ty)
     }
 
     fn parse_unary(&mut self) -> Result<Expr, ConstExprError> {
@@ -1253,9 +1275,10 @@ impl<'a> Parser<'a> {
             && self.peek_at(1) == Some(&Token::LParen)
             && let Some(next) = self.peek_at(2)
             && starts_type_name(next, self.context)
-            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2)
-            && self.token_at(end) == Some(&Token::RParen)
-            && self.token_at(end + 1) != Some(&Token::LBrace)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2, |end| {
+                self.token_at(end) == Some(&Token::RParen)
+                    && self.token_at(end + 1) != Some(&Token::LBrace)
+            })
         {
             self.position = end + 1;
             return Ok(self.node(ExprKind::SizeOfType { ty }, start));
@@ -1268,8 +1291,9 @@ impl<'a> Parser<'a> {
             && self.peek_at(1) == Some(&Token::LParen)
             && let Some(next) = self.peek_at(2)
             && starts_type_name(next, self.context)
-            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2)
-            && self.token_at(end) == Some(&Token::RParen)
+            && let Some((ty, end)) = self.try_parse_type_name(self.position + 2, |end| {
+                self.token_at(end) == Some(&Token::RParen)
+            })
         {
             self.position = end + 1;
             return Ok(self.node(ExprKind::AlignOf { ty }, start));
@@ -1420,28 +1444,26 @@ impl<'a> Parser<'a> {
                 let Some(content) = crate::parser::string_literal_content(token) else {
                     return Err(ConstExprError::UnexpectedToken(token.clone()));
                 };
-                let mut pieces = vec![Span::new(
-                    content.to_string(),
-                    self.tokens[first_index].spelling,
-                    self.tokens[first_index].expansion,
-                )];
+                let mut pieces = vec![
+                    self.tokens[first_index]
+                        .clone()
+                        .with_value(content.to_string()),
+                ];
                 while let Some(next) = self.peek()
                     && let Some(content) = crate::parser::string_literal_content(next)
                 {
                     encoding = merge_string_encoding(encoding, string_literal_encoding(next));
                     let index = self.position;
-                    pieces.push(Span::new(
-                        content.to_string(),
-                        self.tokens[index].spelling,
-                        self.tokens[index].expansion,
-                    ));
+                    pieces.push(self.tokens[index].clone().with_value(content.to_string()));
                     self.take();
                 }
-                let chars: Vec<char> = pieces
+                let code_units = pieces
                     .iter()
-                    .flat_map(|piece| piece.value.chars())
+                    .flat_map(|piece| {
+                        let chars: Vec<char> = piece.value.chars().collect();
+                        Lexer::decode_escapes(&chars, 0, chars.len())
+                    })
                     .collect();
-                let code_units = Lexer::decode_escapes(&chars, 0, chars.len());
                 ExprKind::StringLiteral(StringLiteral {
                     encoding,
                     code_units,
@@ -1523,9 +1545,9 @@ impl<'a> Parser<'a> {
         self.expect(Token::LParen)?;
         let controlling = if let Some(next) = self.peek()
             && starts_type_name(next, self.context)
-            && let Some((ty, end)) = self.try_parse_type_name(self.position)
-            && self.token_at(end) == Some(&Token::Comma)
-        {
+            && let Some((ty, end)) = self.try_parse_type_name(self.position, |end| {
+                self.token_at(end) == Some(&Token::Comma)
+            }) {
             self.position = end;
             GenericControl::Type { ty }
         } else {
@@ -1538,7 +1560,7 @@ impl<'a> Parser<'a> {
                 self.expect(Token::Colon)?;
                 associations.push(GenericAssociation::Default(self.parse_assignment()?));
             } else {
-                let Some((ty, end)) = self.try_parse_type_name(self.position) else {
+                let Some((ty, end)) = self.try_parse_type_name(self.position, |_| true) else {
                     return Err(ConstExprError::ExpectedTypeName);
                 };
                 self.position = end;
@@ -1588,7 +1610,7 @@ impl<'a> Parser<'a> {
     fn parse_offsetof(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let (ty, end) = self
-            .try_parse_type_name(self.position)
+            .try_parse_type_name(self.position, |_| true)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::Comma)?;
@@ -1625,7 +1647,7 @@ impl<'a> Parser<'a> {
     fn parse_bit_cast(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let (ty, end) = self
-            .try_parse_type_name(self.position)
+            .try_parse_type_name(self.position, |_| true)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::Comma)?;
@@ -1639,7 +1661,7 @@ impl<'a> Parser<'a> {
         let list = self.parse_assignment()?;
         self.expect(Token::Comma)?;
         let (ty, end) = self
-            .try_parse_type_name(self.position)
+            .try_parse_type_name(self.position, |_| true)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::RParen)?;
@@ -1649,12 +1671,12 @@ impl<'a> Parser<'a> {
     fn parse_types_compatible(&mut self, start: usize) -> Result<Expr, ConstExprError> {
         self.expect(Token::LParen)?;
         let (left_ty, end) = self
-            .try_parse_type_name(self.position)
+            .try_parse_type_name(self.position, |_| true)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::Comma)?;
         let (right_ty, end) = self
-            .try_parse_type_name(self.position)
+            .try_parse_type_name(self.position, |_| true)
             .ok_or(ConstExprError::ExpectedTypeName)?;
         self.position = end;
         self.expect(Token::RParen)?;
@@ -1719,6 +1741,7 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Unsigned
                 | Keyword::Void
                 | Keyword::Complex
+                | Keyword::Imaginary
                 | Keyword::Struct
                 | Keyword::Union
                 | Keyword::Enum

@@ -1,14 +1,14 @@
 int values[] = { . = 1 };
 
 // SLATE-FILECHECK-DEFINES DEFAULT
-// SLATE-FILECHECK-ERROR DEFAULT
+// SLATE-FILECHECK-ERROR SEMANTIC
 
-// SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × expected identifier
-// DEFAULT: ╰─▶ expected identifier
-// DEFAULT: ╭─[tests/fixtures/error/initializer-designator-malformed.c:1:20]
-// DEFAULT: 1 │ int values[] = { . = 1 };
-// DEFAULT: ·                    ─
-// DEFAULT: 2 │
-// DEFAULT: ╰────
-// SLATE-FILECHECK-END DEFAULT
+// SLATE-FILECHECK-BEGIN SEMANTIC
+// SEMANTIC: Error:   × unexpected token `Equal`
+// SEMANTIC: ╰─▶ unexpected token `Equal`
+// SEMANTIC: ╭─[tests/fixtures/error/initializer-designator-malformed.c:1:16]
+// SEMANTIC: 1 │ int values[] = { . = 1 };
+// SEMANTIC: ·                ─
+// SEMANTIC: 2 │
+// SEMANTIC: ╰────
+// SLATE-FILECHECK-END SEMANTIC

@@ -10,7 +10,7 @@ use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
 use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
-use crate::lexer::{Lexer, Token};
+use crate::lexer::Token;
 use crate::pp::{DirectiveDiagnostic, MacroEntry, Preprocessor};
 use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
@@ -20,26 +20,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
-
-fn lex(code: &str) -> Vec<Span<Token>> {
-    Lexer::new(FileId(0), code).tokenize()
-}
-
-struct Loc<'a> {
-    code: &'a str,
-    offset: usize,
-    length: usize,
-}
-
-impl<'a> Loc<'a> {
-    fn whole(code: &'a str) -> Self {
-        Self {
-            code,
-            offset: 0,
-            length: code.len(),
-        }
-    }
-}
 
 trait Cursor {
     type Error;
@@ -62,18 +42,16 @@ trait Cursor {
     }
 }
 
-struct Fragment<'p, 'a> {
+struct TokenCursor<'p, 'a> {
     parser: &'p Parser,
-    code: &'a str,
     tokens: &'a [Span<Token>],
     pos: usize,
 }
 
-impl<'p, 'a> Fragment<'p, 'a> {
-    fn new(parser: &'p Parser, code: &'a str, tokens: &'a [Span<Token>], pos: usize) -> Self {
+impl<'p, 'a> TokenCursor<'p, 'a> {
+    fn new(parser: &'p Parser, tokens: &'a [Span<Token>], pos: usize) -> Self {
         Self {
             parser,
-            code,
             tokens,
             pos,
         }
@@ -103,7 +81,7 @@ impl<'p, 'a> Fragment<'p, 'a> {
     }
 }
 
-impl<'p, 'a> Cursor for Fragment<'p, 'a> {
+impl<'p, 'a> Cursor for TokenCursor<'p, 'a> {
     type Error = ParseError;
 
     fn tokens(&self) -> &[Span<Token>] {
@@ -196,6 +174,29 @@ impl NameEnvironment {
     }
 }
 
+pub(crate) struct ParseCheckpoint<'a> {
+    parser: &'a Parser,
+    scopes: Option<Vec<HashMap<String, NameBinding>>>,
+    tags: usize,
+    annotations: input::Annotations,
+}
+
+impl ParseCheckpoint<'_> {
+    pub(crate) fn commit(mut self) {
+        self.scopes = None;
+    }
+}
+
+impl Drop for ParseCheckpoint<'_> {
+    fn drop(&mut self) {
+        if let Some(scopes) = self.scopes.take() {
+            *self.parser.names.scopes.borrow_mut() = scopes;
+            self.parser.tags.borrow_mut().truncate(self.tags);
+            *self.parser.input.annotations.borrow_mut() = std::mem::take(&mut self.annotations);
+        }
+    }
+}
+
 pub(crate) const FALLBACK_BIGGEST_ALIGNMENT: i64 = 16;
 
 fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
@@ -206,6 +207,15 @@ fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
 }
 
 impl Parser {
+    pub(crate) fn checkpoint(&self) -> ParseCheckpoint<'_> {
+        ParseCheckpoint {
+            parser: self,
+            scopes: Some(self.names.scopes.borrow().clone()),
+            tags: self.tags.borrow().len(),
+            annotations: self.input.annotations.borrow().clone(),
+        }
+    }
+
     pub(crate) fn is_typedef(&self, name: &str) -> bool {
         self.names.is_typedef(name)
     }
@@ -341,49 +351,6 @@ impl Parser {
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
 
-    pub fn parse_declaration(&self, code: &str) -> Result<Declaration, ParseError> {
-        let tokens = lex(code);
-        self.parse_declaration_tokens(&tokens)
-    }
-
-    fn error_at(&self, loc: Loc<'_>, message: impl Into<String>) -> ParseError {
-        let Loc {
-            code,
-            offset,
-            length,
-        } = loc;
-        if let Some(base) = self.source.find(code) {
-            return ParseError::new(
-                self.source_name.clone(),
-                self.source.clone(),
-                base + offset,
-                length.max(1),
-                message,
-            );
-        }
-        for path in self.files.paths() {
-            let Ok(contents) = std::fs::read(path).map(|bytes| decode_source_bytes(&bytes)) else {
-                continue;
-            };
-            if let Some(base) = contents.find(code) {
-                return ParseError::new(
-                    display_path(path),
-                    contents,
-                    base + offset,
-                    length.max(1),
-                    message,
-                );
-            }
-        }
-        ParseError::new(
-            self.source_name.clone(),
-            self.source.clone(),
-            offset,
-            length.max(1),
-            message,
-        )
-    }
-
     fn error_at_tokens(
         &self,
         tokens: &[Span<Token>],
@@ -391,10 +358,7 @@ impl Parser {
         message: impl Into<String>,
     ) -> ParseError {
         let message = message.into();
-        if tokens.is_empty() {
-            return self.error_at(Loc::whole(""), message);
-        }
-        let end = position.min(tokens.len() - 1) + 1;
+        let end = position.saturating_add(1).min(tokens.len());
         for token in tokens[..end].iter().rev() {
             let loc = token.expansion;
             let Some(path) = self.files.get_path(loc.file) else {

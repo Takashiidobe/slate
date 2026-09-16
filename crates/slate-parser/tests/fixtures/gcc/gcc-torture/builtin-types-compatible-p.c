@@ -636,10 +636,15 @@ int main(void) {
 // DEFAULT-NEXT:                                   left_ty: TypeName {
 // DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                           ty: TypeOf(
-// DEFAULT-NEXT:                                               Expression(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "dingos",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Type(
+// DEFAULT-NEXT:                                                   TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "dingos",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
@@ -648,10 +653,15 @@ int main(void) {
 // DEFAULT-NEXT:                                   right_ty: TypeName {
 // DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                                           ty: TypeOf(
-// DEFAULT-NEXT:                                               Expression(
-// DEFAULT-NEXT:                                                   Identifier(
-// DEFAULT-NEXT:                                                       "cranberry",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               Type(
+// DEFAULT-NEXT:                                                   TypeName {
+// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "cranberry",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },

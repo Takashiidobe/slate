@@ -460,13 +460,14 @@ impl<'a> DeclaratorParser<'a> {
             _ => None,
         };
         let mut fixed_type = None;
-        if self.peek() == Some(&Token::Colon) {
-            let checkpoint = self.pos;
+        if self.peek() == Some(&Token::Colon)
+            && self
+                .tokens
+                .value_at(self.pos + 1)
+                .is_some_and(|token| const_expr::starts_type_name(token, self.context))
+        {
             self.pos += 1;
-            match self.parse_type_name() {
-                Ok(type_name) => fixed_type = Some(type_name),
-                Err(_) => self.pos = checkpoint,
-            }
+            fixed_type = Some(self.parse_type_name()?);
         }
         if self.peek() == Some(&Token::LBrace) {
             let body = TagBody::Enum {
@@ -683,116 +684,15 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(super) fn typeof_type_start(&self) -> bool {
-        matches!(
-            self.peek(),
-            Some(Token::Keyword(
-                Keyword::Bool
-                    | Keyword::BFloat16
-                    | Keyword::Char
-                    | Keyword::Double
-                    | Keyword::Float
-                    | Keyword::Float16
-                    | Keyword::Fp16
-                    | Keyword::Float64x
-                    | Keyword::Float128
-                    | Keyword::Float128Ext
-                    | Keyword::Int
-                    | Keyword::Int128
-                    | Keyword::Long
-                    | Keyword::Short
-                    | Keyword::Signed
-                    | Keyword::Unsigned
-                    | Keyword::Void
-                    | Keyword::Complex
-                    | Keyword::Imaginary
-                    | Keyword::BitInt
-                    | Keyword::Atomic
-                    | Keyword::Struct
-                    | Keyword::Union
-                    | Keyword::Enum
-                    | Keyword::Fract
-                    | Keyword::Accum
-                    | Keyword::Saturated
-                    | Keyword::Typeof
-                    | Keyword::TypeofUnqual
-            ))
-        )
-    }
-
-    fn parse_designator_index(&mut self) -> Result<Expr, const_expr::ConstExprError> {
-        let (index, end) = const_expr::Parser::parse_one(self.tokens, self.pos, self.context)?;
-        self.pos = end;
-        Ok(index)
+        self.peek()
+            .is_some_and(|token| const_expr::starts_type_name(token, self.context))
     }
 
     pub(super) fn parse_initializer(&mut self) -> Result<Initializer, const_expr::ConstExprError> {
-        if self.matches(Token::LBrace) {
-            let mut items = Vec::new();
-            while !self.matches(Token::RBrace) {
-                let mut designators = Vec::new();
-                loop {
-                    if self.matches(Token::LBracket) {
-                        let index = self.parse_designator_index()?;
-                        if self.matches(Token::Ellipsis) {
-                            let end = self.parse_designator_index()?;
-                            designators.push(Designator::ArrayRange { start: index, end });
-                        } else {
-                            designators.push(Designator::Array(index));
-                        }
-                        self.expect(
-                            Token::RBracket,
-                            DeclaratorError::ExpectedToken(
-                                Token::RBracket,
-                                "in initializer designator",
-                            ),
-                        )
-                        .map_err(|error| {
-                            const_expr::ConstExprError::StatementExpression(error.to_string())
-                        })?;
-                    } else if self.matches(Token::Dot) {
-                        let Some(Token::Ident(name)) = self.peek().cloned() else {
-                            return Err(const_expr::ConstExprError::ExpectedIdentifier);
-                        };
-                        let start = self.pos;
-                        self.pos += 1;
-                        designators.push(Designator::Field(span_tokens(
-                            name,
-                            &self.tokens[start..self.pos],
-                        )));
-                    } else if let Some(Token::Ident(name)) = self.peek().cloned()
-                        && self.tokens.value_at(self.pos + 1) == Some(&Token::Colon)
-                    {
-                        let start = self.pos;
-                        self.pos += 2;
-                        designators.push(Designator::Field(span_tokens(
-                            name,
-                            &self.tokens[start..start + 1],
-                        )));
-                    } else {
-                        break;
-                    }
-                }
-                if !designators.is_empty() {
-                    self.matches(Token::Equal);
-                }
-                items.push(InitializerItem {
-                    designators,
-                    value: self.parse_initializer()?,
-                });
-                if !self.matches(Token::Comma) && self.peek() != Some(&Token::RBrace) {
-                    return Err(const_expr::ConstExprError::Expected {
-                        expected: Token::Comma,
-                        found: self.tokens.get(self.pos).cloned(),
-                    });
-                }
-            }
-            Ok(Initializer::List(items))
-        } else {
-            let (expression, end) =
-                const_expr::Parser::parse_one(self.tokens, self.pos, self.context)?;
-            self.pos = end;
-            Ok(Initializer::Expr(expression))
-        }
+        let (initializer, end) =
+            const_expr::Parser::parse_initializer(self.tokens, self.pos, self.context)?;
+        self.pos = end;
+        Ok(initializer)
     }
 
     pub(crate) fn parse_declarator(

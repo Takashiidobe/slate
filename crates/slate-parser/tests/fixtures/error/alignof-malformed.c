@@ -5,9 +5,9 @@ int g(void) { return _Alignof(; }
 // SLATE-FILECHECK-BEGIN PARSE
 // PARSE: Error:   × expected `;`
 // PARSE: ╰─▶ expected `;`
-// PARSE: ╭─[tests/fixtures/error/alignof-malformed.c:1:1]
+// PARSE: ╭─[tests/fixtures/error/alignof-malformed.c:1:15]
 // PARSE: 1 │ int g(void) { return _Alignof(; }
-// PARSE: · ─
+// PARSE: ·               ──────
 // PARSE: 2 │
 // PARSE: ╰────
 // SLATE-FILECHECK-END PARSE
