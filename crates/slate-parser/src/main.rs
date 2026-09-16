@@ -14,7 +14,7 @@ fn main() -> miette::Result<()> {
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--target=x86_64-unknown-linux-gnu] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata]"
+            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [--target=x86_64-unknown-linux-gnu] [--flavor=gcc|clang|msvc] [-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -27,10 +27,14 @@ fn main() -> miette::Result<()> {
     let mut dump_ir = command.as_deref() == Some("ir");
     let mut show_spans = false;
     let mut show_metadata = false;
+    let mut compact_ir = false;
     let remaining: Vec<String> = args
         .filter(|arg| {
             if arg == "--show-metadata" {
                 show_metadata = true;
+                false
+            } else if arg == "--compact-ir" {
+                compact_ir = true;
                 false
             } else if arg == "--dump-ir" {
                 dump_ir = true;
@@ -67,6 +71,9 @@ fn main() -> miette::Result<()> {
     if show_metadata && !dump_ir {
         return Err(miette::miette!("--show-metadata requires ir or --dump-ir"));
     }
+    if compact_ir && !dump_ir {
+        return Err(miette::miette!("--compact-ir requires ir or --dump-ir"));
+    }
     fs::metadata(Path::new(&path)).map_err(|error| miette::miette!(error))?;
     let mut system: Vec<PathBuf> = compiler_args.isystem.iter().map(PathBuf::from).collect();
     if let Some(home) = env::var_os("HOME") {
@@ -89,7 +96,15 @@ fn main() -> miette::Result<()> {
     if dump_ir {
         let module =
             slate_parser::sema::resolve_module(&ast).map_err(|error| miette::miette!("{error}"))?;
-        print!("{}", module.display(show_metadata));
+        let display = module.display(show_metadata);
+        print!(
+            "{}",
+            if compact_ir {
+                display.compact()
+            } else {
+                display
+            }
+        );
         return Ok(());
     }
     if dump_ir_names {

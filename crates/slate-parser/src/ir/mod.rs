@@ -74,7 +74,7 @@ pub enum ValueKind {
 
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.format(f, false, None)
+        self.format(f, false, None, false)
     }
 }
 
@@ -82,11 +82,20 @@ pub struct DisplayValue<'a> {
     value: &'a Value,
     show_spans: bool,
     metadata: Option<&'a Metadata>,
+    compact: bool,
 }
 
 impl fmt::Display for DisplayValue<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.value.format(f, self.show_spans, self.metadata)
+        self.value
+            .format(f, self.show_spans, self.metadata, self.compact)
+    }
+}
+
+impl DisplayValue<'_> {
+    pub(crate) fn with_compact(mut self, compact: bool) -> Self {
+        self.compact = compact;
+        self
     }
 }
 
@@ -96,6 +105,7 @@ impl Value {
             value: self,
             show_spans,
             metadata: None,
+            compact: false,
         }
     }
 
@@ -108,6 +118,7 @@ impl Value {
             value: self,
             show_spans,
             metadata,
+            compact: false,
         }
     }
 
@@ -116,6 +127,7 @@ impl Value {
         f: &mut fmt::Formatter<'_>,
         show_spans: bool,
         metadata: Option<&Metadata>,
+        compact: bool,
     ) -> fmt::Result {
         match &self.node.value {
             ValueKind::Bytes(bytes) => write!(f, "bytes<{}>({bytes:?})", self.ty),
@@ -128,7 +140,13 @@ impl Value {
             } => {
                 write!(f, "call<{}>(%{}", self.ty, function.0)?;
                 for argument in arguments {
-                    write!(f, ", {}", argument.display_metadata(show_spans, metadata))?;
+                    write!(
+                        f,
+                        ", {}",
+                        argument
+                            .display_metadata(show_spans, metadata)
+                            .with_compact(compact)
+                    )?;
                 }
                 f.write_str(")")
             }
@@ -165,8 +183,12 @@ impl Value {
                 reason,
                 semantics,
             } => {
-                write!(f, "{kind}<{}, reason={reason}", self.ty)?;
+                write!(f, "{kind}<{}", self.ty)?;
+                if !compact {
+                    write!(f, ", reason={reason}")?;
+                }
                 match semantics {
+                    _ if compact => {}
                     ConversionSema::Exact => {}
                     ConversionSema::Fits(fits) => write!(
                         f,
@@ -187,7 +209,13 @@ impl Value {
                         exceptions_name(*exceptions)
                     )?,
                 }
-                write!(f, ">({})", operand.display_metadata(show_spans, metadata))
+                write!(
+                    f,
+                    ">({})",
+                    operand
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )
             }
             ValueKind::Arith {
                 op,
@@ -196,12 +224,15 @@ impl Value {
                 semantics,
             } => {
                 write!(f, "{op}")?;
-                self.format_semantics(f, *semantics)?;
+                self.format_semantics(f, *semantics, compact)?;
                 write!(
                     f,
                     "({}, {})",
-                    left.display_metadata(show_spans, metadata),
-                    right.display_metadata(show_spans, metadata)
+                    left.display_metadata(show_spans, metadata)
+                        .with_compact(compact),
+                    right
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
                 )
             }
             ValueKind::Unary {
@@ -210,8 +241,14 @@ impl Value {
                 semantics,
             } => {
                 write!(f, "{op}")?;
-                self.format_semantics(f, *semantics)?;
-                write!(f, "({})", operand.display_metadata(show_spans, metadata))
+                self.format_semantics(f, *semantics, compact)?;
+                write!(
+                    f,
+                    "({})",
+                    operand
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )
             }
             ValueKind::Compare {
                 op,
@@ -220,22 +257,28 @@ impl Value {
                 exceptions,
             } => {
                 write!(f, "{op}<{}", left.ty)?;
-                if let Some(exceptions) = exceptions {
-                    write!(f, ", exceptions={}", exceptions_name(*exceptions))?;
+                if let Some(exceptions) = exceptions.filter(|_| !compact) {
+                    write!(f, ", exceptions={}", exceptions_name(exceptions))?;
                 }
                 write!(
                     f,
                     ">({}, {})",
-                    left.display_metadata(show_spans, metadata),
-                    right.display_metadata(show_spans, metadata)
+                    left.display_metadata(show_spans, metadata)
+                        .with_compact(compact),
+                    right
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
                 )
             }
             ValueKind::Logical { op, left, right } => write!(
                 f,
                 "{op}<{}>({}, {})",
                 self.ty,
-                left.display_metadata(show_spans, metadata),
-                right.display_metadata(show_spans, metadata)
+                left.display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                right
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
             ),
         }?;
         module_print::metadata(f, metadata, self.node.id)?;
@@ -256,8 +299,16 @@ impl Value {
         Ok(())
     }
 
-    fn format_semantics(&self, f: &mut fmt::Formatter<'_>, semantics: ArithSema) -> fmt::Result {
+    fn format_semantics(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        semantics: ArithSema,
+        compact: bool,
+    ) -> fmt::Result {
         write!(f, "<{}", self.ty)?;
+        if compact {
+            return f.write_str(">");
+        }
         match semantics {
             ArithSema::Integer { overflow } => write!(
                 f,

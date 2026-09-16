@@ -8,6 +8,7 @@ use std::fmt;
 pub struct DisplayModule<'a> {
     module: &'a Module,
     show_metadata: bool,
+    compact: bool,
 }
 
 impl Module {
@@ -15,7 +16,15 @@ impl Module {
         DisplayModule {
             module: self,
             show_metadata,
+            compact: false,
         }
+    }
+}
+
+impl DisplayModule<'_> {
+    pub fn compact(mut self) -> Self {
+        self.compact = true;
+        self
     }
 }
 
@@ -66,7 +75,13 @@ impl DisplayModule<'_> {
             }
         )?;
         if let Some(value) = &variable.initializer {
-            write!(f, " = {}", value.display_metadata(false, self.table()))?;
+            write!(
+                f,
+                " = {}",
+                value
+                    .display_metadata(false, self.table())
+                    .with_compact(self.compact)
+            )?;
         }
         Ok(())
     }
@@ -89,14 +104,24 @@ impl DisplayModule<'_> {
                     "write<{}>(%{}, {})",
                     place.ty,
                     place.binding.0,
-                    value.display_metadata(false, self.table())
+                    value
+                        .display_metadata(false, self.table())
+                        .with_compact(self.compact)
                 )?,
-                Statement::Expression(value) => {
-                    write!(f, "{}", value.display_metadata(false, self.table()))?
-                }
-                Statement::Return(Some(value)) => {
-                    write!(f, "return {}", value.display_metadata(false, self.table()))?
-                }
+                Statement::Expression(value) => write!(
+                    f,
+                    "{}",
+                    value
+                        .display_metadata(false, self.table())
+                        .with_compact(self.compact)
+                )?,
+                Statement::Return(Some(value)) => write!(
+                    f,
+                    "return {}",
+                    value
+                        .display_metadata(false, self.table())
+                        .with_compact(self.compact)
+                )?,
                 Statement::Return(None) => f.write_str("return")?,
                 Statement::Block(body) => {
                     f.write_str("{")?;
@@ -259,7 +284,11 @@ impl fmt::Display for DisplayModule<'_> {
                                 "        %{} {} = {}",
                                 enumerator.value.id.0,
                                 enumerator.name,
-                                enumerator.value.value.display_metadata(false, self.table())
+                                enumerator
+                                    .value
+                                    .value
+                                    .display_metadata(false, self.table())
+                                    .with_compact(self.compact)
                             )?;
                             metadata(f, self.table(), enumerator.id)?;
                             writeln!(f, ";")?;

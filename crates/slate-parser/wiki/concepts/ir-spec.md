@@ -83,6 +83,10 @@ The canonical semantic module dump is `slate-parser ir source.c` or
 spelling for source annotations. These commands share the same lowering and
 printer, and lowering must succeed for the whole module before output is
 printed. The expression and name dump modes are separate diagnostic views.
+Add `--compact-ir` to either module command for a typed view that hides
+conversion reasons and operation policies such as overflow, rounding,
+exceptions, and shift fill. This affects only printing; the default dump
+retains those facts for FileCheck and semantic inspection.
 
 FileCheck fixtures select the module dump with `SLATE-FILECHECK-ARGS --dump-ir`;
 add `--show-metadata` there for the annotated view. The fixture runner and
