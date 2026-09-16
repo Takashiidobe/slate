@@ -47,8 +47,16 @@ scope stack from inside out and stops at the nearest typedef or ordinary binding
 tags and members do not enter this namespace. Scope guards restore enclosing
 bindings on both success and errors for blocks, loops, function bodies and
 prototype parameter lists. Grammar parsers share the environment rather than
-copying typedef sets or cloning the whole parser. Exact declaration binding times
-and transfer of prototype bindings into definitions remain `slate-parser-ixa.34`.
+copying typedef sets or cloning the whole parser. Object and typedef names bind
+immediately after their complete declarator, before attributes, initializers and
+later declarators; their own array bounds still see the enclosing binding.
+Parameters bind after their complete declarators, and enumerators bind after
+their defining enumerator, leaving initializer expressions unevaluated.
+Each parameter list has its own scope, including nested function-pointer lists.
+The defining function's parameter-scope bindings (including enumerators) are
+retained for its body; prototype and nested parameter bindings do not leak.
+A for-initializer declaration stays visible through the condition, increment and
+body, then the enclosing bindings are restored.
 
 ## Invariants
 

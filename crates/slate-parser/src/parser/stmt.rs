@@ -163,9 +163,6 @@ impl Parser {
             let mut fragment = Fragment::new(self, code, tokens, position);
             let stmt = self.parse_one_stmt(&mut fragment)?;
             position = fragment.pos;
-            if let StmtKind::Decl(declaration) = &stmt {
-                self.record_declaration_typedefs(declaration);
-            }
             let (pragmas, comments): (Vec<_>, Vec<_>) = self
                 .statement_annotations(tokens, start, position - 1)?
                 .into_iter()
@@ -490,7 +487,6 @@ impl Parser {
                     None
                 } else if self.starts_declaration(init_tokens, 0) {
                     let declaration = self.parse_declaration_tokens(&clause[..=first_semi])?;
-                    self.record_declaration_typedefs(&declaration);
                     Some(Box::new(span_tokens(
                         StmtKind::Decl(declaration),
                         init_tokens,

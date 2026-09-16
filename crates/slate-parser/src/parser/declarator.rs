@@ -52,6 +52,7 @@ pub(crate) struct DeclaratorParser<'a> {
     pub(super) biggest_alignment: i64,
     pub(super) context: Option<&'a Parser>,
     pub(super) identifier_list: IdentifierList,
+    pub(super) definition_bindings: std::collections::HashMap<String, super::NameBinding>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -71,6 +72,7 @@ impl<'a> DeclaratorParser<'a> {
             }),
             context,
             identifier_list: IdentifierList::Rejected,
+            definition_bindings: std::collections::HashMap::new(),
         }
     }
 
@@ -573,6 +575,9 @@ impl<'a> DeclaratorParser<'a> {
             } else {
                 None
             };
+            if let Some(parser) = self.context {
+                parser.names.bind(&name, false);
+            }
             items.push(span_tokens(
                 EnumItemKind::Enumerator(Enumerator { name, value }),
                 &self.tokens[start..self.pos],
@@ -1129,6 +1134,11 @@ impl<'a> DeclaratorParser<'a> {
                 Some(Token::Comma) | Some(Token::RParen) => Declarator::Abstract,
                 _ => self.parse_declarator(true)?,
             };
+            if let Some(parser) = self.context
+                && let Some(name) = declarator.name()
+            {
+                parser.names.bind(name, false);
+            }
             let attributes = self.parse_attributes()?;
             let vector_attributes = specifiers
                 .attributes
@@ -1154,6 +1164,15 @@ impl<'a> DeclaratorParser<'a> {
                 Token::Comma,
                 DeclaratorError::ExpectedToken(Token::Comma, "between parameters"),
             )?;
+        }
+        if accepts_identifier_list && let Some(parser) = self.context {
+            self.definition_bindings = parser
+                .names
+                .scopes
+                .borrow()
+                .last()
+                .cloned()
+                .unwrap_or_default();
         }
         Ok(ParameterList::Prototype {
             parameters,

@@ -185,6 +185,10 @@ impl Parser {
                 .parse_declarator(false)
                 .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))?
         };
+        if !is_field && let Some(name) = declarator.name() {
+            self.names
+                .bind(name, specifiers.storage == StorageClass::Typedef);
+        }
         let bit_width = if is_field && parser.matches(Token::Colon) {
             let start = parser.pos;
             let (width, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
@@ -334,7 +338,6 @@ impl Parser {
             }
             let start = *position;
             let decl = self.parse_external_item(tokens, position)?;
-            self.record_typedefs(&decl);
             let mut comments = Vec::new();
             for annotation in self.input.take(tokens, start, position.saturating_sub(1)) {
                 if matches!(annotation.value, Annotation::Comment(_)) {
@@ -401,6 +404,11 @@ impl Parser {
                 && first.declarator.function_parameters().is_some()
                 && first.initializer.is_none()
             {
+                let _scope = self.enter_scope();
+                for (name, binding) in &parser.definition_bindings {
+                    self.names
+                        .bind(name, matches!(binding, super::NameBinding::Typedef));
+                }
                 let body = self.parse_function_body(tokens, &mut parser.pos, &first.declarator)?;
                 *position = parser.pos;
                 return Ok(DeclKind::Function(FunctionDefinition {
@@ -430,19 +438,6 @@ impl Parser {
             specifiers,
             declarators: declarators.into_iter().map(into_init_declarator).collect(),
         }))
-    }
-
-    pub(super) fn record_typedefs(&mut self, decl: &DeclKind) {
-        if let DeclKind::Declaration(declaration) = decl {
-            self.record_declaration_typedefs(declaration);
-        }
-    }
-
-    pub(super) fn record_declaration_typedefs(&self, declaration: &Declaration) {
-        let is_typedef = declaration.specifiers.storage == StorageClass::Typedef;
-        for name in declaration.names() {
-            self.names.bind(name, is_typedef);
-        }
     }
 }
 
