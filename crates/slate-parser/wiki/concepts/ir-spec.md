@@ -119,11 +119,25 @@ the complete worked `add`/`printf`/`main` example and both printer modes through
 generated FileCheck expectations. `SLATE-FILECHECK-EXAMPLE ir_module` selects
 that renderer in the harness and expectation generator.
 
-The initial record layout represents ordinary fields; bit-field storage,
-full qualifiers, callable types/ABI contracts, projected places, structured
-aggregate initializers, and complete target data layout remain in their
-respective type/layout and lowering tasks. The name-resolution dump remains
-a separate diagnostic view, not the module declaration representation.
+The type view resolves struct, union, and enum tag definitions. On the
+x86_64 SysV target, record layout records byte size, aggregate alignment,
+one byte offset per field, bit offsets for bit-fields, and byte extents for
+contiguous bit-field storage units. It applies packed,
+aligned, and `_Alignas` requests, including local field alignment. Unnamed
+members and zero-width bit-fields remain in the field list. Enum values are
+evaluated in declaration order, including references to prior enumerators;
+the underlying integer type is selected from the represented range unless
+the source fixes it. Enum storage retains size and alignment separately so
+alignment attributes need not change the underlying integer type.
+`tools/check_record_layout.py` compares the generated
+layout fixture with clang's record layout dump.
+
+The bit-field units describe occupied bytes; access types and bit slices for
+Rust emission remain future work, as do flexible-array semantics. Full
+qualifiers, callable types/ABI contracts,
+projected places, and structured aggregate initializers remain in their
+respective lowering tasks. The name-resolution dump remains a separate
+diagnostic view, not the module declaration representation.
 
 ### Implemented numeric seed
 

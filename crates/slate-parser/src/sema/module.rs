@@ -9,10 +9,14 @@ use crate::ir::{ConversionReason, Function, Linkage, Module, Parameters, Stateme
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     let context = Context::new(unit.target.clone()).with_options(&unit.options);
     let mut module = Module::new(context.target.clone());
-    let mut types = TypeResolver::new(context.target.clone());
+    let mut types = TypeResolver::with_tags(context.target.clone(), unit);
     for declaration in &unit.decls {
         let function = match &declaration.value {
             DeclKind::Comment(_) => continue,
+            DeclKind::Declaration(item) if item.declarators.is_empty() => {
+                types.resolve(&item.specifiers, &Declarator::Abstract)?;
+                continue;
+            }
             DeclKind::Declaration(item) if item.specifiers.storage == StorageClass::Typedef => {
                 for declarator in &item.declarators {
                     let start = types.definitions.len();
@@ -95,6 +99,24 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 body: Some(lower_statements(&context, &function.body, return_type)?),
             }),
         );
+    }
+    for definition in &types.definitions {
+        if module
+            .types
+            .iter()
+            .any(|entry| entry.value.id == definition.id)
+        {
+            continue;
+        }
+        if let Some(tag) = types.tag_span(definition.id, unit) {
+            module
+                .types
+                .push(tag.clone().with_value(definition.clone()));
+        } else if let Some(declaration) = unit.decls.first() {
+            module
+                .types
+                .push(declaration.clone().with_value(definition.clone()));
+        }
     }
     Ok(module)
 }

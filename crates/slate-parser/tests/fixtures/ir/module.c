@@ -29,7 +29,7 @@
 // IR-NEXT:     type @type3 Choice = enum : i32 {
 // IR-NEXT:         %3 FIRST = const<i32>(0);
 // IR-NEXT:         %4 SECOND = const<i32>(1);
-// IR-NEXT:     };
+// IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     type @type4 Payload = union {
 // IR-NEXT:         field0 number: i32;
 // IR-NEXT:         field1 alias: @type0;
@@ -91,7 +91,7 @@
 // IR-NEXT:     type @type3 Choice = enum : i32 {
 // IR-NEXT:         %3 FIRST = const<i32>(0);
 // IR-NEXT:         %4 SECOND = const<i32>(1);
-// IR-NEXT:     };
+// IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     type @type4 Payload = union {
 // IR-NEXT:         field0 number: i32;
 // IR-NEXT:         field1 alias: @type0;

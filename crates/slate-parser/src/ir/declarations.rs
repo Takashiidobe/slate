@@ -1,5 +1,7 @@
 use super::{BindingId, Type, Value};
 use crate::ast::Span;
+use crate::target_info::StorageLayout;
+use custom_debug::Debug as CustomDebug;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TypeId(pub u32);
@@ -36,6 +38,7 @@ pub enum TypeDefinitionKind {
     Enum {
         underlying: Option<Type>,
         enumerators: Option<Vec<Span<Enumerator>>>,
+        layout: Option<StorageLayout>,
     },
 }
 
@@ -45,17 +48,35 @@ pub enum RecordKind {
     Union,
 }
 
-#[derive(Debug, Clone)]
+#[derive(CustomDebug, Clone)]
 pub struct RecordLayout {
     pub size: u64,
     pub align: u64,
     pub offsets: Vec<u64>,
+    #[debug(skip_if = all_none)]
+    pub bit_offsets: Vec<Option<u64>>,
+    #[debug(skip_if = Vec::is_empty)]
+    pub bit_units: Vec<BitFieldUnit>,
+    #[debug(skip_if = all_none)]
+    pub field_units: Vec<Option<usize>>,
+}
+
+fn all_none<T>(values: &[Option<T>]) -> bool {
+    values.iter().all(Option::is_none)
 }
 
 #[derive(Debug, Clone)]
+pub struct BitFieldUnit {
+    pub offset: u64,
+    pub size: u64,
+}
+
+#[derive(CustomDebug, Clone)]
 pub struct Field {
     pub name: Option<String>,
     pub ty: Type,
+    #[debug(skip_if = Option::is_none)]
+    pub bit_width: Option<u32>,
 }
 
 #[derive(Debug, Clone)]

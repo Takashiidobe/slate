@@ -50,6 +50,7 @@ fn main() {
     let field = node(Field {
         name: Some("value".into()),
         ty: I32,
+        bit_width: None,
     });
     module
         .metadata
@@ -66,6 +67,9 @@ fn main() {
                     size: 4,
                     align: 4,
                     offsets: vec![0],
+                    bit_offsets: vec![None],
+                    bit_units: vec![],
+                    field_units: vec![None],
                 }),
             },
         ),
@@ -94,6 +98,10 @@ fn main() {
                         value: integer(1),
                     }),
                 ]),
+                layout: Some(slate_parser::target_info::StorageLayout {
+                    size_bytes: 4,
+                    alignment_bytes: 4,
+                }),
             },
         ),
         definition(
@@ -105,16 +113,21 @@ fn main() {
                     node(Field {
                         name: Some("number".into()),
                         ty: I32,
+                        bit_width: None,
                     }),
                     node(Field {
                         name: Some("alias".into()),
                         ty: Type::Defined(TypeId(0)),
+                        bit_width: None,
                     }),
                 ]),
                 layout: Some(RecordLayout {
                     size: 4,
                     align: 4,
                     offsets: vec![0, 0],
+                    bit_offsets: vec![None, None],
+                    bit_units: vec![],
+                    field_units: vec![None, None],
                 }),
             },
         ),
@@ -149,6 +162,7 @@ fn main() {
             TypeDefinitionKind::Enum {
                 underlying: None,
                 enumerators: None,
+                layout: None,
             },
         ),
         definition(

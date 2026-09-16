@@ -283,6 +283,9 @@ impl fmt::Display for DisplayModule<'_> {
                                 field.name.as_deref().unwrap_or("<anonymous>"),
                                 field.ty
                             )?;
+                            if let Some(width) = field.bit_width {
+                                write!(f, " : {width}")?;
+                            }
                             metadata(f, self.table(), field.id)?;
                             writeln!(f, ";")?;
                         }
@@ -293,14 +296,30 @@ impl fmt::Display for DisplayModule<'_> {
                     if let Some(layout) = layout {
                         write!(
                             f,
-                            " [size={}, align={}, offsets={:?}]",
+                            " [size={}, align={}, offsets={:?}",
                             layout.size, layout.align, layout.offsets
                         )?;
+                        if layout.bit_offsets.iter().any(Option::is_some) {
+                            write!(f, ", bit_offsets={:?}", layout.bit_offsets)?;
+                        }
+                        if !layout.bit_units.is_empty() {
+                            let units: Vec<_> = layout
+                                .bit_units
+                                .iter()
+                                .map(|unit| (unit.offset, unit.size))
+                                .collect();
+                            write!(f, ", bit_units={units:?}")?;
+                        }
+                        if layout.field_units.iter().any(Option::is_some) {
+                            write!(f, ", field_units={:?}", layout.field_units)?;
+                        }
+                        f.write_str("]")?;
                     }
                 }
                 TypeDefinitionKind::Enum {
                     underlying,
                     enumerators,
+                    layout,
                 } => {
                     f.write_str(" = enum")?;
                     if let Some(underlying) = underlying {
@@ -326,6 +345,13 @@ impl fmt::Display for DisplayModule<'_> {
                         f.write_str("    }")?;
                     } else {
                         f.write_str(" incomplete")?;
+                    }
+                    if let Some(layout) = layout {
+                        write!(
+                            f,
+                            " [size={}, align={}]",
+                            layout.size_bytes, layout.alignment_bytes
+                        )?;
                     }
                 }
             }

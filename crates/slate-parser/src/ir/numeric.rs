@@ -1,4 +1,4 @@
-use num_bigint::BigUint;
+use num_bigint::{BigInt, BigUint};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -252,5 +252,6 @@ pub enum ConversionSema {
 pub enum Number {
     Bool(bool),
     Integer(BigUint),
+    SignedInteger(BigInt),
     FloatBits(u128),
 }

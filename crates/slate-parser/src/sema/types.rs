@@ -1,11 +1,16 @@
 use std::collections::HashMap;
 
 use crate::ast::{
-    ArraySize, DeclarationSpecifiers, Declarator, FloatingType, IntegerRank, IntegerType,
-    ParameterList, Qualifiers, TypeSpecifier,
+    AlignAsOperand, ArraySize, Attribute, DeclarationSpecifiers, Declarator, EnumItemKind,
+    FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, Qualifiers, TagBody,
+    TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeSpecifier,
 };
-use crate::ir::{FloatType, NumericType, Type, TypeDefinition, TypeDefinitionKind, TypeId};
-use crate::target_info::{LongDoubleFormat, TargetInfo};
+use crate::ir::{
+    BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
+    RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
+};
+use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
+use num_bigint::{BigInt, BigUint};
 
 use super::numeric::ResolveError;
 
@@ -51,6 +56,9 @@ pub struct ResolvedType {
 pub struct TypeResolver {
     target: TargetInfo,
     aliases: HashMap<String, ResolvedType>,
+    tags: Vec<crate::ast::Span<TagDefinition>>,
+    tag_ids: HashMap<TagId, TypeId>,
+    tag_names: HashMap<(TagKind, String), TypeId>,
     pub definitions: Vec<TypeDefinition>,
 }
 
@@ -59,8 +67,27 @@ impl TypeResolver {
         Self {
             target,
             aliases: HashMap::new(),
+            tags: Vec::new(),
+            tag_ids: HashMap::new(),
+            tag_names: HashMap::new(),
             definitions: Vec::new(),
         }
+    }
+
+    pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
+        let mut resolver = Self::new(target);
+        resolver.tags = unit.tags.clone();
+        resolver
+    }
+
+    pub fn tag_span<'a>(
+        &self,
+        id: TypeId,
+        unit: &'a TranslationUnit,
+    ) -> Option<&'a crate::ast::Span<TagDefinition>> {
+        unit.tags
+            .iter()
+            .find(|tag| self.tag_ids.get(&tag.value.id) == Some(&id))
     }
 
     pub fn define_alias(
@@ -98,7 +125,7 @@ impl TypeResolver {
     }
 
     fn base(
-        &self,
+        &mut self,
         specifier: &TypeSpecifier,
     ) -> Result<(Option<Type>, String, String, Vec<String>), ResolveError> {
         let scalar = match specifier {
@@ -111,6 +138,68 @@ impl TypeResolver {
                 let mut chain = vec![name.clone()];
                 chain.extend(alias.c.typedef_chain.iter().cloned());
                 return Ok((alias.ty, name.clone(), alias.c.canonical.clone(), chain));
+            }
+            TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
+                let tag = self
+                    .tags
+                    .iter()
+                    .find(|tag| tag.value.id == *id)
+                    .cloned()
+                    .ok_or(ResolveError::Unsupported("unknown tag definition"))?;
+                let ty = Type::Defined(self.define_tag(&tag.value)?);
+                let spelling = tag_spelling(tag.kind, tag.name.as_deref());
+                return Ok((Some(ty), spelling.clone(), spelling, Vec::new()));
+            }
+            TypeSpecifier::Tag(TagSpecifier::Reference {
+                kind,
+                name,
+                fixed_type,
+            }) => {
+                let key = (*kind, name.clone());
+                let id = if let Some(id) = self.tag_names.get(&key) {
+                    *id
+                } else {
+                    let tag = self
+                        .tags
+                        .iter()
+                        .find(|tag| tag.kind == *kind && tag.name.as_deref() == Some(name))
+                        .cloned();
+                    if let Some(tag) = tag {
+                        self.define_tag(&tag.value)?
+                    } else {
+                        let id = self.push(incomplete_tag(*kind));
+                        self.definitions[id.0 as usize].name = Some(name.clone());
+                        self.tag_names.insert(key, id);
+                        id
+                    }
+                };
+                if let Some(fixed_type) = fixed_type
+                    && matches!(
+                        self.definitions[id.0 as usize].kind,
+                        TypeDefinitionKind::Enum {
+                            underlying: None,
+                            ..
+                        }
+                    )
+                {
+                    let underlying = self
+                        .resolve(&fixed_type.specifiers, &fixed_type.declarator)?
+                        .ty
+                        .ok_or(ResolveError::Unsupported("void enum underlying type"))?;
+                    let layout = self.storage(underlying)?;
+                    self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
+                        underlying: Some(underlying),
+                        enumerators: None,
+                        layout: Some(layout),
+                    };
+                }
+                let spelling = tag_spelling(*kind, Some(name));
+                return Ok((
+                    Some(Type::Defined(id)),
+                    spelling.clone(),
+                    spelling,
+                    Vec::new(),
+                ));
             }
             TypeSpecifier::Bool => (Type::Bool, "_Bool".into()),
             TypeSpecifier::Integer(IntegerType::Char { signed }) => {
@@ -260,6 +349,353 @@ impl TypeResolver {
         }
     }
 
+    fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
+        if let Some(id) = self.tag_ids.get(&tag.id) {
+            return Ok(*id);
+        }
+        let id = if let Some(name) = &tag.name {
+            self.tag_names.get(&(tag.kind, name.clone())).copied()
+        } else {
+            None
+        }
+        .unwrap_or_else(|| self.push(incomplete_tag(tag.kind)));
+        self.tag_ids.insert(tag.id, id);
+        self.definitions[id.0 as usize].name = tag.name.clone();
+        if let Some(name) = &tag.name {
+            self.tag_names.insert((tag.kind, name.clone()), id);
+        }
+        let kind = match &tag.body {
+            TagBody::Record(items) => {
+                let mut fields = Vec::new();
+                let mut requests = Vec::new();
+                for item in items {
+                    let FieldItemKind::Field(declaration) = &item.value else {
+                        continue;
+                    };
+                    if declaration.declarators.is_empty() {
+                        let resolved =
+                            self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
+                        let ty = resolved
+                            .ty
+                            .ok_or(ResolveError::Unsupported("void record field"))?;
+                        fields.push(item.clone().with_value(Field {
+                            name: None,
+                            ty,
+                            bit_width: None,
+                        }));
+                        requests.push(field_request(
+                            self,
+                            &declaration.specifiers.attributes,
+                            &[],
+                        )?);
+                    }
+                    for declarator in &declaration.declarators {
+                        let resolved =
+                            self.resolve(&declaration.specifiers, &declarator.declarator)?;
+                        let ty = resolved
+                            .ty
+                            .ok_or(ResolveError::Unsupported("void record field"))?;
+                        let bit_width = declarator
+                            .bit_width
+                            .as_ref()
+                            .map(|expr| {
+                                let value = crate::const_expr::Parser::evaluate_ast(expr)?;
+                                u32::try_from(value).map_err(|_| {
+                                    ResolveError::Unsupported("invalid bit-field width")
+                                })
+                            })
+                            .transpose()?;
+                        fields.push(declarator.clone().with_value(Field {
+                            name: declarator.declarator.name().map(str::to_owned),
+                            ty,
+                            bit_width,
+                        }));
+                        requests.push(field_request(
+                            self,
+                            &declaration.specifiers.attributes,
+                            &declarator.attributes,
+                        )?);
+                    }
+                }
+                let packed = tag
+                    .attributes
+                    .iter()
+                    .any(|attribute| matches!(attribute, Attribute::Packed));
+                let alignment = requested_alignment(self, &tag.attributes)?;
+                let layout = self.layout_record(tag.kind, &fields, &requests, packed, alignment)?;
+                TypeDefinitionKind::Record {
+                    kind: match tag.kind {
+                        TagKind::Struct => RecordKind::Struct,
+                        TagKind::Union => RecordKind::Union,
+                        TagKind::Enum => return Err(ResolveError::Unsupported("enum record body")),
+                    },
+                    fields: Some(fields),
+                    layout: Some(layout),
+                }
+            }
+            TagBody::Enum {
+                fixed_type,
+                enumerators,
+            } => {
+                let fixed_underlying = if let Some(fixed_type) = fixed_type {
+                    self.resolve(&fixed_type.specifiers, &fixed_type.declarator)?
+                        .ty
+                        .ok_or(ResolveError::Unsupported("void enum underlying type"))?
+                } else {
+                    Type::Void
+                };
+                let mut values = Vec::new();
+                let mut previous = -1i64;
+                let mut prior = HashMap::new();
+                for item in enumerators {
+                    let EnumItemKind::Enumerator(enumerator) = &item.value else {
+                        continue;
+                    };
+                    let value = if let Some(expr) = &enumerator.value {
+                        crate::const_expr::Parser::evaluate_ast(&substitute_enumerators(
+                            expr, &prior,
+                        ))?
+                    } else {
+                        previous
+                            .checked_add(1)
+                            .ok_or(ResolveError::Unsupported("enum value overflow"))?
+                    };
+                    previous = value;
+                    prior.insert(enumerator.name.clone(), value);
+                    values.push((item, enumerator, value));
+                }
+                let underlying = if fixed_underlying != Type::Void {
+                    fixed_underlying
+                } else if values
+                    .iter()
+                    .all(|(_, _, value)| i32::try_from(*value).is_ok())
+                {
+                    Type::Numeric(NumericType::Integer {
+                        width: self.target.int_width,
+                        signed: true,
+                    })
+                } else if values
+                    .iter()
+                    .all(|(_, _, value)| u32::try_from(*value).is_ok())
+                {
+                    Type::Numeric(NumericType::Integer {
+                        width: self.target.int_width,
+                        signed: false,
+                    })
+                } else {
+                    Type::Numeric(NumericType::Integer {
+                        width: self.target.long_width,
+                        signed: true,
+                    })
+                };
+                let mut entries = Vec::new();
+                for (item, enumerator, value) in values {
+                    entries.push(item.clone().with_value(Enumerator {
+                        id: BindingId(entries.len() as u32),
+                        name: enumerator.name.clone(),
+                        value: Value {
+                            ty: underlying,
+                            node: item.clone().with_value(ValueKind::Constant(if value < 0 {
+                                Number::SignedInteger(BigInt::from(value))
+                            } else {
+                                Number::Integer(BigUint::from(value as u64))
+                            })),
+                        },
+                    }));
+                }
+                TypeDefinitionKind::Enum {
+                    underlying: Some(underlying),
+                    enumerators: Some(entries),
+                    layout: Some({
+                        let mut layout = self.storage(underlying)?;
+                        if let Some(alignment) = requested_alignment(self, &tag.attributes)? {
+                            layout.alignment_bytes =
+                                u32::try_from(u64::from(layout.alignment_bytes).max(alignment))
+                                    .map_err(|_| {
+                                        ResolveError::Unsupported("enum alignment overflow")
+                                    })?;
+                        }
+                        layout
+                    }),
+                }
+            }
+        };
+        self.definitions[id.0 as usize].kind = kind;
+        Ok(id)
+    }
+
+    fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
+        match ty {
+            Type::Defined(id) => match &self.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.storage(*inner),
+                TypeDefinitionKind::Pointer { .. } => Ok(self.target.pointer),
+                TypeDefinitionKind::Array {
+                    element,
+                    length: Some(length),
+                } => {
+                    let element = self.storage(*element)?;
+                    Ok(StorageLayout {
+                        size_bytes: align_up(
+                            element.size_bytes,
+                            u64::from(element.alignment_bytes),
+                        )?
+                        .checked_mul(*length)
+                        .ok_or(ResolveError::Unsupported("array size overflow"))?,
+                        alignment_bytes: element.alignment_bytes,
+                    })
+                }
+                TypeDefinitionKind::Record {
+                    layout: Some(layout),
+                    ..
+                } => Ok(StorageLayout {
+                    size_bytes: layout.size,
+                    alignment_bytes: u32::try_from(layout.align)
+                        .map_err(|_| ResolveError::Unsupported("record alignment overflow"))?,
+                }),
+                TypeDefinitionKind::Enum {
+                    layout: Some(layout),
+                    ..
+                } => Ok(*layout),
+                TypeDefinitionKind::Enum {
+                    underlying: Some(underlying),
+                    ..
+                } => self.storage(*underlying),
+                _ => Err(ResolveError::Unsupported("incomplete field type")),
+            },
+            _ => Ok(self.target.storage_of(ty)?),
+        }
+    }
+
+    fn layout_record(
+        &self,
+        kind: TagKind,
+        fields: &[crate::ast::Span<Field>],
+        requests: &[(bool, Option<u64>)],
+        packed: bool,
+        requested: Option<u64>,
+    ) -> Result<RecordLayout, ResolveError> {
+        let mut end_bits = 0u64;
+        let mut aggregate_align = requested.unwrap_or(1);
+        let mut offsets = Vec::new();
+        let mut bit_offsets = Vec::new();
+        for (field, &(field_packed, field_aligned)) in fields.iter().zip(requests) {
+            let storage = self.storage(field.ty)?;
+            let natural = u64::from(storage.alignment_bytes);
+            let align =
+                (if packed || field_packed { 1 } else { natural }).max(field_aligned.unwrap_or(1));
+            if field.bit_width != Some(0) {
+                aggregate_align = aggregate_align.max(align);
+            }
+            if let Some(width) = field.bit_width {
+                let unit_bits = storage
+                    .size_bytes
+                    .checked_mul(8)
+                    .ok_or(ResolveError::Unsupported("bit-field unit overflow"))?;
+                if u64::from(width) > unit_bits {
+                    return Err(ResolveError::Unsupported("bit-field wider than its type"));
+                }
+                if width == 0 {
+                    if field.name.is_some() {
+                        return Err(ResolveError::Unsupported("named zero-width bit-field"));
+                    }
+                    let position = if kind == TagKind::Union {
+                        0
+                    } else {
+                        align_up(
+                            end_bits,
+                            natural
+                                .checked_mul(8)
+                                .ok_or(ResolveError::Unsupported("field alignment overflow"))?,
+                        )?
+                    };
+                    end_bits = end_bits.max(position);
+                    offsets.push(position / 8);
+                    bit_offsets.push(Some(position));
+                    continue;
+                }
+                let position = if kind == TagKind::Union {
+                    0
+                } else if packed || field_packed {
+                    end_bits
+                } else {
+                    let boundary = align_up(
+                        end_bits,
+                        align
+                            .checked_mul(8)
+                            .ok_or(ResolveError::Unsupported("field alignment overflow"))?,
+                    )?;
+                    let last_bit = end_bits
+                        .checked_add(u64::from(width) - 1)
+                        .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                    if end_bits == 0 || end_bits / unit_bits != last_bit / unit_bits {
+                        boundary
+                    } else {
+                        end_bits
+                    }
+                };
+                let used = position
+                    .checked_add(u64::from(width))
+                    .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                end_bits = end_bits.max(if kind == TagKind::Union && !(packed || field_packed) {
+                    unit_bits
+                } else {
+                    used
+                });
+                offsets.push(position / 8);
+                bit_offsets.push(Some(position));
+            } else {
+                let position = if kind == TagKind::Union {
+                    0
+                } else {
+                    align_up(end_bits.div_ceil(8), align)?
+                };
+                let end = position
+                    .checked_add(storage.size_bytes)
+                    .and_then(|bytes| bytes.checked_mul(8))
+                    .ok_or(ResolveError::Unsupported("record size overflow"))?;
+                end_bits = end_bits.max(end);
+                offsets.push(position);
+                bit_offsets.push(None);
+            }
+        }
+        let size = align_up(end_bits.div_ceil(8), aggregate_align)?;
+        let mut bit_units: Vec<BitFieldUnit> = Vec::new();
+        let mut field_units = Vec::new();
+        let mut prior_end = None;
+        for (field, bit_offset) in fields.iter().zip(&bit_offsets) {
+            let (Some(width), Some(position)) =
+                (field.bit_width.filter(|width| *width != 0), bit_offset)
+            else {
+                field_units.push(None);
+                prior_end = None;
+                continue;
+            };
+            let end = position + u64::from(width);
+            let unit = if kind == TagKind::Struct && prior_end == Some(*position) {
+                let index = bit_units.len() - 1;
+                bit_units[index].size = end.div_ceil(8) - bit_units[index].offset;
+                index
+            } else {
+                let index = bit_units.len();
+                bit_units.push(BitFieldUnit {
+                    offset: position / 8,
+                    size: end.div_ceil(8) - position / 8,
+                });
+                index
+            };
+            field_units.push(Some(unit));
+            prior_end = Some(end);
+        }
+        Ok(RecordLayout {
+            size,
+            align: aggregate_align,
+            offsets,
+            bit_offsets,
+            bit_units,
+            field_units,
+        })
+    }
+
     fn push(&mut self, kind: TypeDefinitionKind) -> TypeId {
         let id = TypeId(self.definitions.len() as u32);
         self.definitions.push(TypeDefinition {
@@ -269,6 +705,142 @@ impl TypeResolver {
         });
         id
     }
+}
+
+fn incomplete_tag(kind: TagKind) -> TypeDefinitionKind {
+    match kind {
+        TagKind::Struct | TagKind::Union => TypeDefinitionKind::Record {
+            kind: if kind == TagKind::Struct {
+                RecordKind::Struct
+            } else {
+                RecordKind::Union
+            },
+            fields: None,
+            layout: None,
+        },
+        TagKind::Enum => TypeDefinitionKind::Enum {
+            underlying: None,
+            enumerators: None,
+            layout: None,
+        },
+    }
+}
+
+fn tag_spelling(kind: TagKind, name: Option<&str>) -> String {
+    let prefix = match kind {
+        TagKind::Struct => "struct",
+        TagKind::Union => "union",
+        TagKind::Enum => "enum",
+    };
+    name.map_or_else(|| prefix.to_owned(), |name| format!("{prefix} {name}"))
+}
+
+fn align_up(value: u64, alignment: u64) -> Result<u64, ResolveError> {
+    if alignment == 0 || !alignment.is_power_of_two() {
+        return Err(ResolveError::Unsupported("invalid alignment"));
+    }
+    value
+        .checked_add(alignment - 1)
+        .map(|sum| sum & !(alignment - 1))
+        .ok_or(ResolveError::Unsupported("record size overflow"))
+}
+
+fn requested_alignment(
+    resolver: &mut TypeResolver,
+    attributes: &[Attribute],
+) -> Result<Option<u64>, ResolveError> {
+    let mut requested: Option<u64> = None;
+    for attribute in attributes {
+        let value = match attribute {
+            Attribute::Aligned(expr) | Attribute::AlignAs(AlignAsOperand::Expr(expr)) => {
+                u64::try_from(crate::const_expr::Parser::evaluate_ast(expr)?)
+                    .map_err(|_| ResolveError::Unsupported("invalid alignment"))?
+            }
+            Attribute::AlignAs(AlignAsOperand::Type { ty }) => {
+                let resolved = resolver.resolve(&ty.specifiers, &ty.declarator)?;
+                u64::from(
+                    resolver
+                        .storage(
+                            resolved
+                                .ty
+                                .ok_or(ResolveError::Unsupported("void alignment type"))?,
+                        )?
+                        .alignment_bytes,
+                )
+            }
+            _ => continue,
+        };
+        if value != 0 {
+            align_up(0, value)?;
+            requested = Some(requested.unwrap_or(1).max(value));
+        }
+    }
+    Ok(requested)
+}
+
+fn field_request(
+    resolver: &mut TypeResolver,
+    declaration: &[Attribute],
+    field: &[Attribute],
+) -> Result<(bool, Option<u64>), ResolveError> {
+    let packed = declaration
+        .iter()
+        .chain(field)
+        .any(|attribute| matches!(attribute, Attribute::Packed));
+    let first = requested_alignment(resolver, declaration)?;
+    let second = requested_alignment(resolver, field)?;
+    Ok((packed, first.into_iter().chain(second).max()))
+}
+
+fn substitute_enumerators(
+    expression: &crate::ast::Expr,
+    values: &HashMap<String, i64>,
+) -> crate::ast::Expr {
+    use crate::ast::ExprKind;
+    let mut result = expression.clone();
+    result.value = match &expression.value {
+        ExprKind::Identifier(name) if values.contains_key(name) => {
+            let value = values[name];
+            let literal = ExprKind::IntegerLiteral(crate::const_expr::IntegerLiteral::decimal(
+                value.saturating_abs(),
+            ));
+            if value < 0 {
+                ExprKind::Unary {
+                    op: crate::const_expr::UnaryOp::Minus,
+                    operand: Box::new(expression.as_ref().clone().with_value(literal)),
+                }
+            } else {
+                literal
+            }
+        }
+        ExprKind::Paren(inner) => ExprKind::Paren(substitute_enumerators(inner, values)),
+        ExprKind::Unary { op, operand } => ExprKind::Unary {
+            op: *op,
+            operand: substitute_enumerators(operand, values),
+        },
+        ExprKind::Binary { op, left, right } => ExprKind::Binary {
+            op: *op,
+            left: substitute_enumerators(left, values),
+            right: substitute_enumerators(right, values),
+        },
+        ExprKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => ExprKind::Conditional {
+            condition: substitute_enumerators(condition, values),
+            then_value: then_value
+                .as_ref()
+                .map(|value| substitute_enumerators(value, values)),
+            else_value: substitute_enumerators(else_value, values),
+        },
+        ExprKind::Cast { ty, value } => ExprKind::Cast {
+            ty: ty.clone(),
+            value: substitute_enumerators(value, values),
+        },
+        _ => expression.value.clone(),
+    };
+    result
 }
 
 fn qualifier_spelling(qualifiers: Qualifiers) -> String {
@@ -308,11 +880,20 @@ pub fn resolve_type_module(
 
     let target = unit.options.effective_target(unit.target.clone());
     let mut module = Module::new(target.clone());
-    let mut resolver = TypeResolver::new(target);
+    let mut resolver = TypeResolver::with_tags(target, unit);
     let mut next_binding = 0u32;
     for declaration in &unit.decls {
         match &declaration.value {
             DeclKind::Comment(_) | DeclKind::Pragma(_) | DeclKind::StaticAssert(_) => continue,
+            DeclKind::Declaration(item) if item.declarators.is_empty() => {
+                let start = resolver.definitions.len();
+                resolver.resolve(&item.specifiers, &Declarator::Abstract)?;
+                for definition in &resolver.definitions[start..] {
+                    module
+                        .types
+                        .push(declaration.clone().with_value(definition.clone()));
+                }
+            }
             DeclKind::Declaration(item) if item.specifiers.storage == StorageClass::Typedef => {
                 for declarator in &item.declarators {
                     let start = resolver.definitions.len();
@@ -407,7 +988,16 @@ pub fn resolve_type_module(
             .iter()
             .any(|entry| entry.value.id == definition.id)
         {
-            return Err(ResolveError::Unsupported("unattached derived type"));
+            let span = resolver.tag_span(definition.id, unit);
+            if let Some(span) = span {
+                module
+                    .types
+                    .push(span.clone().with_value(definition.clone()));
+            } else if let Some(declaration) = unit.decls.first() {
+                module
+                    .types
+                    .push(declaration.clone().with_value(definition.clone()));
+            }
         }
     }
     Ok(module)

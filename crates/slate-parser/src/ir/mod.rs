@@ -5,8 +5,8 @@ mod names;
 mod numeric;
 
 pub use declarations::{
-    Enumerator, Field, Global, Parameter, Parameters, Place, RecordKind, RecordLayout,
-    StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
+    BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, RecordKind,
+    RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{Function, Linkage, Metadata, Module, Statement};
 
@@ -155,6 +155,9 @@ impl Value {
             ValueKind::AddressOf(place) => write!(f, "addr_of<{}>(%{})", self.ty, place.binding.0),
             ValueKind::Constant(Number::Bool(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
+            ValueKind::Constant(Number::SignedInteger(value)) => {
+                write!(f, "const<{}>({value})", self.ty)
+            }
             ValueKind::Constant(Number::FloatBits(bits)) => match self.ty {
                 Type::Numeric(NumericType::Float(FloatType::F32))
                     if !f32::from_bits(*bits as u32).is_nan() =>
