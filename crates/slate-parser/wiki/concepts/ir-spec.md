@@ -78,10 +78,29 @@ The CLI enables this with `--show-metadata`; spans continue to belong to
 individual nodes rather than being duplicated into the table. Metadata
 entries are ordered within each node and string values are escaped.
 
+The canonical semantic module dump is `slate-parser ir source.c` or
+`slate-parser parse source.c --dump-ir`. Add `--show-metadata` to either
+spelling for source annotations. These commands share the same lowering and
+printer, and lowering must succeed for the whole module before output is
+printed. The expression and name dump modes are separate diagnostic views.
+
+FileCheck fixtures select the module dump with `SLATE-FILECHECK-ARGS --dump-ir`;
+add `--show-metadata` there for the annotated view. The fixture runner and
+expectation generator pass dedicated defines, include paths, flavor, standard,
+and show-ID options first, followed by `SLATE-FILECHECK-ARGS` in source order.
+Thus the latter wins when a CLI option accepts repeated values. Extra arguments
+are split on whitespace; shell quoting is not interpreted.
+`tests/fixtures/sema/ir_module_promotions.c` exercises real C arithmetic,
+explicit narrowing, integer promotion, and return widening. The constructed
+`ir_module` example covers IR nodes that C lowering cannot yet produce.
+
 AST lowering still accepts only functions without parameters. Other
 declarations, parameter lists, derived return types, unsupported statements,
 and function attributes are diagnosed instead of omitted. Populating the
 expanded nodes from C belongs to `lh7.2.2` and subsequent lowering tasks.
+In particular, `tests/fixtures/add.c` cannot yet be dumped as a module: its
+stdio declaration, parameters, local variable, calls, strings, and implicit
+return need the `lh7.2.2` C-to-IR lowering work.
 The constructed module in `examples/ir_module.rs` exercises the declarations,
 the complete worked `add`/`printf`/`main` example and both printer modes through
 generated FileCheck expectations. `SLATE-FILECHECK-EXAMPLE ir_module` selects

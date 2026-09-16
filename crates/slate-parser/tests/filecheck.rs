@@ -199,8 +199,10 @@ fn run_job(job: FixtureJob) {
             &job.fixture,
             &job.prefix,
             &job.defines,
+            &job.isystem,
             job.flavor.as_deref(),
             job.standard.as_deref(),
+            job.show_ids,
             job.slot,
         );
     } else {
@@ -277,7 +279,6 @@ fn run_fixture(
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1");
-    command.args(fixture_args(fixture));
     for define in defines {
         command.arg(format!("-D{}", define.trim_start_matches("-D")));
     }
@@ -293,6 +294,7 @@ fn run_fixture(
     if show_ids {
         command.arg("--show-ids");
     }
+    command.args(fixture_args(fixture));
     let rendered = command
         .output()
         .expect("run slate-parser filecheck renderer");
@@ -377,8 +379,10 @@ fn run_error_fixture(
     fixture: &Path,
     prefix: &str,
     defines: &[String],
+    isystem: &[String],
     flavor: Option<&str>,
     standard: Option<&str>,
+    show_ids: bool,
     slot: usize,
 ) {
     let file_name = fixture.file_name().unwrap().to_string_lossy();
@@ -391,17 +395,25 @@ fn run_error_fixture(
     let parsed_fixture = fixture.with_file_name(&parsed_name);
     std::fs::write(&parsed_fixture, fixture_source(fixture))
         .expect("write fixture without FileCheck metadata");
-    let output = Command::new(env!("CARGO_BIN_EXE_slate-parser"))
-        .arg("parse")
-        .arg(&parsed_fixture)
+    let mut command = Command::new(env!("CARGO_BIN_EXE_slate-parser"));
+    command.arg("parse").arg(&parsed_fixture);
+    for define in defines {
+        command.arg(format!("-D{}", define.trim_start_matches("-D")));
+    }
+    for path in isystem {
+        command.arg(format!("-isystem{path}"));
+    }
+    if let Some(flavor) = flavor {
+        command.arg(format!("--flavor={flavor}"));
+    }
+    if let Some(standard) = standard {
+        command.arg(format!("-std={standard}"));
+    }
+    if show_ids {
+        command.arg("--show-ids");
+    }
+    let output = command
         .args(fixture_args(fixture))
-        .args(
-            defines
-                .iter()
-                .map(|define| format!("-D{}", define.trim_start_matches("-D"))),
-        )
-        .args(flavor.map(|flavor| format!("--flavor={flavor}")))
-        .args(standard.map(|standard| format!("-std={standard}")))
         .env_remove("FORCE_COLOR")
         .env_remove("CLICOLOR_FORCE")
         .env("NO_COLOR", "1")
@@ -1011,6 +1023,7 @@ fn fixtures_are_filechecked() {
         let configs = configurations(&source);
         let errors = error_configurations(&source);
         let flavor = flavor(&source);
+        let isystem = isystem_paths(&source);
         if !errors.is_empty() {
             for (slot, prefix) in errors.iter().enumerate() {
                 let defines = configs
@@ -1021,7 +1034,7 @@ fn fixtures_are_filechecked() {
                     fixture: fixture.clone(),
                     prefix: prefix.clone(),
                     defines: defines.to_vec(),
-                    isystem: Vec::new(),
+                    isystem: isystem.clone(),
                     flavor: flavor.clone(),
                     standard: std_for_prefix(&source, prefix),
                     show_ids: show_ids_for_prefix(&source, prefix),
@@ -1036,7 +1049,6 @@ fn fixtures_are_filechecked() {
             "fixture has no FileCheck configurations: {}",
             fixture.display()
         );
-        let isystem = isystem_paths(&source);
         for (slot, (prefix, defines)) in configs.iter().enumerate() {
             jobs.push(FixtureJob {
                 fixture: fixture.clone(),
