@@ -317,7 +317,11 @@ fn substitute_function_macro(
         if token.value == Token::Ident("__VA_OPT__".to_string())
             && let Some((optional, end)) = invocation_arguments(&definition.replacement, i + 1)
         {
-            if arguments.len() > parameters.len() {
+            if arguments
+                .iter()
+                .skip(parameters.len())
+                .any(|argument| !argument.is_empty())
+            {
                 for optional_token in optional.into_iter().flatten() {
                     output.extend(replacement_tokens(
                         &optional_token,
