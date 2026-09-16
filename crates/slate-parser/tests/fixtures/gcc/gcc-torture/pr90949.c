@@ -317,9 +317,11 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       ReturnVoid,
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           ReturnVoid,
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
@@ -329,37 +331,39 @@ int main() {
 // DEFAULT-NEXT:                           "cleanup",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_puts",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               78,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               99,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               117,
-// DEFAULT-NEXT:                                               112,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "No cleanup",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_puts",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   78,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   99,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                                   112,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "No cleanup",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
@@ -385,20 +389,22 @@ int main() {
 // DEFAULT-NEXT:                   condition: Identifier(
 // DEFAULT-NEXT:                       "cleanup",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "my_free",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "module",
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "my_free",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "module",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

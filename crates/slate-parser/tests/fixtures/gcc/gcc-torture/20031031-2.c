@@ -242,72 +242,74 @@ reset_lists ()
 // DEFAULT-NEXT:                   discriminant: Identifier(
 // DEFAULT-NEXT:                       "type",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       SwitchLabel {
-// DEFAULT-NEXT:                           label: Case(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "INITIAL",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           body: SwitchLabel {
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           SwitchLabel {
 // DEFAULT-NEXT:                               label: Case(
 // DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "FREE",
+// DEFAULT-NEXT:                                       "INITIAL",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               body: SwitchLabel {
 // DEFAULT-NEXT:                                   label: Case(
 // DEFAULT-NEXT:                                       Identifier(
-// DEFAULT-NEXT:                                           "FREEZE",
+// DEFAULT-NEXT:                                           "FREE",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   body: SwitchLabel {
 // DEFAULT-NEXT:                                       label: Case(
 // DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "SPILL",
+// DEFAULT-NEXT:                                               "FREEZE",
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       body: Expr(
-// DEFAULT-NEXT:                                           Call {
-// DEFAULT-NEXT:                                               callee: Identifier(
-// DEFAULT-NEXT:                                                   "foo",
+// DEFAULT-NEXT:                                       body: SwitchLabel {
+// DEFAULT-NEXT:                                           label: Case(
+// DEFAULT-NEXT:                                               Identifier(
+// DEFAULT-NEXT:                                                   "SPILL",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               arguments: [],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           body: Expr(
+// DEFAULT-NEXT:                                               Call {
+// DEFAULT-NEXT:                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                       "foo",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   arguments: [],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       SwitchLabel {
-// DEFAULT-NEXT:                           label: Case(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "PRECOLORED",
+// DEFAULT-NEXT:                           Break,
+// DEFAULT-NEXT:                           SwitchLabel {
+// DEFAULT-NEXT:                               label: Case(
+// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                                       "PRECOLORED",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           body: Expr(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "bar",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Break,
-// DEFAULT-NEXT:                       SwitchLabel {
-// DEFAULT-NEXT:                           label: Default,
-// DEFAULT-NEXT:                           body: Expr(
-// DEFAULT-NEXT:                               Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "baz",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                               body: Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "bar",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Break,
+// DEFAULT-NEXT:                           SwitchLabel {
+// DEFAULT-NEXT:                               label: Default,
+// DEFAULT-NEXT:                               body: Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "baz",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

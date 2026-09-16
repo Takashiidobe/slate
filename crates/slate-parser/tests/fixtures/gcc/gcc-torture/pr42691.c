@@ -261,174 +261,172 @@ int main() {
 // DEFAULT-NEXT:                           spelling: "1",
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Floating(
-// DEFAULT-NEXT:                                       Double,
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                       declarator: Pointer {
-// DEFAULT-NEXT:                                           qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                           inner: Name(
-// DEFAULT-NEXT:                                               "entry",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Binary {
-// DEFAULT-NEXT:                                                   op: Add,
-// DEFAULT-NEXT:                                                   left: Identifier(
-// DEFAULT-NEXT:                                                       "table",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: Identifier(
-// DEFAULT-NEXT:                                                       "i",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Decl(
+// DEFAULT-NEXT:                               Declaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Floating(
+// DEFAULT-NEXT:                                           Double,
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Equal,
-// DEFAULT-NEXT:                               left: Unary {
-// DEFAULT-NEXT:                                   op: Deref,
-// DEFAULT-NEXT:                                   operand: Identifier(
-// DEFAULT-NEXT:                                       "entry",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Unary {
-// DEFAULT-NEXT:                                   op: Deref,
-// DEFAULT-NEXT:                                   operand: Identifier(
-// DEFAULT-NEXT:                                       "key",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Union,
-// DEFAULT-NEXT:                                           name: "_D_rep",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "_D_inf",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           List(
-// DEFAULT-NEXT:                                               [
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: List(
-// DEFAULT-NEXT:                                                           [
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 32752,
-// DEFAULT-NEXT:                                                                               radix: Hex,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0x7ff0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Pointer {
+// DEFAULT-NEXT:                                               qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                               inner: Name(
+// DEFAULT-NEXT:                                                   "entry",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           initializer: Some(
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Binary {
+// DEFAULT-NEXT:                                                       op: Add,
+// DEFAULT-NEXT:                                                       left: Identifier(
+// DEFAULT-NEXT:                                                           "table",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       right: Identifier(
+// DEFAULT-NEXT:                                                           "i",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           If {
+// DEFAULT-NEXT:                               condition: Binary {
+// DEFAULT-NEXT:                                   op: Equal,
+// DEFAULT-NEXT:                                   left: Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "entry",
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Unary {
-// DEFAULT-NEXT:                                   op: Deref,
-// DEFAULT-NEXT:                                   operand: Identifier(
-// DEFAULT-NEXT:                                       "entry",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "key",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "_D_inf",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "val",
-// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               then_branch: Break,
+// DEFAULT-NEXT:                               else_branch: None,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                           Decl(
+// DEFAULT-NEXT:                               Declaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tag(
+// DEFAULT-NEXT:                                           Reference {
+// DEFAULT-NEXT:                                               kind: Union,
+// DEFAULT-NEXT:                                               name: "_D_rep",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "_D_inf",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           initializer: Some(
+// DEFAULT-NEXT:                                               List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: List(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 32752,
+// DEFAULT-NEXT:                                                                                   radix: Hex,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0x7ff0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           If {
+// DEFAULT-NEXT:                               condition: Binary {
+// DEFAULT-NEXT:                                   op: NotEqual,
+// DEFAULT-NEXT:                                   left: Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "entry",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "_D_inf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "val",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               then_branch: Expr(
 // DEFAULT-NEXT:                                   Call {
 // DEFAULT-NEXT:                                       callee: Identifier(
 // DEFAULT-NEXT:                                           "abort",
@@ -436,117 +434,115 @@ int main() {
 // DEFAULT-NEXT:                                       arguments: [],
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Tag(
-// DEFAULT-NEXT:                                       Reference {
-// DEFAULT-NEXT:                                           kind: Union,
-// DEFAULT-NEXT:                                           name: "_D_rep",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "_D_inf2",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           List(
-// DEFAULT-NEXT:                                               [
-// DEFAULT-NEXT:                                                   InitializerItem {
-// DEFAULT-NEXT:                                                       designators: [],
-// DEFAULT-NEXT:                                                       value: List(
-// DEFAULT-NEXT:                                                           [
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               InitializerItem {
-// DEFAULT-NEXT:                                                                   designators: [],
-// DEFAULT-NEXT:                                                                   value: Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 32752,
-// DEFAULT-NEXT:                                                                               radix: Hex,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0x7ff0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                               else_branch: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           Decl(
+// DEFAULT-NEXT:                               Declaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Tag(
+// DEFAULT-NEXT:                                           Reference {
+// DEFAULT-NEXT:                                               kind: Union,
+// DEFAULT-NEXT:                                               name: "_D_rep",
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Unary {
-// DEFAULT-NEXT:                               op: Not,
-// DEFAULT-NEXT:                               operand: Member {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "_D_inf2",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   field: "val",
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "_D_inf2",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           initializer: Some(
+// DEFAULT-NEXT:                                               List(
+// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                                       InitializerItem {
+// DEFAULT-NEXT:                                                           designators: [],
+// DEFAULT-NEXT:                                                           value: List(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   InitializerItem {
+// DEFAULT-NEXT:                                                                       designators: [],
+// DEFAULT-NEXT:                                                                       value: Expr(
+// DEFAULT-NEXT:                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 32752,
+// DEFAULT-NEXT:                                                                                   radix: Hex,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0x7ff0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           If {
+// DEFAULT-NEXT:                               condition: Unary {
+// DEFAULT-NEXT:                                   op: Not,
+// DEFAULT-NEXT:                                   operand: Member {
+// DEFAULT-NEXT:                                       base: Identifier(
+// DEFAULT-NEXT:                                           "_D_inf2",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       field: "val",
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               then_branch: Expr(
 // DEFAULT-NEXT:                                   Assign {
 // DEFAULT-NEXT:                                       op: Assign,
 // DEFAULT-NEXT:                                       target: Identifier(
@@ -557,43 +553,41 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Postfix {
-// DEFAULT-NEXT:                               op: Increment,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "i",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               else_branch: None,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Postfix {
+// DEFAULT-NEXT:                                   op: Increment,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
 // DEFAULT-NEXT:                   condition: Identifier(
 // DEFAULT-NEXT:                       "deletedEntry",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Unary {
-// DEFAULT-NEXT:                                   op: Deref,
-// DEFAULT-NEXT:                                   operand: Identifier(
-// DEFAULT-NEXT:                                       "deletedEntry",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: FloatLiteral(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       spelling: "0.0",
-// DEFAULT-NEXT:                                       radix: Decimal,
-// DEFAULT-NEXT:                                       suffix: None,
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Unary {
+// DEFAULT-NEXT:                               op: Deref,
+// DEFAULT-NEXT:                               operand: Identifier(
+// DEFAULT-NEXT:                                   "deletedEntry",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                           value: FloatLiteral(
+// DEFAULT-NEXT:                               FloatLiteral {
+// DEFAULT-NEXT:                                   spelling: "0.0",
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

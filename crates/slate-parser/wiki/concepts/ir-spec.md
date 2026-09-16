@@ -218,6 +218,15 @@ resolved types, conversions, or layout belong to `src/sema/`. Failures
 there produce diagnostics; lowering must not assume that surviving early
 validation proves a node valid or silently discard failed operations.
 
+Name resolution reads `TranslationUnit.standard`. C89/GNU89 control statements
+and unbraced bodies introduce no implicit scope; explicit AST `Block` nodes do.
+C99+ selection/iteration statements and their bodies each have nested scopes,
+with an explicit `Block` supplying the braced body's scope. In these modes,
+keep `for` clause bindings outside the body scope and retire them after the loop. Resolve enum
+and tag definitions inside expressions at their lexical declaration points.
+The AST preserves each body as one statement; name resolution must not flatten
+away compound scopes or infer scopes solely from braces in C99+.
+
 For the IR pipeline, resolve declarations before pruning them. Reachability
 uses resolved symbol dependencies and explicit roots: requested translation
 entries, exported symbols, and declarations retained for linkage or

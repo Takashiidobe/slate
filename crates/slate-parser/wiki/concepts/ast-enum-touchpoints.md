@@ -22,11 +22,20 @@ the wrapper's `.value`.
 ## Adding a `Decl` variant
 
 - `src/ast.rs` — `Decl::name` and `Decl::provenance` are exhaustive.
-- `src/sema.rs` — typedef/tag collection and the main analysis pass match declarations.
+- `src/sema/validate.rs` — typedef/tag collection and the main analysis pass match declarations.
 - `src/reachability.rs` — root dependency marking is exhaustive.
 - `tests/filecheck.rs` — clang-oracle filtering and declaration summaries are exhaustive.
 
 ## Adding a `Stmt` variant
+
+Control-flow bodies and if/else branches are `Box<Stmt>`; only `Block` and
+function/statement-expression bodies contain statement lists. `Null` represents
+an empty statement without introducing a compound scope.
+
+- `src/sema/names.rs` — statement resolution and label collection recurse into
+  single bodies; scope rules depend on `TranslationUnit.standard`.
+- `src/render.rs` — comment stripping recurses into single bodies and blocks.
+- `src/sema/module.rs` — module lowering handles `Null` and explicit blocks.
 
 - `src/parser/stmt.rs` — every `FunctionDecl` body (top-level and nested) is
   passed through `reachability::mark_unreachable` when it is built. A new
@@ -44,7 +53,7 @@ the wrapper's `.value`.
   statement always transfers control, like `Goto`.
 - `Stmt::Attribute` is a standalone GNU or C23 attribute declaration; it
   needs no reachability handling beyond that conservative default.
-- `src/sema.rs` — `walk_stmt` is exhaustive: a variant holding statements
+- `src/sema/validate.rs` — `walk_stmt` is exhaustive: a variant holding statements
   or expressions must recurse so clang-flavor asm checks see nested
   `asm`, register locals, and labels.
 - `Stmt::Labeled { label: String, body: Box<Stmt> }` (goto target) and
@@ -68,7 +77,7 @@ attributes, `#if`), and wraps each node in a `Span` covering its tokens.
   the construct folds to `i64` or returns `ConstExprError::NotConstant`.
   `evaluate_wide` and `contains_wide` only need touching for new
   arithmetic forms.
-- `src/sema.rs` — `is_integer_constant_expression` and `walk_expr` are
+- `src/sema/validate.rs` — `is_integer_constant_expression` and `walk_expr` are
   exhaustive; `walk_expr` must recurse so asm/label checks see nested
   statement expressions.
 - `src/reachability.rs` — `Reachability::mark_expr` is exhaustive; mark
@@ -98,7 +107,7 @@ an error.
 `Declarator`. A variant that embeds a `TypeName` (`Atomic`, `TypeOf`) must
 walk its declarator too.
 
-- `src/sema.rs` — `check_type` and `collect_tag_names` are exhaustive and
+- `src/sema/validate.rs` — `check_type` and `collect_tag_names` are exhaustive and
   must traverse nested types; `is_register_scalar_type` classifies it.
 - `src/reachability.rs` — `Marker::mark_type` is exhaustive and must mark
   declarations referenced through the type.

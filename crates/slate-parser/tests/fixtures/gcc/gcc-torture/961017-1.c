@@ -97,11 +97,7 @@ int main(void) {
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               DoWhile {
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Block(
-// DEFAULT-NEXT:                           [],
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   body: Null,
 // DEFAULT-NEXT:                   condition: Binary {
 // DEFAULT-NEXT:                       op: Greater,
 // DEFAULT-NEXT:                       left: Unary {

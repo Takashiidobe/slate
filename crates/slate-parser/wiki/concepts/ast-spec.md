@@ -55,8 +55,8 @@ their defining enumerator, leaving initializer expressions unevaluated.
 Each parameter list has its own scope, including nested function-pointer lists.
 The defining function's parameter-scope bindings (including enumerators) are
 retained for its body; prototype and nested parameter bindings do not leak.
-A for-initializer declaration stays visible through the condition, increment and
-body, then the enclosing bindings are restored.
+In C99+, a for-initializer declaration stays visible through the condition,
+increment and body, then the enclosing bindings are restored.
 
 ## Invariants
 
@@ -353,10 +353,22 @@ EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | Co
 
 ## Statements
 
-`Stmt = Span<StmtKind>`. Control-flow bodies are normalized to `Vec<Stmt>`.
-The outer braces of a control body are not preserved: valid unbraced bodies
-cannot introduce declarations, nested compound statements remain `Block`
-nodes, and Rust lowering requires a braced body in either case.
+`Stmt = Span<StmtKind>`. Each control-flow body is a single `Box<Stmt>`.
+Braced bodies retain an explicit `Block(Vec<Stmt>)` node spanning the braces;
+unbraced bodies retain their statement node. `Null` represents `;`, separately
+from an empty compound statement. Function bodies remain statement lists.
+
+`TranslationUnit.standard` preserves the configured language standard for sema.
+In C89/GNU89, only explicit compound statements introduce block scopes here;
+selection/iteration statements and unbraced bodies add no implicit scopes.
+In C99 and later (including GNU modes), each selection/iteration statement
+has a scope, and each controlled body has a nested scope regardless of braces.
+A braced body's `Block` supplies that body scope; do not add another implicit
+scope around it. Condition and `for` clause declarations belong to the control
+statement's scope, while body declarations remain within the body scope.
+Parser typedef disambiguation and semantic name resolution follow these same
+version-dependent rules. Enum/tag definitions in expressions make the
+unbraced-body distinction observable even without declaration statements.
 
 ```
 CompoundStatement { items: Vec<BlockItem> }
@@ -370,13 +382,14 @@ BlockItem =
     | Stmt(Stmt)
 
 StmtKind =
-    | Compound(CompoundStatement)
+    | Block(Vec<Stmt>)
+    | Null
     | Expr(Expr)
-    | If { condition, then_branch: Vec<Stmt>, else_branch: Option<Vec<Stmt>> }
-    | Switch { discriminant, body: Vec<Stmt> }
-    | While { condition, body: Vec<Stmt> }
-    | DoWhile { body: Vec<Stmt>, condition }
-    | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Vec<Stmt> }
+    | If { condition, then_branch: Box<Stmt>, else_branch: Option<Box<Stmt>> }
+    | Switch { discriminant, body: Box<Stmt> }
+    | While { condition, body: Box<Stmt> }
+    | DoWhile { body: Box<Stmt>, condition }
+    | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Box<Stmt> }
     | Labeled { label: Span<String>, body: Box<Stmt> }        // goto target
     | SwitchLabel { label: SwitchLabel, body: Box<Stmt> }     // case/default
     | Goto(Span<String>)
@@ -400,8 +413,8 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
   flat list item, so `case 1: case 2: x;` is
   `SwitchLabel(Case 1, body: SwitchLabel(Case 2, body: Expr x))`, and a
   label at the end of a block or before nothing parseable gets an empty
-  `Block([])` as `body`. A null statement `;` uses the same representation;
-  both lower to an empty Rust block where a body is required.
+  `Null` as `body`. A null statement `;` uses the same representation;
+  an explicit empty compound statement remains `Block([])`.
 - `switch` cases are found by walking the body. Cases may be nested inside
   other statements (Duff's device), so they are not collected by the parser.
 

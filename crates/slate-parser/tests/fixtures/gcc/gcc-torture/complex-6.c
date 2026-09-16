@@ -384,55 +384,57 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               102,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               102,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "test_",
-// DEFAULT-NEXT:                                               "float",
-// DEFAULT-NEXT:                                               " failed\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "e",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   102,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   102,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "test_",
+// DEFAULT-NEXT:                                                   "float",
+// DEFAULT-NEXT:                                                   " failed\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "e",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -613,56 +615,58 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               117,
-// DEFAULT-NEXT:                                               98,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               102,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "test_",
-// DEFAULT-NEXT:                                               "double",
-// DEFAULT-NEXT:                                               " failed\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "e",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                                   98,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   102,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "test_",
+// DEFAULT-NEXT:                                                   "double",
+// DEFAULT-NEXT:                                                   " failed\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "e",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -843,61 +847,63 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               103,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               117,
-// DEFAULT-NEXT:                                               98,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               102,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "test_",
-// DEFAULT-NEXT:                                               "long_double",
-// DEFAULT-NEXT:                                               " failed\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "e",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   103,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   117,
+// DEFAULT-NEXT:                                                   98,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   102,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "test_",
+// DEFAULT-NEXT:                                                   "long_double",
+// DEFAULT-NEXT:                                                   " failed\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "e",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -1090,53 +1096,55 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               102,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "test_",
-// DEFAULT-NEXT:                                               "int",
-// DEFAULT-NEXT:                                               " failed\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "e",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   102,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "test_",
+// DEFAULT-NEXT:                                                   "int",
+// DEFAULT-NEXT:                                                   " failed\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "e",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -1329,58 +1337,60 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               103,
-// DEFAULT-NEXT:                                               95,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               102,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               108,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "test_",
-// DEFAULT-NEXT:                                               "long_int",
-// DEFAULT-NEXT:                                               " failed\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "printf",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Unary {
-// DEFAULT-NEXT:                               op: PreIncrement,
-// DEFAULT-NEXT:                               operand: Identifier(
-// DEFAULT-NEXT:                                   "e",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   103,
+// DEFAULT-NEXT:                                                   95,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   102,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   10,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "test_",
+// DEFAULT-NEXT:                                                   "long_int",
+// DEFAULT-NEXT:                                                   " failed\\n",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Unary {
+// DEFAULT-NEXT:                                   op: PreIncrement,
+// DEFAULT-NEXT:                                   operand: Identifier(
+// DEFAULT-NEXT:                                       "e",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -1480,16 +1490,14 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "abort",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

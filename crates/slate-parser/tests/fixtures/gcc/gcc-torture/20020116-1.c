@@ -279,12 +279,12 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Switch {
-// DEFAULT-NEXT:                           discriminant: Identifier(
-// DEFAULT-NEXT:                               "c",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           body: [
+// DEFAULT-NEXT:                   body: Switch {
+// DEFAULT-NEXT:                       discriminant: Identifier(
+// DEFAULT-NEXT:                           "c",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       body: Block(
+// DEFAULT-NEXT:                           [
 // DEFAULT-NEXT:                               SwitchLabel {
 // DEFAULT-NEXT:                                   label: Case(
 // DEFAULT-NEXT:                                       CharLiteral(
@@ -403,8 +403,8 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               Break,
 // DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {

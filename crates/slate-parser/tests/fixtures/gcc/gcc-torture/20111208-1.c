@@ -637,109 +637,50 @@ int main(void) {
 // DEFAULT-NEXT:                           "pend",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "type",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: Unary {
-// DEFAULT-NEXT:                                   op: Deref,
-// DEFAULT-NEXT:                                   operand: Postfix {
-// DEFAULT-NEXT:                                       op: Increment,
-// DEFAULT-NEXT:                                       operand: Identifier(
-// DEFAULT-NEXT:                                           "p",
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "type",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Postfix {
+// DEFAULT-NEXT:                                           op: Increment,
+// DEFAULT-NEXT:                                           operand: Identifier(
+// DEFAULT-NEXT:                                               "p",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Switch {
-// DEFAULT-NEXT:                           discriminant: Identifier(
-// DEFAULT-NEXT:                               "type",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           body: [
-// DEFAULT-NEXT:                               SwitchLabel {
-// DEFAULT-NEXT:                                   label: Case(
-// DEFAULT-NEXT:                                       CharLiteral(
-// DEFAULT-NEXT:                                           CharLiteral {
-// DEFAULT-NEXT:                                               encoding: Plain,
-// DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   115,
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               spelling: "s",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   body: Expr(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "integer_size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 2,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "2",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Goto(
-// DEFAULT-NEXT:                                   "unpack_integer",
+// DEFAULT-NEXT:                           Switch {
+// DEFAULT-NEXT:                               discriminant: Identifier(
+// DEFAULT-NEXT:                                   "type",
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               SwitchLabel {
-// DEFAULT-NEXT:                                   label: Case(
-// DEFAULT-NEXT:                                       CharLiteral(
-// DEFAULT-NEXT:                                           CharLiteral {
-// DEFAULT-NEXT:                                               encoding: Plain,
-// DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   108,
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               spelling: "l",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   body: Expr(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "integer_size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 4,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                               body: Block(
+// DEFAULT-NEXT:                                   [
+// DEFAULT-NEXT:                                       SwitchLabel {
+// DEFAULT-NEXT:                                           label: Case(
+// DEFAULT-NEXT:                                               CharLiteral(
+// DEFAULT-NEXT:                                                   CharLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           115,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       spelling: "s",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "4",
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Goto(
-// DEFAULT-NEXT:                                   "unpack_integer",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Labeled {
-// DEFAULT-NEXT:                                   label: "unpack_integer",
-// DEFAULT-NEXT:                                   body: Switch {
-// DEFAULT-NEXT:                                       discriminant: Identifier(
-// DEFAULT-NEXT:                                           "integer_size",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       body: [
-// DEFAULT-NEXT:                                           SwitchLabel {
-// DEFAULT-NEXT:                                               label: Case(
-// DEFAULT-NEXT:                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                           body: Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Identifier(
+// DEFAULT-NEXT:                                                       "integer_size",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   value: IntegerLiteral(
 // DEFAULT-NEXT:                                                       IntegerLiteral {
 // DEFAULT-NEXT:                                                           value: 2,
 // DEFAULT-NEXT:                                                           radix: Decimal,
@@ -750,97 +691,31 @@ int main(void) {
 // DEFAULT-NEXT:                                                           spelling: "2",
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Goto(
+// DEFAULT-NEXT:                                           "unpack_integer",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       SwitchLabel {
+// DEFAULT-NEXT:                                           label: Case(
+// DEFAULT-NEXT:                                               CharLiteral(
+// DEFAULT-NEXT:                                                   CharLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           108,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       spelling: "l",
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               body: Block(
-// DEFAULT-NEXT:                                                   [
-// DEFAULT-NEXT:                                                       Decl(
-// DEFAULT-NEXT:                                                           Declaration {
-// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                   ty: Tag(
-// DEFAULT-NEXT:                                                                       Definition(
-// DEFAULT-NEXT:                                                                           TagId(
-// DEFAULT-NEXT:                                                                               0,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarators: [
-// DEFAULT-NEXT:                                                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "memcpy",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "a",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "s",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   SizeOfType {
-// DEFAULT-NEXT:                                                                       ty: TypeName {
-// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                   "int16_t",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: AddAssign,
-// DEFAULT-NEXT:                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                   "s",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               value: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                               "int16_t",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "do_something",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "i",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Break,
-// DEFAULT-NEXT:                                           SwitchLabel {
-// DEFAULT-NEXT:                                               label: Case(
-// DEFAULT-NEXT:                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           body: Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Identifier(
+// DEFAULT-NEXT:                                                       "integer_size",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   value: IntegerLiteral(
 // DEFAULT-NEXT:                                                       IntegerLiteral {
 // DEFAULT-NEXT:                                                           value: 4,
 // DEFAULT-NEXT:                                                           radix: Decimal,
@@ -851,101 +726,232 @@ int main(void) {
 // DEFAULT-NEXT:                                                           spelling: "4",
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Goto(
+// DEFAULT-NEXT:                                           "unpack_integer",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Labeled {
+// DEFAULT-NEXT:                                           label: "unpack_integer",
+// DEFAULT-NEXT:                                           body: Switch {
+// DEFAULT-NEXT:                                               discriminant: Identifier(
+// DEFAULT-NEXT:                                                   "integer_size",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               body: Block(
 // DEFAULT-NEXT:                                                   [
-// DEFAULT-NEXT:                                                       Decl(
-// DEFAULT-NEXT:                                                           Declaration {
-// DEFAULT-NEXT:                                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                   ty: Tag(
-// DEFAULT-NEXT:                                                                       Definition(
-// DEFAULT-NEXT:                                                                           TagId(
-// DEFAULT-NEXT:                                                                               1,
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               declarators: [
-// DEFAULT-NEXT:                                                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                                                       declarator: Name(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                       SwitchLabel {
+// DEFAULT-NEXT:                                                           label: Case(
+// DEFAULT-NEXT:                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 2,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "2",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "memcpy",
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "a",
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   Identifier(
-// DEFAULT-NEXT:                                                                       "s",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   SizeOfType {
-// DEFAULT-NEXT:                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           body: Block(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   Decl(
+// DEFAULT-NEXT:                                                                       Declaration {
 // DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                   "int32_t",
+// DEFAULT-NEXT:                                                                               ty: Tag(
+// DEFAULT-NEXT:                                                                                   Definition(
+// DEFAULT-NEXT:                                                                                       TagId(
+// DEFAULT-NEXT:                                                                                           0,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                           declarators: [
+// DEFAULT-NEXT:                                                                               InitDeclaratorKind {
+// DEFAULT-NEXT:                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                       "v",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Assign {
-// DEFAULT-NEXT:                                                               op: AddAssign,
-// DEFAULT-NEXT:                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                   "s",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               value: SizeOfType {
-// DEFAULT-NEXT:                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                               "int32_t",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "memcpy",
 // DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                       "v",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "a",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "s",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               SizeOfType {
+// DEFAULT-NEXT:                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                                               "int16_t",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Call {
-// DEFAULT-NEXT:                                                               callee: Identifier(
-// DEFAULT-NEXT:                                                                   "do_something",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               arguments: [
-// DEFAULT-NEXT:                                                                   Member {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "v",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "i",
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: AddAssign,
+// DEFAULT-NEXT:                                                                           target: Identifier(
+// DEFAULT-NEXT:                                                                               "s",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           value: SizeOfType {
+// DEFAULT-NEXT:                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                           "int16_t",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "do_something",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                       "v",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "i",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       Break,
+// DEFAULT-NEXT:                                                       SwitchLabel {
+// DEFAULT-NEXT:                                                           label: Case(
+// DEFAULT-NEXT:                                                               IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 4,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "4",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           body: Block(
+// DEFAULT-NEXT:                                                               [
+// DEFAULT-NEXT:                                                                   Decl(
+// DEFAULT-NEXT:                                                                       Declaration {
+// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                               ty: Tag(
+// DEFAULT-NEXT:                                                                                   Definition(
+// DEFAULT-NEXT:                                                                                       TagId(
+// DEFAULT-NEXT:                                                                                           1,
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           declarators: [
+// DEFAULT-NEXT:                                                                               InitDeclaratorKind {
+// DEFAULT-NEXT:                                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                                       "v",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "memcpy",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                       "v",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "a",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "s",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               SizeOfType {
+// DEFAULT-NEXT:                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                           ty: Named(
+// DEFAULT-NEXT:                                                                                               "int32_t",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Assign {
+// DEFAULT-NEXT:                                                                           op: AddAssign,
+// DEFAULT-NEXT:                                                                           target: Identifier(
+// DEFAULT-NEXT:                                                                               "s",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           value: SizeOfType {
+// DEFAULT-NEXT:                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                           "int32_t",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   Expr(
+// DEFAULT-NEXT:                                                                       Call {
+// DEFAULT-NEXT:                                                                           callee: Identifier(
+// DEFAULT-NEXT:                                                                               "do_something",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           arguments: [
+// DEFAULT-NEXT:                                                                               Member {
+// DEFAULT-NEXT:                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                       "v",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "i",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       Break,
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           Break,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Break,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Cast {
@@ -1064,16 +1070,14 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "abort",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

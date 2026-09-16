@@ -83,9 +83,7 @@ void dotest()
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               Labeled {
 // DEFAULT-NEXT:                   label: "l1",
-// DEFAULT-NEXT:                   body: Block(
-// DEFAULT-NEXT:                       [],
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: Null,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

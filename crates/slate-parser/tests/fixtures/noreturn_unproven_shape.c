@@ -129,7 +129,9 @@ int main(void) {
 // DEFAULT-NEXT:                   init: None,
 // DEFAULT-NEXT:                   condition: None,
 // DEFAULT-NEXT:                   increment: None,
-// DEFAULT-NEXT:                   body: [],
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

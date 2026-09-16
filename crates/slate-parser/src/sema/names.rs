@@ -32,6 +32,7 @@ pub fn resolve(unit: &TranslationUnit) -> Result<NameResolution, ResolveError> {
 }
 
 struct Resolver {
+    control_scopes: bool,
     resolution: NameResolution,
     ordinary: Vec<HashMap<String, Entry>>,
     tags: Vec<HashMap<String, Entry>>,
@@ -45,6 +46,7 @@ struct Resolver {
 impl Resolver {
     fn new(unit: &TranslationUnit) -> Self {
         Self {
+            control_scopes: unit.standard.has_control_scopes(),
             resolution: NameResolution::default(),
             ordinary: vec![HashMap::new()],
             tags: vec![HashMap::new()],
@@ -128,8 +130,41 @@ impl Resolver {
     }
 
     fn statement(&mut self, statement: &Stmt) -> Result<(), ResolveError> {
+        let scoped = self.control_scopes
+            && matches!(
+                statement.value,
+                StmtKind::If { .. }
+                    | StmtKind::While { .. }
+                    | StmtKind::DoWhile { .. }
+                    | StmtKind::For { .. }
+                    | StmtKind::Switch { .. }
+            );
+        if scoped {
+            self.push_scope();
+        }
+        let result = self.statement_contents(statement);
+        if scoped {
+            self.pop_scope();
+        }
+        result
+    }
+
+    fn control_body(&mut self, body: &Stmt) -> Result<(), ResolveError> {
+        let scoped = self.control_scopes && !matches!(body.value, StmtKind::Block(_));
+        if scoped {
+            self.push_scope();
+        }
+        let result = self.statement(body);
+        if scoped {
+            self.pop_scope();
+        }
+        result
+    }
+
+    fn statement_contents(&mut self, statement: &Stmt) -> Result<(), ResolveError> {
         match &statement.value {
-            StmtKind::Comment(_)
+            StmtKind::Null
+            | StmtKind::Comment(_)
             | StmtKind::ReturnVoid
             | StmtKind::Attribute(_)
             | StmtKind::Break
@@ -148,18 +183,18 @@ impl Resolver {
                 else_branch,
             } => {
                 self.expr(condition)?;
-                self.statements(then_branch)?;
+                self.control_body(then_branch)?;
                 if let Some(branch) = else_branch {
-                    self.statements(branch)?;
+                    self.control_body(branch)?;
                 }
                 Ok(())
             }
             StmtKind::While { condition, body } => {
                 self.expr(condition)?;
-                self.statements(body)
+                self.control_body(body)
             }
             StmtKind::DoWhile { body, condition } => {
-                self.statements(body)?;
+                self.control_body(body)?;
                 self.expr(condition)
             }
             StmtKind::For {
@@ -168,7 +203,6 @@ impl Resolver {
                 increment,
                 body,
             } => {
-                self.push_scope();
                 if let Some(init) = init {
                     self.statement(init)?;
                 }
@@ -178,13 +212,12 @@ impl Resolver {
                 if let Some(increment) = increment {
                     self.expr(increment)?;
                 }
-                self.statements(body)?;
-                self.pop_scope();
+                self.control_body(body)?;
                 Ok(())
             }
             StmtKind::Switch { discriminant, body } => {
                 self.expr(discriminant)?;
-                self.statements(body)
+                self.control_body(body)
             }
             StmtKind::Labeled { body, .. } => self.statement(body),
             StmtKind::SwitchLabel { label, body } => {
@@ -476,19 +509,19 @@ impl Resolver {
                     self.bind_label(label)?;
                     self.collect_labels(std::slice::from_ref(body))?;
                 }
-                StmtKind::Block(body)
-                | StmtKind::While { body, .. }
+                StmtKind::Block(body) => self.collect_labels(body)?,
+                StmtKind::While { body, .. }
                 | StmtKind::DoWhile { body, .. }
                 | StmtKind::Switch { body, .. }
-                | StmtKind::For { body, .. } => self.collect_labels(body)?,
+                | StmtKind::For { body, .. } => self.collect_labels(std::slice::from_ref(body))?,
                 StmtKind::If {
                     then_branch,
                     else_branch,
                     ..
                 } => {
-                    self.collect_labels(then_branch)?;
+                    self.collect_labels(std::slice::from_ref(then_branch))?;
                     if let Some(branch) = else_branch {
-                        self.collect_labels(branch)?;
+                        self.collect_labels(std::slice::from_ref(branch))?;
                     }
                 }
                 StmtKind::SwitchLabel { body, .. } => {

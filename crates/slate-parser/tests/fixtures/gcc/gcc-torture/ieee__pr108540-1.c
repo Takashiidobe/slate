@@ -292,16 +292,14 @@ int main() {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_abort",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -467,25 +465,122 @@ int main() {
 // DEFAULT-NEXT:                   discriminant: Identifier(
 // DEFAULT-NEXT:                       "x",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       SwitchLabel {
-// DEFAULT-NEXT:                           label: Case(
-// DEFAULT-NEXT:                               IntegerLiteral(
-// DEFAULT-NEXT:                                   IntegerLiteral {
-// DEFAULT-NEXT:                                       value: 42,
-// DEFAULT-NEXT:                                       radix: Decimal,
-// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                           unsigned: false,
-// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           SwitchLabel {
+// DEFAULT-NEXT:                               label: Case(
+// DEFAULT-NEXT:                                   IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 42,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "42",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "42",
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           body: If {
+// DEFAULT-NEXT:                               body: If {
+// DEFAULT-NEXT:                                   condition: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "__builtin_isinf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "d",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   then_branch: Block(
+// DEFAULT-NEXT:                                       [
+// DEFAULT-NEXT:                                           If {
+// DEFAULT-NEXT:                                               condition: Binary {
+// DEFAULT-NEXT:                                                   op: Less,
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "d",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 0,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "0",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               then_branch: Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "sign",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       value: CharLiteral(
+// DEFAULT-NEXT:                                                           CharLiteral {
+// DEFAULT-NEXT:                                                               encoding: Plain,
+// DEFAULT-NEXT:                                                               code_units: [
+// DEFAULT-NEXT:                                                                   45,
+// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                               spelling: "-",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               else_branch: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Identifier(
+// DEFAULT-NEXT:                                                       "cp",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   value: StringLiteral(
+// DEFAULT-NEXT:                                                       StringLiteral {
+// DEFAULT-NEXT:                                                           encoding: Plain,
+// DEFAULT-NEXT:                                                           code_units: [
+// DEFAULT-NEXT:                                                               73,
+// DEFAULT-NEXT:                                                               110,
+// DEFAULT-NEXT:                                                               102,
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                           pieces: [
+// DEFAULT-NEXT:                                                               "Inf",
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Expr(
+// DEFAULT-NEXT:                                               Assign {
+// DEFAULT-NEXT:                                                   op: Assign,
+// DEFAULT-NEXT:                                                   target: Identifier(
+// DEFAULT-NEXT:                                                       "size",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                           value: 3,
+// DEFAULT-NEXT:                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                               unsigned: false,
+// DEFAULT-NEXT:                                                               size: None,
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           spelling: "3",
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Break,
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   else_branch: None,
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           If {
 // DEFAULT-NEXT:                               condition: Call {
 // DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "__builtin_isinf",
+// DEFAULT-NEXT:                                       "__builtin_isnan",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                                   arguments: [
 // DEFAULT-NEXT:                                       Identifier(
@@ -493,200 +588,107 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_branch: [
-// DEFAULT-NEXT:                                   If {
-// DEFAULT-NEXT:                                       condition: Binary {
-// DEFAULT-NEXT:                                           op: Less,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "d",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 0,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                               then_branch: Block(
+// DEFAULT-NEXT:                                   [
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "cp",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: StringLiteral(
+// DEFAULT-NEXT:                                                   StringLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                           97,
+// DEFAULT-NEXT:                                                           78,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       pieces: [
+// DEFAULT-NEXT:                                                           "NaN",
+// DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "0",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       then_branch: [
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "sign",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: CharLiteral(
-// DEFAULT-NEXT:                                                       CharLiteral {
-// DEFAULT-NEXT:                                                           encoding: Plain,
-// DEFAULT-NEXT:                                                           code_units: [
-// DEFAULT-NEXT:                                                               45,
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           spelling: "-",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "size",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                       value: 3,
+// DEFAULT-NEXT:                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                           unsigned: false,
+// DEFAULT-NEXT:                                                           size: None,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       else_branch: None,
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "cp",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: StringLiteral(
-// DEFAULT-NEXT:                                               StringLiteral {
-// DEFAULT-NEXT:                                                   encoding: Plain,
-// DEFAULT-NEXT:                                                   code_units: [
-// DEFAULT-NEXT:                                                       73,
-// DEFAULT-NEXT:                                                       110,
-// DEFAULT-NEXT:                                                       102,
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   pieces: [
-// DEFAULT-NEXT:                                                       "Inf",
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 3,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                       spelling: "3",
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "3",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Break,
-// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       Break,
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               else_branch: None,
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_isnan",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
+// DEFAULT-NEXT:                           If {
+// DEFAULT-NEXT:                               condition: Binary {
+// DEFAULT-NEXT:                                   op: Less,
+// DEFAULT-NEXT:                                   left: Identifier(
 // DEFAULT-NEXT:                                       "d",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "cp",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: StringLiteral(
-// DEFAULT-NEXT:                                           StringLiteral {
-// DEFAULT-NEXT:                                               encoding: Plain,
-// DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   78,
-// DEFAULT-NEXT:                                                   97,
-// DEFAULT-NEXT:                                                   78,
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               pieces: [
-// DEFAULT-NEXT:                                                   "NaN",
-// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 0,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "size",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 3,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                           spelling: "0",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               then_branch: Block(
+// DEFAULT-NEXT:                                   [
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "d",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: Unary {
+// DEFAULT-NEXT:                                                   op: Minus,
+// DEFAULT-NEXT:                                                   operand: Identifier(
+// DEFAULT-NEXT:                                                       "d",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "3",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Break,
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Less,
-// DEFAULT-NEXT:                               left: Identifier(
-// DEFAULT-NEXT:                                   "d",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                   IntegerLiteral {
-// DEFAULT-NEXT:                                       value: 0,
-// DEFAULT-NEXT:                                       radix: Decimal,
-// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                           unsigned: false,
-// DEFAULT-NEXT:                                           size: None,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "0",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Unary {
-// DEFAULT-NEXT:                                           op: Minus,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "d",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "sign",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: CharLiteral(
-// DEFAULT-NEXT:                                           CharLiteral {
-// DEFAULT-NEXT:                                               encoding: Plain,
-// DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   45,
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               spelling: "-",
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "sign",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: CharLiteral(
+// DEFAULT-NEXT:                                                   CharLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           45,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       spelling: "-",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: Some(
-// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                               else_branch: Some(
 // DEFAULT-NEXT:                                   If {
 // DEFAULT-NEXT:                                       condition: Binary {
 // DEFAULT-NEXT:                                           op: And,
@@ -714,7 +716,24 @@ int main() {
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       then_branch: [
+// DEFAULT-NEXT:                                       then_branch: Expr(
+// DEFAULT-NEXT:                                           Assign {
+// DEFAULT-NEXT:                                               op: Assign,
+// DEFAULT-NEXT:                                               target: Identifier(
+// DEFAULT-NEXT:                                                   "sign",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               value: CharLiteral(
+// DEFAULT-NEXT:                                                   CharLiteral {
+// DEFAULT-NEXT:                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                       code_units: [
+// DEFAULT-NEXT:                                                           45,
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                       spelling: "-",
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       else_branch: Some(
 // DEFAULT-NEXT:                                           Expr(
 // DEFAULT-NEXT:                                               Assign {
 // DEFAULT-NEXT:                                                   op: Assign,
@@ -725,282 +744,207 @@ int main() {
 // DEFAULT-NEXT:                                                       CharLiteral {
 // DEFAULT-NEXT:                                                           encoding: Plain,
 // DEFAULT-NEXT:                                                           code_units: [
-// DEFAULT-NEXT:                                                               45,
+// DEFAULT-NEXT:                                                               0,
 // DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           spelling: "-",
+// DEFAULT-NEXT:                                                           spelling: "\\0",
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       else_branch: Some(
-// DEFAULT-NEXT:                                           [
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Identifier(
-// DEFAULT-NEXT:                                                           "sign",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           If {
+// DEFAULT-NEXT:                               condition: Binary {
+// DEFAULT-NEXT:                                   op: Or,
+// DEFAULT-NEXT:                                   left: Binary {
+// DEFAULT-NEXT:                                       op: Equal,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "ch",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "a",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                                       op: Equal,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "ch",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: CharLiteral(
+// DEFAULT-NEXT:                                           CharLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   65,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               spelling: "A",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               then_branch: Block(
+// DEFAULT-NEXT:                                   [
+// DEFAULT-NEXT:                                       Decl(
+// DEFAULT-NEXT:                                           Declaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Tag(
+// DEFAULT-NEXT:                                                       Definition(
+// DEFAULT-NEXT:                                                           TagId(
+// DEFAULT-NEXT:                                                               0,
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       value: CharLiteral(
-// DEFAULT-NEXT:                                                           CharLiteral {
-// DEFAULT-NEXT:                                                               encoding: Plain,
-// DEFAULT-NEXT:                                                               code_units: [
-// DEFAULT-NEXT:                                                                   0,
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               spelling: "\\0",
-// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclaratorKind {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "u",
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: Or,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "ch",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "a",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Equal,
-// DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "ch",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: CharLiteral(
-// DEFAULT-NEXT:                                       CharLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               65,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "A",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Tag(
-// DEFAULT-NEXT:                                               Definition(
-// DEFAULT-NEXT:                                                   TagId(
-// DEFAULT-NEXT:                                                       0,
+// DEFAULT-NEXT:                                       Decl(
+// DEFAULT-NEXT:                                           Declaration {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Ranked {
+// DEFAULT-NEXT:                                                           rank: Int,
+// DEFAULT-NEXT:                                                           signed: true,
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarators: [
-// DEFAULT-NEXT:                                           InitDeclaratorKind {
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "u",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: true,
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarators: [
-// DEFAULT-NEXT:                                           InitDeclaratorKind {
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "dsgn",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Assign {
-// DEFAULT-NEXT:                                       op: Assign,
-// DEFAULT-NEXT:                                       target: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "u",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "d",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       value: Identifier(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Binary {
-// DEFAULT-NEXT:                                       op: Less,
-// DEFAULT-NEXT:                                       left: Member {
-// DEFAULT-NEXT:                                           base: Identifier(
-// DEFAULT-NEXT:                                               "u",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           field: "l",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 0,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "0",
+// DEFAULT-NEXT:                                               declarators: [
+// DEFAULT-NEXT:                                                   InitDeclaratorKind {
+// DEFAULT-NEXT:                                                       declarator: Name(
+// DEFAULT-NEXT:                                                           "dsgn",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_branch: [
 // DEFAULT-NEXT:                                       Expr(
 // DEFAULT-NEXT:                                           Assign {
 // DEFAULT-NEXT:                                               op: Assign,
-// DEFAULT-NEXT:                                               target: Identifier(
-// DEFAULT-NEXT:                                                   "dsgn",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 1,
-// DEFAULT-NEXT:                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "1",
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                                   base: Identifier(
+// DEFAULT-NEXT:                                                       "u",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   field: "d",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Identifier(
+// DEFAULT-NEXT:                                                   "d",
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Assign {
-// DEFAULT-NEXT:                                               op: BitAndAssign,
-// DEFAULT-NEXT:                                               target: Member {
+// DEFAULT-NEXT:                                       If {
+// DEFAULT-NEXT:                                           condition: Binary {
+// DEFAULT-NEXT:                                               op: Less,
+// DEFAULT-NEXT:                                               left: Member {
 // DEFAULT-NEXT:                                                   base: Identifier(
 // DEFAULT-NEXT:                                                       "u",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   field: "l",
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                               right: IntegerLiteral(
 // DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 9223372036854775807,
-// DEFAULT-NEXT:                                                       radix: Hex,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: LongLong,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "0x7fffffffffffffffLL",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   else_branch: Some(
-// DEFAULT-NEXT:                                       [
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Assign {
-// DEFAULT-NEXT:                                                   op: Assign,
-// DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "dsgn",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 0,
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                               unsigned: false,
-// DEFAULT-NEXT:                                                               size: None,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "0",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "__builtin_isinf",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "d",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Assign {
-// DEFAULT-NEXT:                                               op: Assign,
-// DEFAULT-NEXT:                                               target: Identifier(
-// DEFAULT-NEXT:                                                   "cp",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               value: StringLiteral(
-// DEFAULT-NEXT:                                                   StringLiteral {
-// DEFAULT-NEXT:                                                       encoding: Plain,
-// DEFAULT-NEXT:                                                       code_units: [
-// DEFAULT-NEXT:                                                           73,
-// DEFAULT-NEXT:                                                           78,
-// DEFAULT-NEXT:                                                           70,
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                       pieces: [
-// DEFAULT-NEXT:                                                           "INF",
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Assign {
-// DEFAULT-NEXT:                                               op: Assign,
-// DEFAULT-NEXT:                                               target: Identifier(
-// DEFAULT-NEXT:                                                   "size",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 3,
+// DEFAULT-NEXT:                                                       value: 0,
 // DEFAULT-NEXT:                                                       radix: Decimal,
 // DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                           unsigned: false,
 // DEFAULT-NEXT:                                                           size: None,
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "3",
+// DEFAULT-NEXT:                                                       spelling: "0",
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   else_branch: Some(
-// DEFAULT-NEXT:                                       [
-// DEFAULT-NEXT:                                           If {
-// DEFAULT-NEXT:                                               condition: Call {
-// DEFAULT-NEXT:                                                   callee: Identifier(
-// DEFAULT-NEXT:                                                       "__builtin_isnan",
+// DEFAULT-NEXT:                                           then_branch: Block(
+// DEFAULT-NEXT:                                               [
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: Assign,
+// DEFAULT-NEXT:                                                           target: Identifier(
+// DEFAULT-NEXT:                                                               "dsgn",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 1,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   arguments: [
-// DEFAULT-NEXT:                                                       Identifier(
-// DEFAULT-NEXT:                                                           "d",
+// DEFAULT-NEXT:                                                   Expr(
+// DEFAULT-NEXT:                                                       Assign {
+// DEFAULT-NEXT:                                                           op: BitAndAssign,
+// DEFAULT-NEXT:                                                           target: Member {
+// DEFAULT-NEXT:                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                   "u",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               field: "l",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 9223372036854775807,
+// DEFAULT-NEXT:                                                                   radix: Hex,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: LongLong,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "0x7fffffffffffffffLL",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_branch: Some(
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Identifier(
+// DEFAULT-NEXT:                                                           "dsgn",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               then_branch: [
+// DEFAULT-NEXT:                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 0,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "0",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       If {
+// DEFAULT-NEXT:                                           condition: Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "__builtin_isinf",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "d",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           then_branch: Block(
+// DEFAULT-NEXT:                                               [
 // DEFAULT-NEXT:                                                   Expr(
 // DEFAULT-NEXT:                                                       Assign {
 // DEFAULT-NEXT:                                                           op: Assign,
@@ -1011,12 +955,12 @@ int main() {
 // DEFAULT-NEXT:                                                               StringLiteral {
 // DEFAULT-NEXT:                                                                   encoding: Plain,
 // DEFAULT-NEXT:                                                                   code_units: [
+// DEFAULT-NEXT:                                                                       73,
 // DEFAULT-NEXT:                                                                       78,
-// DEFAULT-NEXT:                                                                       65,
-// DEFAULT-NEXT:                                                                       78,
+// DEFAULT-NEXT:                                                                       70,
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                                   pieces: [
-// DEFAULT-NEXT:                                                                       "NAN",
+// DEFAULT-NEXT:                                                                       "INF",
 // DEFAULT-NEXT:                                                                   ],
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
@@ -1042,8 +986,64 @@ int main() {
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               else_branch: Some(
-// DEFAULT-NEXT:                                                   [
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           else_branch: Some(
+// DEFAULT-NEXT:                                               If {
+// DEFAULT-NEXT:                                                   condition: Call {
+// DEFAULT-NEXT:                                                       callee: Identifier(
+// DEFAULT-NEXT:                                                           "__builtin_isnan",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       arguments: [
+// DEFAULT-NEXT:                                                           Identifier(
+// DEFAULT-NEXT:                                                               "d",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_branch: Block(
+// DEFAULT-NEXT:                                                       [
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Identifier(
+// DEFAULT-NEXT:                                                                       "cp",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   value: StringLiteral(
+// DEFAULT-NEXT:                                                                       StringLiteral {
+// DEFAULT-NEXT:                                                                           encoding: Plain,
+// DEFAULT-NEXT:                                                                           code_units: [
+// DEFAULT-NEXT:                                                                               78,
+// DEFAULT-NEXT:                                                                               65,
+// DEFAULT-NEXT:                                                                               78,
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                           pieces: [
+// DEFAULT-NEXT:                                                                               "NAN",
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Identifier(
+// DEFAULT-NEXT:                                                                       "size",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 3,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "3",
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_branch: Some(
 // DEFAULT-NEXT:                                                       If {
 // DEFAULT-NEXT:                                                           condition: Binary {
 // DEFAULT-NEXT:                                                               op: Equal,
@@ -1062,50 +1062,7 @@ int main() {
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           then_branch: [
-// DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Assign {
-// DEFAULT-NEXT:                                                                       op: Assign,
-// DEFAULT-NEXT:                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                           "cp",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       value: StringLiteral(
-// DEFAULT-NEXT:                                                                           StringLiteral {
-// DEFAULT-NEXT:                                                                               encoding: Plain,
-// DEFAULT-NEXT:                                                                               code_units: [
-// DEFAULT-NEXT:                                                                                   90,
-// DEFAULT-NEXT:                                                                                   69,
-// DEFAULT-NEXT:                                                                                   82,
-// DEFAULT-NEXT:                                                                                   79,
-// DEFAULT-NEXT:                                                                               ],
-// DEFAULT-NEXT:                                                                               pieces: [
-// DEFAULT-NEXT:                                                                                   "ZERO",
-// DEFAULT-NEXT:                                                                               ],
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Assign {
-// DEFAULT-NEXT:                                                                       op: Assign,
-// DEFAULT-NEXT:                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                           "size",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 4,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "4",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           else_branch: Some(
+// DEFAULT-NEXT:                                                           then_branch: Block(
 // DEFAULT-NEXT:                                                               [
 // DEFAULT-NEXT:                                                                   Expr(
 // DEFAULT-NEXT:                                                                       Assign {
@@ -1117,14 +1074,13 @@ int main() {
 // DEFAULT-NEXT:                                                                               StringLiteral {
 // DEFAULT-NEXT:                                                                                   encoding: Plain,
 // DEFAULT-NEXT:                                                                                   code_units: [
-// DEFAULT-NEXT:                                                                                       87,
+// DEFAULT-NEXT:                                                                                       90,
+// DEFAULT-NEXT:                                                                                       69,
 // DEFAULT-NEXT:                                                                                       82,
 // DEFAULT-NEXT:                                                                                       79,
-// DEFAULT-NEXT:                                                                                       78,
-// DEFAULT-NEXT:                                                                                       71,
 // DEFAULT-NEXT:                                                                                   ],
 // DEFAULT-NEXT:                                                                                   pieces: [
-// DEFAULT-NEXT:                                                                                       "WRONG",
+// DEFAULT-NEXT:                                                                                       "ZERO",
 // DEFAULT-NEXT:                                                                                   ],
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
@@ -1138,51 +1094,99 @@ int main() {
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                           value: IntegerLiteral(
 // DEFAULT-NEXT:                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                   value: 5,
+// DEFAULT-NEXT:                                                                                   value: 4,
 // DEFAULT-NEXT:                                                                                   radix: Decimal,
 // DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                                                       unsigned: false,
 // DEFAULT-NEXT:                                                                                       size: None,
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   spelling: "5",
+// DEFAULT-NEXT:                                                                                   spelling: "4",
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ],
 // DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           else_branch: Some(
+// DEFAULT-NEXT:                                                               Block(
+// DEFAULT-NEXT:                                                                   [
+// DEFAULT-NEXT:                                                                       Expr(
+// DEFAULT-NEXT:                                                                           Assign {
+// DEFAULT-NEXT:                                                                               op: Assign,
+// DEFAULT-NEXT:                                                                               target: Identifier(
+// DEFAULT-NEXT:                                                                                   "cp",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               value: StringLiteral(
+// DEFAULT-NEXT:                                                                                   StringLiteral {
+// DEFAULT-NEXT:                                                                                       encoding: Plain,
+// DEFAULT-NEXT:                                                                                       code_units: [
+// DEFAULT-NEXT:                                                                                           87,
+// DEFAULT-NEXT:                                                                                           82,
+// DEFAULT-NEXT:                                                                                           79,
+// DEFAULT-NEXT:                                                                                           78,
+// DEFAULT-NEXT:                                                                                           71,
+// DEFAULT-NEXT:                                                                                       ],
+// DEFAULT-NEXT:                                                                                       pieces: [
+// DEFAULT-NEXT:                                                                                           "WRONG",
+// DEFAULT-NEXT:                                                                                       ],
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       Expr(
+// DEFAULT-NEXT:                                                                           Assign {
+// DEFAULT-NEXT:                                                                               op: Assign,
+// DEFAULT-NEXT:                                                                               target: Identifier(
+// DEFAULT-NEXT:                                                                                   "size",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                       value: 5,
+// DEFAULT-NEXT:                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       spelling: "5",
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Expr(
+// DEFAULT-NEXT:                                           Call {
+// DEFAULT-NEXT:                                               callee: Identifier(
+// DEFAULT-NEXT:                                                   "bar",
 // DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               arguments: [
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "cp",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "size",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "sign",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   Identifier(
+// DEFAULT-NEXT:                                                       "dsgn",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               Expr(
-// DEFAULT-NEXT:                                   Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "bar",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "cp",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "size",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "sign",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "dsgn",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                               else_branch: None,
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

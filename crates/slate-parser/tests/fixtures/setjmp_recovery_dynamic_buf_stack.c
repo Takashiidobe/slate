@@ -860,41 +860,43 @@ int main(void) {
 // DEFAULT-NEXT:                   condition: Identifier(
 // DEFAULT-NEXT:                       "fail",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "longjmp",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "jb_stack",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Unary {
-// DEFAULT-NEXT:                                           op: PreDecrement,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "jb_top",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   Paren(
-// DEFAULT-NEXT:                                       IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 42,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "42",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "longjmp",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Index {
+// DEFAULT-NEXT:                                           base: Identifier(
+// DEFAULT-NEXT:                                               "jb_stack",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           index: Unary {
+// DEFAULT-NEXT:                                               op: PreDecrement,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "jb_top",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Paren(
+// DEFAULT-NEXT:                                           IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 42,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "42",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
@@ -975,66 +977,20 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "inner",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "fail",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               99,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               37,
-// DEFAULT-NEXT:                                               100,
-// DEFAULT-NEXT:                                               58,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               32,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               120,
-// DEFAULT-NEXT:                                               99,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               112,
-// DEFAULT-NEXT:                                               116,
-// DEFAULT-NEXT:                                               105,
-// DEFAULT-NEXT:                                               111,
-// DEFAULT-NEXT:                                               110,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "case %d: no exception\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   Identifier(
-// DEFAULT-NEXT:                                       "id",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                   then_branch: Block(
 // DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "inner",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "fail",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           Expr(
 // DEFAULT-NEXT:                               Call {
 // DEFAULT-NEXT:                                   callee: Identifier(
@@ -1054,16 +1010,22 @@ int main(void) {
 // DEFAULT-NEXT:                                                   100,
 // DEFAULT-NEXT:                                                   58,
 // DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   32,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   120,
 // DEFAULT-NEXT:                                                   99,
-// DEFAULT-NEXT:                                                   97,
-// DEFAULT-NEXT:                                                   117,
-// DEFAULT-NEXT:                                                   103,
-// DEFAULT-NEXT:                                                   104,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   112,
 // DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   105,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   110,
 // DEFAULT-NEXT:                                                   10,
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               pieces: [
-// DEFAULT-NEXT:                                                   "case %d: caught\\n",
+// DEFAULT-NEXT:                                                   "case %d: no exception\\n",
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -1074,6 +1036,50 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLiteral(
+// DEFAULT-NEXT:                                               StringLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       99,
+// DEFAULT-NEXT:                                                       97,
+// DEFAULT-NEXT:                                                       115,
+// DEFAULT-NEXT:                                                       101,
+// DEFAULT-NEXT:                                                       32,
+// DEFAULT-NEXT:                                                       37,
+// DEFAULT-NEXT:                                                       100,
+// DEFAULT-NEXT:                                                       58,
+// DEFAULT-NEXT:                                                       32,
+// DEFAULT-NEXT:                                                       99,
+// DEFAULT-NEXT:                                                       97,
+// DEFAULT-NEXT:                                                       117,
+// DEFAULT-NEXT:                                                       103,
+// DEFAULT-NEXT:                                                       104,
+// DEFAULT-NEXT:                                                       116,
+// DEFAULT-NEXT:                                                       10,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   pieces: [
+// DEFAULT-NEXT:                                                       "case %d: caught\\n",
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           Identifier(
+// DEFAULT-NEXT:                                               "id",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

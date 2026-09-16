@@ -5,6 +5,7 @@ pub fn filter_translation_unit(tu: &TranslationUnit, root_file: FileId) -> Trans
     let mut reachability = Reachability::new(tu);
     reachability.mark_roots(root_file);
     TranslationUnit {
+        standard: tu.standard,
         options: tu.options.clone(),
         decls: tu
             .decls
@@ -225,9 +226,9 @@ impl<'a> Reachability<'a> {
                 else_branch,
             } => {
                 self.mark_expr(condition);
-                self.mark_stmts(then_branch);
+                self.mark_stmt(then_branch);
                 if let Some(else_branch) = else_branch {
-                    self.mark_stmts(else_branch);
+                    self.mark_stmt(else_branch);
                 }
             }
             StmtKind::While { condition, body }
@@ -237,7 +238,7 @@ impl<'a> Reachability<'a> {
                 body,
             } => {
                 self.mark_expr(condition);
-                self.mark_stmts(body);
+                self.mark_stmt(body);
             }
             StmtKind::For {
                 init,
@@ -251,11 +252,12 @@ impl<'a> Reachability<'a> {
                 for expr in condition.iter().chain(increment) {
                     self.mark_expr(expr);
                 }
-                self.mark_stmts(body);
+                self.mark_stmt(body);
             }
             StmtKind::NestedFunction(function) => self.mark_function(function),
             StmtKind::Attribute(attributes) => self.mark_attributes(attributes),
-            StmtKind::Comment(_)
+            StmtKind::Null
+            | StmtKind::Comment(_)
             | StmtKind::ReturnVoid
             | StmtKind::StaticAssert(_)
             | StmtKind::LocalLabelDecl(_)
@@ -483,7 +485,9 @@ impl<'a> Reachability<'a> {
                 | Attribute::Ifunc(name)
                 | Attribute::Cleanup(name) => self.mark_name(name),
                 Attribute::AddressSpace(value)
-                | Attribute::PassObjectSize { size_type: value, .. }
+                | Attribute::PassObjectSize {
+                    size_type: value, ..
+                }
                 | Attribute::Aligned(value)
                 | Attribute::VectorSize(value)
                 | Attribute::AllocAlign(value)

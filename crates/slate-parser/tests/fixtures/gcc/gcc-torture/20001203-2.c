@@ -996,22 +996,24 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "result_type",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: Call {
-// DEFAULT-NEXT:                                   callee: Identifier(
-// DEFAULT-NEXT:                                       "alloc_type",
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "result_type",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   arguments: [],
+// DEFAULT-NEXT:                                   value: Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "alloc_type",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [],
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
@@ -1320,23 +1322,21 @@ int main(void) {
 // DEFAULT-NEXT:                                                                   "__len",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           then_branch: [
-// DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Call {
-// DEFAULT-NEXT:                                                                       callee: Identifier(
-// DEFAULT-NEXT:                                                                           "_obstack_newchunk",
+// DEFAULT-NEXT:                                                           then_branch: Expr(
+// DEFAULT-NEXT:                                                               Call {
+// DEFAULT-NEXT:                                                                   callee: Identifier(
+// DEFAULT-NEXT:                                                                       "_obstack_newchunk",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   arguments: [
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "__o",
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       arguments: [
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "__o",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "__len",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ],
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                                       Identifier(
+// DEFAULT-NEXT:                                                                           "__len",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           else_branch: None,
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       Expr(
@@ -1377,9 +1377,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Block(
-// DEFAULT-NEXT:                                                   [],
-// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               Null,
 // DEFAULT-NEXT:                                               Expr(
 // DEFAULT-NEXT:                                                   StatementExpression(
 // DEFAULT-NEXT:                                                       [
@@ -1471,31 +1469,29 @@ int main(void) {
 // DEFAULT-NEXT:                                                                       "value",
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               then_branch: [
-// DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Assign {
-// DEFAULT-NEXT:                                                                           op: Assign,
-// DEFAULT-NEXT:                                                                           target: Member {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "__o1",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "maybe_empty_object",
-// DEFAULT-NEXT:                                                                               arrow: true,
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                   value: 1,
-// DEFAULT-NEXT:                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   spelling: "1",
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                               then_branch: Expr(
+// DEFAULT-NEXT:                                                                   Assign {
+// DEFAULT-NEXT:                                                                       op: Assign,
+// DEFAULT-NEXT:                                                                       target: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "__o1",
 // DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "maybe_empty_object",
+// DEFAULT-NEXT:                                                                           arrow: true,
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                               value: 1,
+// DEFAULT-NEXT:                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                   size: None,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               else_branch: None,
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           Expr(
@@ -1678,27 +1674,25 @@ int main(void) {
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               then_branch: [
-// DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Assign {
-// DEFAULT-NEXT:                                                                           op: Assign,
-// DEFAULT-NEXT:                                                                           target: Member {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "__o1",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "next_free",
-// DEFAULT-NEXT:                                                                               arrow: true,
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           value: Member {
-// DEFAULT-NEXT:                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                   "__o1",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "chunk_limit",
-// DEFAULT-NEXT:                                                                               arrow: true,
-// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                               then_branch: Expr(
+// DEFAULT-NEXT:                                                                   Assign {
+// DEFAULT-NEXT:                                                                       op: Assign,
+// DEFAULT-NEXT:                                                                       target: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "__o1",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "next_free",
+// DEFAULT-NEXT:                                                                           arrow: true,
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
+// DEFAULT-NEXT:                                                                       value: Member {
+// DEFAULT-NEXT:                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                               "__o1",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "chunk_limit",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               else_branch: None,
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           Expr(
@@ -2190,16 +2184,14 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "abort",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(

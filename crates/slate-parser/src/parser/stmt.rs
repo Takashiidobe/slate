@@ -183,24 +183,20 @@ impl Parser {
         self.parse_stmts_from_tokens(tokens)
     }
 
-    pub(super) fn parse_body(&self, cursor: &mut TokenCursor) -> Result<Vec<Stmt>, ParseError> {
-        if cursor.peek() == Some(&Token::LBrace) {
-            let close = matching_brace(cursor.tokens, cursor.pos)
-                .ok_or_else(|| cursor.error("expected `}`"))?;
-            let mut body = self.parse_stmts_from_tokens(&cursor.tokens[cursor.pos + 1..close])?;
-            body.extend(self.statement_annotations(cursor.tokens, close, close)?);
-            cursor.pos = close + 1;
-            Ok(body)
-        } else {
-            let start = cursor.pos;
-            let stmt = self.parse_one_stmt(cursor)?;
-            Ok(vec![span_tokens(stmt, &cursor.tokens[start..cursor.pos])])
-        }
+    pub(super) fn parse_body(&self, cursor: &mut TokenCursor) -> Result<Box<Stmt>, ParseError> {
+        let _scope = (self.standard.has_control_scopes() && cursor.peek() != Some(&Token::LBrace))
+            .then(|| self.enter_scope());
+        let start = cursor.pos;
+        let stmt = self.parse_one_stmt(cursor)?;
+        Ok(Box::new(span_tokens(
+            stmt,
+            &cursor.tokens[start..cursor.pos],
+        )))
     }
 
     fn parse_labeled_body(&self, cursor: &mut TokenCursor) -> Result<Box<Stmt>, ParseError> {
         if matches!(cursor.peek(), None | Some(Token::RBrace)) {
-            return Ok(Box::new(synthetic_span(StmtKind::Block(Vec::new()))));
+            return Ok(Box::new(synthetic_span(StmtKind::Null)));
         }
         let start = cursor.pos;
         let stmt = self.parse_one_stmt(cursor)?;
@@ -252,7 +248,7 @@ impl Parser {
 
         if tokens.value_at(cursor.pos) == Some(&Token::Semi) {
             cursor.pos += 1;
-            return Ok(StmtKind::Block(Vec::new()));
+            return Ok(StmtKind::Null);
         }
 
         if tokens.value_at(cursor.pos) == Some(&Token::Keyword(Keyword::StaticAssert)) {
@@ -411,6 +407,10 @@ impl Parser {
                 })
             }
             Some(Token::Keyword(Keyword::If)) => {
+                let _scope = self
+                    .standard
+                    .has_control_scopes()
+                    .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at_tokens(
@@ -437,6 +437,10 @@ impl Parser {
                 })
             }
             Some(Token::Keyword(Keyword::While)) => {
+                let _scope = self
+                    .standard
+                    .has_control_scopes()
+                    .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at_tokens(
@@ -453,6 +457,10 @@ impl Parser {
                 Ok(StmtKind::While { condition, body })
             }
             Some(Token::Keyword(Keyword::Do)) => {
+                let _scope = self
+                    .standard
+                    .has_control_scopes()
+                    .then(|| self.enter_scope());
                 cursor.pos += 1;
                 let body = self.parse_body(cursor)?;
                 if tokens.value_at(cursor.pos) != Some(&Token::Keyword(Keyword::While)) {
@@ -484,6 +492,10 @@ impl Parser {
                 Ok(StmtKind::DoWhile { body, condition })
             }
             Some(Token::Keyword(Keyword::For)) => {
+                let _scope = self
+                    .standard
+                    .has_control_scopes()
+                    .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at_tokens(
@@ -505,7 +517,6 @@ impl Parser {
                 })?;
                 let condition_tokens = &rest[..second_semi];
                 let increment_tokens = &rest[second_semi + 1..];
-                let _scope = self.enter_scope();
                 let init = if init_tokens.is_empty() {
                     None
                 } else if self.starts_declaration(init_tokens, 0) {
@@ -540,6 +551,10 @@ impl Parser {
                 })
             }
             Some(Token::Keyword(Keyword::Switch)) => {
+                let _scope = self
+                    .standard
+                    .has_control_scopes()
+                    .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
                     return Err(self.error_at_tokens(

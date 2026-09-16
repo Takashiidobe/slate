@@ -284,6 +284,7 @@ pub enum Initializer {
 #[derive(Debug, Clone, PartialEq)]
 pub enum StmtKind {
     Comment(CommentGroup),
+    Null,
     Return(Expr),
     ReturnVoid,
     Expr(Expr),
@@ -293,26 +294,26 @@ pub enum StmtKind {
     Block(Vec<Stmt>),
     If {
         condition: Expr,
-        then_branch: Vec<Stmt>,
-        else_branch: Option<Vec<Stmt>>,
+        then_branch: Box<Stmt>,
+        else_branch: Option<Box<Stmt>>,
     },
     While {
         condition: Expr,
-        body: Vec<Stmt>,
+        body: Box<Stmt>,
     },
     DoWhile {
-        body: Vec<Stmt>,
+        body: Box<Stmt>,
         condition: Expr,
     },
     For {
         init: Option<Box<Stmt>>,
         condition: Option<Expr>,
         increment: Option<Expr>,
-        body: Vec<Stmt>,
+        body: Box<Stmt>,
     },
     Switch {
         discriminant: Expr,
-        body: Vec<Stmt>,
+        body: Box<Stmt>,
     },
     Labeled {
         label: Span<String>,
@@ -1286,6 +1287,7 @@ impl Span<DeclKind> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TranslationUnit {
+    pub standard: crate::compiler_args::LanguageStandard,
     pub options: crate::compiler_options::CompilerOptions,
     pub decls: Vec<Decl>,
     pub tags: Vec<Span<TagDefinition>>,

@@ -96,6 +96,7 @@ fn lower_statements(
                     )))
                 }
                 StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
+                StmtKind::Null => Statement::Block(Vec::new()),
                 StmtKind::Block(body) => {
                     Statement::Block(lower_statements(context, body, return_type)?)
                 }

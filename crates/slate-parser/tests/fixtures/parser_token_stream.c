@@ -267,28 +267,30 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:                   condition: Identifier(
 // COMPACT-NEXT:                       "p",
 // COMPACT-NEXT:                   ),
-// COMPACT-NEXT:                   then_branch: [
-// COMPACT-NEXT:                       Return(
-// COMPACT-NEXT:                           Call {
-// COMPACT-NEXT:                               callee: Member {
-// COMPACT-NEXT:                                   base: Identifier(
-// COMPACT-NEXT:                                       "p",
-// COMPACT-NEXT:                                   ),
-// COMPACT-NEXT:                                   field: "callback",
-// COMPACT-NEXT:                                   arrow: true,
-// COMPACT-NEXT:                               },
-// COMPACT-NEXT:                               arguments: [
-// COMPACT-NEXT:                                   Member {
+// COMPACT-NEXT:                   then_branch: Block(
+// COMPACT-NEXT:                       [
+// COMPACT-NEXT:                           Return(
+// COMPACT-NEXT:                               Call {
+// COMPACT-NEXT:                                   callee: Member {
 // COMPACT-NEXT:                                       base: Identifier(
 // COMPACT-NEXT:                                           "p",
 // COMPACT-NEXT:                                       ),
-// COMPACT-NEXT:                                       field: "value",
+// COMPACT-NEXT:                                       field: "callback",
 // COMPACT-NEXT:                                       arrow: true,
 // COMPACT-NEXT:                                   },
-// COMPACT-NEXT:                               ],
-// COMPACT-NEXT:                           },
-// COMPACT-NEXT:                       ),
-// COMPACT-NEXT:                   ],
+// COMPACT-NEXT:                                   arguments: [
+// COMPACT-NEXT:                                       Member {
+// COMPACT-NEXT:                                           base: Identifier(
+// COMPACT-NEXT:                                               "p",
+// COMPACT-NEXT:                                           ),
+// COMPACT-NEXT:                                           field: "value",
+// COMPACT-NEXT:                                           arrow: true,
+// COMPACT-NEXT:                                       },
+// COMPACT-NEXT:                                   ],
+// COMPACT-NEXT:                               },
+// COMPACT-NEXT:                           ),
+// COMPACT-NEXT:                       ],
+// COMPACT-NEXT:                   ),
 // COMPACT-NEXT:                   else_branch: None,
 // COMPACT-NEXT:               },
 // COMPACT-NEXT:               Return(
@@ -532,28 +534,30 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:                   condition: Identifier(
 // SPLIT-NEXT:                       "p",
 // SPLIT-NEXT:                   ),
-// SPLIT-NEXT:                   then_branch: [
-// SPLIT-NEXT:                       Return(
-// SPLIT-NEXT:                           Call {
-// SPLIT-NEXT:                               callee: Member {
-// SPLIT-NEXT:                                   base: Identifier(
-// SPLIT-NEXT:                                       "p",
-// SPLIT-NEXT:                                   ),
-// SPLIT-NEXT:                                   field: "callback",
-// SPLIT-NEXT:                                   arrow: true,
-// SPLIT-NEXT:                               },
-// SPLIT-NEXT:                               arguments: [
-// SPLIT-NEXT:                                   Member {
+// SPLIT-NEXT:                   then_branch: Block(
+// SPLIT-NEXT:                       [
+// SPLIT-NEXT:                           Return(
+// SPLIT-NEXT:                               Call {
+// SPLIT-NEXT:                                   callee: Member {
 // SPLIT-NEXT:                                       base: Identifier(
 // SPLIT-NEXT:                                           "p",
 // SPLIT-NEXT:                                       ),
-// SPLIT-NEXT:                                       field: "value",
+// SPLIT-NEXT:                                       field: "callback",
 // SPLIT-NEXT:                                       arrow: true,
 // SPLIT-NEXT:                                   },
-// SPLIT-NEXT:                               ],
-// SPLIT-NEXT:                           },
-// SPLIT-NEXT:                       ),
-// SPLIT-NEXT:                   ],
+// SPLIT-NEXT:                                   arguments: [
+// SPLIT-NEXT:                                       Member {
+// SPLIT-NEXT:                                           base: Identifier(
+// SPLIT-NEXT:                                               "p",
+// SPLIT-NEXT:                                           ),
+// SPLIT-NEXT:                                           field: "value",
+// SPLIT-NEXT:                                           arrow: true,
+// SPLIT-NEXT:                                       },
+// SPLIT-NEXT:                                   ],
+// SPLIT-NEXT:                               },
+// SPLIT-NEXT:                           ),
+// SPLIT-NEXT:                       ],
+// SPLIT-NEXT:                   ),
 // SPLIT-NEXT:                   else_branch: None,
 // SPLIT-NEXT:               },
 // SPLIT-NEXT:               Return(
@@ -797,28 +801,30 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // MACRO-NEXT:                   condition: Identifier(
 // MACRO-NEXT:                       "p",
 // MACRO-NEXT:                   ),
-// MACRO-NEXT:                   then_branch: [
-// MACRO-NEXT:                       Return(
-// MACRO-NEXT:                           Call {
-// MACRO-NEXT:                               callee: Member {
-// MACRO-NEXT:                                   base: Identifier(
-// MACRO-NEXT:                                       "p",
-// MACRO-NEXT:                                   ),
-// MACRO-NEXT:                                   field: "callback",
-// MACRO-NEXT:                                   arrow: true,
-// MACRO-NEXT:                               },
-// MACRO-NEXT:                               arguments: [
-// MACRO-NEXT:                                   Member {
+// MACRO-NEXT:                   then_branch: Block(
+// MACRO-NEXT:                       [
+// MACRO-NEXT:                           Return(
+// MACRO-NEXT:                               Call {
+// MACRO-NEXT:                                   callee: Member {
 // MACRO-NEXT:                                       base: Identifier(
 // MACRO-NEXT:                                           "p",
 // MACRO-NEXT:                                       ),
-// MACRO-NEXT:                                       field: "value",
+// MACRO-NEXT:                                       field: "callback",
 // MACRO-NEXT:                                       arrow: true,
 // MACRO-NEXT:                                   },
-// MACRO-NEXT:                               ],
-// MACRO-NEXT:                           },
-// MACRO-NEXT:                       ),
-// MACRO-NEXT:                   ],
+// MACRO-NEXT:                                   arguments: [
+// MACRO-NEXT:                                       Member {
+// MACRO-NEXT:                                           base: Identifier(
+// MACRO-NEXT:                                               "p",
+// MACRO-NEXT:                                           ),
+// MACRO-NEXT:                                           field: "value",
+// MACRO-NEXT:                                           arrow: true,
+// MACRO-NEXT:                                       },
+// MACRO-NEXT:                                   ],
+// MACRO-NEXT:                               },
+// MACRO-NEXT:                           ),
+// MACRO-NEXT:                       ],
+// MACRO-NEXT:                   ),
 // MACRO-NEXT:                   else_branch: None,
 // MACRO-NEXT:               },
 // MACRO-NEXT:               Return(

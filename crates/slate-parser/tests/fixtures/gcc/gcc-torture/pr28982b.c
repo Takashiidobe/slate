@@ -1833,9 +1833,9 @@ int main(void) {
 // DEFAULT-NEXT:                           "n",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Comma {
+// DEFAULT-NEXT:                   body: Expr(
+// DEFAULT-NEXT:                       Comma {
+// DEFAULT-NEXT:                           left: Comma {
 // DEFAULT-NEXT:                               left: Comma {
 // DEFAULT-NEXT:                                   left: Comma {
 // DEFAULT-NEXT:                                       left: Comma {
@@ -1873,468 +1873,466 @@ int main(void) {
 // DEFAULT-NEXT:                                                                                                                                                                       left: Comma {
 // DEFAULT-NEXT:                                                                                                                                                                           left: Comma {
 // DEFAULT-NEXT:                                                                                                                                                                               left: Comma {
-// DEFAULT-NEXT:                                                                                                                                                                                   left: Comma {
-// DEFAULT-NEXT:                                                                                                                                                                                       left: Assign {
-// DEFAULT-NEXT:                                                                                                                                                                                           op: AddAssign,
-// DEFAULT-NEXT:                                                                                                                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                               "result0",
-// DEFAULT-NEXT:                                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                                           value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                                                               op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                                                               operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                                   "ptr0",
-// DEFAULT-NEXT:                                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                                                                       right: Assign {
-// DEFAULT-NEXT:                                                                                                                                                                                           op: AddAssign,
-// DEFAULT-NEXT:                                                                                                                                                                                           target: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                                   left: Assign {
+// DEFAULT-NEXT:                                                                                                                                                                                       op: AddAssign,
+// DEFAULT-NEXT:                                                                                                                                                                                       target: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                                           "result0",
+// DEFAULT-NEXT:                                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                                       value: Unary {
+// DEFAULT-NEXT:                                                                                                                                                                                           op: Deref,
+// DEFAULT-NEXT:                                                                                                                                                                                           operand: Identifier(
 // DEFAULT-NEXT:                                                                                                                                                                                               "ptr0",
-// DEFAULT-NEXT:                                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                               "inc0",
 // DEFAULT-NEXT:                                                                                                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                           "result1",
+// DEFAULT-NEXT:                                                                                                                                                                                           "ptr0",
 // DEFAULT-NEXT:                                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                               "ptr1",
-// DEFAULT-NEXT:                                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                                           "inc0",
+// DEFAULT-NEXT:                                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                       "ptr1",
+// DEFAULT-NEXT:                                                                                                                                                                                       "result1",
 // DEFAULT-NEXT:                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                       "inc1",
-// DEFAULT-NEXT:                                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                                                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                                           "ptr1",
+// DEFAULT-NEXT:                                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                   "result2",
+// DEFAULT-NEXT:                                                                                                                                                                                   "ptr1",
 // DEFAULT-NEXT:                                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                                       "ptr2",
-// DEFAULT-NEXT:                                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                                   "inc1",
+// DEFAULT-NEXT:                                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                               "ptr2",
+// DEFAULT-NEXT:                                                                                                                                                                               "result2",
 // DEFAULT-NEXT:                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                               "inc2",
-// DEFAULT-NEXT:                                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                                                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                                                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                                   "ptr2",
+// DEFAULT-NEXT:                                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                           "result3",
+// DEFAULT-NEXT:                                                                                                                                                                           "ptr2",
 // DEFAULT-NEXT:                                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                               "ptr3",
-// DEFAULT-NEXT:                                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                           "inc2",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                       "ptr3",
+// DEFAULT-NEXT:                                                                                                                                                                       "result3",
 // DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                       "inc3",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                           "ptr3",
+// DEFAULT-NEXT:                                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                   "result4",
+// DEFAULT-NEXT:                                                                                                                                                                   "ptr3",
 // DEFAULT-NEXT:                                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                                       "ptr4",
-// DEFAULT-NEXT:                                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                   "inc3",
+// DEFAULT-NEXT:                                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                               "ptr4",
+// DEFAULT-NEXT:                                                                                                                                                               "result4",
 // DEFAULT-NEXT:                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                               "inc4",
-// DEFAULT-NEXT:                                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                                   "ptr4",
+// DEFAULT-NEXT:                                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                           "result5",
+// DEFAULT-NEXT:                                                                                                                                                           "ptr4",
 // DEFAULT-NEXT:                                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                               "ptr5",
-// DEFAULT-NEXT:                                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                           "inc4",
+// DEFAULT-NEXT:                                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                       "ptr5",
+// DEFAULT-NEXT:                                                                                                                                                       "result5",
 // DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                       "inc5",
-// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                           "ptr5",
+// DEFAULT-NEXT:                                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                   "result6",
+// DEFAULT-NEXT:                                                                                                                                                   "ptr5",
 // DEFAULT-NEXT:                                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                                       "ptr6",
-// DEFAULT-NEXT:                                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                   "inc5",
+// DEFAULT-NEXT:                                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                               "ptr6",
+// DEFAULT-NEXT:                                                                                                                                               "result6",
 // DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                               "inc6",
-// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                   "ptr6",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                           "result7",
+// DEFAULT-NEXT:                                                                                                                                           "ptr6",
 // DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                               "ptr7",
-// DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                           "inc6",
+// DEFAULT-NEXT:                                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                       "ptr7",
+// DEFAULT-NEXT:                                                                                                                                       "result7",
 // DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                                                                       "inc7",
-// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                           "ptr7",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               },
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                                                                   "result8",
+// DEFAULT-NEXT:                                                                                                                                   "ptr7",
 // DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                                       "ptr8",
-// DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                                                                   "inc7",
+// DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                                                               "ptr8",
+// DEFAULT-NEXT:                                                                                                                               "result8",
 // DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                                                               "inc8",
-// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                                   "ptr8",
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                                                           "result9",
+// DEFAULT-NEXT:                                                                                                                           "ptr8",
 // DEFAULT-NEXT:                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                               "ptr9",
-// DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                                                           "inc8",
+// DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                                                       "ptr9",
+// DEFAULT-NEXT:                                                                                                                       "result9",
 // DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                                                       "inc9",
-// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                           "ptr9",
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                                                   "result10",
+// DEFAULT-NEXT:                                                                                                                   "ptr9",
 // DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                                                       "ptr10",
-// DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "inc9",
+// DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                                               "ptr10",
+// DEFAULT-NEXT:                                                                                                               "result10",
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                                               "inc10",
-// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "ptr10",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                                           "result11",
+// DEFAULT-NEXT:                                                                                                           "ptr10",
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                                               "ptr11",
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                                           "inc10",
+// DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                                       "ptr11",
+// DEFAULT-NEXT:                                                                                                       "result11",
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                                       "inc11",
-// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                                           "ptr11",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                                   "result12",
+// DEFAULT-NEXT:                                                                                                   "ptr11",
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                                       "ptr12",
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                                   "inc11",
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                                               "ptr12",
+// DEFAULT-NEXT:                                                                                               "result12",
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                                               "inc12",
-// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                                   "ptr12",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                                           "result13",
+// DEFAULT-NEXT:                                                                                           "ptr12",
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                                               "ptr13",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                                           "inc12",
+// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                               right: Assign {
 // DEFAULT-NEXT:                                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                                       "ptr13",
+// DEFAULT-NEXT:                                                                                       "result13",
 // DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                                       "inc13",
-// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                                           "ptr13",
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                           right: Assign {
 // DEFAULT-NEXT:                                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                                   "result14",
+// DEFAULT-NEXT:                                                                                   "ptr13",
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                                       "ptr14",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                                   "inc13",
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                       right: Assign {
 // DEFAULT-NEXT:                                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                                           target: Identifier(
-// DEFAULT-NEXT:                                                                               "ptr14",
+// DEFAULT-NEXT:                                                                               "result14",
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           value: Identifier(
-// DEFAULT-NEXT:                                                                               "inc14",
-// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                               op: Deref,
+// DEFAULT-NEXT:                                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                                   "ptr14",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                                   right: Assign {
 // DEFAULT-NEXT:                                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                                       target: Identifier(
-// DEFAULT-NEXT:                                                                           "result15",
+// DEFAULT-NEXT:                                                                           "ptr14",
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       value: Unary {
-// DEFAULT-NEXT:                                                                           op: Deref,
-// DEFAULT-NEXT:                                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                                               "ptr15",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       value: Identifier(
+// DEFAULT-NEXT:                                                                           "inc14",
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                               right: Assign {
 // DEFAULT-NEXT:                                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                                   target: Identifier(
-// DEFAULT-NEXT:                                                                       "ptr15",
+// DEFAULT-NEXT:                                                                       "result15",
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   value: Identifier(
-// DEFAULT-NEXT:                                                                       "inc15",
-// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                       op: Deref,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "ptr15",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                           right: Assign {
 // DEFAULT-NEXT:                                                               op: AddAssign,
 // DEFAULT-NEXT:                                                               target: Identifier(
-// DEFAULT-NEXT:                                                                   "result16",
+// DEFAULT-NEXT:                                                                   "ptr15",
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               value: Unary {
-// DEFAULT-NEXT:                                                                   op: Deref,
-// DEFAULT-NEXT:                                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                                       "ptr16",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: Identifier(
+// DEFAULT-NEXT:                                                                   "inc15",
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       right: Assign {
 // DEFAULT-NEXT:                                                           op: AddAssign,
 // DEFAULT-NEXT:                                                           target: Identifier(
-// DEFAULT-NEXT:                                                               "ptr16",
+// DEFAULT-NEXT:                                                               "result16",
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           value: Identifier(
-// DEFAULT-NEXT:                                                               "inc16",
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           value: Unary {
+// DEFAULT-NEXT:                                                               op: Deref,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "ptr16",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                                   right: Assign {
 // DEFAULT-NEXT:                                                       op: AddAssign,
 // DEFAULT-NEXT:                                                       target: Identifier(
-// DEFAULT-NEXT:                                                           "result17",
+// DEFAULT-NEXT:                                                           "ptr16",
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       value: Unary {
-// DEFAULT-NEXT:                                                           op: Deref,
-// DEFAULT-NEXT:                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                               "ptr17",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: Identifier(
+// DEFAULT-NEXT:                                                           "inc16",
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                               right: Assign {
 // DEFAULT-NEXT:                                                   op: AddAssign,
 // DEFAULT-NEXT:                                                   target: Identifier(
-// DEFAULT-NEXT:                                                       "ptr17",
+// DEFAULT-NEXT:                                                       "result17",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   value: Identifier(
-// DEFAULT-NEXT:                                                       "inc17",
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   value: Unary {
+// DEFAULT-NEXT:                                                       op: Deref,
+// DEFAULT-NEXT:                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                           "ptr17",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                           right: Assign {
 // DEFAULT-NEXT:                                               op: AddAssign,
 // DEFAULT-NEXT:                                               target: Identifier(
-// DEFAULT-NEXT:                                                   "result18",
+// DEFAULT-NEXT:                                                   "ptr17",
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               value: Unary {
-// DEFAULT-NEXT:                                                   op: Deref,
-// DEFAULT-NEXT:                                                   operand: Identifier(
-// DEFAULT-NEXT:                                                       "ptr18",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               value: Identifier(
+// DEFAULT-NEXT:                                                   "inc17",
+// DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                       right: Assign {
 // DEFAULT-NEXT:                                           op: AddAssign,
 // DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "ptr18",
+// DEFAULT-NEXT:                                               "result18",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: Identifier(
-// DEFAULT-NEXT:                                               "inc18",
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           value: Unary {
+// DEFAULT-NEXT:                                               op: Deref,
+// DEFAULT-NEXT:                                               operand: Identifier(
+// DEFAULT-NEXT:                                                   "ptr18",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   right: Assign {
 // DEFAULT-NEXT:                                       op: AddAssign,
 // DEFAULT-NEXT:                                       target: Identifier(
-// DEFAULT-NEXT:                                           "result19",
+// DEFAULT-NEXT:                                           "ptr18",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       value: Unary {
-// DEFAULT-NEXT:                                           op: Deref,
-// DEFAULT-NEXT:                                           operand: Identifier(
-// DEFAULT-NEXT:                                               "ptr19",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       value: Identifier(
+// DEFAULT-NEXT:                                           "inc18",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Assign {
 // DEFAULT-NEXT:                                   op: AddAssign,
 // DEFAULT-NEXT:                                   target: Identifier(
-// DEFAULT-NEXT:                                       "ptr19",
+// DEFAULT-NEXT:                                       "result19",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   value: Identifier(
-// DEFAULT-NEXT:                                       "inc19",
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: Unary {
+// DEFAULT-NEXT:                                       op: Deref,
+// DEFAULT-NEXT:                                       operand: Identifier(
+// DEFAULT-NEXT:                                           "ptr19",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                           right: Assign {
+// DEFAULT-NEXT:                               op: AddAssign,
+// DEFAULT-NEXT:                               target: Identifier(
+// DEFAULT-NEXT:                                   "ptr19",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "inc19",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Comma {
@@ -2961,46 +2959,44 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Comma {
-// DEFAULT-NEXT:                               left: Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "ptrs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Binary {
-// DEFAULT-NEXT:                                       op: Add,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "input",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                   body: Expr(
+// DEFAULT-NEXT:                       Comma {
+// DEFAULT-NEXT:                           left: Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "ptrs",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Assign {
-// DEFAULT-NEXT:                                   op: Assign,
-// DEFAULT-NEXT:                                   target: Index {
-// DEFAULT-NEXT:                                       base: Identifier(
-// DEFAULT-NEXT:                                           "incs",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       index: Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   value: Identifier(
+// DEFAULT-NEXT:                               value: Binary {
+// DEFAULT-NEXT:                                   op: Add,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "input",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Identifier(
 // DEFAULT-NEXT:                                       "i",
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                           right: Assign {
+// DEFAULT-NEXT:                               op: Assign,
+// DEFAULT-NEXT:                               target: Index {
+// DEFAULT-NEXT:                                   base: Identifier(
+// DEFAULT-NEXT:                                       "incs",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   index: Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               For {
 // DEFAULT-NEXT:                   init: Some(
@@ -3065,24 +3061,22 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Index {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "input",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               value: Identifier(
+// DEFAULT-NEXT:                   body: Expr(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Index {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "input",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               index: Identifier(
 // DEFAULT-NEXT:                                   "i",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                           value: Identifier(
+// DEFAULT-NEXT:                               "i",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Expr(
 // DEFAULT-NEXT:                   Call {
@@ -3153,28 +3147,42 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       If {
-// DEFAULT-NEXT:                           condition: Binary {
-// DEFAULT-NEXT:                               op: NotEqual,
-// DEFAULT-NEXT:                               left: Index {
-// DEFAULT-NEXT:                                   base: Identifier(
-// DEFAULT-NEXT:                                       "results",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   index: Identifier(
-// DEFAULT-NEXT:                                       "i",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: Div,
+// DEFAULT-NEXT:                   body: If {
+// DEFAULT-NEXT:                       condition: Binary {
+// DEFAULT-NEXT:                           op: NotEqual,
+// DEFAULT-NEXT:                           left: Index {
+// DEFAULT-NEXT:                               base: Identifier(
+// DEFAULT-NEXT:                                   "results",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               index: Identifier(
+// DEFAULT-NEXT:                                   "i",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: Div,
+// DEFAULT-NEXT:                               left: Binary {
+// DEFAULT-NEXT:                                   op: Mul,
 // DEFAULT-NEXT:                                   left: Binary {
 // DEFAULT-NEXT:                                       op: Mul,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: Mul,
-// DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "i",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "i",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 4,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "4",
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   right: Paren(
+// DEFAULT-NEXT:                                       Binary {
+// DEFAULT-NEXT:                                           op: Add,
+// DEFAULT-NEXT:                                           left: IntegerLiteral(
 // DEFAULT-NEXT:                                               IntegerLiteral {
 // DEFAULT-NEXT:                                                   value: 4,
 // DEFAULT-NEXT:                                                   radix: Decimal,
@@ -3185,66 +3193,48 @@ int main(void) {
 // DEFAULT-NEXT:                                                   spelling: "4",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: Paren(
-// DEFAULT-NEXT:                                           Binary {
-// DEFAULT-NEXT:                                               op: Add,
-// DEFAULT-NEXT:                                               left: IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 4,
-// DEFAULT-NEXT:                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "4",
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 1,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 1,
-// DEFAULT-NEXT:                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "1",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 2,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "2",
+// DEFAULT-NEXT:                                                   spelling: "1",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           then_branch: [
-// DEFAULT-NEXT:                               Return(
-// DEFAULT-NEXT:                                   IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 1,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 2,
+// DEFAULT-NEXT:                                       radix: Decimal,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       spelling: "2",
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                           else_branch: None,
+// DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       then_branch: Return(
+// DEFAULT-NEXT:                           IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 1,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "1",
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       else_branch: None,
+// DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(

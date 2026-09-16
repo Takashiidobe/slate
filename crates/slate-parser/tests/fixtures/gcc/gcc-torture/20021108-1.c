@@ -44,9 +44,7 @@ l2:;
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Labeled {
 // DEFAULT-NEXT:                   label: "l2",
-// DEFAULT-NEXT:                   body: Block(
-// DEFAULT-NEXT:                       [],
-// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   body: Null,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

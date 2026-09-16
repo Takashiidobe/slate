@@ -330,13 +330,11 @@ int main(void) {
 // DEFAULT-NEXT:                               "length",
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       then_branch: [
-// DEFAULT-NEXT:                           Return(
-// DEFAULT-NEXT:                               Identifier(
-// DEFAULT-NEXT:                                   "value",
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                       then_branch: Return(
+// DEFAULT-NEXT:                           Identifier(
+// DEFAULT-NEXT:                               "value",
 // DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       else_branch: None,
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               },

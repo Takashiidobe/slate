@@ -346,13 +346,11 @@ int main(void) {
 // DEFAULT-NEXT:                   condition: Identifier(
 // DEFAULT-NEXT:                       "choose_first",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "first",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                   then_branch: Return(
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "first",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

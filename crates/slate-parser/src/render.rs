@@ -121,25 +121,25 @@ fn strip_stmt_comments(stmts: &mut Vec<Stmt>) {
 
 fn strip_stmt_children(stmt: &mut StmtKind) {
     match stmt {
-        StmtKind::Block(body)
-        | StmtKind::While { body, .. }
+        StmtKind::Block(body) => strip_stmt_comments(body),
+        StmtKind::While { body, .. }
         | StmtKind::DoWhile { body, .. }
-        | StmtKind::Switch { body, .. } => strip_stmt_comments(body),
+        | StmtKind::Switch { body, .. } => strip_stmt_children(&mut body.value),
         StmtKind::If {
             then_branch,
             else_branch,
             ..
         } => {
-            strip_stmt_comments(then_branch);
+            strip_stmt_children(&mut then_branch.value);
             if let Some(else_branch) = else_branch {
-                strip_stmt_comments(else_branch);
+                strip_stmt_children(&mut else_branch.value);
             }
         }
         StmtKind::For { init, body, .. } => {
             if let Some(init) = init {
                 strip_stmt_children(&mut init.value);
             }
-            strip_stmt_comments(body);
+            strip_stmt_children(&mut body.value);
         }
         StmtKind::Labeled { body, .. } | StmtKind::SwitchLabel { body, .. } => {
             strip_stmt_children(&mut body.value);

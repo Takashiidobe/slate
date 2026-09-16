@@ -556,6 +556,7 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::StaticAssert(_)
                     | StmtKind::Attribute(_)
                     | StmtKind::Block(_)
+                    | StmtKind::Null
                     | StmtKind::If { .. }
                     | StmtKind::While { .. }
                     | StmtKind::DoWhile { .. }

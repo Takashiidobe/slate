@@ -296,7 +296,9 @@ static inline void zend_ptr_stack_clear_multiple(void)
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [],
+// DEFAULT-NEXT:                   then_branch: Block(
+// DEFAULT-NEXT:                       [],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],

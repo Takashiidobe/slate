@@ -269,32 +269,7 @@ int main(void) {
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "printf",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [
-// DEFAULT-NEXT:                                   StringLiteral(
-// DEFAULT-NEXT:                                       StringLiteral {
-// DEFAULT-NEXT:                                           encoding: Plain,
-// DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               121,
-// DEFAULT-NEXT:                                               101,
-// DEFAULT-NEXT:                                               115,
-// DEFAULT-NEXT:                                               10,
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "yes\\n",
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                   then_branch: Block(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           Expr(
 // DEFAULT-NEXT:                               Call {
@@ -306,12 +281,13 @@ int main(void) {
 // DEFAULT-NEXT:                                           StringLiteral {
 // DEFAULT-NEXT:                                               encoding: Plain,
 // DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   110,
-// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   121,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                                   115,
 // DEFAULT-NEXT:                                                   10,
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                               pieces: [
-// DEFAULT-NEXT:                                                   "no\\n",
+// DEFAULT-NEXT:                                                   "yes\\n",
 // DEFAULT-NEXT:                                               ],
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
@@ -319,6 +295,34 @@ int main(void) {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Call {
+// DEFAULT-NEXT:                                       callee: Identifier(
+// DEFAULT-NEXT:                                           "printf",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       arguments: [
+// DEFAULT-NEXT:                                           StringLiteral(
+// DEFAULT-NEXT:                                               StringLiteral {
+// DEFAULT-NEXT:                                                   encoding: Plain,
+// DEFAULT-NEXT:                                                   code_units: [
+// DEFAULT-NEXT:                                                       110,
+// DEFAULT-NEXT:                                                       111,
+// DEFAULT-NEXT:                                                       10,
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                                   pieces: [
+// DEFAULT-NEXT:                                                       "no\\n",
+// DEFAULT-NEXT:                                                   ],
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ],
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

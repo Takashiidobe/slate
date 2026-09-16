@@ -345,13 +345,11 @@ int main() {
 // DEFAULT-NEXT:                   condition: Identifier(
 // DEFAULT-NEXT:                       "err",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Return(
-// DEFAULT-NEXT:                           Identifier(
-// DEFAULT-NEXT:                               "err",
-// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                   then_branch: Return(
+// DEFAULT-NEXT:                       Identifier(
+// DEFAULT-NEXT:                           "err",
 // DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               If {
@@ -383,151 +381,143 @@ int main() {
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "ap_standalone",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                   IntegerLiteral {
-// DEFAULT-NEXT:                                       value: 0,
-// DEFAULT-NEXT:                                       radix: Decimal,
-// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                           unsigned: false,
-// DEFAULT-NEXT:                                           size: None,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "0",
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Assign {
+// DEFAULT-NEXT:                           op: Assign,
+// DEFAULT-NEXT:                           target: Identifier(
+// DEFAULT-NEXT:                               "ap_standalone",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           value: IntegerLiteral(
+// DEFAULT-NEXT:                               IntegerLiteral {
+// DEFAULT-NEXT:                                   value: 0,
+// DEFAULT-NEXT:                                   radix: Decimal,
+// DEFAULT-NEXT:                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                       unsigned: false,
+// DEFAULT-NEXT:                                       size: None,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: Some(
-// DEFAULT-NEXT:                       [
-// DEFAULT-NEXT:                           If {
-// DEFAULT-NEXT:                               condition: Unary {
-// DEFAULT-NEXT:                                   op: Not,
-// DEFAULT-NEXT:                                   operand: Call {
-// DEFAULT-NEXT:                                       callee: Identifier(
-// DEFAULT-NEXT:                                           "strcmp",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       arguments: [
-// DEFAULT-NEXT:                                           Identifier(
-// DEFAULT-NEXT:                                               "arg",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           StringLiteral(
-// DEFAULT-NEXT:                                               StringLiteral {
-// DEFAULT-NEXT:                                                   encoding: Plain,
-// DEFAULT-NEXT:                                                   code_units: [
-// DEFAULT-NEXT:                                                       115,
-// DEFAULT-NEXT:                                                       116,
-// DEFAULT-NEXT:                                                       97,
-// DEFAULT-NEXT:                                                       110,
-// DEFAULT-NEXT:                                                       100,
-// DEFAULT-NEXT:                                                       97,
-// DEFAULT-NEXT:                                                       108,
-// DEFAULT-NEXT:                                                       111,
-// DEFAULT-NEXT:                                                       110,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   pieces: [
-// DEFAULT-NEXT:                                                       "standalone",
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   spelling: "0",
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               then_branch: [
-// DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       Assign {
-// DEFAULT-NEXT:                                           op: Assign,
-// DEFAULT-NEXT:                                           target: Identifier(
-// DEFAULT-NEXT:                                               "ap_standalone",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           value: IntegerLiteral(
-// DEFAULT-NEXT:                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                   value: 1,
-// DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                       unsigned: false,
-// DEFAULT-NEXT:                                                       size: None,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   spelling: "1",
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                       If {
+// DEFAULT-NEXT:                           condition: Unary {
+// DEFAULT-NEXT:                               op: Not,
+// DEFAULT-NEXT:                               operand: Call {
+// DEFAULT-NEXT:                                   callee: Identifier(
+// DEFAULT-NEXT:                                       "strcmp",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               else_branch: Some(
-// DEFAULT-NEXT:                                   [
-// DEFAULT-NEXT:                                       Return(
-// DEFAULT-NEXT:                                           StringLiteral(
-// DEFAULT-NEXT:                                               StringLiteral {
-// DEFAULT-NEXT:                                                   encoding: Plain,
-// DEFAULT-NEXT:                                                   code_units: [
-// DEFAULT-NEXT:                                                       83,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       114,
-// DEFAULT-NEXT:                                                       118,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       114,
-// DEFAULT-NEXT:                                                       84,
-// DEFAULT-NEXT:                                                       121,
-// DEFAULT-NEXT:                                                       112,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       32,
-// DEFAULT-NEXT:                                                       109,
-// DEFAULT-NEXT:                                                       117,
-// DEFAULT-NEXT:                                                       115,
-// DEFAULT-NEXT:                                                       116,
-// DEFAULT-NEXT:                                                       32,
-// DEFAULT-NEXT:                                                       98,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       32,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       105,
-// DEFAULT-NEXT:                                                       116,
-// DEFAULT-NEXT:                                                       104,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       114,
-// DEFAULT-NEXT:                                                       32,
-// DEFAULT-NEXT:                                                       39,
-// DEFAULT-NEXT:                                                       105,
-// DEFAULT-NEXT:                                                       110,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       116,
-// DEFAULT-NEXT:                                                       100,
-// DEFAULT-NEXT:                                                       39,
-// DEFAULT-NEXT:                                                       32,
-// DEFAULT-NEXT:                                                       111,
-// DEFAULT-NEXT:                                                       114,
-// DEFAULT-NEXT:                                                       32,
-// DEFAULT-NEXT:                                                       39,
-// DEFAULT-NEXT:                                                       115,
-// DEFAULT-NEXT:                                                       116,
-// DEFAULT-NEXT:                                                       97,
-// DEFAULT-NEXT:                                                       110,
-// DEFAULT-NEXT:                                                       100,
-// DEFAULT-NEXT:                                                       97,
-// DEFAULT-NEXT:                                                       108,
-// DEFAULT-NEXT:                                                       111,
-// DEFAULT-NEXT:                                                       110,
-// DEFAULT-NEXT:                                                       101,
-// DEFAULT-NEXT:                                                       39,
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   pieces: [
-// DEFAULT-NEXT:                                                       "ServerType must be either 'inetd' or 'standalone'",
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                   arguments: [
+// DEFAULT-NEXT:                                       Identifier(
+// DEFAULT-NEXT:                                           "arg",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   115,
+// DEFAULT-NEXT:                                                   116,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   108,
+// DEFAULT-NEXT:                                                   111,
+// DEFAULT-NEXT:                                                   110,
+// DEFAULT-NEXT:                                                   101,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "standalone",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                           then_branch: Expr(
+// DEFAULT-NEXT:                               Assign {
+// DEFAULT-NEXT:                                   op: Assign,
+// DEFAULT-NEXT:                                   target: Identifier(
+// DEFAULT-NEXT:                                       "ap_standalone",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   value: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 1,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "1",
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           else_branch: Some(
+// DEFAULT-NEXT:                               Return(
+// DEFAULT-NEXT:                                   StringLiteral(
+// DEFAULT-NEXT:                                       StringLiteral {
+// DEFAULT-NEXT:                                           encoding: Plain,
+// DEFAULT-NEXT:                                           code_units: [
+// DEFAULT-NEXT:                                               83,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               118,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               84,
+// DEFAULT-NEXT:                                               121,
+// DEFAULT-NEXT:                                               112,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               109,
+// DEFAULT-NEXT:                                               117,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               98,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               104,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               39,
+// DEFAULT-NEXT:                                               105,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               39,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               114,
+// DEFAULT-NEXT:                                               32,
+// DEFAULT-NEXT:                                               39,
+// DEFAULT-NEXT:                                               115,
+// DEFAULT-NEXT:                                               116,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               97,
+// DEFAULT-NEXT:                                               108,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               110,
+// DEFAULT-NEXT:                                               101,
+// DEFAULT-NEXT:                                               39,
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                           pieces: [
+// DEFAULT-NEXT:                                               "ServerType must be either 'inetd' or 'standalone'",
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

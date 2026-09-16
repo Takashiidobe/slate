@@ -190,29 +190,7 @@ int main(void) {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Assign {
-// DEFAULT-NEXT:                               op: Assign,
-// DEFAULT-NEXT:                               target: Identifier(
-// DEFAULT-NEXT:                                   "Err",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               value: StringLiteral(
-// DEFAULT-NEXT:                                   StringLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           111,
-// DEFAULT-NEXT:                                           107,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       pieces: [
-// DEFAULT-NEXT:                                           "ok",
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                   then_branch: Block(
 // DEFAULT-NEXT:                       [
 // DEFAULT-NEXT:                           Expr(
 // DEFAULT-NEXT:                               Assign {
@@ -224,18 +202,44 @@ int main(void) {
 // DEFAULT-NEXT:                                       StringLiteral {
 // DEFAULT-NEXT:                                           encoding: Plain,
 // DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               98,
-// DEFAULT-NEXT:                                               97,
-// DEFAULT-NEXT:                                               100,
+// DEFAULT-NEXT:                                               111,
+// DEFAULT-NEXT:                                               107,
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                           pieces: [
-// DEFAULT-NEXT:                                               "bad",
+// DEFAULT-NEXT:                                               "ok",
 // DEFAULT-NEXT:                                           ],
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:                   else_branch: Some(
+// DEFAULT-NEXT:                       Block(
+// DEFAULT-NEXT:                           [
+// DEFAULT-NEXT:                               Expr(
+// DEFAULT-NEXT:                                   Assign {
+// DEFAULT-NEXT:                                       op: Assign,
+// DEFAULT-NEXT:                                       target: Identifier(
+// DEFAULT-NEXT:                                           "Err",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       value: StringLiteral(
+// DEFAULT-NEXT:                                           StringLiteral {
+// DEFAULT-NEXT:                                               encoding: Plain,
+// DEFAULT-NEXT:                                               code_units: [
+// DEFAULT-NEXT:                                                   98,
+// DEFAULT-NEXT:                                                   97,
+// DEFAULT-NEXT:                                                   100,
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                               pieces: [
+// DEFAULT-NEXT:                                                   "bad",
+// DEFAULT-NEXT:                                               ],
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ],
+// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

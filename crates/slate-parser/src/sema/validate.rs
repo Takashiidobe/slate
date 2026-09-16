@@ -555,14 +555,18 @@ fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
                 walk_initializer(initializer, visit);
             }
         }
-        StmtKind::Block(body) | StmtKind::DoWhile { body, .. } => walk_stmts(body, visit),
+        StmtKind::Block(body) => walk_stmts(body, visit),
+        StmtKind::DoWhile { body, condition } => {
+            walk_stmt(body, visit);
+            walk_expr(condition, visit);
+        }
         StmtKind::While { condition, body }
         | StmtKind::Switch {
             discriminant: condition,
             body,
         } => {
             walk_expr(condition, visit);
-            walk_stmts(body, visit);
+            walk_stmt(body, visit);
         }
         StmtKind::If {
             condition,
@@ -570,9 +574,9 @@ fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             else_branch,
         } => {
             walk_expr(condition, visit);
-            walk_stmts(then_branch, visit);
+            walk_stmt(then_branch, visit);
             if let Some(else_branch) = else_branch {
-                walk_stmts(else_branch, visit);
+                walk_stmt(else_branch, visit);
             }
         }
         StmtKind::For {
@@ -587,9 +591,10 @@ fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
             for expr in condition.iter().chain(increment) {
                 walk_expr(expr, visit);
             }
-            walk_stmts(body, visit);
+            walk_stmt(body, visit);
         }
-        StmtKind::NestedFunction(_)
+        StmtKind::Null
+        | StmtKind::NestedFunction(_)
         | StmtKind::Comment(_)
         | StmtKind::ReturnVoid
         | StmtKind::StaticAssert(_)

@@ -2709,129 +2709,142 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   storage: Register,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "r",
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           Decl(
+// DEFAULT-NEXT:                               Declaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "reload_order",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "j",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       storage: Register,
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Decl(
-// DEFAULT-NEXT:                           Declaration {
-// DEFAULT-NEXT:                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                   ty: Integer(
-// DEFAULT-NEXT:                                       Ranked {
-// DEFAULT-NEXT:                                           rank: Int,
-// DEFAULT-NEXT:                                           signed: true,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   storage: Register,
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               declarators: [
-// DEFAULT-NEXT:                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                       declarator: Name(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       initializer: Some(
-// DEFAULT-NEXT:                                           Expr(
-// DEFAULT-NEXT:                                               Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "reload_spill_index",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
-// DEFAULT-NEXT:                                                       "r",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "r",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                       Block(
-// DEFAULT-NEXT:                           [
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Named(
-// DEFAULT-NEXT:                                               "rtx",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarators: [
-// DEFAULT-NEXT:                                           InitDeclaratorKind {
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "out",
+// DEFAULT-NEXT:                                           initializer: Some(
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "reload_order",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "j",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               initializer: Some(
-// DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Paren(
-// DEFAULT-NEXT:                                                           Conditional {
-// DEFAULT-NEXT:                                                               condition: Binary {
-// DEFAULT-NEXT:                                                                   op: Equal,
-// DEFAULT-NEXT:                                                                   left: Paren(
-// DEFAULT-NEXT:                                                                       Cast {
-// DEFAULT-NEXT:                                                                           ty: TypeName {
-// DEFAULT-NEXT:                                                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                   ty: Tag(
-// DEFAULT-NEXT:                                                                                       Reference {
-// DEFAULT-NEXT:                                                                                           kind: Enum,
-// DEFAULT-NEXT:                                                                                           name: "rtx_code",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Decl(
+// DEFAULT-NEXT:                               Declaration {
+// DEFAULT-NEXT:                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                       ty: Integer(
+// DEFAULT-NEXT:                                           Ranked {
+// DEFAULT-NEXT:                                               rank: Int,
+// DEFAULT-NEXT:                                               signed: true,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       storage: Register,
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                                   declarators: [
+// DEFAULT-NEXT:                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                           declarator: Name(
+// DEFAULT-NEXT:                                               "i",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           initializer: Some(
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Index {
+// DEFAULT-NEXT:                                                       base: Identifier(
+// DEFAULT-NEXT:                                                           "reload_spill_index",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                       index: Identifier(
+// DEFAULT-NEXT:                                                           "r",
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           Block(
+// DEFAULT-NEXT:                               [
+// DEFAULT-NEXT:                                   Decl(
+// DEFAULT-NEXT:                                       Declaration {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Named(
+// DEFAULT-NEXT:                                                   "rtx",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarators: [
+// DEFAULT-NEXT:                                               InitDeclaratorKind {
+// DEFAULT-NEXT:                                                   declarator: Name(
+// DEFAULT-NEXT:                                                       "out",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   initializer: Some(
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Conditional {
+// DEFAULT-NEXT:                                                                   condition: Binary {
+// DEFAULT-NEXT:                                                                       op: Equal,
+// DEFAULT-NEXT:                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                           Cast {
+// DEFAULT-NEXT:                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                       ty: Tag(
+// DEFAULT-NEXT:                                                                                           Reference {
+// DEFAULT-NEXT:                                                                                               kind: Enum,
+// DEFAULT-NEXT:                                                                                               name: "rtx_code",
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               value: Member {
+// DEFAULT-NEXT:                                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                                       Member {
+// DEFAULT-NEXT:                                                                                           base: Index {
+// DEFAULT-NEXT:                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                   "rld",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           field: "out",
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   field: "code",
+// DEFAULT-NEXT:                                                                                   arrow: true,
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           value: Member {
-// DEFAULT-NEXT:                                                                               base: Paren(
-// DEFAULT-NEXT:                                                                                   Member {
-// DEFAULT-NEXT:                                                                                       base: Index {
-// DEFAULT-NEXT:                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                               "rld",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                                               "r",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       field: "out",
-// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                           "REG",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   then_value: Some(
+// DEFAULT-NEXT:                                                                       Member {
+// DEFAULT-NEXT:                                                                           base: Index {
+// DEFAULT-NEXT:                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                   "rld",
 // DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "code",
-// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                                   "r",
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           field: "out",
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   right: Identifier(
-// DEFAULT-NEXT:                                                                       "REG",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               then_value: Some(
-// DEFAULT-NEXT:                                                                   Member {
+// DEFAULT-NEXT:                                                                   else_value: Member {
 // DEFAULT-NEXT:                                                                       base: Index {
 // DEFAULT-NEXT:                                                                           base: Identifier(
 // DEFAULT-NEXT:                                                                               "rld",
@@ -2840,408 +2853,423 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                               "r",
 // DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       field: "out",
+// DEFAULT-NEXT:                                                                       field: "out_reg",
 // DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               else_value: Member {
-// DEFAULT-NEXT:                                                                   base: Index {
-// DEFAULT-NEXT:                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                           "rld",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Identifier(
-// DEFAULT-NEXT:                                                                           "r",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   field: "out_reg",
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               Decl(
-// DEFAULT-NEXT:                                   Declaration {
-// DEFAULT-NEXT:                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                           ty: Integer(
-// DEFAULT-NEXT:                                               Ranked {
-// DEFAULT-NEXT:                                                   rank: Int,
-// DEFAULT-NEXT:                                                   signed: true,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           storage: Register,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       declarators: [
-// DEFAULT-NEXT:                                           InitDeclaratorKind {
-// DEFAULT-NEXT:                                               declarator: Name(
-// DEFAULT-NEXT:                                                   "nregno",
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               initializer: Some(
-// DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Paren(
-// DEFAULT-NEXT:                                                           Member {
-// DEFAULT-NEXT:                                                               base: Paren(
-// DEFAULT-NEXT:                                                                   Index {
-// DEFAULT-NEXT:                                                                       base: Member {
-// DEFAULT-NEXT:                                                                           base: Paren(
-// DEFAULT-NEXT:                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                   "out",
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           field: "fld",
-// DEFAULT-NEXT:                                                                           arrow: true,
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       index: IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               field: "rtuint",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               If {
-// DEFAULT-NEXT:                                   condition: Binary {
-// DEFAULT-NEXT:                                       op: GreaterEqual,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "nregno",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 77,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "77",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   then_branch: [
-// DEFAULT-NEXT:                                       Decl(
-// DEFAULT-NEXT:                                           Declaration {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "rtx",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarators: [
-// DEFAULT-NEXT:                                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "src_reg",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   InitDeclaratorKind {
-// DEFAULT-NEXT:                                                       declarator: Name(
-// DEFAULT-NEXT:                                                           "store_insn",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       initializer: Some(
-// DEFAULT-NEXT:                                                           Expr(
-// DEFAULT-NEXT:                                                               Cast {
-// DEFAULT-NEXT:                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                           ty: Named(
-// DEFAULT-NEXT:                                                                               "rtx",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                           value: 0,
-// DEFAULT-NEXT:                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                               size: None,
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           spelling: "0",
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       Expr(
-// DEFAULT-NEXT:                                           Assign {
-// DEFAULT-NEXT:                                               op: Assign,
-// DEFAULT-NEXT:                                               target: Index {
-// DEFAULT-NEXT:                                                   base: Identifier(
-// DEFAULT-NEXT:                                                       "reg_last_reload_reg",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   index: Identifier(
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   Decl(
+// DEFAULT-NEXT:                                       Declaration {
+// DEFAULT-NEXT:                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                               ty: Integer(
+// DEFAULT-NEXT:                                                   Ranked {
+// DEFAULT-NEXT:                                                       rank: Int,
+// DEFAULT-NEXT:                                                       signed: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               storage: Register,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           declarators: [
+// DEFAULT-NEXT:                                               InitDeclaratorKind {
+// DEFAULT-NEXT:                                                   declarator: Name(
 // DEFAULT-NEXT:                                                       "nregno",
 // DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               value: IntegerLiteral(
-// DEFAULT-NEXT:                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                       value: 0,
-// DEFAULT-NEXT:                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                           unsigned: false,
-// DEFAULT-NEXT:                                                           size: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       spelling: "0",
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       If {
-// DEFAULT-NEXT:                                           condition: Binary {
-// DEFAULT-NEXT:                                               op: And,
-// DEFAULT-NEXT:                                               left: Binary {
-// DEFAULT-NEXT:                                                   op: And,
-// DEFAULT-NEXT:                                                   left: Identifier(
-// DEFAULT-NEXT:                                                       "src_reg",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: Binary {
-// DEFAULT-NEXT:                                                       op: Equal,
-// DEFAULT-NEXT:                                                       left: Paren(
-// DEFAULT-NEXT:                                                           Cast {
-// DEFAULT-NEXT:                                                               ty: TypeName {
-// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                       ty: Tag(
-// DEFAULT-NEXT:                                                                           Reference {
-// DEFAULT-NEXT:                                                                               kind: Enum,
-// DEFAULT-NEXT:                                                                               name: "rtx_code",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               value: Member {
+// DEFAULT-NEXT:                                                   initializer: Some(
+// DEFAULT-NEXT:                                                       Expr(
+// DEFAULT-NEXT:                                                           Paren(
+// DEFAULT-NEXT:                                                               Member {
 // DEFAULT-NEXT:                                                                   base: Paren(
-// DEFAULT-NEXT:                                                                       Identifier(
-// DEFAULT-NEXT:                                                                           "src_reg",
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   field: "code",
-// DEFAULT-NEXT:                                                                   arrow: true,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Identifier(
-// DEFAULT-NEXT:                                                           "REG",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               right: Binary {
-// DEFAULT-NEXT:                                                   op: Less,
-// DEFAULT-NEXT:                                                   left: Paren(
-// DEFAULT-NEXT:                                                       Member {
-// DEFAULT-NEXT:                                                           base: Paren(
-// DEFAULT-NEXT:                                                               Index {
-// DEFAULT-NEXT:                                                                   base: Member {
-// DEFAULT-NEXT:                                                                       base: Paren(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "src_reg",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       field: "fld",
-// DEFAULT-NEXT:                                                                       arrow: true,
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   index: IntegerLiteral(
-// DEFAULT-NEXT:                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                           value: 0,
-// DEFAULT-NEXT:                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                       Index {
+// DEFAULT-NEXT:                                                                           base: Member {
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                       "out",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "fld",
+// DEFAULT-NEXT:                                                                               arrow: true,
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
 // DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "rtuint",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           field: "rtuint",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 77,
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                               unsigned: false,
-// DEFAULT-NEXT:                                                               size: None,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "77",
-// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           then_branch: [
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   If {
+// DEFAULT-NEXT:                                       condition: Binary {
+// DEFAULT-NEXT:                                           op: GreaterEqual,
+// DEFAULT-NEXT:                                           left: Identifier(
+// DEFAULT-NEXT:                                               "nregno",
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 77,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "77",
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       then_branch: Block(
+// DEFAULT-NEXT:                                           [
 // DEFAULT-NEXT:                                               Decl(
 // DEFAULT-NEXT:                                                   Declaration {
 // DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
-// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ty: Named(
+// DEFAULT-NEXT:                                                               "rtx",
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                       declarators: [
 // DEFAULT-NEXT:                                                           InitDeclaratorKind {
 // DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "src_regno",
+// DEFAULT-NEXT:                                                                   "src_reg",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           InitDeclaratorKind {
+// DEFAULT-NEXT:                                                               declarator: Name(
+// DEFAULT-NEXT:                                                                   "store_insn",
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                               initializer: Some(
 // DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Paren(
-// DEFAULT-NEXT:                                                                           Member {
-// DEFAULT-NEXT:                                                                               base: Paren(
-// DEFAULT-NEXT:                                                                                   Index {
-// DEFAULT-NEXT:                                                                                       base: Member {
-// DEFAULT-NEXT:                                                                                           base: Paren(
-// DEFAULT-NEXT:                                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                                   "src_reg",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           field: "fld",
-// DEFAULT-NEXT:                                                                                           arrow: true,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       index: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                               value: 0,
-// DEFAULT-NEXT:                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               field: "rtuint",
+// DEFAULT-NEXT:                                                                       Cast {
+// DEFAULT-NEXT:                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                   ty: Named(
+// DEFAULT-NEXT:                                                                                       "rtx",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               declarator: Abstract,
 // DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ],
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Decl(
-// DEFAULT-NEXT:                                                   Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Integer(
-// DEFAULT-NEXT:                                                               Ranked {
-// DEFAULT-NEXT:                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                   signed: true,
+// DEFAULT-NEXT:                                               Expr(
+// DEFAULT-NEXT:                                                   Assign {
+// DEFAULT-NEXT:                                                       op: Assign,
+// DEFAULT-NEXT:                                                       target: Index {
+// DEFAULT-NEXT:                                                           base: Identifier(
+// DEFAULT-NEXT:                                                               "reg_last_reload_reg",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           index: Identifier(
+// DEFAULT-NEXT:                                                               "nregno",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       value: IntegerLiteral(
+// DEFAULT-NEXT:                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                               value: 0,
+// DEFAULT-NEXT:                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                   size: None,
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               spelling: "0",
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               If {
+// DEFAULT-NEXT:                                                   condition: Binary {
+// DEFAULT-NEXT:                                                       op: And,
+// DEFAULT-NEXT:                                                       left: Binary {
+// DEFAULT-NEXT:                                                           op: And,
+// DEFAULT-NEXT:                                                           left: Identifier(
+// DEFAULT-NEXT:                                                               "src_reg",
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: Binary {
+// DEFAULT-NEXT:                                                               op: Equal,
+// DEFAULT-NEXT:                                                               left: Paren(
+// DEFAULT-NEXT:                                                                   Cast {
+// DEFAULT-NEXT:                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                               ty: Tag(
+// DEFAULT-NEXT:                                                                                   Reference {
+// DEFAULT-NEXT:                                                                                       kind: Enum,
+// DEFAULT-NEXT:                                                                                       name: "rtx_code",
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       value: Member {
+// DEFAULT-NEXT:                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                   "src_reg",
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           field: "code",
+// DEFAULT-NEXT:                                                                           arrow: true,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                   "REG",
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                       right: Binary {
+// DEFAULT-NEXT:                                                           op: Less,
+// DEFAULT-NEXT:                                                           left: Paren(
+// DEFAULT-NEXT:                                                               Member {
+// DEFAULT-NEXT:                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                       Index {
+// DEFAULT-NEXT:                                                                           base: Member {
+// DEFAULT-NEXT:                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                       "src_reg",
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                               field: "fld",
+// DEFAULT-NEXT:                                                                               arrow: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                   value: 0,
+// DEFAULT-NEXT:                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   spelling: "0",
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   field: "rtuint",
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                   value: 77,
+// DEFAULT-NEXT:                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                       size: None,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   spelling: "77",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarators: [
-// DEFAULT-NEXT:                                                           InitDeclaratorKind {
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "nr",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               initializer: Some(
-// DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Paren(
-// DEFAULT-NEXT:                                                                           Conditional {
-// DEFAULT-NEXT:                                                                               condition: Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: And,
-// DEFAULT-NEXT:                                                                                       left: Binary {
-// DEFAULT-NEXT:                                                                                           op: GreaterEqual,
-// DEFAULT-NEXT:                                                                                           left: Paren(
-// DEFAULT-NEXT:                                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 32,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "32",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       right: Binary {
-// DEFAULT-NEXT:                                                                                           op: LessEqual,
-// DEFAULT-NEXT:                                                                                           left: Paren(
-// DEFAULT-NEXT:                                                                                               Identifier(
-// DEFAULT-NEXT:                                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 63,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "63",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               then_value: Some(
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   then_branch: Block(
+// DEFAULT-NEXT:                                                       [
+// DEFAULT-NEXT:                                                           Decl(
+// DEFAULT-NEXT:                                                               Declaration {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                               signed: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "src_regno",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           initializer: Some(
+// DEFAULT-NEXT:                                                                               Expr(
 // DEFAULT-NEXT:                                                                                   Paren(
-// DEFAULT-NEXT:                                                                                       Binary {
-// DEFAULT-NEXT:                                                                                           op: Div,
-// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                       Member {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Index {
+// DEFAULT-NEXT:                                                                                                   base: Member {
+// DEFAULT-NEXT:                                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                                               "src_reg",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       field: "fld",
+// DEFAULT-NEXT:                                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   index: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           field: "rtuint",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           Decl(
+// DEFAULT-NEXT:                                                               Declaration {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                           Ranked {
+// DEFAULT-NEXT:                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                               signed: true,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "nr",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           initializer: Some(
+// DEFAULT-NEXT:                                                                               Expr(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Conditional {
+// DEFAULT-NEXT:                                                                                           condition: Paren(
 // DEFAULT-NEXT:                                                                                               Binary {
-// DEFAULT-NEXT:                                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                                   op: And,
 // DEFAULT-NEXT:                                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                                       op: GreaterEqual,
 // DEFAULT-NEXT:                                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                                           Index {
-// DEFAULT-NEXT:                                                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                                                   "mode_size",
-// DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                               index: Cast {
-// DEFAULT-NEXT:                                                                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                                                   signed: true,
-// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                                               "src_regno",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 32,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "32",
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   right: Binary {
+// DEFAULT-NEXT:                                                                                                       op: LessEqual,
+// DEFAULT-NEXT:                                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                                               "src_regno",
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 63,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "63",
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           then_value: Some(
+// DEFAULT-NEXT:                                                                                               Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Div,
+// DEFAULT-NEXT:                                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: Sub,
+// DEFAULT-NEXT:                                                                                                               left: Binary {
+// DEFAULT-NEXT:                                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                                                   left: Paren(
+// DEFAULT-NEXT:                                                                                                                       Index {
+// DEFAULT-NEXT:                                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                                               "mode_size",
 // DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                                                       Member {
-// DEFAULT-NEXT:                                                                                                                           base: Index {
-// DEFAULT-NEXT:                                                                                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                                                                                   "rld",
-// DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               index: Identifier(
-// DEFAULT-NEXT:                                                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                                                           index: Cast {
+// DEFAULT-NEXT:                                                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                                                               signed: true,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                                                   Member {
+// DEFAULT-NEXT:                                                                                                                                       base: Index {
+// DEFAULT-NEXT:                                                                                                                                           base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                               "rld",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                           index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                               "r",
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           field: "mode",
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 8,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "8",
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 1,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "1",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
@@ -3256,72 +3284,111 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                           value: 1,
-// DEFAULT-NEXT:                                                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                                                               size: None,
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           spelling: "1",
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               else_value: Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: Div,
-// DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Binary {
-// DEFAULT-NEXT:                                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                           else_value: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Div,
 // DEFAULT-NEXT:                                                                                                   left: Paren(
-// DEFAULT-NEXT:                                                                                                       Index {
-// DEFAULT-NEXT:                                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                                               "mode_size",
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           index: Cast {
-// DEFAULT-NEXT:                                                                                                               ty: TypeName {
-// DEFAULT-NEXT:                                                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                                                               signed: true,
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: Sub,
+// DEFAULT-NEXT:                                                                                                           left: Binary {
+// DEFAULT-NEXT:                                                                                                               op: Add,
+// DEFAULT-NEXT:                                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                                   Index {
+// DEFAULT-NEXT:                                                                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                                                                           "mode_size",
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                       index: Cast {
+// DEFAULT-NEXT:                                                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                                                           signed: true,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                                                               Member {
+// DEFAULT-NEXT:                                                                                                                                   base: Index {
+// DEFAULT-NEXT:                                                                                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                           "rld",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                           "r",
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   field: "mode",
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                                   Conditional {
+// DEFAULT-NEXT:                                                                                                                       condition: Unary {
+// DEFAULT-NEXT:                                                                                                                           op: Not,
+// DEFAULT-NEXT:                                                                                                                           operand: Paren(
+// DEFAULT-NEXT:                                                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                                                   op: BitAnd,
+// DEFAULT-NEXT:                                                                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                                                                       "target_flags",
+// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                           value: 32,
+// DEFAULT-NEXT:                                                                                                                                           radix: Hex,
+// DEFAULT-NEXT:                                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           spelling: "0x00000020",
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       then_value: Some(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 4,
+// DEFAULT-NEXT:                                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "4",
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                       else_value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 8,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "8",
 // DEFAULT-NEXT:                                                                                                                           },
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                   Member {
-// DEFAULT-NEXT:                                                                                                                       base: Index {
-// DEFAULT-NEXT:                                                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                                                               "rld",
-// DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                                                                               "r",
-// DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       field: "mode",
-// DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                   right: Paren(
@@ -3375,810 +3442,532 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 1,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "1",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           Decl(
+// DEFAULT-NEXT:                                                               Declaration {
+// DEFAULT-NEXT:                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                           "rtx",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   declarators: [
+// DEFAULT-NEXT:                                                                       InitDeclaratorKind {
+// DEFAULT-NEXT:                                                                           declarator: Name(
+// DEFAULT-NEXT:                                                                               "note",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           initializer: Some(
+// DEFAULT-NEXT:                                                                               Expr(
+// DEFAULT-NEXT:                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                           value: 0,
+// DEFAULT-NEXT:                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                               size: None,
 // DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                           While {
+// DEFAULT-NEXT:                                                               condition: Binary {
+// DEFAULT-NEXT:                                                                   op: Greater,
+// DEFAULT-NEXT:                                                                   left: Postfix {
+// DEFAULT-NEXT:                                                                       op: Decrement,
+// DEFAULT-NEXT:                                                                       operand: Identifier(
+// DEFAULT-NEXT:                                                                           "nr",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 0,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               body: Block(
+// DEFAULT-NEXT:                                                                   [
+// DEFAULT-NEXT:                                                                       Expr(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Assign {
+// DEFAULT-NEXT:                                                                                   op: BitAndAssign,
+// DEFAULT-NEXT:                                                                                   target: Index {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "reg_reloaded_dead",
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Paren(
-// DEFAULT-NEXT:                                                                                           Conditional {
-// DEFAULT-NEXT:                                                                                               condition: Unary {
-// DEFAULT-NEXT:                                                                                                   op: Not,
-// DEFAULT-NEXT:                                                                                                   operand: Paren(
-// DEFAULT-NEXT:                                                                                                       Binary {
-// DEFAULT-NEXT:                                                                                                           op: BitAnd,
-// DEFAULT-NEXT:                                                                                                           left: Identifier(
-// DEFAULT-NEXT:                                                                                                               "target_flags",
+// DEFAULT-NEXT:                                                                                       index: Binary {
+// DEFAULT-NEXT:                                                                                           op: Div,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                                       "src_regno",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                                       "nr",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Cast {
+// DEFAULT-NEXT:                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                                                           left: IntegerLiteral(
 // DEFAULT-NEXT:                                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                                   value: 32,
-// DEFAULT-NEXT:                                                                                                                   radix: Hex,
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
 // DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                                                                                       unsigned: false,
 // DEFAULT-NEXT:                                                                                                                       size: None,
 // DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   spelling: "0x00000020",
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   value: Unary {
+// DEFAULT-NEXT:                                                                                       op: BitNot,
+// DEFAULT-NEXT:                                                                                       operand: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                               ty: Named(
+// DEFAULT-NEXT:                                                                                                                   "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 1,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "1",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Rem,
+// DEFAULT-NEXT:                                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: Add,
+// DEFAULT-NEXT:                                                                                                               left: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "src_regno",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "nr",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                                           Cast {
+// DEFAULT-NEXT:                                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                       ty: Integer(
+// DEFAULT-NEXT:                                                                                                                           Ranked {
+// DEFAULT-NEXT:                                                                                                                               rank: Int,
+// DEFAULT-NEXT:                                                                                                                               signed: false,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                                       op: Mul,
+// DEFAULT-NEXT:                                                                                                                       left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 8,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                               value: 8,
+// DEFAULT-NEXT:                                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       Expr(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Assign {
+// DEFAULT-NEXT:                                                                                   op: BitOrAssign,
+// DEFAULT-NEXT:                                                                                   target: Index {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "reg_reloaded_valid",
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                       index: Binary {
+// DEFAULT-NEXT:                                                                                           op: Div,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                                       "src_regno",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                                       "nr",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Cast {
+// DEFAULT-NEXT:                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   },
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                           Cast {
+// DEFAULT-NEXT:                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                                           "HARD_REG_ELT_TYPE",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                               value: Paren(
 // DEFAULT-NEXT:                                                                                                   IntegerLiteral(
 // DEFAULT-NEXT:                                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                           value: 4,
+// DEFAULT-NEXT:                                                                                                           value: 1,
 // DEFAULT-NEXT:                                                                                                           radix: Decimal,
 // DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
 // DEFAULT-NEXT:                                                                                                               unsigned: false,
 // DEFAULT-NEXT:                                                                                                               size: None,
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           spelling: "4",
+// DEFAULT-NEXT:                                                                                                           spelling: "1",
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               else_value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 8,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "8",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               Decl(
-// DEFAULT-NEXT:                                                   Declaration {
-// DEFAULT-NEXT:                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                           ty: Named(
-// DEFAULT-NEXT:                                                               "rtx",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       declarators: [
-// DEFAULT-NEXT:                                                           InitDeclaratorKind {
-// DEFAULT-NEXT:                                                               declarator: Name(
-// DEFAULT-NEXT:                                                                   "note",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               initializer: Some(
-// DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       IntegerLiteral(
-// DEFAULT-NEXT:                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                               value: 0,
-// DEFAULT-NEXT:                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                   size: None,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               spelling: "0",
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               While {
-// DEFAULT-NEXT:                                                   condition: Binary {
-// DEFAULT-NEXT:                                                       op: Greater,
-// DEFAULT-NEXT:                                                       left: Postfix {
-// DEFAULT-NEXT:                                                           op: Decrement,
-// DEFAULT-NEXT:                                                           operand: Identifier(
-// DEFAULT-NEXT:                                                               "nr",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                               value: 0,
-// DEFAULT-NEXT:                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                   size: None,
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                               spelling: "0",
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   body: [
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Paren(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: BitAndAssign,
-// DEFAULT-NEXT:                                                                   target: Index {
-// DEFAULT-NEXT:                                                                       base: Paren(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "reg_reloaded_dead",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Paren(
-// DEFAULT-NEXT:                                                                               Binary {
-// DEFAULT-NEXT:                                                                                   op: Add,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "src_regno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Identifier(
-// DEFAULT-NEXT:                                                                                       "nr",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Paren(
-// DEFAULT-NEXT:                                                                               Cast {
-// DEFAULT-NEXT:                                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: false,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                       Binary {
-// DEFAULT-NEXT:                                                                                           op: Mul,
-// DEFAULT-NEXT:                                                                                           left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Unary {
-// DEFAULT-NEXT:                                                                       op: BitNot,
-// DEFAULT-NEXT:                                                                       operand: Paren(
-// DEFAULT-NEXT:                                                                           Binary {
-// DEFAULT-NEXT:                                                                               op: ShiftLeft,
-// DEFAULT-NEXT:                                                                               left: Paren(
-// DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: TypeName {
-// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                                   "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                           IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 1,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "1",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: Rem,
-// DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Binary {
-// DEFAULT-NEXT:                                                                                               op: Add,
-// DEFAULT-NEXT:                                                                                               left: Identifier(
-// DEFAULT-NEXT:                                                                                                   "src_regno",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Identifier(
-// DEFAULT-NEXT:                                                                                                   "nr",
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       right: Paren(
-// DEFAULT-NEXT:                                                                                           Cast {
-// DEFAULT-NEXT:                                                                                               ty: TypeName {
-// DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                                               signed: false,
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               value: Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Rem,
+// DEFAULT-NEXT:                                                                                               left: Paren(
 // DEFAULT-NEXT:                                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                                       op: Mul,
-// DEFAULT-NEXT:                                                                                                       left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
-// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                                           "src_regno",
 // DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
-// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                                           "nr",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Paren(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: BitOrAssign,
-// DEFAULT-NEXT:                                                                   target: Index {
-// DEFAULT-NEXT:                                                                       base: Paren(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "reg_reloaded_valid",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Paren(
-// DEFAULT-NEXT:                                                                               Binary {
-// DEFAULT-NEXT:                                                                                   op: Add,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "src_regno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Identifier(
-// DEFAULT-NEXT:                                                                                       "nr",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Paren(
-// DEFAULT-NEXT:                                                                               Cast {
-// DEFAULT-NEXT:                                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: false,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                       Binary {
-// DEFAULT-NEXT:                                                                                           op: Mul,
-// DEFAULT-NEXT:                                                                                           left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                           Cast {
-// DEFAULT-NEXT:                                                                               ty: TypeName {
-// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                   IntegerLiteral(
-// DEFAULT-NEXT:                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                           value: 1,
-// DEFAULT-NEXT:                                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                                               size: None,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           spelling: "1",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Paren(
-// DEFAULT-NEXT:                                                                           Binary {
-// DEFAULT-NEXT:                                                                               op: Rem,
-// DEFAULT-NEXT:                                                                               left: Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                           "src_regno",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                                           "nr",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Paren(
-// DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: TypeName {
-// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                           Binary {
-// DEFAULT-NEXT:                                                                                               op: Mul,
-// DEFAULT-NEXT:                                                                                               left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 8,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "8",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 8,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: Mul,
+// DEFAULT-NEXT:                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       Expr(
-// DEFAULT-NEXT:                                                           Paren(
-// DEFAULT-NEXT:                                                               Assign {
-// DEFAULT-NEXT:                                                                   op: BitOrAssign,
-// DEFAULT-NEXT:                                                                   target: Index {
-// DEFAULT-NEXT:                                                                       base: Paren(
-// DEFAULT-NEXT:                                                                           Identifier(
-// DEFAULT-NEXT:                                                                               "reg_is_output_reload",
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       index: Binary {
-// DEFAULT-NEXT:                                                                           op: Div,
-// DEFAULT-NEXT:                                                                           left: Paren(
-// DEFAULT-NEXT:                                                                               Binary {
-// DEFAULT-NEXT:                                                                                   op: Add,
-// DEFAULT-NEXT:                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                       "src_regno",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Identifier(
-// DEFAULT-NEXT:                                                                                       "nr",
-// DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           right: Paren(
-// DEFAULT-NEXT:                                                                               Cast {
-// DEFAULT-NEXT:                                                                                   ty: TypeName {
-// DEFAULT-NEXT:                                                                                       specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                           ty: Integer(
-// DEFAULT-NEXT:                                                                                               Ranked {
-// DEFAULT-NEXT:                                                                                                   rank: Int,
-// DEFAULT-NEXT:                                                                                                   signed: false,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       declarator: Abstract,
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   value: Paren(
-// DEFAULT-NEXT:                                                                                       Binary {
-// DEFAULT-NEXT:                                                                                           op: Mul,
-// DEFAULT-NEXT:                                                                                           left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                                   value: Binary {
-// DEFAULT-NEXT:                                                                       op: ShiftLeft,
-// DEFAULT-NEXT:                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                           Cast {
-// DEFAULT-NEXT:                                                                               ty: TypeName {
-// DEFAULT-NEXT:                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                       ty: Named(
-// DEFAULT-NEXT:                                                                                           "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                   IntegerLiteral(
-// DEFAULT-NEXT:                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                           value: 1,
-// DEFAULT-NEXT:                                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                                               size: None,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           spelling: "1",
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
 // DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                       right: Paren(
-// DEFAULT-NEXT:                                                                           Binary {
-// DEFAULT-NEXT:                                                                               op: Rem,
-// DEFAULT-NEXT:                                                                               left: Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: Add,
-// DEFAULT-NEXT:                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                       Expr(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Assign {
+// DEFAULT-NEXT:                                                                                   op: BitOrAssign,
+// DEFAULT-NEXT:                                                                                   target: Index {
+// DEFAULT-NEXT:                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                           Identifier(
+// DEFAULT-NEXT:                                                                                               "reg_is_output_reload",
+// DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Identifier(
-// DEFAULT-NEXT:                                                                                           "nr",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Paren(
-// DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: TypeName {
-// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                               ty: Integer(
-// DEFAULT-NEXT:                                                                                                   Ranked {
-// DEFAULT-NEXT:                                                                                                       rank: Int,
-// DEFAULT-NEXT:                                                                                                       signed: false,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                           Binary {
-// DEFAULT-NEXT:                                                                                               op: Mul,
-// DEFAULT-NEXT:                                                                                               left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 8,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "8",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 8,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "8",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   },
-// DEFAULT-NEXT:                                                               },
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       If {
-// DEFAULT-NEXT:                                                           condition: Identifier(
-// DEFAULT-NEXT:                                                               "note",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           then_branch: [
-// DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Paren(
-// DEFAULT-NEXT:                                                                       Assign {
-// DEFAULT-NEXT:                                                                           op: BitOrAssign,
-// DEFAULT-NEXT:                                                                           target: Index {
-// DEFAULT-NEXT:                                                                               base: Paren(
-// DEFAULT-NEXT:                                                                                   Identifier(
-// DEFAULT-NEXT:                                                                                       "reg_reloaded_died",
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               index: Binary {
-// DEFAULT-NEXT:                                                                                   op: Div,
-// DEFAULT-NEXT:                                                                                   left: Paren(
-// DEFAULT-NEXT:                                                                                       Identifier(
-// DEFAULT-NEXT:                                                                                           "src_regno",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Paren(
-// DEFAULT-NEXT:                                                                                       Cast {
-// DEFAULT-NEXT:                                                                                           ty: TypeName {
-// DEFAULT-NEXT:                                                                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                                           signed: false,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                       index: Binary {
+// DEFAULT-NEXT:                                                                                           op: Div,
+// DEFAULT-NEXT:                                                                                           left: Paren(
 // DEFAULT-NEXT:                                                                                               Binary {
-// DEFAULT-NEXT:                                                                                                   op: Mul,
-// DEFAULT-NEXT:                                                                                                   left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                           value: 8,
-// DEFAULT-NEXT:                                                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                                                               size: None,
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           spelling: "8",
-// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                                                   left: Identifier(
+// DEFAULT-NEXT:                                                                                                       "src_regno",
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                           value: 8,
-// DEFAULT-NEXT:                                                                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                                                               size: None,
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           spelling: "8",
+// DEFAULT-NEXT:                                                                                                   right: Identifier(
+// DEFAULT-NEXT:                                                                                                       "nr",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Cast {
+// DEFAULT-NEXT:                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                   signed: false,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                           op: Mul,
+// DEFAULT-NEXT:                                                                                                           left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                           value: Binary {
-// DEFAULT-NEXT:                                                                               op: ShiftLeft,
-// DEFAULT-NEXT:                                                                               left: Paren(
-// DEFAULT-NEXT:                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                       ty: TypeName {
-// DEFAULT-NEXT:                                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                               ty: Named(
-// DEFAULT-NEXT:                                                                                                   "HARD_REG_ELT_TYPE",
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                       value: Paren(
-// DEFAULT-NEXT:                                                                                           IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 1,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "1",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                               right: Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: Rem,
+// DEFAULT-NEXT:                                                                                   value: Binary {
+// DEFAULT-NEXT:                                                                                       op: ShiftLeft,
 // DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Identifier(
-// DEFAULT-NEXT:                                                                                               "src_regno",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: Paren(
 // DEFAULT-NEXT:                                                                                           Cast {
 // DEFAULT-NEXT:                                                                                               ty: TypeName {
 // DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                                               signed: false,
-// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                                           "HARD_REG_ELT_TYPE",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
 // DEFAULT-NEXT:                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                                       op: Mul,
-// DEFAULT-NEXT:                                                                                                       left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                           spelling: "1",
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               ),
 // DEFAULT-NEXT:                                                                                           },
 // DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           else_branch: Some(
-// DEFAULT-NEXT:                                                               [
-// DEFAULT-NEXT:                                                                   Expr(
-// DEFAULT-NEXT:                                                                       Paren(
-// DEFAULT-NEXT:                                                                           Assign {
-// DEFAULT-NEXT:                                                                               op: BitAndAssign,
-// DEFAULT-NEXT:                                                                               target: Index {
-// DEFAULT-NEXT:                                                                                   base: Paren(
-// DEFAULT-NEXT:                                                                                       Identifier(
-// DEFAULT-NEXT:                                                                                           "reg_reloaded_died",
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   index: Binary {
-// DEFAULT-NEXT:                                                                                       op: Div,
-// DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Identifier(
-// DEFAULT-NEXT:                                                                                               "src_regno",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                       right: Paren(
-// DEFAULT-NEXT:                                                                                           Cast {
-// DEFAULT-NEXT:                                                                                               ty: TypeName {
-// DEFAULT-NEXT:                                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                                               signed: false,
-// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Rem,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                                                           "nr",
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   declarator: Abstract,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                                       op: Mul,
-// DEFAULT-NEXT:                                                                                                       left: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
+// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: Mul,
+// DEFAULT-NEXT:                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
 // DEFAULT-NEXT:                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                   },
@@ -4187,10 +3976,74 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
 // DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                               value: Unary {
-// DEFAULT-NEXT:                                                                                   op: BitNot,
-// DEFAULT-NEXT:                                                                                   operand: Paren(
-// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       If {
+// DEFAULT-NEXT:                                                                           condition: Identifier(
+// DEFAULT-NEXT:                                                                               "note",
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                           then_branch: Expr(
+// DEFAULT-NEXT:                                                                               Paren(
+// DEFAULT-NEXT:                                                                                   Assign {
+// DEFAULT-NEXT:                                                                                       op: BitOrAssign,
+// DEFAULT-NEXT:                                                                                       target: Index {
+// DEFAULT-NEXT:                                                                                           base: Paren(
+// DEFAULT-NEXT:                                                                                               Identifier(
+// DEFAULT-NEXT:                                                                                                   "reg_reloaded_died",
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           index: Binary {
+// DEFAULT-NEXT:                                                                                               op: Div,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                                       "src_regno",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: Mul,
+// DEFAULT-NEXT:                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                       value: Binary {
 // DEFAULT-NEXT:                                                                                           op: ShiftLeft,
 // DEFAULT-NEXT:                                                                                           left: Paren(
 // DEFAULT-NEXT:                                                                                               Cast {
@@ -4270,164 +4123,517 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                               },
-// DEFAULT-NEXT:                                                                           },
-// DEFAULT-NEXT:                                                                       ),
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               Expr(
-// DEFAULT-NEXT:                                                   Assign {
-// DEFAULT-NEXT:                                                       op: Assign,
-// DEFAULT-NEXT:                                                       target: Index {
-// DEFAULT-NEXT:                                                           base: Identifier(
-// DEFAULT-NEXT:                                                               "reg_last_reload_reg",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           index: Identifier(
-// DEFAULT-NEXT:                                                               "nregno",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                       value: Identifier(
-// DEFAULT-NEXT:                                                           "src_reg",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           else_branch: None,
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                                   else_branch: Some(
-// DEFAULT-NEXT:                                       [
-// DEFAULT-NEXT:                                           Decl(
-// DEFAULT-NEXT:                                               Declaration {
-// DEFAULT-NEXT:                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                       ty: Integer(
-// DEFAULT-NEXT:                                                           Ranked {
-// DEFAULT-NEXT:                                                               rank: Int,
-// DEFAULT-NEXT:                                                               signed: true,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   declarators: [
-// DEFAULT-NEXT:                                                       InitDeclaratorKind {
-// DEFAULT-NEXT:                                                           declarator: Name(
-// DEFAULT-NEXT:                                                               "num_regs",
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           initializer: Some(
-// DEFAULT-NEXT:                                                               Expr(
-// DEFAULT-NEXT:                                                                   Paren(
-// DEFAULT-NEXT:                                                                       Conditional {
-// DEFAULT-NEXT:                                                                           condition: Paren(
-// DEFAULT-NEXT:                                                                               Binary {
-// DEFAULT-NEXT:                                                                                   op: And,
-// DEFAULT-NEXT:                                                                                   left: Binary {
-// DEFAULT-NEXT:                                                                                       op: GreaterEqual,
-// DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Identifier(
-// DEFAULT-NEXT:                                                                                               "nregno",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                               value: 32,
-// DEFAULT-NEXT:                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               spelling: "32",
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
 // DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                                   right: Binary {
-// DEFAULT-NEXT:                                                                                       op: LessEqual,
-// DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Identifier(
-// DEFAULT-NEXT:                                                                                               "nregno",
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                               value: 63,
-// DEFAULT-NEXT:                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               spelling: "63",
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               },
+// DEFAULT-NEXT:                                                                               ),
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           then_value: Some(
-// DEFAULT-NEXT:                                                                               Paren(
-// DEFAULT-NEXT:                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                       op: Div,
-// DEFAULT-NEXT:                                                                                       left: Paren(
-// DEFAULT-NEXT:                                                                                           Binary {
-// DEFAULT-NEXT:                                                                                               op: Sub,
-// DEFAULT-NEXT:                                                                                               left: Binary {
-// DEFAULT-NEXT:                                                                                                   op: Add,
+// DEFAULT-NEXT:                                                                           else_branch: Some(
+// DEFAULT-NEXT:                                                                               Expr(
+// DEFAULT-NEXT:                                                                                   Paren(
+// DEFAULT-NEXT:                                                                                       Assign {
+// DEFAULT-NEXT:                                                                                           op: BitAndAssign,
+// DEFAULT-NEXT:                                                                                           target: Index {
+// DEFAULT-NEXT:                                                                                               base: Paren(
+// DEFAULT-NEXT:                                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                                       "reg_reloaded_died",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               index: Binary {
+// DEFAULT-NEXT:                                                                                                   op: Div,
 // DEFAULT-NEXT:                                                                                                   left: Paren(
-// DEFAULT-NEXT:                                                                                                       Index {
-// DEFAULT-NEXT:                                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                                               "mode_size",
+// DEFAULT-NEXT:                                                                                                       Identifier(
+// DEFAULT-NEXT:                                                                                                           "src_regno",
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   right: Paren(
+// DEFAULT-NEXT:                                                                                                       Cast {
+// DEFAULT-NEXT:                                                                                                           ty: TypeName {
+// DEFAULT-NEXT:                                                                                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                   ty: Integer(
+// DEFAULT-NEXT:                                                                                                                       Ranked {
+// DEFAULT-NEXT:                                                                                                                           rank: Int,
+// DEFAULT-NEXT:                                                                                                                           signed: false,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           value: Paren(
+// DEFAULT-NEXT:                                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                                   op: Mul,
+// DEFAULT-NEXT:                                                                                                                   left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 8,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "8",
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 8,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "8",
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                           index: Cast {
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           value: Unary {
+// DEFAULT-NEXT:                                                                                               op: BitNot,
+// DEFAULT-NEXT:                                                                                               operand: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: ShiftLeft,
+// DEFAULT-NEXT:                                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                                           Cast {
 // DEFAULT-NEXT:                                                                                                               ty: TypeName {
 // DEFAULT-NEXT:                                                                                                                   specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                                       ty: Integer(
-// DEFAULT-NEXT:                                                                                                                           Ranked {
-// DEFAULT-NEXT:                                                                                                                               rank: Int,
-// DEFAULT-NEXT:                                                                                                                               signed: true,
-// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ty: Named(
+// DEFAULT-NEXT:                                                                                                                           "HARD_REG_ELT_TYPE",
 // DEFAULT-NEXT:                                                                                                                       ),
 // DEFAULT-NEXT:                                                                                                                   },
 // DEFAULT-NEXT:                                                                                                                   declarator: Abstract,
 // DEFAULT-NEXT:                                                                                                               },
 // DEFAULT-NEXT:                                                                                                               value: Paren(
-// DEFAULT-NEXT:                                                                                                                   Paren(
-// DEFAULT-NEXT:                                                                                                                       Cast {
-// DEFAULT-NEXT:                                                                                                                           ty: TypeName {
-// DEFAULT-NEXT:                                                                                                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                                                   ty: Tag(
-// DEFAULT-NEXT:                                                                                                                                       Reference {
-// DEFAULT-NEXT:                                                                                                                                           kind: Enum,
-// DEFAULT-NEXT:                                                                                                                                           name: "machine_mode",
-// DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                               declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
 // DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           value: Member {
-// DEFAULT-NEXT:                                                                                                                               base: Paren(
-// DEFAULT-NEXT:                                                                                                                                   Member {
-// DEFAULT-NEXT:                                                                                                                                       base: Index {
-// DEFAULT-NEXT:                                                                                                                                           base: Identifier(
-// DEFAULT-NEXT:                                                                                                                                               "rld",
-// DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                           index: Identifier(
-// DEFAULT-NEXT:                                                                                                                                               "r",
-// DEFAULT-NEXT:                                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                                       field: "out",
-// DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                               field: "mode",
-// DEFAULT-NEXT:                                                                                                                               arrow: true,
-// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "1",
 // DEFAULT-NEXT:                                                                                                                       },
 // DEFAULT-NEXT:                                                                                                                   ),
 // DEFAULT-NEXT:                                                                                                               ),
 // DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: Rem,
+// DEFAULT-NEXT:                                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                                                       "src_regno",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: Paren(
+// DEFAULT-NEXT:                                                                                                                   Cast {
+// DEFAULT-NEXT:                                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                                       signed: false,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                                               op: Mul,
+// DEFAULT-NEXT:                                                                                                                               left: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                               ),
+// DEFAULT-NEXT:                                                                           ),
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ],
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           Expr(
+// DEFAULT-NEXT:                                                               Assign {
+// DEFAULT-NEXT:                                                                   op: Assign,
+// DEFAULT-NEXT:                                                                   target: Index {
+// DEFAULT-NEXT:                                                                       base: Identifier(
+// DEFAULT-NEXT:                                                                           "reg_last_reload_reg",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       index: Identifier(
+// DEFAULT-NEXT:                                                                           "nregno",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   value: Identifier(
+// DEFAULT-NEXT:                                                                       "src_reg",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                       ],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   else_branch: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           ],
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       else_branch: Some(
+// DEFAULT-NEXT:                                           Block(
+// DEFAULT-NEXT:                                               [
+// DEFAULT-NEXT:                                                   Decl(
+// DEFAULT-NEXT:                                                       Declaration {
+// DEFAULT-NEXT:                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                   Ranked {
+// DEFAULT-NEXT:                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                       signed: true,
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                           declarators: [
+// DEFAULT-NEXT:                                                               InitDeclaratorKind {
+// DEFAULT-NEXT:                                                                   declarator: Name(
+// DEFAULT-NEXT:                                                                       "num_regs",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   initializer: Some(
+// DEFAULT-NEXT:                                                                       Expr(
+// DEFAULT-NEXT:                                                                           Paren(
+// DEFAULT-NEXT:                                                                               Conditional {
+// DEFAULT-NEXT:                                                                                   condition: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: And,
+// DEFAULT-NEXT:                                                                                           left: Binary {
+// DEFAULT-NEXT:                                                                                               op: GreaterEqual,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                                       "nregno",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 32,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "32",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                           right: Binary {
+// DEFAULT-NEXT:                                                                                               op: LessEqual,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Identifier(
+// DEFAULT-NEXT:                                                                                                       "nregno",
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 63,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "63",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       },
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   then_value: Some(
+// DEFAULT-NEXT:                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                               op: Div,
+// DEFAULT-NEXT:                                                                                               left: Paren(
+// DEFAULT-NEXT:                                                                                                   Binary {
+// DEFAULT-NEXT:                                                                                                       op: Sub,
+// DEFAULT-NEXT:                                                                                                       left: Binary {
+// DEFAULT-NEXT:                                                                                                           op: Add,
+// DEFAULT-NEXT:                                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                                               Index {
+// DEFAULT-NEXT:                                                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                                                       "mode_size",
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                   index: Cast {
+// DEFAULT-NEXT:                                                                                                                       ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                           specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                               ty: Integer(
+// DEFAULT-NEXT:                                                                                                                                   Ranked {
+// DEFAULT-NEXT:                                                                                                                                       rank: Int,
+// DEFAULT-NEXT:                                                                                                                                       signed: true,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       value: Paren(
+// DEFAULT-NEXT:                                                                                                                           Paren(
+// DEFAULT-NEXT:                                                                                                                               Cast {
+// DEFAULT-NEXT:                                                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                                           ty: Tag(
+// DEFAULT-NEXT:                                                                                                                                               Reference {
+// DEFAULT-NEXT:                                                                                                                                                   kind: Enum,
+// DEFAULT-NEXT:                                                                                                                                                   name: "machine_mode",
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   value: Member {
+// DEFAULT-NEXT:                                                                                                                                       base: Paren(
+// DEFAULT-NEXT:                                                                                                                                           Member {
+// DEFAULT-NEXT:                                                                                                                                               base: Index {
+// DEFAULT-NEXT:                                                                                                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                       "rld",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                                   index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                       "r",
+// DEFAULT-NEXT:                                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                                               field: "out",
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                       field: "mode",
+// DEFAULT-NEXT:                                                                                                                                       arrow: true,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                   value: 8,
+// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   spelling: "8",
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 1,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "1",
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                       },
+// DEFAULT-NEXT:                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                               ),
+// DEFAULT-NEXT:                                                                                           },
+// DEFAULT-NEXT:                                                                                       ),
+// DEFAULT-NEXT:                                                                                   ),
+// DEFAULT-NEXT:                                                                                   else_value: Paren(
+// DEFAULT-NEXT:                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                           op: Div,
+// DEFAULT-NEXT:                                                                                           left: Paren(
+// DEFAULT-NEXT:                                                                                               Binary {
+// DEFAULT-NEXT:                                                                                                   op: Sub,
+// DEFAULT-NEXT:                                                                                                   left: Binary {
+// DEFAULT-NEXT:                                                                                                       op: Add,
+// DEFAULT-NEXT:                                                                                                       left: Paren(
+// DEFAULT-NEXT:                                                                                                           Index {
+// DEFAULT-NEXT:                                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "mode_size",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               index: Cast {
+// DEFAULT-NEXT:                                                                                                                   ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                       specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                           ty: Integer(
+// DEFAULT-NEXT:                                                                                                                               Ranked {
+// DEFAULT-NEXT:                                                                                                                                   rank: Int,
+// DEFAULT-NEXT:                                                                                                                                   signed: true,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                   value: Paren(
+// DEFAULT-NEXT:                                                                                                                       Paren(
+// DEFAULT-NEXT:                                                                                                                           Cast {
+// DEFAULT-NEXT:                                                                                                                               ty: TypeName {
+// DEFAULT-NEXT:                                                                                                                                   specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                                                                                                       ty: Tag(
+// DEFAULT-NEXT:                                                                                                                                           Reference {
+// DEFAULT-NEXT:                                                                                                                                               kind: Enum,
+// DEFAULT-NEXT:                                                                                                                                               name: "machine_mode",
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   declarator: Abstract,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                               value: Member {
+// DEFAULT-NEXT:                                                                                                                                   base: Paren(
+// DEFAULT-NEXT:                                                                                                                                       Member {
+// DEFAULT-NEXT:                                                                                                                                           base: Index {
+// DEFAULT-NEXT:                                                                                                                                               base: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                   "rld",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                               index: Identifier(
+// DEFAULT-NEXT:                                                                                                                                                   "r",
+// DEFAULT-NEXT:                                                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                                           field: "out",
+// DEFAULT-NEXT:                                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                                                   field: "mode",
+// DEFAULT-NEXT:                                                                                                                                   arrow: true,
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                       right: Paren(
+// DEFAULT-NEXT:                                                                                                           Conditional {
+// DEFAULT-NEXT:                                                                                                               condition: Unary {
+// DEFAULT-NEXT:                                                                                                                   op: Not,
+// DEFAULT-NEXT:                                                                                                                   operand: Paren(
+// DEFAULT-NEXT:                                                                                                                       Binary {
+// DEFAULT-NEXT:                                                                                                                           op: BitAnd,
+// DEFAULT-NEXT:                                                                                                                           left: Identifier(
+// DEFAULT-NEXT:                                                                                                                               "target_flags",
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                                   value: 32,
+// DEFAULT-NEXT:                                                                                                                                   radix: Hex,
+// DEFAULT-NEXT:                                                                                                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                                       unsigned: false,
+// DEFAULT-NEXT:                                                                                                                                       size: None,
+// DEFAULT-NEXT:                                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                                                   spelling: "0x00000020",
+// DEFAULT-NEXT:                                                                                                                               },
+// DEFAULT-NEXT:                                                                                                                           ),
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               then_value: Some(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                           value: 4,
+// DEFAULT-NEXT:                                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                                           },
+// DEFAULT-NEXT:                                                                                                                           spelling: "4",
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               else_value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 8,
+// DEFAULT-NEXT:                                                                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "8",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                           value: 1,
+// DEFAULT-NEXT:                                                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                                                               size: None,
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                           spelling: "1",
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                               },
+// DEFAULT-NEXT:                                                                                           ),
+// DEFAULT-NEXT:                                                                                           right: Paren(
+// DEFAULT-NEXT:                                                                                               Conditional {
+// DEFAULT-NEXT:                                                                                                   condition: Unary {
+// DEFAULT-NEXT:                                                                                                       op: Not,
+// DEFAULT-NEXT:                                                                                                       operand: Paren(
+// DEFAULT-NEXT:                                                                                                           Binary {
+// DEFAULT-NEXT:                                                                                                               op: BitAnd,
+// DEFAULT-NEXT:                                                                                                               left: Identifier(
+// DEFAULT-NEXT:                                                                                                                   "target_flags",
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                                       value: 32,
+// DEFAULT-NEXT:                                                                                                                       radix: Hex,
+// DEFAULT-NEXT:                                                                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                                                                           size: None,
+// DEFAULT-NEXT:                                                                                                                       },
+// DEFAULT-NEXT:                                                                                                                       spelling: "0x00000020",
+// DEFAULT-NEXT:                                                                                                                   },
+// DEFAULT-NEXT:                                                                                                               ),
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   },
+// DEFAULT-NEXT:                                                                                                   then_value: Some(
+// DEFAULT-NEXT:                                                                                                       IntegerLiteral(
+// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
+// DEFAULT-NEXT:                                                                                                               value: 4,
+// DEFAULT-NEXT:                                                                                                               radix: Decimal,
+// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                                                                   unsigned: false,
+// DEFAULT-NEXT:                                                                                                                   size: None,
+// DEFAULT-NEXT:                                                                                                               },
+// DEFAULT-NEXT:                                                                                                               spelling: "4",
+// DEFAULT-NEXT:                                                                                                           },
+// DEFAULT-NEXT:                                                                                                       ),
+// DEFAULT-NEXT:                                                                                                   ),
+// DEFAULT-NEXT:                                                                                                   else_value: IntegerLiteral(
 // DEFAULT-NEXT:                                                                                                       IntegerLiteral {
 // DEFAULT-NEXT:                                                                                                           value: 8,
 // DEFAULT-NEXT:                                                                                                           radix: Decimal,
@@ -4439,259 +4645,27 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                                                                       },
 // DEFAULT-NEXT:                                                                                                   ),
 // DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 1,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "1",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                               spelling: "8",
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                       ),
-// DEFAULT-NEXT:                                                                                   },
-// DEFAULT-NEXT:                                                                               ),
-// DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                           else_value: Paren(
-// DEFAULT-NEXT:                                                                               Binary {
-// DEFAULT-NEXT:                                                                                   op: Div,
-// DEFAULT-NEXT:                                                                                   left: Paren(
-// DEFAULT-NEXT:                                                                                       Binary {
-// DEFAULT-NEXT:                                                                                           op: Sub,
-// DEFAULT-NEXT:                                                                                           left: Binary {
-// DEFAULT-NEXT:                                                                                               op: Add,
-// DEFAULT-NEXT:                                                                                               left: Paren(
-// DEFAULT-NEXT:                                                                                                   Index {
-// DEFAULT-NEXT:                                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                                           "mode_size",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       index: Cast {
-// DEFAULT-NEXT:                                                                                                           ty: TypeName {
-// DEFAULT-NEXT:                                                                                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                                   ty: Integer(
-// DEFAULT-NEXT:                                                                                                                       Ranked {
-// DEFAULT-NEXT:                                                                                                                           rank: Int,
-// DEFAULT-NEXT:                                                                                                                           signed: true,
-// DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                           value: Paren(
-// DEFAULT-NEXT:                                                                                                               Paren(
-// DEFAULT-NEXT:                                                                                                                   Cast {
-// DEFAULT-NEXT:                                                                                                                       ty: TypeName {
-// DEFAULT-NEXT:                                                                                                                           specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                                                                                               ty: Tag(
-// DEFAULT-NEXT:                                                                                                                                   Reference {
-// DEFAULT-NEXT:                                                                                                                                       kind: Enum,
-// DEFAULT-NEXT:                                                                                                                                       name: "machine_mode",
-// DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           declarator: Abstract,
-// DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                       value: Member {
-// DEFAULT-NEXT:                                                                                                                           base: Paren(
-// DEFAULT-NEXT:                                                                                                                               Member {
-// DEFAULT-NEXT:                                                                                                                                   base: Index {
-// DEFAULT-NEXT:                                                                                                                                       base: Identifier(
-// DEFAULT-NEXT:                                                                                                                                           "rld",
-// DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                       index: Identifier(
-// DEFAULT-NEXT:                                                                                                                                           "r",
-// DEFAULT-NEXT:                                                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                                   field: "out",
-// DEFAULT-NEXT:                                                                                                                               },
-// DEFAULT-NEXT:                                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                                           field: "mode",
-// DEFAULT-NEXT:                                                                                                                           arrow: true,
-// DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                               ),
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                               right: Paren(
-// DEFAULT-NEXT:                                                                                                   Conditional {
-// DEFAULT-NEXT:                                                                                                       condition: Unary {
-// DEFAULT-NEXT:                                                                                                           op: Not,
-// DEFAULT-NEXT:                                                                                                           operand: Paren(
-// DEFAULT-NEXT:                                                                                                               Binary {
-// DEFAULT-NEXT:                                                                                                                   op: BitAnd,
-// DEFAULT-NEXT:                                                                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                                                                       "target_flags",
-// DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                                           value: 32,
-// DEFAULT-NEXT:                                                                                                                           radix: Hex,
-// DEFAULT-NEXT:                                                                                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                               unsigned: false,
-// DEFAULT-NEXT:                                                                                                                               size: None,
-// DEFAULT-NEXT:                                                                                                                           },
-// DEFAULT-NEXT:                                                                                                                           spelling: "0x00000020",
-// DEFAULT-NEXT:                                                                                                                       },
-// DEFAULT-NEXT:                                                                                                                   ),
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       then_value: Some(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                                   value: 4,
-// DEFAULT-NEXT:                                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                                   },
-// DEFAULT-NEXT:                                                                                                                   spelling: "4",
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                           ),
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       else_value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 8,
-// DEFAULT-NEXT:                                                                                                               radix: Decimal,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "8",
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 1,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "1",
-// DEFAULT-NEXT:                                                                                               },
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                       },
-// DEFAULT-NEXT:                                                                                   ),
-// DEFAULT-NEXT:                                                                                   right: Paren(
-// DEFAULT-NEXT:                                                                                       Conditional {
-// DEFAULT-NEXT:                                                                                           condition: Unary {
-// DEFAULT-NEXT:                                                                                               op: Not,
-// DEFAULT-NEXT:                                                                                               operand: Paren(
-// DEFAULT-NEXT:                                                                                                   Binary {
-// DEFAULT-NEXT:                                                                                                       op: BitAnd,
-// DEFAULT-NEXT:                                                                                                       left: Identifier(
-// DEFAULT-NEXT:                                                                                                           "target_flags",
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                           IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                               value: 32,
-// DEFAULT-NEXT:                                                                                                               radix: Hex,
-// DEFAULT-NEXT:                                                                                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                                   unsigned: false,
-// DEFAULT-NEXT:                                                                                                                   size: None,
-// DEFAULT-NEXT:                                                                                                               },
-// DEFAULT-NEXT:                                                                                                               spelling: "0x00000020",
-// DEFAULT-NEXT:                                                                                                           },
-// DEFAULT-NEXT:                                                                                                       ),
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           },
-// DEFAULT-NEXT:                                                                                           then_value: Some(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                       value: 4,
-// DEFAULT-NEXT:                                                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                                                           size: None,
-// DEFAULT-NEXT:                                                                                                       },
-// DEFAULT-NEXT:                                                                                                       spelling: "4",
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                               ),
-// DEFAULT-NEXT:                                                                                           ),
-// DEFAULT-NEXT:                                                                                           else_value: IntegerLiteral(
-// DEFAULT-NEXT:                                                                                               IntegerLiteral {
-// DEFAULT-NEXT:                                                                                                   value: 8,
-// DEFAULT-NEXT:                                                                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                                                                   suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                                                       unsigned: false,
-// DEFAULT-NEXT:                                                                                                       size: None,
-// DEFAULT-NEXT:                                                                                                   },
-// DEFAULT-NEXT:                                                                                                   spelling: "8",
-// DEFAULT-NEXT:                                                                                               },
 // DEFAULT-NEXT:                                                                                           ),
 // DEFAULT-NEXT:                                                                                       },
 // DEFAULT-NEXT:                                                                                   ),
 // DEFAULT-NEXT:                                                                               },
 // DEFAULT-NEXT:                                                                           ),
-// DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           While {
-// DEFAULT-NEXT:                                               condition: Binary {
-// DEFAULT-NEXT:                                                   op: Greater,
-// DEFAULT-NEXT:                                                   left: Postfix {
-// DEFAULT-NEXT:                                                       op: Decrement,
-// DEFAULT-NEXT:                                                       operand: Identifier(
-// DEFAULT-NEXT:                                                           "num_regs",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                                       IntegerLiteral {
-// DEFAULT-NEXT:                                                           value: 0,
-// DEFAULT-NEXT:                                                           radix: Decimal,
-// DEFAULT-NEXT:                                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                               unsigned: false,
-// DEFAULT-NEXT:                                                               size: None,
-// DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           spelling: "0",
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               body: [
-// DEFAULT-NEXT:                                                   Expr(
-// DEFAULT-NEXT:                                                       Assign {
-// DEFAULT-NEXT:                                                           op: Assign,
-// DEFAULT-NEXT:                                                           target: Index {
-// DEFAULT-NEXT:                                                               base: Identifier(
-// DEFAULT-NEXT:                                                                   "reg_last_reload_reg",
-// DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                               index: Binary {
-// DEFAULT-NEXT:                                                                   op: Add,
-// DEFAULT-NEXT:                                                                   left: Identifier(
-// DEFAULT-NEXT:                                                                       "nregno",
-// DEFAULT-NEXT:                                                                   ),
-// DEFAULT-NEXT:                                                                   right: Identifier(
-// DEFAULT-NEXT:                                                                       "num_regs",
+// DEFAULT-NEXT:                                                                       ),
 // DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                           ],
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   While {
+// DEFAULT-NEXT:                                                       condition: Binary {
+// DEFAULT-NEXT:                                                           op: Greater,
+// DEFAULT-NEXT:                                                           left: Postfix {
+// DEFAULT-NEXT:                                                               op: Decrement,
+// DEFAULT-NEXT:                                                               operand: Identifier(
+// DEFAULT-NEXT:                                                                   "num_regs",
+// DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           },
-// DEFAULT-NEXT:                                                           value: IntegerLiteral(
+// DEFAULT-NEXT:                                                           right: IntegerLiteral(
 // DEFAULT-NEXT:                                                               IntegerLiteral {
 // DEFAULT-NEXT:                                                                   value: 0,
 // DEFAULT-NEXT:                                                                   radix: Decimal,
@@ -4703,15 +4677,45 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                       body: Expr(
+// DEFAULT-NEXT:                                                           Assign {
+// DEFAULT-NEXT:                                                               op: Assign,
+// DEFAULT-NEXT:                                                               target: Index {
+// DEFAULT-NEXT:                                                                   base: Identifier(
+// DEFAULT-NEXT:                                                                       "reg_last_reload_reg",
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                                   index: Binary {
+// DEFAULT-NEXT:                                                                       op: Add,
+// DEFAULT-NEXT:                                                                       left: Identifier(
+// DEFAULT-NEXT:                                                                           "nregno",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                       right: Identifier(
+// DEFAULT-NEXT:                                                                           "num_regs",
+// DEFAULT-NEXT:                                                                       ),
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               },
+// DEFAULT-NEXT:                                                               value: IntegerLiteral(
+// DEFAULT-NEXT:                                                                   IntegerLiteral {
+// DEFAULT-NEXT:                                                                       value: 0,
+// DEFAULT-NEXT:                                                                       radix: Decimal,
+// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                           unsigned: false,
+// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                       spelling: "0",
+// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
+// DEFAULT-NEXT:                                                       ),
+// DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           ],
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
+// DEFAULT-NEXT:                               ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },

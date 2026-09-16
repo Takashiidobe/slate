@@ -307,6 +307,7 @@ impl Parser {
         let options = self.effective_options();
         Ok(filter_translation_unit(
             &TranslationUnit {
+                standard: self.standard(),
                 options: options.clone(),
                 decls,
                 tags: self.tags.take(),
@@ -513,7 +514,8 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
     };
     let alignment = tokens.get(alignment_start).and_then(|_token| {
         let checkpoint = parser.checkpoint();
-        let expression = const_expr::Parser::parse_expression(&tokens[alignment_start..], Some(parser)).ok()?;
+        let expression =
+            const_expr::Parser::parse_expression(&tokens[alignment_start..], Some(parser)).ok()?;
         checkpoint.commit();
         Some(expression)
     });

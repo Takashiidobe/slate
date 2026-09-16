@@ -67,28 +67,17 @@ int main() {
 // DEFAULT-NEXT:                   discriminant: Identifier(
 // DEFAULT-NEXT:                       "x",
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   body: [
-// DEFAULT-NEXT:                       SwitchLabel {
-// DEFAULT-NEXT:                           label: Case(
-// DEFAULT-NEXT:                               CharLiteral(
-// DEFAULT-NEXT:                                   CharLiteral {
-// DEFAULT-NEXT:                                       encoding: Plain,
-// DEFAULT-NEXT:                                       code_units: [
-// DEFAULT-NEXT:                                           34,
-// DEFAULT-NEXT:                                       ],
-// DEFAULT-NEXT:                                       spelling: "\"",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           body: SwitchLabel {
+// DEFAULT-NEXT:                   body: Block(
+// DEFAULT-NEXT:                       [
+// DEFAULT-NEXT:                           SwitchLabel {
 // DEFAULT-NEXT:                               label: Case(
 // DEFAULT-NEXT:                                   CharLiteral(
 // DEFAULT-NEXT:                                       CharLiteral {
 // DEFAULT-NEXT:                                           encoding: Plain,
 // DEFAULT-NEXT:                                           code_units: [
-// DEFAULT-NEXT:                                               60,
+// DEFAULT-NEXT:                                               34,
 // DEFAULT-NEXT:                                           ],
-// DEFAULT-NEXT:                                           spelling: "<",
+// DEFAULT-NEXT:                                           spelling: "\"",
 // DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
@@ -98,9 +87,9 @@ int main() {
 // DEFAULT-NEXT:                                           CharLiteral {
 // DEFAULT-NEXT:                                               encoding: Plain,
 // DEFAULT-NEXT:                                               code_units: [
-// DEFAULT-NEXT:                                                   62,
+// DEFAULT-NEXT:                                                   60,
 // DEFAULT-NEXT:                                               ],
-// DEFAULT-NEXT:                                               spelling: ">",
+// DEFAULT-NEXT:                                               spelling: "<",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   ),
@@ -110,9 +99,9 @@ int main() {
 // DEFAULT-NEXT:                                               CharLiteral {
 // DEFAULT-NEXT:                                                   encoding: Plain,
 // DEFAULT-NEXT:                                                   code_units: [
-// DEFAULT-NEXT:                                                       92,
+// DEFAULT-NEXT:                                                       62,
 // DEFAULT-NEXT:                                                   ],
-// DEFAULT-NEXT:                                                   spelling: "\\\\",
+// DEFAULT-NEXT:                                                   spelling: ">",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                       ),
@@ -122,9 +111,9 @@ int main() {
 // DEFAULT-NEXT:                                                   CharLiteral {
 // DEFAULT-NEXT:                                                       encoding: Plain,
 // DEFAULT-NEXT:                                                       code_units: [
-// DEFAULT-NEXT:                                                           94,
+// DEFAULT-NEXT:                                                           92,
 // DEFAULT-NEXT:                                                       ],
-// DEFAULT-NEXT:                                                       spelling: "^",
+// DEFAULT-NEXT:                                                       spelling: "\\\\",
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           ),
@@ -134,9 +123,9 @@ int main() {
 // DEFAULT-NEXT:                                                       CharLiteral {
 // DEFAULT-NEXT:                                                           encoding: Plain,
 // DEFAULT-NEXT:                                                           code_units: [
-// DEFAULT-NEXT:                                                               96,
+// DEFAULT-NEXT:                                                               94,
 // DEFAULT-NEXT:                                                           ],
-// DEFAULT-NEXT:                                                           spelling: "`",
+// DEFAULT-NEXT:                                                           spelling: "^",
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               ),
@@ -146,9 +135,9 @@ int main() {
 // DEFAULT-NEXT:                                                           CharLiteral {
 // DEFAULT-NEXT:                                                               encoding: Plain,
 // DEFAULT-NEXT:                                                               code_units: [
-// DEFAULT-NEXT:                                                                   123,
+// DEFAULT-NEXT:                                                                   96,
 // DEFAULT-NEXT:                                                               ],
-// DEFAULT-NEXT:                                                               spelling: "{",
+// DEFAULT-NEXT:                                                               spelling: "`",
 // DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       ),
 // DEFAULT-NEXT:                                                   ),
@@ -158,9 +147,9 @@ int main() {
 // DEFAULT-NEXT:                                                               CharLiteral {
 // DEFAULT-NEXT:                                                                   encoding: Plain,
 // DEFAULT-NEXT:                                                                   code_units: [
-// DEFAULT-NEXT:                                                                       124,
+// DEFAULT-NEXT:                                                                       123,
 // DEFAULT-NEXT:                                                                   ],
-// DEFAULT-NEXT:                                                                   spelling: "|",
+// DEFAULT-NEXT:                                                                   spelling: "{",
 // DEFAULT-NEXT:                                                               },
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                       ),
@@ -170,25 +159,38 @@ int main() {
 // DEFAULT-NEXT:                                                                   CharLiteral {
 // DEFAULT-NEXT:                                                                       encoding: Plain,
 // DEFAULT-NEXT:                                                                       code_units: [
-// DEFAULT-NEXT:                                                                           125,
+// DEFAULT-NEXT:                                                                           124,
 // DEFAULT-NEXT:                                                                       ],
-// DEFAULT-NEXT:                                                                       spelling: "}",
+// DEFAULT-NEXT:                                                                       spelling: "|",
 // DEFAULT-NEXT:                                                                   },
 // DEFAULT-NEXT:                                                               ),
 // DEFAULT-NEXT:                                                           ),
-// DEFAULT-NEXT:                                                           body: Return(
-// DEFAULT-NEXT:                                                               IntegerLiteral(
-// DEFAULT-NEXT:                                                                   IntegerLiteral {
-// DEFAULT-NEXT:                                                                       value: 0,
-// DEFAULT-NEXT:                                                                       radix: Decimal,
-// DEFAULT-NEXT:                                                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                                           unsigned: false,
-// DEFAULT-NEXT:                                                                           size: None,
+// DEFAULT-NEXT:                                                           body: SwitchLabel {
+// DEFAULT-NEXT:                                                               label: Case(
+// DEFAULT-NEXT:                                                                   CharLiteral(
+// DEFAULT-NEXT:                                                                       CharLiteral {
+// DEFAULT-NEXT:                                                                           encoding: Plain,
+// DEFAULT-NEXT:                                                                           code_units: [
+// DEFAULT-NEXT:                                                                               125,
+// DEFAULT-NEXT:                                                                           ],
+// DEFAULT-NEXT:                                                                           spelling: "}",
 // DEFAULT-NEXT:                                                                       },
-// DEFAULT-NEXT:                                                                       spelling: "0",
-// DEFAULT-NEXT:                                                                   },
+// DEFAULT-NEXT:                                                                   ),
 // DEFAULT-NEXT:                                                               ),
-// DEFAULT-NEXT:                                                           ),
+// DEFAULT-NEXT:                                                               body: Return(
+// DEFAULT-NEXT:                                                                   IntegerLiteral(
+// DEFAULT-NEXT:                                                                       IntegerLiteral {
+// DEFAULT-NEXT:                                                                           value: 0,
+// DEFAULT-NEXT:                                                                           radix: Decimal,
+// DEFAULT-NEXT:                                                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                                               unsigned: false,
+// DEFAULT-NEXT:                                                                               size: None,
+// DEFAULT-NEXT:                                                                           },
+// DEFAULT-NEXT:                                                                           spelling: "0",
+// DEFAULT-NEXT:                                                                       },
+// DEFAULT-NEXT:                                                                   ),
+// DEFAULT-NEXT:                                                               ),
+// DEFAULT-NEXT:                                                           },
 // DEFAULT-NEXT:                                                       },
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               },
@@ -197,8 +199,8 @@ int main() {
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   IntegerLiteral(
@@ -264,16 +266,14 @@ int main() {
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Expr(
-// DEFAULT-NEXT:                           Call {
-// DEFAULT-NEXT:                               callee: Identifier(
-// DEFAULT-NEXT:                                   "__builtin_abort",
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               arguments: [],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Expr(
+// DEFAULT-NEXT:                       Call {
+// DEFAULT-NEXT:                           callee: Identifier(
+// DEFAULT-NEXT:                               "__builtin_abort",
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           arguments: [],
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: None,
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:               Return(

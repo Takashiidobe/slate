@@ -57,18 +57,16 @@ void foo ()
 // DEFAULT-NEXT:                           spelling: "1",
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   then_branch: [
-// DEFAULT-NEXT:                       Goto(
-// DEFAULT-NEXT:                           "foo",
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
+// DEFAULT-NEXT:                   then_branch: Goto(
+// DEFAULT-NEXT:                       "foo",
+// DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   else_branch: Some(
-// DEFAULT-NEXT:                       [
-// DEFAULT-NEXT:                           For {
-// DEFAULT-NEXT:                               init: None,
-// DEFAULT-NEXT:                               condition: None,
-// DEFAULT-NEXT:                               increment: None,
-// DEFAULT-NEXT:                               body: [
+// DEFAULT-NEXT:                       For {
+// DEFAULT-NEXT:                           init: None,
+// DEFAULT-NEXT:                           condition: None,
+// DEFAULT-NEXT:                           increment: None,
+// DEFAULT-NEXT:                           body: Block(
+// DEFAULT-NEXT:                               [
 // DEFAULT-NEXT:                                   Labeled {
 // DEFAULT-NEXT:                                       label: "foo",
 // DEFAULT-NEXT:                                       body: Expr(
@@ -82,8 +80,8 @@ void foo ()
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                                   ReturnVoid,
 // DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
 // DEFAULT-NEXT:           ],
