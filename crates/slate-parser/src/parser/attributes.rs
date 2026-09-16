@@ -2,7 +2,6 @@ use super::Parser;
 use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Token, TokenSpanExt};
-use std::collections::HashSet;
 
 impl Parser {
     pub(super) fn parse_attribute_groups(
@@ -10,13 +9,7 @@ impl Parser {
         tokens: &[Span<Token>],
         position: usize,
     ) -> Result<(Vec<Attribute>, usize), String> {
-        parse_attribute_groups(
-            tokens,
-            position,
-            self.biggest_alignment,
-            &self.typedef_names_snapshot(),
-            Some(self),
-        )
+        parse_attribute_groups(tokens, position, self.biggest_alignment, Some(self))
     }
 }
 
@@ -95,8 +88,7 @@ pub(super) fn parse_attribute_groups(
     tokens: &[Span<Token>],
     position: usize,
     biggest_alignment: i64,
-    typedef_names: &HashSet<String>,
-    statements: Option<&Parser>,
+    context: Option<&Parser>,
 ) -> Result<(Vec<Attribute>, usize), String> {
     let mut cursor = AttrCursor::new(tokens, position);
     let mut attributes = Vec::new();
@@ -120,6 +112,7 @@ pub(super) fn parse_attribute_groups(
                     canonical,
                     &arguments,
                     biggest_alignment,
+                    context,
                 )?);
                 cursor.consume(&Token::Comma);
             }
@@ -131,13 +124,9 @@ pub(super) fn parse_attribute_groups(
             if arguments.is_empty() {
                 return Err("expected `(` after `_Alignas`".into());
             }
-            let operand = match const_expr::Parser::try_parse_full_type_name(
-                &arguments,
-                typedef_names,
-                statements,
-            ) {
+            let operand = match const_expr::Parser::try_parse_full_type_name(&arguments, context) {
                 Some(ty) => AlignAsOperand::Type { ty },
-                None => AlignAsOperand::Expr(parse_attribute_expression(&arguments)?),
+                None => AlignAsOperand::Expr(parse_attribute_expression(&arguments, context)?),
             };
             attributes.push(Attribute::AlignAs(operand));
         } else if cursor.consume(&Token::Ident("__attribute__".into()))
@@ -153,7 +142,12 @@ pub(super) fn parse_attribute_groups(
                 let name = cursor.expect_ident("expected attribute name")?;
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                attributes.push(parse_attribute(&name, &arguments, biggest_alignment)?);
+                attributes.push(parse_attribute(
+                    &name,
+                    &arguments,
+                    biggest_alignment,
+                    context,
+                )?);
                 if cursor.consume(&Token::Comma) {
                     continue;
                 }
@@ -183,9 +177,13 @@ pub(super) fn parse_attribute_groups(
                 let arguments = cursor
                     .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
                 attributes.push(match c23_attribute_name(&name) {
-                    Some(canonical) => {
-                        parse_attribute_spelling(&name, canonical, &arguments, biggest_alignment)?
-                    }
+                    Some(canonical) => parse_attribute_spelling(
+                        &name,
+                        canonical,
+                        &arguments,
+                        biggest_alignment,
+                        context,
+                    )?,
                     None => unknown_attribute(&name, &arguments),
                 });
                 if cursor.consume(&Token::Comma) {
@@ -206,7 +204,10 @@ pub(super) fn parse_attribute(
     name: &str,
     arguments: &[Span<Token>],
     biggest_alignment: i64,
+    context: Option<&Parser>,
 ) -> Result<Attribute, String> {
+    let parse_expression =
+        |arguments: &[Span<Token>]| parse_attribute_expression(arguments, context);
     let canonical_name = unwrapped_attribute_name(name);
     let single_string = || match arguments {
         [single] => match &single.value {
@@ -245,7 +246,7 @@ pub(super) fn parse_attribute(
     match canonical_name {
         "packed" if arguments.is_empty() => Ok(Attribute::Packed),
         "address_space" | "pass_object_size" | "pass_dynamic_object_size" => {
-            Ok(match parse_attribute_expression(arguments) {
+            Ok(match parse_expression(arguments) {
                 Ok(value) => match canonical_name {
                     "address_space" => Attribute::AddressSpace(value),
                     _ => Attribute::PassObjectSize {
@@ -273,13 +274,11 @@ pub(super) fn parse_attribute(
             None if arguments.is_empty() => {
                 Attribute::Aligned(integer_argument(biggest_alignment, arguments))
             }
-            None => Attribute::Aligned(parse_attribute_expression(arguments)?),
+            None => Attribute::Aligned(parse_expression(arguments)?),
         }),
         "vector_size" => Ok(match single_int() {
             Some(value) => Attribute::VectorSize(integer_argument(value, arguments)),
-            None if !arguments.is_empty() => {
-                Attribute::VectorSize(parse_attribute_expression(arguments)?)
-            }
+            None if !arguments.is_empty() => Attribute::VectorSize(parse_expression(arguments)?),
             None => invalid_attribute(name, arguments),
         }),
         "mode" => Ok(single_ident()
@@ -310,7 +309,7 @@ pub(super) fn parse_attribute(
         "assume_aligned" => Ok(
             match arguments
                 .split(|token| token.value == Token::Comma)
-                .map(parse_attribute_expression)
+                .map(parse_expression)
                 .collect::<Result<Vec<_>, _>>()
             {
                 Ok(values) if !values.is_empty() => Attribute::AssumeAligned(values),
@@ -320,14 +319,14 @@ pub(super) fn parse_attribute(
         "alloc_size" => Ok(
             match arguments
                 .split(|token| token.value == Token::Comma)
-                .map(parse_attribute_expression)
+                .map(parse_expression)
                 .collect::<Result<Vec<_>, _>>()
             {
                 Ok(values) if !values.is_empty() => Attribute::AllocSize(values),
                 _ => invalid_attribute(name, arguments),
             },
         ),
-        "alloc_align" => Ok(match parse_attribute_expression(arguments) {
+        "alloc_align" => Ok(match parse_expression(arguments) {
             Ok(value) if !arguments.is_empty() => Attribute::AllocAlign(value),
             _ => invalid_attribute(name, arguments),
         }),
@@ -409,7 +408,7 @@ pub(super) fn parse_attribute(
             };
             Ok(Attribute::CallingConvention(convention))
         }
-        "regparm" => Ok(match parse_attribute_expression(arguments) {
+        "regparm" => Ok(match parse_expression(arguments) {
             Ok(value) => Attribute::CallingConvention(CallingConvention::RegParm(value)),
             Err(_) => invalid_attribute(name, arguments),
         }),
@@ -424,7 +423,7 @@ pub(super) fn parse_attribute(
         }),
         "nomips16" if arguments.is_empty() => Ok(Attribute::NoMips16),
         "availability" => Ok(Attribute::Availability(attribute_arguments(arguments))),
-        "ext_vector_type" => Ok(match parse_attribute_expression(arguments) {
+        "ext_vector_type" => Ok(match parse_expression(arguments) {
             Ok(value) => Attribute::ExtVectorType(value),
             Err(_) => invalid_attribute(name, arguments),
         }),
@@ -500,8 +499,11 @@ fn integer_argument(value: i64, arguments: &[Span<Token>]) -> Expr {
     ))
 }
 
-pub(super) fn parse_attribute_expression(arguments: &[Span<Token>]) -> Result<Expr, String> {
-    const_expr::Parser::parse(arguments).map_err(|error| error.to_string())
+fn parse_attribute_expression(
+    arguments: &[Span<Token>],
+    context: Option<&Parser>,
+) -> Result<Expr, String> {
+    const_expr::Parser::parse_expression(arguments, context).map_err(|error| error.to_string())
 }
 
 trait AttributeName {
@@ -736,9 +738,10 @@ fn parse_attribute_spelling(
     canonical: &str,
     arguments: &[Span<Token>],
     biggest_alignment: i64,
+    context: Option<&Parser>,
 ) -> Result<Attribute, String> {
     Ok(
-        match parse_attribute(canonical, arguments, biggest_alignment)? {
+        match parse_attribute(canonical, arguments, biggest_alignment, context)? {
             Attribute::Invalid { .. } => invalid_attribute(spelling, arguments),
             Attribute::Unknown { .. } => unknown_attribute(spelling, arguments),
             attribute => attribute,

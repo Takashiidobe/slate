@@ -41,8 +41,14 @@ survive this boundary without re-lexing or synthesized declaration tokens.
 Nested item parsers claim annotations within their token ranges. Remaining
 pragmas inside an item precede that containing item; interleaved comments follow
 it. Comments at item boundaries retain their position, including empty bodies.
-This token-input change does not replace typedef tracking with an explicit scope
-stack; that is the next phase (`slate-parser-ixa.33`).
+
+All grammar entry points share one ordinary-name environment. Lookup walks the
+scope stack from inside out and stops at the nearest typedef or ordinary binding;
+tags and members do not enter this namespace. Scope guards restore enclosing
+bindings on both success and errors for blocks, loops, function bodies and
+prototype parameter lists. Grammar parsers share the environment rather than
+copying typedef sets or cloning the whole parser. Exact declaration binding times
+and transfer of prototype bindings into definitions remain `slate-parser-ixa.34`.
 
 ## Invariants
 

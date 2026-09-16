@@ -5,7 +5,6 @@ use crate::ast::*;
 use crate::const_expr;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use miette::Diagnostic;
-use std::collections::HashSet;
 use thiserror::Error;
 
 #[derive(Debug, Error, Diagnostic)]
@@ -50,9 +49,8 @@ impl From<String> for DeclaratorError {
 pub(crate) struct DeclaratorParser<'a> {
     pub(super) tokens: &'a [Span<Token>],
     pub(super) pos: usize,
-    pub(super) typedef_names: HashSet<String>,
     pub(super) biggest_alignment: i64,
-    pub(super) statements: Option<&'a Parser>,
+    pub(super) context: Option<&'a Parser>,
     pub(super) identifier_list: IdentifierList,
 }
 
@@ -64,33 +62,16 @@ pub(super) enum IdentifierList {
 }
 
 impl<'a> DeclaratorParser<'a> {
-    pub(crate) fn new(
-        tokens: &'a [Span<Token>],
-        pos: usize,
-        typedef_names: HashSet<String>,
-    ) -> Self {
-        Self::with_biggest_alignment(tokens, pos, typedef_names, FALLBACK_BIGGEST_ALIGNMENT)
-    }
-
-    pub(crate) fn with_biggest_alignment(
-        tokens: &'a [Span<Token>],
-        pos: usize,
-        typedef_names: HashSet<String>,
-        biggest_alignment: i64,
-    ) -> Self {
+    pub(crate) fn new(tokens: &'a [Span<Token>], pos: usize, context: Option<&'a Parser>) -> Self {
         Self {
             tokens,
             pos,
-            typedef_names,
-            biggest_alignment,
-            statements: None,
+            biggest_alignment: context.map_or(FALLBACK_BIGGEST_ALIGNMENT, |parser| {
+                parser.biggest_alignment
+            }),
+            context,
             identifier_list: IdentifierList::Rejected,
         }
-    }
-
-    pub(crate) fn with_statements(mut self, statements: Option<&'a Parser>) -> Self {
-        self.statements = statements;
-        self
     }
 
     pub(crate) fn position(&self) -> usize {
@@ -98,13 +79,8 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(crate) fn parse_attributes(&mut self) -> Result<Vec<Attribute>, String> {
-        let (attributes, position) = parse_attribute_groups(
-            self.tokens,
-            self.pos,
-            self.biggest_alignment,
-            &self.typedef_names,
-            self.statements,
-        )?;
+        let (attributes, position) =
+            parse_attribute_groups(self.tokens, self.pos, self.biggest_alignment, self.context)?;
         self.pos = position;
         Ok(attributes)
     }
@@ -457,7 +433,7 @@ impl<'a> DeclaratorParser<'a> {
         start: usize,
     ) -> Result<TypeSpecifier, DeclaratorError> {
         let parser = self
-            .statements
+            .context
             .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
         let definition = TagDefinition {
             id: TagId(0),
@@ -505,7 +481,7 @@ impl<'a> DeclaratorParser<'a> {
         self.pos += 1;
         let mut fields = Vec::new();
         let parser = self
-            .statements
+            .context
             .ok_or(DeclaratorError::TagDefinitionNotAllowed)?;
         loop {
             fields.extend(
@@ -564,7 +540,7 @@ impl<'a> DeclaratorParser<'a> {
         self.pos += 1;
         let mut items = Vec::new();
         loop {
-            if let Some(parser) = self.statements {
+            if let Some(parser) = self.context {
                 items.extend(
                     parser
                         .input
@@ -589,13 +565,9 @@ impl<'a> DeclaratorParser<'a> {
             };
             self.pos += 1;
             let value = if self.matches(Token::Equal) {
-                let (value, end) = const_expr::Parser::parse_one(
-                    self.tokens,
-                    self.pos,
-                    &self.typedef_names,
-                    self.statements,
-                )
-                .map_err(|error| error.to_string())?;
+                let (value, end) =
+                    const_expr::Parser::parse_one(self.tokens, self.pos, self.context)
+                        .map_err(|error| error.to_string())?;
                 self.pos = end;
                 Some(value)
             } else {
@@ -651,19 +623,13 @@ impl<'a> DeclaratorParser<'a> {
             Token::LParen,
             DeclaratorError::ExpectedToken(Token::LParen, "after `_BitInt`"),
         )?;
-        let start = self.pos;
-        while self.peek().is_some() && self.peek() != Some(&Token::RParen) {
-            self.pos += 1;
-        }
-        if self.peek().is_none() {
-            return Err(DeclaratorError::ExpectedToken(
-                Token::RParen,
-                "after `_BitInt` width",
-            ));
-        }
-        let width = const_expr::Parser::parse(&self.tokens[start..self.pos])
+        let (width, end) = const_expr::Parser::parse_one(self.tokens, self.pos, self.context)
             .map_err(|error| DeclaratorError::Other(error.to_string()))?;
-        self.pos += 1;
+        self.pos = end;
+        self.expect(
+            Token::RParen,
+            DeclaratorError::ExpectedToken(Token::RParen, "after `_BitInt` width"),
+        )?;
         Ok(TypeSpecifier::Integer(IntegerType::BitInt {
             width,
             signed: !is_unsigned,
@@ -706,9 +672,8 @@ impl<'a> DeclaratorParser<'a> {
         if tokens.is_empty() {
             return Err(DeclaratorError::UnsupportedTypeofExpression);
         }
-        let expression =
-            const_expr::Parser::parse_expression(tokens, &self.typedef_names, self.statements)
-                .map_err(|error| DeclaratorError::Other(error.to_string()))?;
+        let expression = const_expr::Parser::parse_expression(tokens, self.context)
+            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
         Ok(TypeOfOperand::Expression(expression))
     }
 
@@ -750,20 +715,12 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn parse_designator_index(&mut self) -> Result<Expr, const_expr::ConstExprError> {
-        let (index, end) = const_expr::Parser::parse_one(
-            self.tokens,
-            self.pos,
-            &self.typedef_names,
-            self.statements,
-        )?;
+        let (index, end) = const_expr::Parser::parse_one(self.tokens, self.pos, self.context)?;
         self.pos = end;
         Ok(index)
     }
 
-    pub(super) fn parse_initializer(
-        &mut self,
-        typedef_names: &HashSet<String>,
-    ) -> Result<Initializer, const_expr::ConstExprError> {
+    pub(super) fn parse_initializer(&mut self) -> Result<Initializer, const_expr::ConstExprError> {
         if self.matches(Token::LBrace) {
             let mut items = Vec::new();
             while !self.matches(Token::RBrace) {
@@ -815,7 +772,7 @@ impl<'a> DeclaratorParser<'a> {
                 }
                 items.push(InitializerItem {
                     designators,
-                    value: self.parse_initializer(typedef_names)?,
+                    value: self.parse_initializer()?,
                 });
                 if !self.matches(Token::Comma) && self.peek() != Some(&Token::RBrace) {
                     return Err(const_expr::ConstExprError::Expected {
@@ -826,12 +783,8 @@ impl<'a> DeclaratorParser<'a> {
             }
             Ok(Initializer::List(items))
         } else {
-            let (expression, end) = const_expr::Parser::parse_one(
-                self.tokens,
-                self.pos,
-                typedef_names,
-                self.statements,
-            )?;
+            let (expression, end) =
+                const_expr::Parser::parse_one(self.tokens, self.pos, self.context)?;
             self.pos = end;
             Ok(Initializer::Expr(expression))
         }
@@ -917,12 +870,8 @@ impl<'a> DeclaratorParser<'a> {
                             self.pos += 1;
                         }
                         let bound_tokens = &self.tokens[start..self.pos];
-                        let size = const_expr::Parser::parse_expression(
-                            bound_tokens,
-                            &self.typedef_names,
-                            self.statements,
-                        )
-                        .map_err(|error| DeclaratorError::Other(error.to_string()))?;
+                        let size = const_expr::Parser::parse_expression(bound_tokens, self.context)
+                            .map_err(|error| DeclaratorError::Other(error.to_string()))?;
                         ArraySize::Expression(size)
                     };
                     self.expect(
@@ -958,7 +907,7 @@ impl<'a> DeclaratorParser<'a> {
         let gnu_auto_type = self.matches(Token::Ident("__auto_type".into()));
         self.parse_specifier_keywords(&mut specifiers)?;
         let c23_auto_inference = self
-            .statements
+            .context
             .is_some_and(|parser| parser.standard().is_c23_or_later())
             && specifiers.storage == StorageClass::Auto
             && matches!(self.peek(), Some(Token::Ident(_)));
@@ -967,21 +916,21 @@ impl<'a> DeclaratorParser<'a> {
         }
         let implicit_int = implicit_int_function
             && self
-                .statements
+                .context
                 .is_some_and(|parser| parser.standard().allows_implicit_int())
-            && matches!(self.peek(), Some(Token::Ident(name)) if !self.typedef_names.contains(name))
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_some_and(|parser| parser.is_typedef(name)))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
                 Some(Token::LParen | Token::Semi | Token::Comma | Token::Equal)
             );
         if !implicit_int
-            && matches!(self.peek(), Some(Token::Ident(name)) if !self.typedef_names.contains(name))
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_some_and(|parser| parser.is_typedef(name)))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
                 Some(Token::LParen | Token::Semi)
             )
             && self
-                .statements
+                .context
                 .is_some_and(|parser| !parser.standard().allows_implicit_int())
         {
             return Err(DeclaratorError::Other(
@@ -1087,17 +1036,11 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     fn opens_parameter_list(&self, pos: usize) -> bool {
-        let pos = parse_attribute_groups(
-            self.tokens,
-            pos,
-            self.biggest_alignment,
-            &self.typedef_names,
-            self.statements,
-        )
-        .map_or(pos, |(_, after_attributes)| after_attributes);
+        let pos = parse_attribute_groups(self.tokens, pos, self.biggest_alignment, self.context)
+            .map_or(pos, |(_, after_attributes)| after_attributes);
         match self.tokens.value_at(pos) {
             Some(Token::RParen | Token::Ellipsis | Token::Keyword(Keyword::Register)) => true,
-            Some(token) => const_expr::starts_type_name(token, &self.typedef_names),
+            Some(token) => const_expr::starts_type_name(token, self.context),
             None => false,
         }
     }
@@ -1136,6 +1079,7 @@ impl<'a> DeclaratorParser<'a> {
     }
 
     pub(super) fn parse_parameters(&mut self) -> Result<ParameterList, DeclaratorError> {
+        let _scope = self.context.map(Parser::enter_scope);
         let open = self.pos;
         self.expect(
             Token::LParen,
@@ -1160,7 +1104,7 @@ impl<'a> DeclaratorParser<'a> {
                 self.tokens[open + 1..close]
                     .iter()
                     .map(|token| &token.value),
-                &self.typedef_names,
+                self.context,
             )
         {
             self.pos = close + 1;

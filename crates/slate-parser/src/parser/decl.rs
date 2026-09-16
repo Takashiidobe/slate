@@ -7,7 +7,6 @@ use crate::const_expr;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::reachability::filter_translation_unit;
-use std::collections::HashSet;
 use std::rc::Rc;
 
 impl Parser {
@@ -108,14 +107,7 @@ impl Parser {
         tokens: &'a [Span<Token>],
         pos: usize,
     ) -> DeclaratorParser<'a> {
-        DeclaratorParser {
-            tokens,
-            pos,
-            typedef_names: self.typedef_names_snapshot(),
-            biggest_alignment: self.biggest_alignment,
-            statements: Some(self),
-            identifier_list: IdentifierList::Rejected,
-        }
+        DeclaratorParser::new(tokens, pos, Some(self))
     }
 
     pub(super) fn parse_declaration_specifiers(
@@ -195,13 +187,8 @@ impl Parser {
         };
         let bit_width = if is_field && parser.matches(Token::Colon) {
             let start = parser.pos;
-            let (width, end) = const_expr::Parser::parse_one(
-                tokens,
-                start,
-                &self.typedef_names_snapshot(),
-                Some(self),
-            )
-            .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
+            let (width, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
+                .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
             parser.pos = end;
             Some(width)
         } else {
@@ -245,7 +232,7 @@ impl Parser {
     ) -> Result<Initializer, ParseError> {
         let tokens = parser.tokens;
         parser
-            .parse_initializer(&self.typedef_names_snapshot())
+            .parse_initializer()
             .map_err(|error| self.error_at_tokens(tokens, parser.pos, error.to_string()))
     }
 
@@ -453,14 +440,9 @@ impl Parser {
 
     pub(super) fn record_declaration_typedefs(&self, declaration: &Declaration) {
         let is_typedef = declaration.specifiers.storage == StorageClass::Typedef;
-        let mut names = self.names.borrow_mut();
         for name in declaration.names() {
-            names.bind(name, is_typedef);
+            self.names.bind(name, is_typedef);
         }
-    }
-
-    pub(super) fn typedef_names_snapshot(&self) -> HashSet<String> {
-        self.names.borrow().typedef_names()
     }
 }
 
@@ -527,12 +509,7 @@ fn parse_pack(parser: &Parser, tokens: &[Span<Token>]) -> Result<PragmaKind, Par
         PragmaStackAction::Pop | PragmaStackAction::Show => tokens.len(),
     };
     let alignment = tokens.get(alignment_start).and_then(|_token| {
-        const_expr::Parser::parse_expression(
-            &tokens[alignment_start..],
-            &parser.typedef_names_snapshot(),
-            Some(parser),
-        )
-        .ok()
+        const_expr::Parser::parse_expression(&tokens[alignment_start..], Some(parser)).ok()
     });
     Ok(PragmaKind::Pack { action, alignment })
 }
@@ -587,14 +564,16 @@ pub(super) fn set_qualifier(qualifiers: &mut Qualifiers, qualifier: Keyword) {
 
 pub(super) fn bare_identifier_names<'a>(
     tokens: impl IntoIterator<Item = &'a Token>,
-    typedef_names: &HashSet<String>,
+    context: Option<&Parser>,
 ) -> Option<Vec<String>> {
     let mut names = Vec::new();
     let mut expect_ident = true;
     for token in tokens {
         if expect_ident {
             match token {
-                Token::Ident(name) if !typedef_names.contains(name) => names.push(name.clone()),
+                Token::Ident(name) if !context.is_some_and(|parser| parser.is_typedef(name)) => {
+                    names.push(name.clone())
+                }
                 _ => return None,
             }
         } else if *token != Token::Comma {

@@ -250,7 +250,7 @@ impl Parser {
             {
                 true
             }
-            Some(token) => const_expr::starts_type_name(token, &self.typedef_names_snapshot()),
+            Some(token) => const_expr::starts_type_name(token, Some(self)),
             None => false,
         }
     }
@@ -551,7 +551,7 @@ impl Parser {
         if tokens.is_empty() {
             return Err(self.error_at(Loc::whole(code), "expected expression"));
         }
-        const_expr::Parser::parse_expression(tokens, &self.typedef_names_snapshot(), Some(self))
+        const_expr::Parser::parse_expression(tokens, Some(self))
             .map_err(|error| self.error_at_tokens(tokens, 0, error.to_string()))
     }
 }
@@ -560,7 +560,7 @@ fn shadow_parameter_names(parser: &Parser, parameters: Option<&ParameterList>) {
     if let Some(parameters) = parameters {
         for parameter in parameters.parameters() {
             if let Some(name) = parameter.declarator.name() {
-                parser.names.borrow_mut().bind(name, false);
+                parser.names.bind(name, false);
             }
         }
     }

@@ -17,7 +17,7 @@ pub(crate) use decl::matching_brace;
 pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
 use input::{Annotation, ParserInput};
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
 
@@ -119,13 +119,12 @@ impl<'p, 'a> Cursor for Fragment<'p, 'a> {
     }
 }
 
-#[derive(Clone)]
 pub struct Parser {
     search: SearchPaths,
     source_name: String,
     source: String,
     files: Files,
-    names: Rc<RefCell<NameEnvironment>>,
+    names: NameEnvironment,
     input: Rc<ParserInput>,
     directive_diagnostics: Vec<DirectiveDiagnostic>,
     defines: Vec<String>,
@@ -138,46 +137,61 @@ pub struct Parser {
     line_starts: HashMap<FileId, Vec<usize>>,
 }
 
-#[derive(Default)]
+#[derive(Clone, Copy)]
+enum NameBinding {
+    Typedef,
+    Ordinary,
+}
+
 struct NameEnvironment {
-    scopes: Vec<HashMap<String, bool>>,
+    scopes: RefCell<Vec<HashMap<String, NameBinding>>>,
 }
 
-pub(super) struct ScopeGuard {
-    names: Rc<RefCell<NameEnvironment>>,
+impl Default for NameEnvironment {
+    fn default() -> Self {
+        Self {
+            scopes: RefCell::new(vec![HashMap::new()]),
+        }
+    }
 }
 
-impl Drop for ScopeGuard {
+pub(super) struct ScopeGuard<'a> {
+    names: &'a NameEnvironment,
+}
+
+impl Drop for ScopeGuard<'_> {
     fn drop(&mut self) {
-        self.names.borrow_mut().leave();
+        self.names.scopes.borrow_mut().pop();
     }
 }
 
 impl NameEnvironment {
-    fn typedef_names(&self) -> HashSet<String> {
-        let mut visible = HashMap::new();
-        for scope in &self.scopes {
-            for (name, is_typedef) in scope {
-                visible.insert(name.clone(), *is_typedef);
-            }
-        }
-        visible
-            .into_iter()
-            .filter_map(|(name, is_typedef)| is_typedef.then_some(name))
-            .collect()
+    fn is_typedef(&self, name: &str) -> bool {
+        matches!(
+            self.scopes
+                .borrow()
+                .iter()
+                .rev()
+                .find_map(|scope| scope.get(name)),
+            Some(NameBinding::Typedef)
+        )
     }
 
-    fn enter(&mut self) {
-        self.scopes.push(HashMap::new());
+    fn enter(&self) -> ScopeGuard<'_> {
+        self.scopes.borrow_mut().push(HashMap::new());
+        ScopeGuard { names: self }
     }
 
-    fn leave(&mut self) {
-        self.scopes.pop();
-    }
-
-    fn bind(&mut self, name: &str, is_typedef: bool) {
-        if let Some(scope) = self.scopes.last_mut() {
-            scope.insert(name.to_string(), is_typedef);
+    fn bind(&self, name: &str, is_typedef: bool) {
+        if let Some(scope) = self.scopes.borrow_mut().last_mut() {
+            scope.insert(
+                name.to_string(),
+                if is_typedef {
+                    NameBinding::Typedef
+                } else {
+                    NameBinding::Ordinary
+                },
+            );
         }
     }
 }
@@ -192,11 +206,12 @@ fn resolve_biggest_alignment(macros: &HashMap<String, MacroEntry>) -> i64 {
 }
 
 impl Parser {
-    pub(super) fn enter_scope(&self) -> ScopeGuard {
-        self.names.borrow_mut().enter();
-        ScopeGuard {
-            names: Rc::clone(&self.names),
-        }
+    pub(crate) fn is_typedef(&self, name: &str) -> bool {
+        self.names.is_typedef(name)
+    }
+
+    pub(super) fn enter_scope(&self) -> ScopeGuard<'_> {
+        self.names.enter()
     }
 
     pub fn new(search: SearchPaths) -> Self {
@@ -205,9 +220,7 @@ impl Parser {
             source_name: "<source>".into(),
             source: String::new(),
             files: Files::new(),
-            names: Rc::new(RefCell::new(NameEnvironment {
-                scopes: vec![HashMap::new()],
-            })),
+            names: NameEnvironment::default(),
             input: Rc::default(),
             directive_diagnostics: Vec::new(),
             defines: Vec::new(),
