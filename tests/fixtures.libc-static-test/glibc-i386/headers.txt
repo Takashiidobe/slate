@@ -178,3 +178,6 @@ sys/ptrace.h
 sys/queue.h
 sys/quota.h
 sys/random.h
+sys/sdt.h
+sys/select.h
+sys/sem.h
