@@ -406,11 +406,9 @@ pub fn resolve(arch: Architecture, libc: LibcVariant) -> Result<ProbeConfig, Str
                     &linker_value.to_string_lossy(),
                     &format!("glibc {} linker", arch_key(arch)),
                 )?;
-                (
-                    linker,
-                    vec![format!("--sysroot={}", sysroot.display())],
-                    Vec::new(),
-                )
+                let mut linker_args = extra_compiler_args(arch);
+                linker_args.push(format!("--sysroot={}", sysroot.display()));
+                (linker, linker_args, Vec::new())
             } else if arch == Architecture::X86_64 {
                 (
                     slate_clang.clone(),
