@@ -736,13 +736,13 @@ int main() { n(); }
 // DEFAULT-NEXT:           body: [
 // DEFAULT-NEXT:               Return(
 // DEFAULT-NEXT:                   Binary {
-// DEFAULT-NEXT:                       op: ShiftRight,
-// DEFAULT-NEXT:                       left: Binary {
-// DEFAULT-NEXT:                           op: GreaterEqual,
-// DEFAULT-NEXT:                           left: Identifier(
-// DEFAULT-NEXT:                               "l",
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           right: IntegerLiteral(
+// DEFAULT-NEXT:                       op: GreaterEqual,
+// DEFAULT-NEXT:                       left: Identifier(
+// DEFAULT-NEXT:                           "l",
+// DEFAULT-NEXT:                       ),
+// DEFAULT-NEXT:                       right: Binary {
+// DEFAULT-NEXT:                           op: ShiftRight,
+// DEFAULT-NEXT:                           left: IntegerLiteral(
 // DEFAULT-NEXT:                               IntegerLiteral {
 // DEFAULT-NEXT:                                   value: 2,
 // DEFAULT-NEXT:                                   radix: Decimal,
@@ -753,10 +753,10 @@ int main() { n(); }
 // DEFAULT-NEXT:                                   spelling: "2",
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           right: Identifier(
+// DEFAULT-NEXT:                               "l",
+// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       right: Identifier(
-// DEFAULT-NEXT:                           "l",
-// DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           ],
@@ -892,27 +892,27 @@ int main() { n(); }
 // DEFAULT-NEXT:                                   "l_1127",
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               Binary {
-// DEFAULT-NEXT:                                   op: BitXor,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: And,
+// DEFAULT-NEXT:                                   op: And,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "i",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                                       op: BitXor,
 // DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "i",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: Identifier(
 // DEFAULT-NEXT:                                           "e",
 // DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: IntegerLiteral(
-// DEFAULT-NEXT:                                       IntegerLiteral {
-// DEFAULT-NEXT:                                           value: 4,
-// DEFAULT-NEXT:                                           radix: Decimal,
-// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                               unsigned: false,
-// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 4,
+// DEFAULT-NEXT:                                               radix: Decimal,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "4",
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           spelling: "4",
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                       },

@@ -731,27 +731,27 @@ int main() {
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                       right: Paren(
 // DEFAULT-NEXT:                           Binary {
-// DEFAULT-NEXT:                               op: ShiftRight,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: LessEqual,
+// DEFAULT-NEXT:                               op: LessEqual,
+// DEFAULT-NEXT:                               left: Identifier(
+// DEFAULT-NEXT:                                   "adx",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Binary {
+// DEFAULT-NEXT:                                   op: ShiftRight,
 // DEFAULT-NEXT:                                   left: Identifier(
-// DEFAULT-NEXT:                                       "adx",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                                   right: Identifier(
 // DEFAULT-NEXT:                                       "ady",
 // DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: IntegerLiteral(
-// DEFAULT-NEXT:                                   IntegerLiteral {
-// DEFAULT-NEXT:                                       value: 4,
-// DEFAULT-NEXT:                                       radix: Decimal,
-// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                           unsigned: false,
-// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                   right: IntegerLiteral(
+// DEFAULT-NEXT:                                       IntegerLiteral {
+// DEFAULT-NEXT:                                           value: 4,
+// DEFAULT-NEXT:                                           radix: Decimal,
+// DEFAULT-NEXT:                                           suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                               unsigned: false,
+// DEFAULT-NEXT:                                               size: None,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           spelling: "4",
 // DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       spelling: "4",
-// DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   },
@@ -858,27 +858,27 @@ int main() {
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Paren(
 // DEFAULT-NEXT:                                   Binary {
-// DEFAULT-NEXT:                                       op: ShiftRight,
-// DEFAULT-NEXT:                                       left: Binary {
-// DEFAULT-NEXT:                                           op: LessEqual,
+// DEFAULT-NEXT:                                       op: LessEqual,
+// DEFAULT-NEXT:                                       left: Identifier(
+// DEFAULT-NEXT:                                           "ady",
+// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: Binary {
+// DEFAULT-NEXT:                                           op: ShiftRight,
 // DEFAULT-NEXT:                                           left: Identifier(
-// DEFAULT-NEXT:                                               "ady",
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: Identifier(
 // DEFAULT-NEXT:                                               "adx",
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       right: IntegerLiteral(
-// DEFAULT-NEXT:                                           IntegerLiteral {
-// DEFAULT-NEXT:                                               value: 4,
-// DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
-// DEFAULT-NEXT:                                                   unsigned: false,
-// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 4,
+// DEFAULT-NEXT:                                                   radix: Decimal,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "4",
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               spelling: "4",
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                           ),
+// DEFAULT-NEXT:                                       },
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },

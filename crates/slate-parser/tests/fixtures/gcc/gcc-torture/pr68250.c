@@ -225,13 +225,13 @@ int main() {
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                               right: Binary {
-// DEFAULT-NEXT:                                   op: ShiftRight,
-// DEFAULT-NEXT:                                   left: Binary {
-// DEFAULT-NEXT:                                       op: Greater,
-// DEFAULT-NEXT:                                       left: Identifier(
-// DEFAULT-NEXT:                                           "d",
-// DEFAULT-NEXT:                                       ),
-// DEFAULT-NEXT:                                       right: IntegerLiteral(
+// DEFAULT-NEXT:                                   op: Greater,
+// DEFAULT-NEXT:                                   left: Identifier(
+// DEFAULT-NEXT:                                       "d",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                                   right: Binary {
+// DEFAULT-NEXT:                                       op: ShiftRight,
+// DEFAULT-NEXT:                                       left: IntegerLiteral(
 // DEFAULT-NEXT:                                           IntegerLiteral {
 // DEFAULT-NEXT:                                               value: 1,
 // DEFAULT-NEXT:                                               radix: Decimal,
@@ -242,10 +242,10 @@ int main() {
 // DEFAULT-NEXT:                                               spelling: "1",
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
+// DEFAULT-NEXT:                                       right: Identifier(
+// DEFAULT-NEXT:                                           "o",
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "o",
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
 // DEFAULT-NEXT:                           },
 // DEFAULT-NEXT:                           then_value: Some(

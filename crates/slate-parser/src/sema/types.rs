@@ -165,6 +165,38 @@ impl TypeResolver {
                     _ => return Err(ResolveError::Unsupported("nonconstant unary expression")),
                 }
             }
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                let condition = self.constant_value(condition)?;
+                let then_value = match then_value {
+                    Some(value) => self.constant_value(value)?,
+                    None => condition.clone(),
+                };
+                let else_value = self.constant_value(else_value)?;
+                let (then_value, else_value) = context.usual_arithmetic(then_value, else_value);
+                (
+                    then_value.ty.clone(),
+                    ValueKind::Conditional {
+                        condition: Box::new(context.condition(condition)),
+                        then_value: Box::new(then_value),
+                        else_value: Box::new(else_value),
+                    },
+                )
+            }
+            ExprKind::Comma { left, right } => {
+                let left = self.constant_value(left)?;
+                let right = self.constant_value(right)?;
+                (
+                    right.ty.clone(),
+                    ValueKind::Sequence {
+                        left: Box::new(left),
+                        right: Box::new(right),
+                    },
+                )
+            }
             ExprKind::Cast { ty, value } => {
                 let ty = self
                     .resolve(&ty.specifiers, &ty.declarator)?
@@ -678,9 +710,10 @@ impl TypeResolver {
                         continue;
                     };
                     let value = if let Some(expr) = &enumerator.value {
-                        crate::const_expr::Parser::evaluate_ast(&substitute_enumerators(
-                            expr, &prior,
-                        ))?
+                        i64::try_from(self.constant_integer(&substitute_enumerators(expr, &prior))?)
+                            .map_err(|_| {
+                                ResolveError::Unsupported("enum value outside supported i64 range")
+                            })?
                     } else {
                         previous
                             .checked_add(1)

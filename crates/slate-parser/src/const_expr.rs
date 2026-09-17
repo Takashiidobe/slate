@@ -49,7 +49,9 @@ impl WideInt {
 
     fn binary(&self, rhs: &Self, op: impl FnOnce(&BigInt, &BigInt) -> BigInt) -> Self {
         let (width, signed) = self.combined_width_signed(rhs);
-        Self::wrap(op(&self.value, &rhs.value), width, signed)
+        let left = Self::wrap(self.value.clone(), width, signed);
+        let right = Self::wrap(rhs.value.clone(), width, signed);
+        Self::wrap(op(&left.value, &right.value), width, signed)
     }
 
     pub fn wrapping_add(&self, rhs: &Self) -> Self {
@@ -99,13 +101,16 @@ impl WideInt {
     }
 
     pub fn compare(&self, rhs: &Self, op: BinaryOp) -> Option<i64> {
+        let (width, signed) = self.combined_width_signed(rhs);
+        let left = Self::wrap(self.value.clone(), width, signed);
+        let right = Self::wrap(rhs.value.clone(), width, signed);
         let result = match op {
-            BinaryOp::Less => self.value < rhs.value,
-            BinaryOp::LessEqual => self.value <= rhs.value,
-            BinaryOp::Greater => self.value > rhs.value,
-            BinaryOp::GreaterEqual => self.value >= rhs.value,
-            BinaryOp::Equal => self.value == rhs.value,
-            BinaryOp::NotEqual => self.value != rhs.value,
+            BinaryOp::Less => left.value < right.value,
+            BinaryOp::LessEqual => left.value <= right.value,
+            BinaryOp::Greater => left.value > right.value,
+            BinaryOp::GreaterEqual => left.value >= right.value,
+            BinaryOp::Equal => left.value == right.value,
+            BinaryOp::NotEqual => left.value != right.value,
             _ => return None,
         };
         Some(result as i64)
@@ -725,7 +730,8 @@ impl<'a> Parser<'a> {
         if parser.peek().is_some() {
             return Err(at_position(&parser, ConstExprError::UnexpectedTokens));
         }
-        Self::evaluate_expr(&expression, Some(is_defined))
+        Self::evaluate_wide(&expression, Some(is_defined))
+            .map(|value| i64::from(!value.is_zero()))
             .map_err(|error| LocatedConstExprError { error, token: None })
     }
 
@@ -894,6 +900,16 @@ impl<'a> Parser<'a> {
         is_defined: Option<&dyn Fn(&str) -> bool>,
     ) -> Result<WideInt, ConstExprError> {
         match &expression.value {
+            ExprKind::IntegerLiteral(literal) if is_defined.is_some() => {
+                if literal.value.bits() > 64 {
+                    return Err(ConstExprError::IntegerOverflow);
+                }
+                Ok(WideInt::wrap(
+                    BigInt::from(literal.value.clone()),
+                    64,
+                    !literal.suffix.unsigned && literal.value.bits() < 64,
+                ))
+            }
             ExprKind::IntegerLiteral(literal) => Ok(integer_literal_wide(literal)),
             ExprKind::Paren(inner) => Self::evaluate_wide(inner, is_defined),
             ExprKind::Unary {
@@ -939,8 +955,18 @@ impl<'a> Parser<'a> {
                     BinaryOp::BitAnd => Ok(left.bitand(&right)),
                     BinaryOp::BitXor => Ok(left.bitxor(&right)),
                     BinaryOp::BitOr => Ok(left.bitor(&right)),
-                    BinaryOp::ShiftLeft => Ok(left.shift_left(right.truncate_to_i64() as u32)),
-                    BinaryOp::ShiftRight => Ok(left.shift_right(right.truncate_to_i64() as u32)),
+                    BinaryOp::ShiftLeft | BinaryOp::ShiftRight => {
+                        let shift = u32::try_from(&right.value)
+                            .map_err(|_| ConstExprError::InvalidIntegerConstant)?;
+                        if shift >= left.width {
+                            return Err(ConstExprError::InvalidIntegerConstant);
+                        }
+                        Ok(if *op == BinaryOp::ShiftLeft {
+                            left.shift_left(shift)
+                        } else {
+                            left.shift_right(shift)
+                        })
+                    }
                     BinaryOp::And => Ok(WideInt::from_i64(
                         (!left.is_zero() && !right.is_zero()) as i64,
                     )),
@@ -971,10 +997,17 @@ impl<'a> Parser<'a> {
                 else_value,
             } => {
                 let value = Self::evaluate_wide(condition, is_defined)?;
-                match (value.is_zero(), then_value) {
+                let result = match (value.is_zero(), then_value) {
                     (false, Some(then_value)) => Self::evaluate_wide(then_value, is_defined),
                     (false, None) => Ok(value),
                     (true, _) => Self::evaluate_wide(else_value, is_defined),
+                }?;
+                if is_defined.is_some() {
+                    let unsigned = Self::pp_unsigned(then_value.as_ref().unwrap_or(condition))?
+                        || Self::pp_unsigned(else_value)?;
+                    Ok(WideInt::wrap(result.value, 64, !unsigned))
+                } else {
+                    Ok(result)
                 }
             }
             ExprKind::Comma { left, right } => {
@@ -983,6 +1016,33 @@ impl<'a> Parser<'a> {
             }
             _ => Self::evaluate_expr(expression, is_defined).map(WideInt::from_i64),
         }
+    }
+
+    fn pp_unsigned(expression: &Expr) -> Result<bool, ConstExprError> {
+        Ok(match &expression.value {
+            ExprKind::IntegerLiteral(literal) => literal.suffix.unsigned,
+            ExprKind::Paren(inner) => Self::pp_unsigned(inner)?,
+            ExprKind::Unary { operand, .. } => Self::pp_unsigned(operand)?,
+            ExprKind::Cast { ty, value, .. } => match bit_int_width(ty) {
+                Some((_, signed)) => !signed,
+                None => Self::pp_unsigned(value)?,
+            },
+            ExprKind::Conditional { condition, .. } => Self::pp_unsigned(condition)?,
+            ExprKind::Comma { right, .. } => Self::pp_unsigned(right)?,
+            ExprKind::Binary { op, .. } => matches!(
+                op,
+                BinaryOp::Less
+                    | BinaryOp::LessEqual
+                    | BinaryOp::Greater
+                    | BinaryOp::GreaterEqual
+                    | BinaryOp::Equal
+                    | BinaryOp::NotEqual
+                    | BinaryOp::And
+                    | BinaryOp::Or
+            ),
+            ExprKind::Call { .. } => true,
+            _ => false,
+        })
     }
 
     fn new(tokens: &'a [Span<Token>], context: Option<&'a crate::parser::Parser>) -> Self {
@@ -1685,24 +1745,24 @@ impl<'a> Parser<'a> {
 
     fn binary_operator(&self) -> Option<(BinaryOp, u8)> {
         Some(match self.peek()? {
-            Token::Star => (BinaryOp::Mul, 6),
-            Token::Slash => (BinaryOp::Div, 6),
-            Token::Percent => (BinaryOp::Rem, 6),
-            Token::Plus => (BinaryOp::Add, 5),
-            Token::Minus => (BinaryOp::Sub, 5),
-            Token::Less => (BinaryOp::Less, 4),
-            Token::LessEqual => (BinaryOp::LessEqual, 4),
-            Token::Greater => (BinaryOp::Greater, 4),
-            Token::GreaterEqual => (BinaryOp::GreaterEqual, 4),
-            Token::EqualEqual => (BinaryOp::Equal, 3),
-            Token::NotEqual => (BinaryOp::NotEqual, 3),
-            Token::Amp => (BinaryOp::BitAnd, 2),
-            Token::Caret => (BinaryOp::BitXor, 1),
-            Token::Pipe => (BinaryOp::BitOr, 1),
+            Token::Star => (BinaryOp::Mul, 9),
+            Token::Slash => (BinaryOp::Div, 9),
+            Token::Percent => (BinaryOp::Rem, 9),
+            Token::Plus => (BinaryOp::Add, 8),
+            Token::Minus => (BinaryOp::Sub, 8),
+            Token::Less => (BinaryOp::Less, 6),
+            Token::LessEqual => (BinaryOp::LessEqual, 6),
+            Token::Greater => (BinaryOp::Greater, 6),
+            Token::GreaterEqual => (BinaryOp::GreaterEqual, 6),
+            Token::EqualEqual => (BinaryOp::Equal, 5),
+            Token::NotEqual => (BinaryOp::NotEqual, 5),
+            Token::Amp => (BinaryOp::BitAnd, 4),
+            Token::Caret => (BinaryOp::BitXor, 3),
+            Token::Pipe => (BinaryOp::BitOr, 2),
             Token::AndAnd => (BinaryOp::And, 1),
             Token::OrOr => (BinaryOp::Or, 0),
-            Token::ShiftLeft => (BinaryOp::ShiftLeft, 4),
-            Token::ShiftRight => (BinaryOp::ShiftRight, 4),
+            Token::ShiftLeft => (BinaryOp::ShiftLeft, 7),
+            Token::ShiftRight => (BinaryOp::ShiftRight, 7),
             _ => return None,
         })
     }

@@ -358,39 +358,39 @@ int main() {
 // DEFAULT-NEXT:                           "i",
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                       value: Binary {
-// DEFAULT-NEXT:                           op: BitXor,
+// DEFAULT-NEXT:                           op: And,
 // DEFAULT-NEXT:                           left: Binary {
-// DEFAULT-NEXT:                               op: And,
-// DEFAULT-NEXT:                               left: Binary {
-// DEFAULT-NEXT:                                   op: Add,
-// DEFAULT-NEXT:                                   left: Unary {
-// DEFAULT-NEXT:                                       op: Minus,
-// DEFAULT-NEXT:                                       operand: Unary {
-// DEFAULT-NEXT:                                           op: BitNot,
-// DEFAULT-NEXT:                                           operand: Paren(
-// DEFAULT-NEXT:                                               Binary {
+// DEFAULT-NEXT:                               op: Add,
+// DEFAULT-NEXT:                               left: Unary {
+// DEFAULT-NEXT:                                   op: Minus,
+// DEFAULT-NEXT:                                   operand: Unary {
+// DEFAULT-NEXT:                                       op: BitNot,
+// DEFAULT-NEXT:                                       operand: Paren(
+// DEFAULT-NEXT:                                           Binary {
+// DEFAULT-NEXT:                                               op: Mul,
+// DEFAULT-NEXT:                                               left: Binary {
 // DEFAULT-NEXT:                                                   op: Mul,
-// DEFAULT-NEXT:                                                   left: Binary {
-// DEFAULT-NEXT:                                                       op: Mul,
-// DEFAULT-NEXT:                                                       left: Identifier(
-// DEFAULT-NEXT:                                                           "f",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                       right: Identifier(
-// DEFAULT-NEXT:                                                           "d",
-// DEFAULT-NEXT:                                                       ),
-// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   left: Identifier(
+// DEFAULT-NEXT:                                                       "f",
+// DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                                   right: Identifier(
-// DEFAULT-NEXT:                                                       "h",
+// DEFAULT-NEXT:                                                       "d",
 // DEFAULT-NEXT:                                                   ),
 // DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                               right: Identifier(
+// DEFAULT-NEXT:                                                   "h",
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
-// DEFAULT-NEXT:                                   right: Identifier(
-// DEFAULT-NEXT:                                       "c",
-// DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               right: Paren(
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "c",
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                           right: Binary {
+// DEFAULT-NEXT:                               op: BitXor,
+// DEFAULT-NEXT:                               left: Paren(
 // DEFAULT-NEXT:                                   Binary {
 // DEFAULT-NEXT:                                       op: Or,
 // DEFAULT-NEXT:                                       left: Identifier(
@@ -401,10 +401,10 @@ int main() {
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                               right: Identifier(
+// DEFAULT-NEXT:                                   "f",
+// DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                           right: Identifier(
-// DEFAULT-NEXT:                               "f",
-// DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   },
 // DEFAULT-NEXT:               ),
