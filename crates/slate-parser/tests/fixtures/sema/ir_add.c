@@ -23,22 +23,14 @@ int exercise_add(void) { return main(); }
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = ptr<const i8>;
-// IR-NEXT:     type @type1 = fn(@type0, ...) -> i32;
-// IR-NEXT:     type @type2 = ptr<const i8>;
-// IR-NEXT:     type @type3 = fn(i32, i32) -> i32;
-// IR-NEXT:     type @type4 = fn() -> i32;
-// IR-NEXT:     type @type5 = array<i8, 4>;
-// IR-NEXT:     type @type6 = ptr<i8>;
-// IR-NEXT:     type @type7 = fn() -> i32;
-// IR-NEXT:     global %8 .str8: @type5 [storage=static] = bytes<@type5>([37, 100, 10, 0]) [linkage=internal];
-// IR-NEXT:     fn %0 @printf(%7 <unnamed>: @type2, ...) -> i32 [linkage=external];
+// IR-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = bytes<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// IR-NEXT:     fn %0 @printf(%7 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %1 @add(%2 a: i32, %3 b: i32) -> i32 [linkage=external] {
 // IR-NEXT:         let %4 c: i32 [storage=automatic] = add<i32, overflow=undefined>(read<i32>(%2), read<i32>(%3));
 // IR-NEXT:         return read<i32>(%4);
 // IR-NEXT:     }
 // IR-NEXT:     fn %5 @main() -> i32 [linkage=external] {
-// IR-NEXT:         call<i32>(%0, pointer_cast<@type0, reason=arg>(array_decay<@type6, length=Some(4)>(%8)), call<i32>(%1, const<i32>(2), const<i32>(3)));
+// IR-NEXT:         call<i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32>(%1, const<i32>(2), const<i32>(3)));
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT:     fn %6 @exercise_add() -> i32 [linkage=external] {

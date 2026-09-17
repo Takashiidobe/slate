@@ -24,7 +24,6 @@ int identity(int value) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = fn(i32) -> i32;
 // IR-NEXT:     fn %0 @identity(%1 value: i32) -> i32 [linkage=external] {
 // IR-NEXT:         return read<i32>(%1);
 // IR-NEXT:     }

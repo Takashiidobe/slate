@@ -32,9 +32,6 @@ double floating(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = fn() -> i32;
-// IR-NEXT:     type @type1 = fn() -> i64;
-// IR-NEXT:     type @type2 = fn() -> f64;
 // IR-NEXT:     fn %0 @add() -> i32 [linkage=external] {
 // IR-NEXT:         return add<i32>(const<i32>(1), const<i32>(2));
 // IR-NEXT:     }

@@ -27,7 +27,6 @@ int selected(void) { return 89; }
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = fn() -> i32;
 // IR-NEXT:     fn %0 @selected() -> i32 [linkage=external] {
 // IR-NEXT:         return const<i32>(99);
 // IR-NEXT:     }

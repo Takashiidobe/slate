@@ -39,10 +39,6 @@ void empty(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = fn() -> i16;
-// IR-NEXT:     type @type1 = fn() -> f64;
-// IR-NEXT:     type @type2 = fn() -> i32;
-// IR-NEXT:     type @type3 = fn() -> void;
 // IR-NEXT:     fn %0 @narrow() -> i16 [linkage=internal] {
 // IR-NEXT:         return truncate<i16, reason=return, fits=unknown>(const<i32>(65537));
 // IR-NEXT:     }

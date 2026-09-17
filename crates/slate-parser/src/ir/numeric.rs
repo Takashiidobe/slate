@@ -1,12 +1,26 @@
 use num_bigint::{BigInt, BigUint};
 use std::fmt;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
     Void,
     Bool,
     Numeric(NumericType),
     Defined(super::TypeId),
+    Pointer {
+        pointee: Box<Type>,
+        is_const: bool,
+    },
+    Array {
+        element: Box<Type>,
+        length: Option<u64>,
+    },
+    Function {
+        return_type: Option<Box<Type>>,
+        parameters: Vec<Type>,
+        variadic: bool,
+        prototyped: bool,
+    },
 }
 
 impl fmt::Display for Type {
@@ -16,6 +30,45 @@ impl fmt::Display for Type {
             Self::Defined(id) => write!(f, "@type{}", id.0),
             Self::Bool => f.write_str("bool"),
             Self::Numeric(ty) => write!(f, "{ty}"),
+            Self::Pointer { pointee, is_const } => {
+                write!(f, "ptr<{}{pointee}>", if *is_const { "const " } else { "" })
+            }
+            Self::Array { element, length } => match length {
+                Some(length) => write!(f, "array<{element}, {length}>"),
+                None => write!(f, "array<{element}, incomplete>"),
+            },
+            Self::Function {
+                return_type,
+                parameters,
+                variadic,
+                prototyped,
+            } => {
+                f.write_str("fn(")?;
+                if !prototyped {
+                    f.write_str("unprototyped")?;
+                } else {
+                    for (index, parameter) in parameters.iter().enumerate() {
+                        if index != 0 {
+                            f.write_str(", ")?;
+                        }
+                        write!(f, "{parameter}")?;
+                    }
+                    if *variadic {
+                        f.write_str(if parameters.is_empty() {
+                            "..."
+                        } else {
+                            ", ..."
+                        })?;
+                    }
+                }
+                write!(
+                    f,
+                    ") -> {}",
+                    return_type
+                        .as_ref()
+                        .map_or("void".to_owned(), ToString::to_string)
+                )
+            }
         }
     }
 }

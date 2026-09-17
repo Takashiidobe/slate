@@ -32,8 +32,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage f80 [size=16, align=16];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = ptr<const i8> [c="const char *restrict"] [c_restrict="true"];
-// DEFAULT-NEXT:     fn %1 @printf(%0 <unnamed>: @type0 [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
+// DEFAULT-NEXT:     fn %1 @printf(%0 <unnamed>: ptr<const i8> [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT:     fn %4 @add(%2 a: i32 [c="int"], %3 b: i32 [c="int"]) -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT: }

@@ -24,7 +24,6 @@ static int answer(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = fn() -> i32 [c_storage="static"] [c_return="int"] [c="int(void)"];
 // IR-NEXT:     fn %0 @answer() -> i32 [linkage=internal] [c_storage="static"] [c_return="int"] [c="int(void)"] {
 // IR-NEXT:         return const<i32>(42);
 // IR-NEXT:     }

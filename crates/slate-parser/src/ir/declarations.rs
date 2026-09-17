@@ -16,20 +16,6 @@ pub struct TypeDefinition {
 #[derive(Debug, Clone)]
 pub enum TypeDefinitionKind {
     Alias(Type),
-    Pointer {
-        pointee: Type,
-        is_const: bool,
-    },
-    Array {
-        element: Type,
-        length: Option<u64>,
-    },
-    Function {
-        return_type: Option<Type>,
-        parameters: Vec<Type>,
-        variadic: bool,
-        prototyped: bool,
-    },
     Record {
         kind: RecordKind,
         fields: Option<Vec<Span<Field>>>,

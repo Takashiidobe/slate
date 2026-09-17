@@ -41,7 +41,7 @@ impl Lowerer {
             .ok_or(ResolveError::Unsupported("missing expression binding"))
     }
 
-    pub fn kind(&self, ty: Type) -> Option<&TypeDefinitionKind> {
+    pub fn kind(&self, ty: &Type) -> Option<&TypeDefinitionKind> {
         match ty {
             Type::Defined(id) => self.types.definitions.get(id.0 as usize).map(|d| &d.kind),
             _ => None,
@@ -49,16 +49,15 @@ impl Lowerer {
     }
 
     pub fn pointer(&mut self, pointee: Type, is_const: bool) -> Type {
-        if let Some(d) = self.types.definitions.iter().find(|d| matches!(d.kind, TypeDefinitionKind::Pointer { pointee: p, is_const: c } if p == pointee && c == is_const)) { return Type::Defined(d.id); }
-        Type::Defined(
-            self.types
-                .push(TypeDefinitionKind::Pointer { pointee, is_const }),
-        )
+        Type::Pointer {
+            pointee: Box::new(pointee),
+            is_const,
+        }
     }
 
-    fn pointee(&self, ty: Type) -> Result<Type, ResolveError> {
-        match self.kind(ty) {
-            Some(TypeDefinitionKind::Pointer { pointee, .. }) => Ok(*pointee),
+    fn pointee(&self, ty: &Type) -> Result<Type, ResolveError> {
+        match ty {
+            Type::Pointer { pointee, .. } => Ok((**pointee).clone()),
             _ => Err(ResolveError::Unsupported("expected pointer")),
         }
     }
@@ -75,11 +74,11 @@ impl Lowerer {
         value: Value,
         reason: Option<ConversionReason>,
     ) -> Result<Value, ResolveError> {
-        let mut result = match value.ty {
+        let mut result = match &value.ty {
             Type::Bool => return Ok(value),
             Type::Numeric(_) => self.context.condition(value),
             ty if self.pointee(ty).is_ok() => {
-                let zero = self.value(&value.node, ty, ValueKind::Null);
+                let zero = self.value(&value.node, ty.clone(), ValueKind::Null);
                 let node = value.node.clone();
                 self.value(
                     &node,
@@ -116,13 +115,13 @@ impl Lowerer {
         if matches!(to, Type::Numeric(_)) && matches!(value.ty, Type::Numeric(_) | Type::Bool) {
             return Ok(self.context.convert(value, to, reason));
         }
-        if self.pointee(to).is_ok() {
+        if self.pointee(&to).is_ok() {
             if matches!(&value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
                 || matches!(value.node.value, ValueKind::Null)
             {
                 return Ok(self.value(&value.node, to, ValueKind::Null));
             }
-            if let (Ok(a), Ok(b)) = (self.pointee(value.ty), self.pointee(to))
+            if let (Ok(a), Ok(b)) = (self.pointee(&value.ty), self.pointee(&to))
                 && (a == b
                     || a == Type::Void
                     || b == Type::Void
@@ -153,7 +152,7 @@ impl Lowerer {
         to: Type,
         reason: ConversionReason,
     ) -> Result<Value, ResolveError> {
-        if self.pointee(to).is_ok()
+        if self.pointee(&to).is_ok()
             && matches!(value.ty, Type::Numeric(NumericType::Integer { .. }))
             && crate::const_expr::Parser::evaluate_ast(expression).is_ok_and(|number| number == 0)
         {
@@ -167,10 +166,11 @@ impl Lowerer {
             ExprKind::Paren(inner) => self.place(inner),
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
-                let ty = *self
+                let ty = self
                     .bindings
                     .get(&id)
-                    .ok_or(ResolveError::Unsupported("untyped binding"))?;
+                    .ok_or(ResolveError::Unsupported("untyped binding"))?
+                    .clone();
                 Ok(Place {
                     ty,
                     kind: PlaceKind::Binding(id),
@@ -182,7 +182,7 @@ impl Lowerer {
             } => {
                 let value = self.expr(operand)?;
                 Ok(Place {
-                    ty: self.pointee(value.ty)?,
+                    ty: self.pointee(&value.ty)?,
                     kind: PlaceKind::Deref(Box::new(value)),
                 })
             }
@@ -193,8 +193,8 @@ impl Lowerer {
                 if !matches!(index.ty, Type::Numeric(NumericType::Integer { .. })) {
                     return Err(ResolveError::Unsupported("noninteger index"));
                 }
-                let ty = self.pointee(base.ty)?;
-                self.types.storage(ty)?;
+                let ty = self.pointee(&base.ty)?;
+                self.types.storage(ty.clone())?;
                 Ok(Place {
                     ty,
                     kind: PlaceKind::Index {
@@ -207,7 +207,7 @@ impl Lowerer {
                 let base = if *arrow {
                     let value = self.expr(base)?;
                     Place {
-                        ty: self.pointee(value.ty)?,
+                        ty: self.pointee(&value.ty)?,
                         kind: PlaceKind::Deref(Box::new(value)),
                     }
                 } else {
@@ -216,7 +216,7 @@ impl Lowerer {
                 let Some(TypeDefinitionKind::Record {
                     fields: Some(fields),
                     ..
-                }) = self.kind(base.ty)
+                }) = self.kind(&base.ty)
                 else {
                     return Err(ResolveError::Unsupported(
                         "member of incomplete or non-record",
@@ -231,7 +231,7 @@ impl Lowerer {
                     return Err(ResolveError::Unsupported("bit-field access"));
                 }
                 Ok(Place {
-                    ty: field.ty,
+                    ty: field.ty.clone(),
                     kind: PlaceKind::Field {
                         base: Box::new(base),
                         index,
@@ -245,17 +245,15 @@ impl Lowerer {
     }
 
     fn read(&mut self, e: &Expr, place: Place) -> Result<Value, ResolveError> {
-        if let Some(TypeDefinitionKind::Array { element, length }) = self.kind(place.ty).cloned() {
-            let ty = self.pointer(element, false);
+        if let Type::Array { element, length } = &place.ty {
+            let ty = self.pointer((**element).clone(), false);
+            let length = *length;
             return Ok(self.value(e, ty, ValueKind::ArrayDecay { place, length }));
         }
-        if matches!(
-            self.kind(place.ty),
-            Some(TypeDefinitionKind::Function { .. })
-        ) {
+        if matches!(place.ty, Type::Function { .. }) {
             return Err(ResolveError::Unsupported("function value or indirect call"));
         }
-        Ok(self.value(e, place.ty, ValueKind::Read(place)))
+        Ok(self.value(e, place.ty.clone(), ValueKind::Read(place)))
     }
 
     fn update(
@@ -267,13 +265,16 @@ impl Lowerer {
         postfix: bool,
     ) -> Result<Value, ResolveError> {
         let place = self.place(target)?;
-        let old = self.value(target, place.ty, ValueKind::OldValue);
+        let old = self.value(target, place.ty.clone(), ValueKind::OldValue);
         let (ty, kind) = self.context.resolve_binary(op, old, rhs)?;
-        let computation =
-            self.convert(self.value(e, ty, kind), place.ty, ConversionReason::Assign)?;
+        let computation = self.convert(
+            self.value(e, ty, kind),
+            place.ty.clone(),
+            ConversionReason::Assign,
+        )?;
         Ok(self.value(
             e,
-            place.ty,
+            place.ty.clone(),
             ValueKind::Update {
                 place,
                 computation: Box::new(computation),
@@ -325,17 +326,17 @@ impl Lowerer {
                     width: 8,
                     signed: self.context.target.char_signed,
                 });
-                let ty = Type::Defined(
-                    self.types
-                        .push(TypeDefinitionKind::Array { element, length }),
-                );
+                let ty = Type::Array {
+                    element: Box::new(element),
+                    length,
+                };
                 let id = self.fresh();
-                let initializer = self.value(e, ty, ValueKind::Bytes(bytes));
+                let initializer = self.value(e, ty.clone(), ValueKind::Bytes(bytes));
                 self.module.globals.push(e.clone().with_value(Global {
                     variable: Variable {
                         id,
                         name: format!(".str{}", id.0),
-                        ty,
+                        ty: ty.clone(),
                         storage: StorageDuration::Static,
                         initializer: Some(initializer),
                     },
@@ -372,7 +373,7 @@ impl Lowerer {
                 operand,
             } => {
                 let place = self.place(operand)?;
-                let ty = self.pointer(place.ty, false);
+                let ty = self.pointer(place.ty.clone(), false);
                 Ok(self.value(e, ty, ValueKind::AddressOf(place)))
             }
             ExprKind::Unary {
@@ -456,12 +457,12 @@ impl Lowerer {
                     ));
                 }
                 if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual)
-                    && (self.pointee(left.ty).is_ok() || self.pointee(right.ty).is_ok())
+                    && (self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok())
                 {
-                    let ty = if self.pointee(left.ty).is_ok() {
-                        left.ty
+                    let ty = if self.pointee(&left.ty).is_ok() {
+                        left.ty.clone()
                     } else {
-                        right.ty
+                        right.ty.clone()
                     };
                     return Ok(self.value(
                         e,
@@ -475,7 +476,7 @@ impl Lowerer {
                             left: Box::new(self.convert_expr(
                                 left_expr,
                                 left,
-                                ty,
+                                ty.clone(),
                                 ConversionReason::UsualArith,
                             )?),
                             right: Box::new(self.convert_expr(
@@ -497,11 +498,15 @@ impl Lowerer {
                 let value = self.expr(value)?;
                 if *op == AssignOp::Assign {
                     let place = self.place(target)?;
-                    let value =
-                        self.convert_expr(value_expr, value, place.ty, ConversionReason::Assign)?;
+                    let value = self.convert_expr(
+                        value_expr,
+                        value,
+                        place.ty.clone(),
+                        ConversionReason::Assign,
+                    )?;
                     return Ok(self.value(
                         e,
-                        place.ty,
+                        place.ty.clone(),
                         ValueKind::Store {
                             place,
                             value: Box::new(value),
@@ -515,7 +520,7 @@ impl Lowerer {
                 let right = self.expr(right)?;
                 Ok(self.value(
                     e,
-                    right.ty,
+                    right.ty.clone(),
                     ValueKind::Sequence {
                         left: Box::new(left),
                         right: Box::new(right),
@@ -540,18 +545,18 @@ impl Lowerer {
                     (left, right) = self
                         .context
                         .usual_arithmetic(self.context.promote(left), self.context.promote(right));
-                } else if self.pointee(left.ty).is_ok() {
+                } else if self.pointee(&left.ty).is_ok() {
                     right = self.convert_expr(
                         else_value,
                         right,
-                        left.ty,
+                        left.ty.clone(),
                         ConversionReason::UsualArith,
                     )?;
-                } else if self.pointee(right.ty).is_ok() {
+                } else if self.pointee(&right.ty).is_ok() {
                     left = self.convert_expr(
                         then_value,
                         left,
-                        right.ty,
+                        right.ty.clone(),
                         ConversionReason::UsualArith,
                     )?;
                 }
@@ -562,7 +567,7 @@ impl Lowerer {
                 }
                 Ok(self.value(
                     e,
-                    left.ty,
+                    left.ty.clone(),
                     ValueKind::Conditional {
                         condition: Box::new(condition),
                         then_value: Box::new(left),
@@ -579,42 +584,43 @@ impl Lowerer {
                     return Err(ResolveError::Unsupported("indirect call"));
                 }
                 let function = self.reference(callee)?;
-                let ty = *self
+                let ty = self
                     .bindings
                     .get(&function)
-                    .ok_or(ResolveError::Unsupported("untyped callee"))?;
-                let Some(TypeDefinitionKind::Function {
+                    .ok_or(ResolveError::Unsupported("untyped callee"))?
+                    .clone();
+                let Type::Function {
                     return_type,
                     parameters,
                     variadic,
                     prototyped,
-                }) = self.kind(ty).cloned()
+                } = &ty
                 else {
                     return Err(ResolveError::Unsupported("non-function callee"));
                 };
-                if prototyped
+                if *prototyped
                     && (arguments.len() < parameters.len()
-                        || (!variadic && arguments.len() != parameters.len()))
+                        || (!*variadic && arguments.len() != parameters.len()))
                 {
                     return Err(ResolveError::Unsupported("call argument count"));
                 }
                 let mut lowered = Vec::new();
                 for (index, argument) in arguments.iter().enumerate() {
                     let value = self.expr(argument)?;
-                    let value = if let Some(to) = parameters.get(index).filter(|_| prototyped) {
-                        self.convert_expr(argument, value, *to, ConversionReason::Arg)?
+                    let value = if let Some(to) = parameters.get(index).filter(|_| *prototyped) {
+                        self.convert_expr(argument, value, to.clone(), ConversionReason::Arg)?
                     } else {
-                        let to = match value.ty {
+                        let to = match &value.ty {
                             Type::Numeric(NumericType::Float(FloatType::F32)) => {
                                 Type::Numeric(NumericType::Float(FloatType::F64))
                             }
                             Type::Bool => self.context.int_type(),
                             Type::Numeric(NumericType::Integer { width, .. })
-                                if width < self.context.target.int_width =>
+                                if *width < self.context.target.int_width =>
                             {
                                 self.context.int_type()
                             }
-                            _ => value.ty,
+                            _ => value.ty.clone(),
                         };
                         self.convert(value, to, ConversionReason::Vararg)?
                     };
@@ -622,7 +628,7 @@ impl Lowerer {
                 }
                 Ok(self.value(
                     e,
-                    return_type.unwrap_or(Type::Void),
+                    return_type.as_ref().map_or(Type::Void, |ty| (**ty).clone()),
                     ValueKind::Call {
                         function,
                         arguments: lowered,

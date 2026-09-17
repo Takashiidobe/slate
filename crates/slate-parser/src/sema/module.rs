@@ -60,11 +60,10 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 let ty = resolved
                     .ty
                     .ok_or(ResolveError::Unsupported("void function type"))?;
-                let Some(TypeDefinitionKind::Function { return_type, .. }) =
-                    lower.kind(ty).cloned()
-                else {
+                let Type::Function { return_type, .. } = &ty else {
                     return Err(ResolveError::Unsupported("function definition declarator"));
                 };
+                let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 lower.bindings.insert(id, ty);
                 let mut metadata = vec![
                     (
@@ -80,7 +79,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
                 let parameters = lower.parameters(params, true)?;
-                let mut body = lower.statements(&function.body, return_type)?;
+                let mut body = lower.statements(&function.body, return_type.clone())?;
                 if name == "main"
                     && return_type == Some(lower.context.int_type())
                     && !matches!(body.last().map(|s| &s.value), Some(Statement::Return(_)))
@@ -171,13 +170,11 @@ impl Lowerer {
             let mut ty = resolved
                 .ty
                 .ok_or(ResolveError::Unsupported("void parameter"))?;
-            match self.kind(ty) {
-                Some(TypeDefinitionKind::Array { element, .. }) => {
-                    ty = self.pointer(*element, false)
-                }
-                Some(TypeDefinitionKind::Function { .. }) => ty = self.pointer(ty, false),
-                _ => {}
-            }
+            ty = match ty {
+                Type::Array { element, .. } => self.pointer(*element, false),
+                function @ Type::Function { .. } => self.pointer(function, false),
+                other => other,
+            };
             let name = parameter.declarator.name();
             let id = if definition {
                 self.declaration_id(
@@ -187,7 +184,7 @@ impl Lowerer {
             } else {
                 self.fresh()
             };
-            self.bindings.insert(id, ty);
+            self.bindings.insert(id, ty.clone());
             self.module
                 .metadata
                 .insert(parameter.id, resolved.c.entries());
@@ -265,8 +262,8 @@ impl Lowerer {
                 .ty
                 .ok_or(ResolveError::Unsupported("void object"))?;
             let id = self.declaration_id(declarator.id, name)?;
-            self.bindings.insert(id, ty);
-            if let Some(TypeDefinitionKind::Function { return_type, .. }) = self.kind(ty).cloned() {
+            self.bindings.insert(id, ty.clone());
+            if let Type::Function { return_type, .. } = &ty {
                 if !global || declarator.initializer.is_some() {
                     return Err(ResolveError::Unsupported(
                         "local function prototype or function initializer",
@@ -283,7 +280,7 @@ impl Lowerer {
                         id,
                         name: name.into(),
                         parameters,
-                        return_type,
+                        return_type: return_type.as_ref().map(|ty| (**ty).clone()),
                         linkage: linkage(item.specifiers.storage)?,
                         body: None,
                     }));
@@ -306,7 +303,7 @@ impl Lowerer {
                         return Err(ResolveError::Unsupported("global initializer"));
                     }
                     let value = self.expr(expr)?;
-                    Some(self.convert_expr(expr, value, ty, ConversionReason::Assign)?)
+                    Some(self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?)
                 }
                 _ => return Err(ResolveError::Unsupported("aggregate initializer")),
             };
@@ -348,6 +345,7 @@ impl Lowerer {
                 StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?),
                 StmtKind::Return(expr) => {
                     let ty = return_type
+                        .clone()
                         .ok_or(ResolveError::Unsupported("value return from void function"))?;
                     let value = self.expr(expr)?;
                     Statement::Return(Some(self.convert_expr(
@@ -359,7 +357,9 @@ impl Lowerer {
                 }
                 StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
                 StmtKind::Null => Statement::Block(Vec::new()),
-                StmtKind::Block(body) => Statement::Block(self.statements(body, return_type)?),
+                StmtKind::Block(body) => {
+                    Statement::Block(self.statements(body, return_type.clone())?)
+                }
                 _ => return Err(ResolveError::Unsupported("module statement")),
             };
             result.push(statement.clone().with_value(kind));

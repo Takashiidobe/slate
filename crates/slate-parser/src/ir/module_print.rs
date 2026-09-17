@@ -218,49 +218,6 @@ impl fmt::Display for DisplayModule<'_> {
             }
             match &definition.kind {
                 TypeDefinitionKind::Alias(ty) => write!(f, " = {ty}")?,
-                TypeDefinitionKind::Pointer { pointee, is_const } => write!(
-                    f,
-                    " = ptr<{}{pointee}>",
-                    if *is_const { "const " } else { "" }
-                )?,
-                TypeDefinitionKind::Array { element, length } => {
-                    write!(f, " = array<{element}, ")?;
-                    match length {
-                        Some(length) => write!(f, "{length}")?,
-                        None => f.write_str("incomplete")?,
-                    }
-                    f.write_str(">")?;
-                }
-                TypeDefinitionKind::Function {
-                    return_type,
-                    parameters,
-                    variadic,
-                    prototyped,
-                } => {
-                    f.write_str(" = fn(")?;
-                    if !prototyped {
-                        f.write_str("unprototyped")?;
-                    } else {
-                        for (index, parameter) in parameters.iter().enumerate() {
-                            if index != 0 {
-                                f.write_str(", ")?;
-                            }
-                            write!(f, "{parameter}")?;
-                        }
-                        if *variadic {
-                            f.write_str(if parameters.is_empty() {
-                                "..."
-                            } else {
-                                ", ..."
-                            })?;
-                        }
-                    }
-                    write!(
-                        f,
-                        ") -> {}",
-                        return_type.map_or("void".to_owned(), |ty| ty.to_string())
-                    )?;
-                }
                 TypeDefinitionKind::Record {
                     kind,
                     fields,
@@ -397,7 +354,7 @@ impl fmt::Display for DisplayModule<'_> {
                 }
             }
             f.write_str(") -> ")?;
-            match function.return_type {
+            match &function.return_type {
                 Some(ty) => write!(f, "{ty}")?,
                 None => f.write_str("void")?,
             }

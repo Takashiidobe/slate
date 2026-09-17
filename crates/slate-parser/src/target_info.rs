@@ -165,7 +165,10 @@ impl TargetInfo {
                 ScalarKey::Integer { width, signed }
             }
             Type::Numeric(NumericType::Float(format)) => ScalarKey::Float(format),
-            Type::Defined(_) | Type::Void => return Err(LayoutError::UnsupportedScalar(ty)),
+            Type::Pointer { .. } => return Ok(self.pointer),
+            Type::Defined(_) | Type::Array { .. } | Type::Function { .. } | Type::Void => {
+                return Err(LayoutError::UnsupportedScalar(ty));
+            }
         };
         self.scalars
             .get(key)

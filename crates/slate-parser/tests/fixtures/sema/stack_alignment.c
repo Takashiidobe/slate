@@ -25,7 +25,6 @@ int one(void) {
 // CHECK-NEXT:         storage f80 [size=16, align=16];
 // CHECK-NEXT:         storage f128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     type @type0 = fn() -> i32;
 // CHECK-NEXT:     fn %0 @one() -> i32 [linkage=external] {
 // CHECK-NEXT:         return const<i32>(1);
 // CHECK-NEXT:     }

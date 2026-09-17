@@ -263,7 +263,7 @@ impl Context {
             },
         };
         Ok((
-            left.ty,
+            left.ty.clone(),
             ValueKind::Arith {
                 op: arith,
                 left: Box::new(left),
@@ -301,7 +301,7 @@ impl Context {
             (NumericType::Integer { .. }, UnaryArithOp::Not) => ArithSema::Exact,
         };
         Ok((
-            operand.ty,
+            operand.ty.clone(),
             ValueKind::Unary {
                 op: arith,
                 operand: Box::new(operand),
@@ -396,7 +396,7 @@ impl Context {
     }
 
     pub(super) fn usual_arithmetic(&self, left: Value, right: Value) -> (Value, Value) {
-        let ty = match (left.ty, right.ty) {
+        let ty = match (left.ty.clone(), right.ty.clone()) {
             (Type::Numeric(NumericType::Float(a)), Type::Numeric(NumericType::Float(b))) => {
                 Type::Numeric(NumericType::Float(a.max(b)))
             }
@@ -424,7 +424,7 @@ impl Context {
             _ => return (left, right),
         };
         (
-            self.convert(left, ty, ConversionReason::UsualArith),
+            self.convert(left, ty.clone(), ConversionReason::UsualArith),
             self.convert(right, ty, ConversionReason::UsualArith),
         )
     }
@@ -449,7 +449,7 @@ impl Context {
         }
         if value.ty == Type::Bool {
             let integer = if matches!(to, Type::Numeric(NumericType::Integer { .. })) {
-                to
+                to.clone()
             } else {
                 self.int_type()
             };
@@ -462,7 +462,7 @@ impl Context {
             );
             return self.convert(value, to, reason);
         }
-        match (value.ty, to) {
+        match (value.ty.clone(), to.clone()) {
             (
                 Type::Numeric(NumericType::Integer {
                     width: from_width,
@@ -565,7 +565,7 @@ impl Context {
         };
         let node = derived_span(&value.node, ValueKind::Constant(zero));
         let zero = Value {
-            ty: value.ty,
+            ty: value.ty.clone(),
             node: node.clone(),
         };
         Value {
@@ -582,7 +582,11 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
     match value.ty {
         Type::Numeric(ty) => Ok(ty),
         Type::Bool => Err(ResolveError::Unsupported("unpromoted boolean operand")),
-        Type::Defined(_) | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
+        Type::Defined(_)
+        | Type::Pointer { .. }
+        | Type::Array { .. }
+        | Type::Function { .. }
+        | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
     }
 }
 

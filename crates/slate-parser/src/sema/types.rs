@@ -97,6 +97,7 @@ impl TypeResolver {
     ) -> Result<(), ResolveError> {
         let ty = resolved
             .ty
+            .clone()
             .ok_or(ResolveError::Unsupported("void typedef"))?;
         let id = self.push(TypeDefinitionKind::Alias(ty));
         self.definitions[id.0 as usize].name = Some(name.clone());
@@ -137,7 +138,12 @@ impl TypeResolver {
                     .ok_or(ResolveError::Unsupported("unknown typedef"))?;
                 let mut chain = vec![name.clone()];
                 chain.extend(alias.c.typedef_chain.iter().cloned());
-                return Ok((alias.ty, name.clone(), alias.c.canonical.clone(), chain));
+                return Ok((
+                    alias.ty.clone(),
+                    name.clone(),
+                    alias.c.canonical.clone(),
+                    chain,
+                ));
             }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
                 let tag = self
@@ -186,7 +192,7 @@ impl TypeResolver {
                         .resolve(&fixed_type.specifiers, &fixed_type.declarator)?
                         .ty
                         .ok_or(ResolveError::Unsupported("void enum underlying type"))?;
-                    let layout = self.storage(underlying)?;
+                    let layout = self.storage(underlying.clone())?;
                     self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
                         underlying: Some(underlying),
                         enumerators: None,
@@ -275,13 +281,12 @@ impl TypeResolver {
             Declarator::Pointer {
                 inner, qualifiers, ..
             } => {
-                let pointee = resolved.ty.unwrap_or(Type::Void);
-                let grouped = matches!(pointee, Type::Defined(id) if matches!(self.definitions[id.0 as usize].kind, TypeDefinitionKind::Function { .. } | TypeDefinitionKind::Array { .. }));
-                let id = self.push(TypeDefinitionKind::Pointer {
-                    pointee,
+                let pointee = resolved.ty.take().unwrap_or(Type::Void);
+                let grouped = matches!(pointee, Type::Function { .. } | Type::Array { .. });
+                resolved.ty = Some(Type::Pointer {
+                    pointee: Box::new(pointee),
                     is_const: resolved.c.qualifiers.is_const,
                 });
-                resolved.ty = Some(Type::Defined(id));
                 resolved.c.spelling = pointer_spelling(&resolved.c.spelling, *qualifiers, grouped);
                 resolved.c.canonical =
                     pointer_spelling(&resolved.c.canonical, *qualifiers, grouped);
@@ -291,6 +296,7 @@ impl TypeResolver {
             Declarator::Array { inner, size, .. } => {
                 let element = resolved
                     .ty
+                    .take()
                     .ok_or(ResolveError::Unsupported("void array element"))?;
                 let length = match size {
                     ArraySize::Unspecified => None,
@@ -305,8 +311,10 @@ impl TypeResolver {
                         _ => return Err(ResolveError::Unsupported("nonconstant array length")),
                     },
                 };
-                let id = self.push(TypeDefinitionKind::Array { element, length });
-                resolved.ty = Some(Type::Defined(id));
+                resolved.ty = Some(Type::Array {
+                    element: Box::new(element),
+                    length,
+                });
                 let suffix = length.map_or("[]".to_owned(), |length| format!("[{length}]"));
                 resolved.c.spelling.push_str(&suffix);
                 resolved.c.canonical.push_str(&suffix);
@@ -321,31 +329,26 @@ impl TypeResolver {
                     let mut ty = parameter_type
                         .ty
                         .ok_or(ResolveError::Unsupported("void parameter"))?;
-                    if let Type::Defined(id) = ty
-                        && matches!(
-                            self.definitions[id.0 as usize].kind,
-                            TypeDefinitionKind::Array { .. } | TypeDefinitionKind::Function { .. }
-                        )
-                    {
-                        let pointee = match self.definitions[id.0 as usize].kind {
-                            TypeDefinitionKind::Array { element, .. } => element,
-                            _ => ty,
-                        };
-                        ty = Type::Defined(self.push(TypeDefinitionKind::Pointer {
-                            pointee,
+                    ty = match ty {
+                        Type::Array { element, .. } => Type::Pointer {
+                            pointee: element,
                             is_const: false,
-                        }));
-                    }
+                        },
+                        function @ Type::Function { .. } => Type::Pointer {
+                            pointee: Box::new(function),
+                            is_const: false,
+                        },
+                        other => other,
+                    };
                     types.push(ty);
                     c_parameters.push(parameter_type.c.spelling);
                 }
-                let id = self.push(TypeDefinitionKind::Function {
-                    return_type: resolved.ty,
+                resolved.ty = Some(Type::Function {
+                    return_type: resolved.ty.take().map(Box::new),
                     parameters: types,
                     variadic: parameters.is_variadic(),
                     prototyped: !matches!(parameters, ParameterList::Empty),
                 });
-                resolved.ty = Some(Type::Defined(id));
                 let suffix = if matches!(parameters, ParameterList::Empty) {
                     "()".to_owned()
                 } else if matches!(parameters, ParameterList::Void) {
@@ -508,7 +511,7 @@ impl TypeResolver {
                         id: BindingId(entries.len() as u32),
                         name: enumerator.name.clone(),
                         value: Value {
-                            ty: underlying,
+                            ty: underlying.clone(),
                             node: item.clone().with_value(ValueKind::Constant(if value < 0 {
                                 Number::SignedInteger(BigInt::from(value))
                             } else {
@@ -518,7 +521,7 @@ impl TypeResolver {
                     }));
                 }
                 TypeDefinitionKind::Enum {
-                    underlying: Some(underlying),
+                    underlying: Some(underlying.clone()),
                     enumerators: Some(entries),
                     layout: Some({
                         let mut layout = self.storage(underlying)?;
@@ -541,23 +544,7 @@ impl TypeResolver {
     pub(super) fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
         match ty {
             Type::Defined(id) => match &self.definitions[id.0 as usize].kind {
-                TypeDefinitionKind::Alias(inner) => self.storage(*inner),
-                TypeDefinitionKind::Pointer { .. } => Ok(self.target.pointer),
-                TypeDefinitionKind::Array {
-                    element,
-                    length: Some(length),
-                } => {
-                    let element = self.storage(*element)?;
-                    Ok(StorageLayout {
-                        size_bytes: align_up(
-                            element.size_bytes,
-                            u64::from(element.alignment_bytes),
-                        )?
-                        .checked_mul(*length)
-                        .ok_or(ResolveError::Unsupported("array size overflow"))?,
-                        alignment_bytes: element.alignment_bytes,
-                    })
-                }
+                TypeDefinitionKind::Alias(inner) => self.storage(inner.clone()),
                 TypeDefinitionKind::Record {
                     layout: Some(layout),
                     ..
@@ -573,9 +560,25 @@ impl TypeResolver {
                 TypeDefinitionKind::Enum {
                     underlying: Some(underlying),
                     ..
-                } => self.storage(*underlying),
+                } => self.storage(underlying.clone()),
                 _ => Err(ResolveError::Unsupported("incomplete field type")),
             },
+            Type::Pointer { .. } => Ok(self.target.pointer),
+            Type::Array {
+                element,
+                length: Some(length),
+            } => {
+                let element = self.storage(*element)?;
+                Ok(StorageLayout {
+                    size_bytes: align_up(element.size_bytes, u64::from(element.alignment_bytes))?
+                        .checked_mul(length)
+                        .ok_or(ResolveError::Unsupported("array size overflow"))?,
+                    alignment_bytes: element.alignment_bytes,
+                })
+            }
+            Type::Array { length: None, .. } | Type::Function { .. } => {
+                Err(ResolveError::Unsupported("incomplete field type"))
+            }
             _ => Ok(self.target.storage_of(ty)?),
         }
     }
@@ -593,7 +596,7 @@ impl TypeResolver {
         let mut offsets = Vec::new();
         let mut bit_offsets = Vec::new();
         for (field, &(field_packed, field_aligned)) in fields.iter().zip(requests) {
-            let storage = self.storage(field.ty)?;
+            let storage = self.storage(field.ty.clone())?;
             let natural = u64::from(storage.alignment_bytes);
             let align =
                 (if packed || field_packed { 1 } else { natural }).max(field_aligned.unwrap_or(1));

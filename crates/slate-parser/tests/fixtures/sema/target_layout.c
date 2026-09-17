@@ -36,10 +36,6 @@ long double one(void) {
 // CHECK-NEXT:         storage f80 [size=16, align=16];
 // CHECK-NEXT:         storage f128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     type @type0 = fn() -> u64 [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"];
-// CHECK-NEXT:     type @type1 = fn() -> u64 [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"];
-// CHECK-NEXT:     type @type2 = fn() -> u64 [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"];
-// CHECK-NEXT:     type @type3 = fn() -> f80 [c_storage="none"] [c_return="long double"] [c="long double(void)"];
 // CHECK-NEXT:     fn %0 @object_size() -> u64 [linkage=external] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
 // CHECK-NEXT:         return const<u64>(16);
 // CHECK-NEXT:     }

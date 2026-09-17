@@ -9,6 +9,9 @@ open until agreed. Decided sections record the agreed shape choices.
 
 This reference covers numeric types, typed constants and bindings, string
 literal objects, loops, jumps, switches, enums, structs, and unions.
+Structural pointer, array, and function-pointer types print inline; named and
+recursive declarations keep type IDs. Direct functions carry their signatures
+on their declarations and definitions.
 The control-flow/aggregate shapes and use of IDs are accepted. Function
 and attribute shapes below are the next proposals for discussion.
 

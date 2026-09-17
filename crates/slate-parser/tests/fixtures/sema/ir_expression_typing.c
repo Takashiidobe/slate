@@ -45,24 +45,10 @@ int pointers(int *p) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = fn(i16) -> i16;
-// IR-NEXT:     type @type1 = fn(i16, ...) -> i32;
-// IR-NEXT:     type @type2 = fn(i16, u64, f32) -> i32;
-// IR-NEXT:     type @type3 = ptr<i32>;
-// IR-NEXT:     type @type4 = fn(@type3, i32) -> i32;
-// IR-NEXT:     type @type5 = ptr<i32>;
-// IR-NEXT:     type @type6 Pair = struct {
+// IR-NEXT:     type @type0 Pair = struct {
 // IR-NEXT:         field0 x: i16;
 // IR-NEXT:         field1 y: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type7 = ptr<@type6>;
-// IR-NEXT:     type @type8 = fn(@type7, @type6) -> i32;
-// IR-NEXT:     type @type9 = ptr<@type6>;
-// IR-NEXT:     type @type10 = ptr<i32>;
-// IR-NEXT:     type @type11 = fn(@type10) -> i32;
-// IR-NEXT:     type @type12 = ptr<i32>;
-// IR-NEXT:     type @type13 = array<i32, 3>;
-// IR-NEXT:     type @type14 = ptr<i32>;
 // IR-NEXT:     fn %0 @inc(%1 s: i16) -> i16 [linkage=external] {
 // IR-NEXT:         return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=undefined>(widen<i32, reason=promotion>(read<i16>(%1)), const<i32>(1)));
 // IR-NEXT:     }
@@ -74,19 +60,19 @@ int pointers(int *p) {
 // IR-NEXT:         call<i32>(%2, reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u64>(%5))), widen<i32, reason=vararg>(read<i16>(%4)), float_widen<f64, reason=vararg>(read<f32>(%6)), from_bool<i32, reason=vararg>(read<bool>(%8)));
 // IR-NEXT:         return conditional<i32>(read<bool>(%8), sequence<i32>(read<i16>(%4), add<i32, overflow=undefined>(widen<i32, reason=promotion>(read<i16>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7))))), neg<i32, overflow=undefined>(widen<i32, reason=promotion>(read<i16>(%4))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @sequencing(%10 p: @type5, %11 i: i32) -> i32 [linkage=external] {
-// IR-NEXT:         update<i32, result=new>(index(read<@type5>(%10), update<i32, result=old>(%11, add<i32, overflow=undefined>(old<i32>, const<i32>(1)))), add<i32, overflow=undefined>(old<i32>, const<i32>(2)));
-// IR-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(sequence<bool>(store<i32>(%11, const<i32>(0)), logical_and<bool>(ne<i32>(read<i32>(index(read<@type5>(%10), read<i32>(%11))), const<i32>(0)), ne<i32>(store<i32>(%11, const<i32>(3)), const<i32>(0)))), ne<i32>(conditional<i32>(ne<i32>(read<i32>(%11), const<i32>(0)), update<i32, result=new>(%11, add<i32, overflow=undefined>(old<i32>, const<i32>(1))), update<i32, result=old>(%11, sub<i32, overflow=undefined>(old<i32>, const<i32>(1)))), const<i32>(0))));
+// IR-NEXT:     fn %9 @sequencing(%10 p: ptr<i32>, %11 i: i32) -> i32 [linkage=external] {
+// IR-NEXT:         update<i32, result=new>(index(read<ptr<i32>>(%10), update<i32, result=old>(%11, add<i32, overflow=undefined>(old<i32>, const<i32>(1)))), add<i32, overflow=undefined>(old<i32>, const<i32>(2)));
+// IR-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(sequence<bool>(store<i32>(%11, const<i32>(0)), logical_and<bool>(ne<i32>(read<i32>(index(read<ptr<i32>>(%10), read<i32>(%11))), const<i32>(0)), ne<i32>(store<i32>(%11, const<i32>(3)), const<i32>(0)))), ne<i32>(conditional<i32>(ne<i32>(read<i32>(%11), const<i32>(0)), update<i32, result=new>(%11, add<i32, overflow=undefined>(old<i32>, const<i32>(1))), update<i32, result=old>(%11, sub<i32, overflow=undefined>(old<i32>, const<i32>(1)))), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @fields(%14 p: @type9, %15 q: @type6) -> i32 [linkage=external] {
-// IR-NEXT:         store<i16>(field0(deref(read<@type9>(%14))), truncate<i16, reason=assign, fits=unknown>(read<i32>(field1(%15))));
-// IR-NEXT:         return add<i32, overflow=undefined>(widen<i32, reason=promotion>(read<i16>(field0(%15))), read<i32>(field1(deref(read<@type9>(%14)))));
+// IR-NEXT:     fn %13 @fields(%14 p: ptr<@type0>, %15 q: @type0) -> i32 [linkage=external] {
+// IR-NEXT:         store<i16>(field0(deref(read<ptr<@type0>>(%14))), truncate<i16, reason=assign, fits=unknown>(read<i32>(field1(%15))));
+// IR-NEXT:         return add<i32, overflow=undefined>(widen<i32, reason=promotion>(read<i16>(field0(%15))), read<i32>(field1(deref(read<ptr<@type0>>(%14)))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @pointers(%17 p: @type12) -> i32 [linkage=external] {
-// IR-NEXT:         let %18 a: @type13 [storage=automatic];
-// IR-NEXT:         let %19 q: @type14 [storage=automatic] = null<@type14>;
-// IR-NEXT:         store<@type14>(%19, pointer_cast<@type14, reason=assign>(array_decay<@type3, length=Some(3)>(%18)));
-// IR-NEXT:         return conditional<i32>(ne<@type12>(read<@type12>(%17), null<@type12>), read<i32>(index(read<@type14>(%19), const<i32>(1))), from_bool<i32, reason=promotion>(not<bool>(ne<@type12>(read<@type12>(%17), null<@type12>))));
+// IR-NEXT:     fn %16 @pointers(%17 p: ptr<i32>) -> i32 [linkage=external] {
+// IR-NEXT:         let %18 a: array<i32, 3> [storage=automatic];
+// IR-NEXT:         let %19 q: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// IR-NEXT:         store<ptr<i32>>(%19, array_decay<ptr<i32>, length=Some(3)>(%18));
+// IR-NEXT:         return conditional<i32>(ne<ptr<i32>>(read<ptr<i32>>(%17), null<ptr<i32>>), read<i32>(index(read<ptr<i32>>(%19), const<i32>(1))), from_bool<i32, reason=promotion>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%17), null<ptr<i32>>))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

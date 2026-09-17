@@ -37,20 +37,13 @@ size_t count(void) { return 1; }
 // DEFAULT-NEXT:     type @type0 size_t = u64 [c="unsigned long"];
 // DEFAULT-NEXT:     type @type1 uint32_t = u32 [c="unsigned int"];
 // DEFAULT-NEXT:     type @type2 word = u32 [c="uint32_t"] [c_canon="unsigned int"] [typedef_chain="uint32_t"];
-// DEFAULT-NEXT:     type @type3 = ptr<const i8> [c="const char *"];
-// DEFAULT-NEXT:     type @type4 cstring = @type3 [c="const char *"];
-// DEFAULT-NEXT:     type @type5 = array<i32, 4> [c="int[4]"];
-// DEFAULT-NEXT:     type @type6 vector = @type5 [c="int[4]"];
-// DEFAULT-NEXT:     type @type7 = fn(i32) -> i32 [c="int(int)"];
-// DEFAULT-NEXT:     type @type8 callback = @type7 [c="int(int)"];
-// DEFAULT-NEXT:     type @type9 = fn(i32) -> i32 [c="int (*)(int)"];
-// DEFAULT-NEXT:     type @type10 = ptr<@type9> [c="int (*)(int)"];
-// DEFAULT-NEXT:     type @type11 fnptr = @type10 [c="int (*)(int)"];
-// DEFAULT-NEXT:     type @type12 plain_char = i8 [c="char"];
-// DEFAULT-NEXT:     type @type13 signed_char = i8 [c="signed char"];
-// DEFAULT-NEXT:     type @type14 unsigned_char = u8 [c="unsigned char"];
-// DEFAULT-NEXT:     type @type15 = fn() -> u32 [c_storage="none"] [c_return="word"] [c="word(void)"] [c_canon="unsigned int(void)"] [typedef_chain="word -> uint32_t"];
-// DEFAULT-NEXT:     type @type16 = fn() -> u64 [c_storage="none"] [c_return="size_t"] [c="size_t(void)"] [c_canon="unsigned long(void)"] [typedef_chain="size_t"];
+// DEFAULT-NEXT:     type @type3 cstring = ptr<const i8> [c="const char *"];
+// DEFAULT-NEXT:     type @type4 vector = array<i32, 4> [c="int[4]"];
+// DEFAULT-NEXT:     type @type5 callback = fn(i32) -> i32 [c="int(int)"];
+// DEFAULT-NEXT:     type @type6 fnptr = ptr<fn(i32) -> i32> [c="int (*)(int)"];
+// DEFAULT-NEXT:     type @type7 plain_char = i8 [c="char"];
+// DEFAULT-NEXT:     type @type8 signed_char = i8 [c="signed char"];
+// DEFAULT-NEXT:     type @type9 unsigned_char = u8 [c="unsigned char"];
 // DEFAULT-NEXT:     fn %10 @value() -> u32 [linkage=external] [c_storage="none"] [c_return="word"] [c="word(void)"] [c_canon="unsigned int(void)"] [typedef_chain="word -> uint32_t"] {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(7));
 // DEFAULT-NEXT:     }

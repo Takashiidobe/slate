@@ -62,11 +62,13 @@ while constructing IR. Return, assignment, argument, and variadic conversions
 carry their reasons. Function parameter arrays and functions adjust to pointers.
 Spans retain the original AST node identity and provenance.
 
-The module node model includes named aliases, pointer/array types, records
-with field layouts, enums with typed enumerators, globals, and function
-prototypes or definitions. `Type::Defined(TypeId)` references the module's
-type table, preserving recursive and incomplete type identity. Variables and
-parameters have binding IDs; root places use those IDs and concrete types.
+The module node model includes named aliases, records with field layouts,
+enums with typed enumerators, globals, and function prototypes or definitions.
+Pointers, arrays, and function-pointer signatures are structural types printed
+inline at their uses. A direct function's `fn` declaration carries its complete
+signature; it has no duplicate type-table entry. `Type::Defined(TypeId)`
+references named or recursive definitions, preserving incomplete type identity.
+Variables and parameters have binding IDs; root places use those IDs and concrete types.
 Statements support declarations and writes as well as the numeric seed.
 Pointer nulls, address-of values, byte-array constants, array decay, and
 direct calls through function binding IDs are represented explicitly.
@@ -104,17 +106,12 @@ and show-ID options first, followed by `SLATE-FILECHECK-ARGS` in source order.
 Thus the latter wins when a CLI option accepts repeated values. Extra arguments
 are split on whitespace; shell quoting is not interpreted.
 `tests/fixtures/sema/ir_module_promotions.c` exercises real C arithmetic,
-explicit narrowing, integer promotion, and return widening. The constructed
-`ir_module` example covers the same printer with hand-built IR.
+explicit narrowing, integer promotion, and return widening.
 
 The module dump also handles `tests/fixtures/add.c`: its stdio declaration,
 parameters, local variable, direct calls, string literal, and implicit return.
 Unsupported statements and attributes are diagnosed instead of omitted.
 Control-flow and aggregate lowering remain separate work.
-The constructed module in `examples/ir_module.rs` exercises the declarations,
-the complete worked `add`/`printf`/`main` example and both printer modes through
-generated FileCheck expectations. `SLATE-FILECHECK-EXAMPLE ir_module` selects
-that renderer in the harness and expectation generator.
 
 The type view resolves struct, union, and enum tag definitions. On the
 x86_64 SysV target, record layout records byte size, aggregate alignment,
