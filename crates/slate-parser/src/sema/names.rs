@@ -323,7 +323,7 @@ impl Resolver {
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self.type_name(ty, expr),
             ExprKind::OffsetOf { ty, member } => {
                 self.type_name(ty, expr)?;
-                self.expr(member)
+                self.offsetof_member(member)
             }
             ExprKind::Generic {
                 controlling,
@@ -356,6 +356,18 @@ impl Resolver {
             | ExprKind::StringLiteral(_)
             | ExprKind::BoolLiteral(_)
             | ExprKind::NullPtrLiteral => Ok(()),
+        }
+    }
+
+    fn offsetof_member(&mut self, member: &Expr) -> Result<(), ResolveError> {
+        match &member.value {
+            ExprKind::Identifier(_) => Ok(()),
+            ExprKind::Member { base, .. } => self.offsetof_member(base),
+            ExprKind::Index { base, index } => {
+                self.offsetof_member(base)?;
+                self.expr(index)
+            }
+            _ => self.expr(member),
         }
     }
 

@@ -134,6 +134,19 @@ projected places, and structured aggregate initializers remain in their
 respective lowering tasks. The name-resolution dump remains a separate
 diagnostic view, not the module declaration representation.
 
+### Required constant evaluation, not optimization
+
+Preserve ordinary source expressions for Rust translation. `1 + 2` remains
+an addition, even when both operands are constants. Do not fold ordinary
+arithmetic, casts, comparisons, or conditional expressions as an optimization.
+For `sizeof(int) * 8`, fold only the `sizeof` leaf and retain the multiply.
+
+Layout queries fold using target layout and retain `size_of`, `align_of`, or
+`offset_of` metadata on their resulting constants. Evaluate expressions when
+a concrete constant is required to resolve a type or layout, such as fixed
+array bounds, `_BitInt` widths, and constant `offsetof` array indices. This
+required evaluation must not rewrite the surrounding source expression tree.
+
 ### Implemented numeric seed
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point

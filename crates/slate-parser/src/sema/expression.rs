@@ -341,6 +341,46 @@ impl Lowerer {
         ))
     }
 
+    fn unevaluated_type(&mut self, operand: &Expr) -> Result<Type, ResolveError> {
+        if let ExprKind::Paren(inner) = &operand.value {
+            return self.unevaluated_type(inner);
+        }
+        if let ExprKind::StringLiteral(lit) = &operand.value {
+            if lit.encoding != Encoding::Plain {
+                return Err(ResolveError::Unsupported("encoded string literal"));
+            }
+            return Ok(Type::Array {
+                element: Box::new(Type::Numeric(NumericType::Integer {
+                    width: 8,
+                    signed: self.context.target.char_signed,
+                })),
+                length: Some(lit.code_units.len() as u64 + 1),
+            });
+        }
+        let globals = self.module.globals.len();
+        let next_id = self.next_id;
+        let result = match self.place(operand) {
+            Ok(place) => Ok(place.ty),
+            Err(_) => self.expr(operand).map(|value| value.ty),
+        };
+        self.module.globals.truncate(globals);
+        self.next_id = next_id;
+        result
+    }
+
+    fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Value {
+        self.module
+            .metadata
+            .entry(e.id)
+            .or_default()
+            .push((key.into(), detail));
+        let ty = Type::Numeric(NumericType::Integer {
+            width: self.context.target.pointer_width,
+            signed: false,
+        });
+        self.value(e, ty, ValueKind::Constant(Number::Integer(amount.into())))
+    }
+
     pub fn expr(&mut self, e: &Expr) -> Result<Value, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.expr(inner),
@@ -702,38 +742,42 @@ impl Lowerer {
                     .resolve(&ty.specifiers, &ty.declarator)?
                     .ty
                     .ok_or(ResolveError::Unsupported("void layout"))?;
-                let layout = self.types.storage(ty)?;
+                let layout = self.types.storage(ty.clone())?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
                     u64::from(layout.alignment_bytes)
                 };
-                let ty = Type::Numeric(NumericType::Integer {
-                    width: self.context.target.long_width,
-                    signed: false,
-                });
-                Ok(self.value(e, ty, ValueKind::Constant(Number::Integer(value.into()))))
+                let key = if matches!(e.value, ExprKind::SizeOfType { .. }) {
+                    "size_of"
+                } else {
+                    "align_of"
+                };
+                Ok(self.layout_constant(e, value, key, ty.to_string()))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let ty = match self.place(operand) {
-                    Ok(place) => place.ty,
-                    Err(_) => self.expr(operand)?.ty,
-                };
-                let layout = self.types.storage(ty)?;
+                let ty = self.unevaluated_type(operand)?;
+                let layout = self.types.storage(ty.clone())?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
                     u64::from(layout.alignment_bytes)
                 };
-                let size_type = Type::Numeric(NumericType::Integer {
-                    width: self.context.target.long_width,
-                    signed: false,
-                });
-                Ok(self.value(
-                    e,
-                    size_type,
-                    ValueKind::Constant(Number::Integer(amount.into())),
-                ))
+                let key = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
+                    "size_of"
+                } else {
+                    "align_of"
+                };
+                Ok(self.layout_constant(e, amount, key, ty.to_string()))
+            }
+            ExprKind::OffsetOf { ty, member } => {
+                let ty = self
+                    .types
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void offsetof"))?;
+                let (_, offset) = self.types.offsetof_member(ty.clone(), member)?;
+                Ok(self.layout_constant(e, offset, "offset_of", format!("{ty}.{member}")))
             }
             _ => Err(ResolveError::Unsupported("advanced expression")),
         }

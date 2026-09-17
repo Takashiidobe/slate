@@ -1,4 +1,5 @@
 mod expression;
+mod fold;
 mod module;
 pub mod names;
 pub mod numeric;

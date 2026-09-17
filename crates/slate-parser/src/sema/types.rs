@@ -90,6 +90,171 @@ impl TypeResolver {
             .find(|tag| self.tag_ids.get(&tag.value.id) == Some(&id))
     }
 
+    pub(super) fn constant_integer(
+        &mut self,
+        e: &crate::ast::Expr,
+    ) -> Result<BigInt, ResolveError> {
+        let value = self.constant_value(e)?;
+        super::fold::integer(&value).ok_or(ResolveError::Unsupported(
+            "nonconstant or undefined integer expression",
+        ))
+    }
+
+    fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Value, ResolveError> {
+        use crate::ast::ExprKind;
+        let context = super::numeric::Context::new(self.target.clone());
+        let (ty, kind) = match &e.value {
+            ExprKind::Paren(inner) => return self.constant_value(inner),
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
+                let ty = self
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void layout"))?;
+                let layout = self.storage(ty)?;
+                let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
+                    layout.size_bytes
+                } else {
+                    u64::from(layout.alignment_bytes)
+                };
+                (
+                    Type::Numeric(NumericType::Integer {
+                        width: self.target.pointer_width,
+                        signed: false,
+                    }),
+                    ValueKind::Constant(Number::Integer(n.into())),
+                )
+            }
+            ExprKind::OffsetOf { ty, member } => {
+                let ty = self
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void offsetof"))?;
+                let (_, n) = self.offsetof_member(ty, member)?;
+                (
+                    Type::Numeric(NumericType::Integer {
+                        width: self.target.pointer_width,
+                        signed: false,
+                    }),
+                    ValueKind::Constant(Number::Integer(n.into())),
+                )
+            }
+            ExprKind::Binary { op, left, right } => {
+                let left = self.constant_value(left)?;
+                let right = self.constant_value(right)?;
+                context.resolve_binary(*op, left, right)?
+            }
+            ExprKind::Unary { op, operand } => {
+                use crate::const_expr::UnaryOp;
+                let operand = self.constant_value(operand)?;
+                match op {
+                    UnaryOp::Plus => return Ok(context.promote(operand)),
+                    UnaryOp::Minus | UnaryOp::BitNot => {
+                        context.resolve_unary_arith(*op, operand)?
+                    }
+                    UnaryOp::Not => (
+                        Type::Bool,
+                        ValueKind::Unary {
+                            op: crate::ir::UnaryArithOp::Not,
+                            operand: Box::new(context.condition(operand)),
+                            semantics: crate::ir::ArithSema::Exact,
+                        },
+                    ),
+                    _ => return Err(ResolveError::Unsupported("nonconstant unary expression")),
+                }
+            }
+            ExprKind::Cast { ty, value } => {
+                let ty = self
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void constant cast"))?;
+                let value = context.convert(
+                    self.constant_value(value)?,
+                    ty,
+                    crate::ir::ConversionReason::Explicit,
+                );
+                (value.ty, value.node.value)
+            }
+            _ => return context.resolve(e),
+        };
+        Ok(Value {
+            ty,
+            node: e.clone().with_value(kind),
+        })
+    }
+
+    pub(super) fn offsetof_member(
+        &mut self,
+        root: Type,
+        member: &crate::ast::Expr,
+    ) -> Result<(Type, u64), ResolveError> {
+        use crate::ast::ExprKind;
+        match &member.value {
+            ExprKind::Identifier(name) => self.offsetof_field(root, name),
+            ExprKind::Member {
+                base,
+                field,
+                arrow: false,
+            } => {
+                let (ty, offset) = self.offsetof_member(root, base)?;
+                let (ty, field_offset) = self.offsetof_field(ty, &field.value)?;
+                Ok((
+                    ty,
+                    offset
+                        .checked_add(field_offset)
+                        .ok_or(ResolveError::Unsupported("offsetof overflow"))?,
+                ))
+            }
+            ExprKind::Index { base, index } => {
+                let (ty, offset) = self.offsetof_member(root, base)?;
+                let Type::Array { element, .. } = ty else {
+                    return Err(ResolveError::Unsupported("offsetof index of non-array"));
+                };
+                let index = u64::try_from(self.constant_integer(index)?)
+                    .map_err(|_| ResolveError::Unsupported("invalid offsetof index"))?;
+                let size = self.storage((*element).clone())?.size_bytes;
+                let offset = size
+                    .checked_mul(index)
+                    .and_then(|n| offset.checked_add(n))
+                    .ok_or(ResolveError::Unsupported("offsetof overflow"))?;
+                Ok((*element, offset))
+            }
+            _ => Err(ResolveError::Unsupported("offsetof member path")),
+        }
+    }
+
+    fn offsetof_field(&self, ty: Type, name: &str) -> Result<(Type, u64), ResolveError> {
+        let Type::Defined(id) = ty else {
+            return Err(ResolveError::Unsupported("offsetof field of non-record"));
+        };
+        let Some(TypeDefinition {
+            kind:
+                TypeDefinitionKind::Record {
+                    fields: Some(fields),
+                    layout: Some(layout),
+                    ..
+                },
+            ..
+        }) = self.definitions.get(id.0 as usize)
+        else {
+            return Err(ResolveError::Unsupported(
+                "offsetof incomplete or non-record",
+            ));
+        };
+        let (index, field) = fields
+            .iter()
+            .enumerate()
+            .find(|(_, f)| f.name.as_deref() == Some(name))
+            .ok_or(ResolveError::Unsupported("unknown offsetof member"))?;
+        if field.bit_width.is_some() {
+            return Err(ResolveError::Unsupported("offsetof bit-field"));
+        }
+        let offset = *layout
+            .offsets
+            .get(index)
+            .ok_or(ResolveError::Unsupported("missing field offset"))?;
+        Ok((field.ty.clone(), offset))
+    }
+
     pub fn define_alias(
         &mut self,
         name: String,
@@ -243,6 +408,20 @@ impl TypeResolver {
                     spelling,
                 )
             }
+            TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
+                let width = u32::try_from(self.constant_integer(width)?)
+                    .map_err(|_| ResolveError::Unsupported("invalid _BitInt width"))?;
+                if width < if *signed { 2 } else { 1 } || width > 65535 {
+                    return Err(ResolveError::Unsupported("invalid _BitInt width"));
+                }
+                (
+                    Type::Numeric(NumericType::Integer {
+                        width,
+                        signed: *signed,
+                    }),
+                    format!("{}_BitInt({width})", if *signed { "" } else { "unsigned " }),
+                )
+            }
             TypeSpecifier::Floating(float) => {
                 let (kind, spelling) = match float {
                     FloatingType::Float16 | FloatingType::Fp16 => (FloatType::F16, "_Float16"),
@@ -303,13 +482,10 @@ impl TypeResolver {
                     ArraySize::Star => {
                         return Err(ResolveError::Unsupported("variable length array"));
                     }
-                    ArraySize::Expression(expr) => match &expr.value {
-                        crate::ast::ExprKind::IntegerLiteral(literal) => Some(
-                            u64::try_from(literal.value.clone())
-                                .map_err(|_| ResolveError::Unsupported("array length overflow"))?,
-                        ),
-                        _ => return Err(ResolveError::Unsupported("nonconstant array length")),
-                    },
+                    ArraySize::Expression(expr) => Some(
+                        u64::try_from(self.constant_integer(expr)?)
+                            .map_err(|_| ResolveError::Unsupported("invalid array length"))?,
+                    ),
                 };
                 resolved.ty = Some(Type::Array {
                     element: Box::new(element),

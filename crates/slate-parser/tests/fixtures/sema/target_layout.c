@@ -37,13 +37,13 @@ long double one(void) {
 // CHECK-NEXT:         storage f128 [size=16, align=16];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %0 @object_size() -> u64 [linkage=external] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
-// CHECK-NEXT:         return const<u64>(16);
+// CHECK-NEXT:         return const<u64>(16) [size_of="f80"];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %1 @object_alignment() -> u64 [linkage=external] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
-// CHECK-NEXT:         return const<u64>(16);
+// CHECK-NEXT:         return const<u64>(16) [align_of="f80"];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %2 @integer_size() -> u64 [linkage=external] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
-// CHECK-NEXT:         return const<u64>(8);
+// CHECK-NEXT:         return const<u64>(8) [size_of="u64"];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     fn %3 @one() -> f80 [linkage=external] [c_storage="none"] [c_return="long double"] [c="long double(void)"] {
 // CHECK-NEXT:         return const<f80>(1);
