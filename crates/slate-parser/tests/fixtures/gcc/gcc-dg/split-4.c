@@ -65,10 +65,10 @@ main(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[27]: Spanned {
+// DEFAULT: tag[25]: Spanned {
 // DEFAULT-NEXT:       value: TagDefinition {
 // DEFAULT-NEXT:           id: TagId(
-// DEFAULT-NEXT:               27,
+// DEFAULT-NEXT:               25,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: Struct,
 // DEFAULT-NEXT:           name: Some(
@@ -422,7 +422,7 @@ main(void) {
 // DEFAULT-NEXT:                   ty: Tag(
 // DEFAULT-NEXT:                       Definition(
 // DEFAULT-NEXT:                           TagId(
-// DEFAULT-NEXT:                               27,
+// DEFAULT-NEXT:                               25,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
