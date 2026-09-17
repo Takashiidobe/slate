@@ -306,6 +306,16 @@ impl Parser {
                 checkpoint.commit();
                 return Ok(StmtKind::Attribute(attributes));
             }
+            if !self.starts_declaration(tokens, position)
+                || (matches!(tokens.value_at(position), Some(Token::Ident(_)))
+                    && tokens.value_at(position + 1) == Some(&Token::Colon))
+            {
+                cursor.pos = position;
+                let statement = self.parse_one_stmt(cursor)?;
+                let body = Box::new(span_tokens(statement, &tokens[position..cursor.pos]));
+                checkpoint.commit();
+                return Ok(StmtKind::Attributed { attributes, body });
+            }
         }
 
         if let Some(asm) = self.parse_asm_stmt(cursor)? {
@@ -371,29 +381,22 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Case)) => {
                 let start = cursor.pos + 1;
-                let colon = tokens[start..]
-                    .values()
-                    .position(|token| *token == Token::Colon)
-                    .map(|position| start + position)
-                    .ok_or_else(|| {
-                        self.error_at_tokens(tokens, cursor.pos, "expected `:` after `case`")
-                    })?;
-                let range = tokens[start..colon]
-                    .values()
-                    .position(|token| *token == Token::Ellipsis);
-                let label = if let Some(range) = range {
-                    let range_start = self.parse_expression(&tokens[start..start + range])?;
-                    let range_end = self.parse_expression(&tokens[start + range + 1..colon])?;
-                    cursor.pos = colon + 1;
+                let (value, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
+                    .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
+                cursor.pos = end;
+                let label = if cursor.peek() == Some(&Token::Ellipsis) {
+                    let start = cursor.pos + 1;
+                    let (end_value, end) = const_expr::Parser::parse_one(tokens, start, Some(self))
+                        .map_err(|error| self.error_at_tokens(tokens, start, error.to_string()))?;
+                    cursor.pos = end;
                     SwitchLabel::CaseRange {
-                        start: range_start,
-                        end: range_end,
+                        start: value,
+                        end: end_value,
                     }
                 } else {
-                    let value = self.parse_expression(&tokens[start..colon])?;
-                    cursor.pos = colon + 1;
                     SwitchLabel::Case(value)
                 };
+                cursor.expect(Token::Colon, "expected `:` after `case`")?;
                 let body = self.parse_labeled_body(cursor)?;
                 Ok(StmtKind::SwitchLabel { label, body })
             }

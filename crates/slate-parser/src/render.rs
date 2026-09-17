@@ -141,7 +141,9 @@ fn strip_stmt_children(stmt: &mut StmtKind) {
             }
             strip_stmt_children(&mut body.value);
         }
-        StmtKind::Labeled { body, .. } | StmtKind::SwitchLabel { body, .. } => {
+        StmtKind::Labeled { body, .. }
+        | StmtKind::SwitchLabel { body, .. }
+        | StmtKind::Attributed { body, .. } => {
             strip_stmt_children(&mut body.value);
         }
         StmtKind::NestedFunction(function) => strip_function_comments(function),

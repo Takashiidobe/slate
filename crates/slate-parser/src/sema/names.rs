@@ -4,7 +4,7 @@ use crate::ast::{
     TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, thiserror::Error)]
 pub enum ResolveError {
@@ -37,6 +37,11 @@ struct Resolver {
     ordinary: Vec<HashMap<String, Entry>>,
     tags: Vec<HashMap<String, Entry>>,
     labels: HashMap<String, Entry>,
+    local_labels: Vec<HashMap<String, Entry>>,
+    local_label_declarations: HashMap<crate::ast::NodeId, Entry>,
+    defined_labels: HashSet<BindingId>,
+    collecting_labels: bool,
+    collected_tags: HashSet<AstTagId>,
     tag_ids: HashMap<AstTagId, Entry>,
     display_counts: HashMap<String, u32>,
     unit_tags: HashMap<AstTagId, Span<crate::ast::TagDefinition>>,
@@ -51,6 +56,11 @@ impl Resolver {
             ordinary: vec![HashMap::new()],
             tags: vec![HashMap::new()],
             labels: HashMap::new(),
+            local_labels: vec![HashMap::new()],
+            local_label_declarations: HashMap::new(),
+            defined_labels: HashSet::new(),
+            collecting_labels: false,
+            collected_tags: HashSet::new(),
             tag_ids: HashMap::new(),
             display_counts: HashMap::new(),
             unit_tags: unit
@@ -78,7 +88,9 @@ impl Resolver {
                 self.type_specifier(&function.specifiers.ty, declaration)?;
                 let name = function.declarator.name().unwrap_or("<anonymous>");
                 self.bind_ordinary(name, BindingKind::Function, declaration)?;
-                self.labels.clear();
+                let outer_labels = std::mem::take(&mut self.labels);
+                let outer_local_labels =
+                    std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
                 self.collect_labels(&function.body)?;
                 self.push_scope();
                 if let Some(parameters) = function.declarator.function_parameters() {
@@ -93,7 +105,8 @@ impl Resolver {
                     self.statement(statement)?;
                 }
                 self.pop_scope();
-                self.labels.clear();
+                self.labels = outer_labels;
+                self.local_labels = outer_local_labels;
                 Ok(())
             }
         }
@@ -119,7 +132,9 @@ impl Resolver {
             } else {
                 base_kind
             };
-            if let Some(name) = declarator.declarator.name() {
+            if !self.collecting_labels
+                && let Some(name) = declarator.declarator.name()
+            {
                 self.bind_ordinary(name, kind, declarator)?;
             }
             if let Some(initializer) = &declarator.initializer {
@@ -150,6 +165,9 @@ impl Resolver {
     }
 
     fn control_body(&mut self, body: &Stmt) -> Result<(), ResolveError> {
+        if let StmtKind::Attributed { body, .. } = &body.value {
+            return self.control_body(body);
+        }
         let scoped = self.control_scopes && !matches!(body.value, StmtKind::Block(_));
         if scoped {
             self.push_scope();
@@ -169,8 +187,14 @@ impl Resolver {
             | StmtKind::Attribute(_)
             | StmtKind::Break
             | StmtKind::Continue
-            | StmtKind::Pragma(_)
-            | StmtKind::LocalLabelDecl(_) => Ok(()),
+            | StmtKind::Pragma(_) => Ok(()),
+            StmtKind::LocalLabelDecl(labels) => {
+                for label in labels {
+                    self.declare_local_label(label)?;
+                }
+                Ok(())
+            }
+            StmtKind::Attributed { body, .. } => self.statement(body),
             StmtKind::Return(value) | StmtKind::Expr(value) | StmtKind::ComputedGoto(value) => {
                 self.expr(value)
             }
@@ -219,7 +243,12 @@ impl Resolver {
                 self.expr(discriminant)?;
                 self.control_body(body)
             }
-            StmtKind::Labeled { body, .. } => self.statement(body),
+            StmtKind::Labeled { label, body } => {
+                if self.collecting_labels {
+                    self.bind_label(label)?;
+                }
+                self.statement(body)
+            }
             StmtKind::SwitchLabel { label, body } => {
                 match label {
                     crate::ast::SwitchLabel::Case(value) => self.expr(value)?,
@@ -243,6 +272,7 @@ impl Resolver {
                 Ok(())
             }
             StmtKind::Goto(label) => self.reference_label(label),
+            StmtKind::NestedFunction(_) if self.collecting_labels => Ok(()),
             StmtKind::NestedFunction(function) => {
                 let fake = statement
                     .clone()
@@ -420,6 +450,9 @@ impl Resolver {
                 if let ParameterList::Prototype { parameters, .. } = parameters {
                     for parameter in parameters {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
+                        if self.collecting_labels {
+                            self.declarator(&parameter.declarator)?;
+                        }
                     }
                 }
                 Ok(())
@@ -468,7 +501,9 @@ impl Resolver {
     }
 
     fn define_tag<T>(&mut self, id: AstTagId, span: &Span<T>) -> Result<(), ResolveError> {
-        if self.tag_ids.contains_key(&id) {
+        if self.tag_ids.contains_key(&id)
+            || (self.collecting_labels && !self.collected_tags.insert(id))
+        {
             return Ok(());
         }
         let Some(tag) = self.unit_tags.get(&id).cloned() else {
@@ -478,14 +513,16 @@ impl Resolver {
             .name
             .clone()
             .unwrap_or_else(|| format!("<anonymous:{}>", id.0));
-        let entry = self.new_entry(&name, BindingKind::Tag, span);
-        if tag.name.is_some() {
-            self.tags
-                .last_mut()
-                .unwrap()
-                .insert(name.clone(), entry.clone());
+        if !self.collecting_labels {
+            let entry = self.new_entry(&name, BindingKind::Tag, span);
+            if tag.name.is_some() {
+                self.tags
+                    .last_mut()
+                    .unwrap()
+                    .insert(name.clone(), entry.clone());
+            }
+            self.tag_ids.insert(id, entry);
         }
-        self.tag_ids.insert(id, entry);
         match &tag.body {
             TagBody::Enum { enumerators, .. } => {
                 for item in enumerators {
@@ -493,7 +530,9 @@ impl Resolver {
                         if let Some(value) = &enumerator.value {
                             self.expr(value)?;
                         }
-                        self.bind_ordinary(&enumerator.name, BindingKind::Enumerator, item)?;
+                        if !self.collecting_labels {
+                            self.bind_ordinary(&enumerator.name, BindingKind::Enumerator, item)?;
+                        }
                     }
                 }
             }
@@ -515,33 +554,50 @@ impl Resolver {
     }
 
     fn collect_labels(&mut self, statements: &[Stmt]) -> Result<(), ResolveError> {
-        for statement in statements {
-            match &statement.value {
-                StmtKind::Labeled { label, body } => {
-                    self.bind_label(label)?;
-                    self.collect_labels(std::slice::from_ref(body))?;
-                }
-                StmtKind::Block(body) => self.collect_labels(body)?,
-                StmtKind::While { body, .. }
-                | StmtKind::DoWhile { body, .. }
-                | StmtKind::Switch { body, .. }
-                | StmtKind::For { body, .. } => self.collect_labels(std::slice::from_ref(body))?,
-                StmtKind::If {
-                    then_branch,
-                    else_branch,
-                    ..
-                } => {
-                    self.collect_labels(std::slice::from_ref(then_branch))?;
-                    if let Some(branch) = else_branch {
-                        self.collect_labels(std::slice::from_ref(branch))?;
-                    }
-                }
-                StmtKind::SwitchLabel { body, .. } => {
-                    self.collect_labels(std::slice::from_ref(body))?
-                }
-                _ => {}
+        let first_binding = self.next_id;
+        self.collecting_labels = true;
+        let result = self.scoped_statements(statements);
+        self.collecting_labels = false;
+        result?;
+        for binding in &self.resolution.bindings {
+            if binding.value.id.0 >= first_binding
+                && binding.kind == BindingKind::Label
+                && !self.defined_labels.contains(&binding.value.id)
+            {
+                return Err(ResolveError::Unresolved {
+                    namespace: "label",
+                    name: binding.name.clone(),
+                });
             }
         }
+        Ok(())
+    }
+
+    fn declare_local_label(&mut self, label: &Span<String>) -> Result<(), ResolveError> {
+        let entry = if self.collecting_labels {
+            if self.local_labels.last().unwrap().contains_key(&label.value) {
+                return Err(ResolveError::Duplicate {
+                    namespace: "label",
+                    name: label.value.clone(),
+                });
+            }
+            let entry = self.new_entry(&label.value, BindingKind::Label, label);
+            self.local_label_declarations
+                .insert(label.id, entry.clone());
+            entry
+        } else {
+            self.local_label_declarations
+                .get(&label.id)
+                .cloned()
+                .ok_or_else(|| ResolveError::Unresolved {
+                    namespace: "label",
+                    name: label.value.clone(),
+                })?
+        };
+        self.local_labels
+            .last_mut()
+            .unwrap()
+            .insert(label.value.clone(), entry);
         Ok(())
     }
 
@@ -569,6 +625,21 @@ impl Resolver {
     }
 
     fn bind_label(&mut self, label: &Span<String>) -> Result<Entry, ResolveError> {
+        if let Some(entry) = self
+            .local_labels
+            .iter()
+            .rev()
+            .find_map(|scope| scope.get(&label.value))
+            .cloned()
+        {
+            if !self.defined_labels.insert(entry.id) {
+                return Err(ResolveError::Duplicate {
+                    namespace: "label",
+                    name: label.value.clone(),
+                });
+            }
+            return Ok(entry);
+        }
         if self.labels.contains_key(&label.value) {
             return Err(ResolveError::Duplicate {
                 namespace: "label",
@@ -576,6 +647,7 @@ impl Resolver {
             });
         }
         let entry = self.new_entry(&label.value, BindingKind::Label, label);
+        self.defined_labels.insert(entry.id);
         self.labels.insert(label.value.clone(), entry.clone());
         Ok(entry)
     }
@@ -608,6 +680,9 @@ impl Resolver {
     }
 
     fn reference_ordinary<T>(&mut self, name: &str, span: &Span<T>) -> Result<(), ResolveError> {
+        if self.collecting_labels {
+            return Ok(());
+        }
         let entry = self
             .ordinary
             .iter()
@@ -623,6 +698,9 @@ impl Resolver {
     }
 
     fn reference_typedef<T>(&mut self, name: &str, span: &Span<T>) -> Result<(), ResolveError> {
+        if self.collecting_labels {
+            return Ok(());
+        }
         let entry = self
             .ordinary
             .iter()
@@ -639,6 +717,9 @@ impl Resolver {
     }
 
     fn reference_tag<T>(&mut self, name: &str, span: &Span<T>) -> Result<(), ResolveError> {
+        if self.collecting_labels {
+            return Ok(());
+        }
         let entry = self
             .tags
             .iter()
@@ -657,10 +738,16 @@ impl Resolver {
     where
         T: AsRef<str>,
     {
+        if self.collecting_labels {
+            return Ok(());
+        }
         let name = label.value.as_ref();
         let entry = self
-            .labels
-            .get(name)
+            .local_labels
+            .iter()
+            .rev()
+            .find_map(|scope| scope.get(name))
+            .or_else(|| self.labels.get(name))
             .cloned()
             .ok_or_else(|| ResolveError::Unresolved {
                 namespace: "label",
@@ -685,10 +772,12 @@ impl Resolver {
     fn push_scope(&mut self) {
         self.ordinary.push(HashMap::new());
         self.tags.push(HashMap::new());
+        self.local_labels.push(HashMap::new());
     }
     fn pop_scope(&mut self) {
         self.ordinary.pop();
         self.tags.pop();
+        self.local_labels.pop();
     }
 }
 

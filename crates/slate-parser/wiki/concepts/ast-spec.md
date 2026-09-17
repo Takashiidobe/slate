@@ -371,17 +371,15 @@ version-dependent rules. Enum/tag definitions in expressions make the
 unbraced-body distinction observable even without declaration statements.
 
 ```
-CompoundStatement { items: Vec<BlockItem> }
-
-BlockItem =
-    | Declaration(Declaration)
-    | StaticAssert
-    | NestedFunction(FunctionDefinition)
-    | LocalLabelDeclaration(Vec<Span<String>>)  // GNU __label__
-    | CommentGroup
-    | Stmt(Stmt)
+FunctionDefinition { body: Vec<Stmt>, ... }
 
 StmtKind =
+    | Decl(Declaration)
+    | StaticAssert(StaticAssert)
+    | NestedFunction(Box<FunctionDefinition>)
+    | LocalLabelDecl(Vec<Span<String>>)  // GNU __label__
+    | Comment(CommentGroup)
+    | Pragma(Pragma)
     | Block(Vec<Stmt>)
     | Null
     | Expr(Expr)
@@ -389,18 +387,18 @@ StmtKind =
     | Switch { discriminant, body: Box<Stmt> }
     | While { condition, body: Box<Stmt> }
     | DoWhile { body: Box<Stmt>, condition }
-    | For { init: ForInit, condition: Option<Expr>, step: Option<Expr>, body: Box<Stmt> }
+    | For { init: Option<Box<Stmt>>, condition: Option<Expr>, increment: Option<Expr>, body: Box<Stmt> }
     | Labeled { label: Span<String>, body: Box<Stmt> }        // goto target
     | SwitchLabel { label: SwitchLabel, body: Box<Stmt> }     // case/default
     | Goto(Span<String>)
-    | IndirectGoto(Expr)                        // GNU goto *p
+    | ComputedGoto(Expr)                        // GNU goto *p
     | Continue
     | Break
-    | Return(Option<Expr>)
-    | Attributed { attributes, body: Box<Stmt> }   // [[fallthrough]]; → body is Null
+    | Return(Expr)
+    | ReturnVoid
+    | Attribute(Vec<Attribute>)                // standalone [[fallthrough]];
+    | Attributed { attributes, body: Box<Stmt> } // attributes on a non-null statement
     | Asm(GnuAsm)
-
-ForInit = Declaration(Declaration) | Expr(Option<Expr>)
 
 SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
 ```
@@ -417,6 +415,15 @@ SwitchLabel = Case(Expr) | CaseRange { start: Expr, end: Expr } | Default
   an explicit empty compound statement remains `Block([])`.
 - `switch` cases are found by walking the body. Cases may be nested inside
   other statements (Duff's device), so they are not collected by the parser.
+  Case expressions and GNU range endpoints are parsed by the expression
+  parser, not split at the first colon or ellipsis; nested ternaries and
+  type expressions retain their structure.
+- `For.init` is absent, a declaration statement, or an expression statement;
+  the parser never puts another statement kind there.
+- `Attributed` preserves attachment to its nested statement, including labels
+  and control statements. It does not itself introduce a scope. Attributes
+  before declarations remain on the declaration, and standalone attribute
+  statements retain the existing `Attribute` form.
 
 ## Comments
 

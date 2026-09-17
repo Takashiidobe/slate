@@ -534,7 +534,9 @@ fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
         StmtKind::Return(expr) | StmtKind::Expr(expr) | StmtKind::ComputedGoto(expr) => {
             walk_expr(expr, visit)
         }
-        StmtKind::Labeled { body, .. } => walk_stmt(body, visit),
+        StmtKind::Labeled { body, .. } | StmtKind::Attributed { body, .. } => {
+            walk_stmt(body, visit)
+        }
         StmtKind::SwitchLabel { label, body } => {
             match label {
                 SwitchLabel::Case(expr) => walk_expr(expr, visit),

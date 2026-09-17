@@ -256,6 +256,10 @@ impl<'a> Reachability<'a> {
             }
             StmtKind::NestedFunction(function) => self.mark_function(function),
             StmtKind::Attribute(attributes) => self.mark_attributes(attributes),
+            StmtKind::Attributed { attributes, body } => {
+                self.mark_attributes(attributes);
+                self.mark_stmt(body);
+            }
             StmtKind::Null
             | StmtKind::Comment(_)
             | StmtKind::ReturnVoid

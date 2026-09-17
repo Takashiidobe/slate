@@ -1,0 +1,56 @@
+// SLATE-FILECHECK-DEFINES DECLARATION DECLARATION
+// SLATE-FILECHECK-ERROR DECLARATION
+// SLATE-FILECHECK-DEFINES DEFINITION DEFINITION
+// SLATE-FILECHECK-ERROR DEFINITION
+// SLATE-FILECHECK-DEFINES UNRESOLVED UNRESOLVED
+// SLATE-FILECHECK-ERROR UNRESOLVED
+// SLATE-FILECHECK-DEFINES ESCAPED ESCAPED
+// SLATE-FILECHECK-ERROR ESCAPED
+// SLATE-FILECHECK-DEFINES SHADOW SHADOW
+// SLATE-FILECHECK-ERROR SHADOW
+// SLATE-FILECHECK-DEFINES EXPRESSION EXPRESSION
+// SLATE-FILECHECK-ERROR EXPRESSION
+// SLATE-FILECHECK-ARGS --dump-ir-names
+
+int probe(void) {
+#if defined(DECLARATION)
+    __label__ done;
+    __label__ done;
+    done: ;
+#elif defined(DEFINITION)
+    __label__ done;
+    done: ;
+    { done: ; }
+#elif defined(UNRESOLVED)
+    __label__ missing;
+#elif defined(ESCAPED)
+    { __label__ hidden; hidden: ; }
+    goto hidden;
+#elif defined(SHADOW)
+    { __label__ done; goto done; }
+    done: ;
+#elif defined(EXPRESSION)
+    (void)({ done: 1; });
+    done: ;
+#endif
+    return 0;
+}
+
+// SLATE-FILECHECK-BEGIN DECLARATION
+// DECLARATION: Error:   × duplicate label name `done`
+// SLATE-FILECHECK-END DECLARATION
+// SLATE-FILECHECK-BEGIN DEFINITION
+// DEFINITION: Error:   × duplicate label name `done`
+// SLATE-FILECHECK-END DEFINITION
+// SLATE-FILECHECK-BEGIN UNRESOLVED
+// UNRESOLVED: Error:   × unresolved label name `missing`
+// SLATE-FILECHECK-END UNRESOLVED
+// SLATE-FILECHECK-BEGIN ESCAPED
+// ESCAPED: Error:   × unresolved label name `hidden`
+// SLATE-FILECHECK-END ESCAPED
+// SLATE-FILECHECK-BEGIN SHADOW
+// SHADOW: Error:   × unresolved label name `done`
+// SLATE-FILECHECK-END SHADOW
+// SLATE-FILECHECK-BEGIN EXPRESSION
+// EXPRESSION: Error:   × duplicate label name `done`
+// SLATE-FILECHECK-END EXPRESSION

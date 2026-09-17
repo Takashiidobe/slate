@@ -51,8 +51,10 @@ an empty statement without introducing a compound scope.
   `mark_unreachable_in` and `always_terminates` (dead-code marking, a
   separate concern) use wildcard arms and only need touching if the new
   statement always transfers control, like `Goto`.
-- `Stmt::Attribute` is a standalone GNU or C23 attribute declaration; it
-  needs no reachability handling beyond that conservative default.
+- `StmtKind::Attribute` is a standalone GNU or C23 attribute statement.
+  `StmtKind::Attributed { attributes, body }` attaches attributes to a nested
+  statement; all body walkers must recurse through it without adding a scope.
+  Reachability visits both the attributes and body.
 - `src/sema/validate.rs` — `walk_stmt` is exhaustive: a variant holding statements
   or expressions must recurse so clang-flavor asm checks see nested
   `asm`, register locals, and labels.

@@ -387,6 +387,7 @@ fn fixture_source(fixture: &Path) -> String {
     result
 }
 
+#[expect(clippy::too_many_arguments, reason = "fine")]
 fn run_error_fixture(
     fixture: &Path,
     prefix: &str,
@@ -579,6 +580,7 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
                     | StmtKind::Decl(_)
                     | StmtKind::StaticAssert(_)
                     | StmtKind::Attribute(_)
+                    | StmtKind::Attributed { .. }
                     | StmtKind::Block(_)
                     | StmtKind::Null
                     | StmtKind::If { .. }

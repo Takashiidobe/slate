@@ -291,6 +291,10 @@ pub enum StmtKind {
     Decl(Declaration),
     StaticAssert(StaticAssert),
     Attribute(Vec<Attribute>),
+    Attributed {
+        attributes: Vec<Attribute>,
+        body: Box<Stmt>,
+    },
     Block(Vec<Stmt>),
     If {
         condition: Expr,
