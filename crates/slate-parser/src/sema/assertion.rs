@@ -150,10 +150,7 @@ impl Checker<'_> {
             fixed_type,
         } = &tag.body
         {
-            let int_ty = Type::Numeric(NumericType::Integer {
-                width: self.unit.target.int_width,
-                signed: true,
-            });
+            let int_ty = Type::integer(self.unit.target.int_width, true);
             let fixed = fixed_type
                 .as_ref()
                 .and_then(|ty| self.types.resolve(&ty.specifiers, &ty.declarator).ok())
@@ -172,7 +169,7 @@ impl Checker<'_> {
                 previous = value.clone();
                 if let Some(value) = value {
                     let ty = fixed.clone().unwrap_or_else(|| int_ty.clone());
-                    let Type::Numeric(NumericType::Integer { width, signed }) = ty else {
+                    let Type::Numeric(NumericType::Integer { width, signed, .. }) = ty else {
                         continue;
                     };
                     let limit = BigInt::from(1u8) << (width - u32::from(signed));

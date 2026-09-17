@@ -88,7 +88,7 @@ impl Context {
                     })
                     .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
                 (
-                    Type::Numeric(NumericType::Integer { width, signed }),
+                    Type::integer(width, signed),
                     ValueKind::Constant(Number::Integer(literal.value.clone())),
                 )
             }
@@ -360,14 +360,12 @@ impl Context {
         }
         let numeric = match &ty.specifiers.ty {
             TypeSpecifier::Bool => return Ok(Type::Bool),
-            TypeSpecifier::Integer(IntegerType::Char { signed }) => NumericType::Integer {
-                width: 8,
-                signed: signed.unwrap_or(self.target.char_signed),
-            },
-            TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => NumericType::Integer {
-                width: integer_rank_width(*rank, &self.target),
-                signed: *signed,
-            },
+            TypeSpecifier::Integer(IntegerType::Char { signed }) => {
+                NumericType::integer(8, signed.unwrap_or(self.target.char_signed))
+            }
+            TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
+                NumericType::integer(integer_rank_width(*rank, &self.target), *signed)
+            }
             TypeSpecifier::Floating(ty) => NumericType::Float(match ty {
                 FloatingType::Float16 | FloatingType::Fp16 => FloatType::F16,
                 FloatingType::Float => FloatType::F32,
@@ -390,10 +388,7 @@ impl Context {
     }
 
     fn size_type(&self) -> Type {
-        Type::Numeric(NumericType::Integer {
-            width: self.target.long_width,
-            signed: false,
-        })
+        Type::integer(self.target.long_width, false)
     }
 
     pub(super) fn promote(&self, value: Value) -> Value {
@@ -417,10 +412,12 @@ impl Context {
                 Type::Numeric(NumericType::Integer {
                     width: a,
                     signed: sa,
+                    bit_precise: pa,
                 }),
                 Type::Numeric(NumericType::Integer {
                     width: b,
                     signed: sb,
+                    bit_precise: pb,
                 }),
             ) => Type::Numeric(NumericType::Integer {
                 width: a.max(b),
@@ -430,6 +427,13 @@ impl Context {
                     sa
                 } else {
                     sb
+                },
+                bit_precise: if a == b {
+                    pa && pb
+                } else if a > b {
+                    pa
+                } else {
+                    pb
                 },
             }),
             _ => return (left, right),
@@ -441,10 +445,7 @@ impl Context {
     }
 
     pub(super) fn int_type(&self) -> Type {
-        Type::Numeric(NumericType::Integer {
-            width: self.target.int_width,
-            signed: true,
-        })
+        Type::integer(self.target.int_width, true)
     }
 
     pub(super) fn convert(&self, value: Value, to: Type, reason: ConversionReason) -> Value {
@@ -478,14 +479,20 @@ impl Context {
                 Type::Numeric(NumericType::Integer {
                     width: from_width,
                     signed: from_signed,
+                    ..
                 }),
-                Type::Numeric(NumericType::Integer { width, signed }),
+                Type::Numeric(NumericType::Integer {
+                    width,
+                    signed,
+                    bit_precise,
+                }),
             ) => {
                 let mut value = value;
                 if from_width != width {
                     let intermediate = Type::Numeric(NumericType::Integer {
                         width,
                         signed: from_signed,
+                        bit_precise,
                     });
                     let (kind, semantics) = if from_width < width {
                         (ConversionKind::Widen, ConversionSema::Exact)
@@ -510,7 +517,7 @@ impl Context {
                 value
             }
             (
-                Type::Numeric(NumericType::Integer { width, signed }),
+                Type::Numeric(NumericType::Integer { width, signed, .. }),
                 Type::Numeric(NumericType::Float(format)),
             ) => {
                 let precision = match format {

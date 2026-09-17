@@ -75,8 +75,40 @@ impl fmt::Display for Type {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NumericType {
-    Integer { width: u32, signed: bool },
+    Integer {
+        width: u32,
+        signed: bool,
+        bit_precise: bool,
+    },
     Float(FloatType),
+}
+
+impl NumericType {
+    pub fn integer(width: u32, signed: bool) -> Self {
+        Self::Integer {
+            width,
+            signed,
+            bit_precise: false,
+        }
+    }
+
+    pub fn bit_precise(width: u32, signed: bool) -> Self {
+        Self::Integer {
+            width,
+            signed,
+            bit_precise: true,
+        }
+    }
+}
+
+impl Type {
+    pub fn integer(width: u32, signed: bool) -> Self {
+        Self::Numeric(NumericType::integer(width, signed))
+    }
+
+    pub fn bit_precise(width: u32, signed: bool) -> Self {
+        Self::Numeric(NumericType::bit_precise(width, signed))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -103,8 +135,17 @@ impl fmt::Display for FloatType {
 impl fmt::Display for NumericType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Integer { width, signed } => {
-                write!(f, "{}{width}", if *signed { 'i' } else { 'u' })
+            Self::Integer {
+                width,
+                signed,
+                bit_precise,
+            } => {
+                write!(
+                    f,
+                    "{}{width}{}",
+                    if *signed { 'i' } else { 'u' },
+                    if *bit_precise { "b" } else { "" }
+                )
             }
             Self::Float(format) => write!(f, "{format}"),
         }

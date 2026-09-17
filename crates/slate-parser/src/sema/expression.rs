@@ -342,10 +342,7 @@ impl Lowerer {
                 }
                 self.types.storage(element.clone())?;
                 Ok((
-                    Type::Numeric(NumericType::Integer {
-                        width: self.context.target.pointer_width,
-                        signed: true,
-                    }),
+                    Type::integer(self.context.target.pointer_width, true),
                     ValueKind::PointerDifference {
                         left: Box::new(left),
                         right: Box::new(right),
@@ -442,10 +439,7 @@ impl Lowerer {
             .entry(e.id)
             .or_default()
             .push((key.into(), detail));
-        let ty = Type::Numeric(NumericType::Integer {
-            width: self.context.target.pointer_width,
-            signed: false,
-        });
+        let ty = Type::integer(self.context.target.pointer_width, false);
         self.value(e, ty, ValueKind::Constant(Number::Integer(amount.into())))
     }
 
@@ -536,10 +530,7 @@ impl Lowerer {
                     .collect::<Result<Vec<_>, _>>()?;
                 bytes.push(0);
                 let length = Some(bytes.len() as u64);
-                let element = Type::Numeric(NumericType::Integer {
-                    width: 8,
-                    signed: self.context.target.char_signed,
-                });
+                let element = Type::integer(8, self.context.target.char_signed);
                 let ty = Type::Array {
                     element: Box::new(element),
                     length,

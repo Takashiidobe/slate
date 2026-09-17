@@ -181,7 +181,7 @@ fn convert_float<F: Float>(bits: u128, negate: bool, width: u32, signed: bool) -
 fn integer_type(ty: &Type) -> Option<(u32, bool)> {
     match ty {
         Type::Bool => Some((1, false)),
-        Type::Numeric(NumericType::Integer { width, signed })
+        Type::Numeric(NumericType::Integer { width, signed, .. })
             if (1..=MAX_WIDTH).contains(width) =>
         {
             Some((*width, *signed))

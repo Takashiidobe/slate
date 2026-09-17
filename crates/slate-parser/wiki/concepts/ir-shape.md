@@ -86,7 +86,10 @@ Sema constructs typed IR directly; there is no separate semantic AST.
 The first implemented slice uses `Value { ty, node: Span<ValueKind> }`
 with constants and addition, preserving spelling/expansion spans, node IDs,
 header provenance, and macro origins. Numeric types currently carry only
-integer width/signedness or one of five explicit float formats. Sema uses
+integer width/signedness/bit-precision or one of five explicit float
+formats; `Integer { width, signed, bit_precise }` stands in for the
+separate `BitInt` variant proposed above, so `_BitInt(N)` and a standard
+integer of the same width compare unequal and get their own layouts. Sema uses
 translation-unit `CompilerOptions.operations` for addition contracts and
 the effective `TargetInfo.long_double` for long-double literals. Layout
 options are applied before both target predefines and sema; consumers do not

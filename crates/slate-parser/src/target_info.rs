@@ -213,9 +213,6 @@ impl ScalarLayouts {
 
     // bit-precise integers take the smallest standard layout that holds them
     fn bit_precise(&self, width: u32) -> Option<StorageLayout> {
-        if [8, 16, 32, 64, 128].contains(&width) {
-            return None;
-        }
         let integer = |width| {
             self.get(ScalarKey::Integer {
                 width,
@@ -371,7 +368,17 @@ impl TargetInfo {
     pub fn storage_of(&self, ty: Type) -> Result<StorageLayout, LayoutError> {
         let key = match ty {
             Type::Bool => ScalarKey::Bool,
-            Type::Numeric(NumericType::Integer { width, signed }) => {
+            Type::Numeric(NumericType::Integer {
+                width,
+                signed,
+                bit_precise,
+            }) => {
+                if bit_precise {
+                    return self
+                        .scalars
+                        .bit_precise(width)
+                        .ok_or(LayoutError::UnsupportedScalar(ty));
+                }
                 ScalarKey::Integer { width, signed }
             }
             Type::Numeric(NumericType::Float(format)) => ScalarKey::Float(format),
@@ -382,10 +389,6 @@ impl TargetInfo {
         };
         self.scalars
             .get(key)
-            .or_else(|| match key {
-                ScalarKey::Integer { width, .. } => self.scalars.bit_precise(width),
-                _ => None,
-            })
             .ok_or(LayoutError::UnsupportedScalar(ty))
     }
 

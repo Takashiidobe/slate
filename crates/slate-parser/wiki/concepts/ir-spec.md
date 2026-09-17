@@ -301,8 +301,14 @@ compound assignments and increments share the same operator lowering as
 ordinary binary expressions. The expression-only diagnostic view has no
 places and therefore still rejects updates.
 
-The initial numeric type stores integer width/signedness or one of five
-floating formats: f16, f32, f64, f80, f128. These denote value formats, not
+The initial numeric type stores integer width/signedness/bit-precision or
+one of five floating formats: f16, f32, f64, f80, f128. Bit-precise
+integers (`_BitInt(N)`) are a distinct type from the standard integer of
+the same width and print with a `b` suffix (`i128b`, `u32b`): on x86-64
+`__int128` is `i128` with size 16 align 16 while `_BitInt(128)` is `i128b`
+with size 16 align 8, and arm32 rejects `__int128` while still accepting
+`_BitInt(128)`. Bit-precise layouts come from `ScalarLayouts::bit_precise`,
+which rounds the width up to the widest standard integer's alignment. These denote value formats, not
 storage sizes. Sema resolves `long double` through `TargetInfo.long_double`:
 the current x86-64 Linux baseline uses f80; `-mlong-double-64/80/128`
 selects the corresponding format. Literal digits are parsed directly into
@@ -501,6 +507,7 @@ original C type is metadata.
 | `float` / `double`                       | `f32` / `f64`                    | `c=float` / `c=double`                |
 | `long double` (x86)                      | `f80`                            | `c=long double`                       |
 | `__float128`                             | `f128`                           |                                       |
+| `_BitInt(128)`                           | `i128b`                          | `c=_BitInt(128)`                      |
 | `const char *`                           | `*const i8`                      | `c=const char *`                      |
 | `enum E`                                 | `enum E` (underlying `u32`)      | underlying type computed per compiler |
 | `struct S`                               | `struct S`                       | layout in module                      |

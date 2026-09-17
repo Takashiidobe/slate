@@ -148,10 +148,7 @@ impl TypeResolver {
                     u64::from(layout.alignment_bytes)
                 };
                 (
-                    Type::Numeric(NumericType::Integer {
-                        width: self.target.pointer_width,
-                        signed: false,
-                    }),
+                    Type::integer(self.target.pointer_width, false),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -189,10 +186,7 @@ impl TypeResolver {
                     u64::from(layout.alignment_bytes)
                 };
                 (
-                    Type::Numeric(NumericType::Integer {
-                        width: self.target.pointer_width,
-                        signed: false,
-                    }),
+                    Type::integer(self.target.pointer_width, false),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -203,10 +197,7 @@ impl TypeResolver {
                     .ok_or(ResolveError::Unsupported("void offsetof"))?;
                 let (_, n) = self.offsetof_member(ty, member)?;
                 (
-                    Type::Numeric(NumericType::Integer {
-                        width: self.target.pointer_width,
-                        signed: false,
-                    }),
+                    Type::integer(self.target.pointer_width, false),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -501,10 +492,7 @@ impl TypeResolver {
                     Some(false) => "unsigned char",
                 };
                 (
-                    Type::Numeric(NumericType::Integer {
-                        width: 8,
-                        signed: signed.unwrap_or(self.target.char_signed),
-                    }),
+                    Type::integer(8, signed.unwrap_or(self.target.char_signed)),
                     spelling.into(),
                 )
             }
@@ -521,13 +509,7 @@ impl TypeResolver {
                 } else {
                     format!("unsigned {name}")
                 };
-                (
-                    Type::Numeric(NumericType::Integer {
-                        width,
-                        signed: *signed,
-                    }),
-                    spelling,
-                )
+                (Type::integer(width, *signed), spelling)
             }
             TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
                 let width = u32::try_from(self.constant_integer(width)?)
@@ -536,10 +518,7 @@ impl TypeResolver {
                     return Err(ResolveError::Unsupported("invalid _BitInt width"));
                 }
                 (
-                    Type::Numeric(NumericType::Integer {
-                        width,
-                        signed: *signed,
-                    }),
+                    Type::bit_precise(width, *signed),
                     format!("{}_BitInt({width})", if *signed { "" } else { "unsigned " }),
                 )
             }
@@ -815,23 +794,14 @@ impl TypeResolver {
                     .iter()
                     .all(|(_, _, value)| i32::try_from(*value).is_ok())
                 {
-                    Type::Numeric(NumericType::Integer {
-                        width: self.target.int_width,
-                        signed: true,
-                    })
+                    Type::integer(self.target.int_width, true)
                 } else if values
                     .iter()
                     .all(|(_, _, value)| u32::try_from(*value).is_ok())
                 {
-                    Type::Numeric(NumericType::Integer {
-                        width: self.target.int_width,
-                        signed: false,
-                    })
+                    Type::integer(self.target.int_width, false)
                 } else {
-                    Type::Numeric(NumericType::Integer {
-                        width: self.target.long_width,
-                        signed: true,
-                    })
+                    Type::integer(self.target.long_width, true)
                 };
                 let mut entries = Vec::new();
                 for (item, enumerator, value) in values {
@@ -1399,7 +1369,7 @@ pub(super) fn string_literal_type(
         _ => false,
     };
     Type::Array {
-        element: Box::new(Type::Numeric(NumericType::Integer { width, signed })),
+        element: Box::new(Type::integer(width, signed)),
         length: Some(literal.execution_units(target.wchar_width).len() as u64 + 1),
     }
 }

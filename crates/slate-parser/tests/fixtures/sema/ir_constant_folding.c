@@ -51,8 +51,8 @@ unsigned long constants(void) {
 // IR-NEXT:         add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1));
 // IR-NEXT:         shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(32));
 // IR-NEXT:         mul<u64, overflow=wrap>(const<u64>(4) [size_of="i32"], reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))));
-// IR-NEXT:         shl<i256, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i256, reason=explicit>(const<i32>(1)), const<i32>(200));
-// IR-NEXT:         truncate<u32, reason=explicit, fits=unknown>(const<u64>(4294967297));
+// IR-NEXT:         shl<i256b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i256b, reason=explicit>(const<i32>(1)), const<i32>(200));
+// IR-NEXT:         truncate<u32b, reason=explicit, fits=unknown>(const<u64>(4294967297));
 // IR-NEXT:         return add<u64, overflow=wrap>(const<u64>(4) [size_of="i32"], const<u64>(8) [align_of="f64"]);
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -360,41 +360,11 @@ impl fmt::Display for DisplayModule<'_> {
         )?;
         for (names, ty) in [
             ("bool", Type::Bool),
-            (
-                "i8, u8",
-                Type::Numeric(NumericType::Integer {
-                    width: 8,
-                    signed: true,
-                }),
-            ),
-            (
-                "i16, u16",
-                Type::Numeric(NumericType::Integer {
-                    width: 16,
-                    signed: true,
-                }),
-            ),
-            (
-                "i32, u32",
-                Type::Numeric(NumericType::Integer {
-                    width: 32,
-                    signed: true,
-                }),
-            ),
-            (
-                "i64, u64",
-                Type::Numeric(NumericType::Integer {
-                    width: 64,
-                    signed: true,
-                }),
-            ),
-            (
-                "i128, u128",
-                Type::Numeric(NumericType::Integer {
-                    width: 128,
-                    signed: true,
-                }),
-            ),
+            ("i8, u8", Type::integer(8, true)),
+            ("i16, u16", Type::integer(16, true)),
+            ("i32, u32", Type::integer(32, true)),
+            ("i64, u64", Type::integer(64, true)),
+            ("i128, u128", Type::integer(128, true)),
             ("f16", Type::Numeric(NumericType::Float(FloatType::F16))),
             ("f32", Type::Numeric(NumericType::Float(FloatType::F32))),
             ("f64", Type::Numeric(NumericType::Float(FloatType::F64))),
