@@ -39,6 +39,9 @@
 
 #define SHM_HUGE_SHIFT 26
 #define SHM_HUGE_MASK  0x3f
+#if defined(__SLATE_LIBC_GLIBC)
+#define SHM_HUGE_16KB (14 << SHM_HUGE_SHIFT)
+#endif
 #define SHM_HUGE_64KB  (16 << 26)
 #define SHM_HUGE_512KB (19 << 26)
 #define SHM_HUGE_1MB   (20 << 26)

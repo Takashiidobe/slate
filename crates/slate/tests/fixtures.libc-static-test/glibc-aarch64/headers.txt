@@ -176,3 +176,6 @@ sys/quota.h
 sys/random.h
 sys/select.h
 sys/sem.h
+sys/sendfile.h
+sys/shm.h
+sys/signal.h

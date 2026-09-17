@@ -42,9 +42,19 @@ struct shmid_ds {
 };
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+struct shminfo {
+  unsigned long shmmax, shmmin, shmmni, shmseg, shmall;
+  unsigned long __glibc_reserved1;
+  unsigned long __glibc_reserved2;
+  unsigned long __glibc_reserved3;
+  unsigned long __glibc_reserved4;
+};
+#else
 struct shminfo {
   unsigned long shmmax, shmmin, shmmni, shmseg, shmall, __unused[4];
 };
+#endif
 
 struct shm_info {
   int           __used_ids;

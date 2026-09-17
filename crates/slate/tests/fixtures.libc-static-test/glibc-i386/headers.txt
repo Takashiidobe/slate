@@ -181,3 +181,6 @@ sys/random.h
 sys/sdt.h
 sys/select.h
 sys/sem.h
+sys/sendfile.h
+sys/shm.h
+sys/signal.h
