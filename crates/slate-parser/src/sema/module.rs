@@ -8,10 +8,9 @@ use crate::ast::{
 use crate::ir::*;
 use std::collections::HashMap;
 
+/// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
+/// diagnostics, including failed static assertions.
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
-    if let Some(error) = super::assertion::validate(unit).into_iter().next() {
-        return Err(ResolveError::StaticAssertion(error.message));
-    }
     let context = Context::new(unit.target.clone()).with_options(&unit.options);
     let names = super::names::resolve(unit)?;
     let next_id = names
