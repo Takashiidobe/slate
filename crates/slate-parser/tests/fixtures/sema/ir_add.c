@@ -1,0 +1,48 @@
+// SLATE-FILECHECK-DEFINES IR
+// SLATE-FILECHECK-ARGS --dump-ir
+// SLATE-FILECHECK-ISYSTEM tests/fixtures ~/Projects/slate/libc-shim/include /usr/lib/clang/22/include
+#include "add.c"
+int exercise_add(void) { return main(); }
+
+// SLATE-FILECHECK-BEGIN IR
+// IR: module {
+// IR-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-NEXT:         endian = little;
+// IR-NEXT:         pointer [size=8, align=8];
+// IR-NEXT:         stack_alignment = 16;
+// IR-NEXT:         long_double = f80;
+// IR-NEXT:         storage bool [size=1, align=1];
+// IR-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage f16 [size=2, align=2];
+// IR-NEXT:         storage f32 [size=4, align=4];
+// IR-NEXT:         storage f64 [size=8, align=8];
+// IR-NEXT:         storage f80 [size=16, align=16];
+// IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:     }
+// IR-NEXT:     type @type0 = ptr<const i8>;
+// IR-NEXT:     type @type1 = fn(@type0, ...) -> i32;
+// IR-NEXT:     type @type2 = ptr<const i8>;
+// IR-NEXT:     type @type3 = fn(i32, i32) -> i32;
+// IR-NEXT:     type @type4 = fn() -> i32;
+// IR-NEXT:     type @type5 = array<i8, 4>;
+// IR-NEXT:     type @type6 = ptr<i8>;
+// IR-NEXT:     type @type7 = fn() -> i32;
+// IR-NEXT:     global %8 .str8: @type5 [storage=static] = bytes<@type5>([37, 100, 10, 0]) [linkage=internal];
+// IR-NEXT:     fn %0 @printf(%7 <unnamed>: @type2, ...) -> i32 [linkage=external];
+// IR-NEXT:     fn %1 @add(%2 a: i32, %3 b: i32) -> i32 [linkage=external] {
+// IR-NEXT:         let %4 c: i32 [storage=automatic] = add<i32, overflow=undefined>(read<i32>(%2), read<i32>(%3));
+// IR-NEXT:         return read<i32>(%4);
+// IR-NEXT:     }
+// IR-NEXT:     fn %5 @main() -> i32 [linkage=external] {
+// IR-NEXT:         call<i32>(%0, pointer_cast<@type0, reason=arg>(array_decay<@type6, length=Some(4)>(%8)), call<i32>(%1, const<i32>(2), const<i32>(3)));
+// IR-NEXT:         return const<i32>(0);
+// IR-NEXT:     }
+// IR-NEXT:     fn %6 @exercise_add() -> i32 [linkage=external] {
+// IR-NEXT:         return call<i32>(%5);
+// IR-NEXT:     }
+// IR-NEXT: }
+// SLATE-FILECHECK-END IR

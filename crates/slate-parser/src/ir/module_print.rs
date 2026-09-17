@@ -101,9 +101,9 @@ impl DisplayModule<'_> {
                 }
                 Statement::Write { place, value } => write!(
                     f,
-                    "write<{}>(%{}, {})",
+                    "write<{}>({}, {})",
                     place.ty,
-                    place.binding.0,
+                    place,
                     value
                         .display_metadata(false, self.table())
                         .with_compact(self.compact)

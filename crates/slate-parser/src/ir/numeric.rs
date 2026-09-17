@@ -194,6 +194,7 @@ pub enum ConversionKind {
     FloatWiden,
     FloatNarrow,
     FloatToInt,
+    PointerCast,
 }
 
 impl fmt::Display for ConversionKind {
@@ -207,6 +208,7 @@ impl fmt::Display for ConversionKind {
             Self::FloatWiden => "float_widen",
             Self::FloatNarrow => "float_narrow",
             Self::FloatToInt => "float_to_int",
+            Self::PointerCast => "pointer_cast",
         })
     }
 }
@@ -214,6 +216,9 @@ impl fmt::Display for ConversionKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ConversionReason {
     Return,
+    Assign,
+    Arg,
+    Vararg,
     Promotion,
     UsualArith,
     Explicit,
@@ -223,6 +228,9 @@ impl fmt::Display for ConversionReason {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
             Self::Return => "return",
+            Self::Assign => "assign",
+            Self::Arg => "arg",
+            Self::Vararg => "vararg",
             Self::Promotion => "promotion",
             Self::UsualArith => "usual_arith",
             Self::Explicit => "explicit",

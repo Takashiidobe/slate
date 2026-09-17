@@ -5,7 +5,7 @@ mod names;
 mod numeric;
 
 pub use declarations::{
-    BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, RecordKind,
+    BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
     RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{Function, Linkage, Metadata, Module, Statement};
@@ -34,8 +34,31 @@ pub struct Value {
 pub enum ValueKind {
     Constant(Number),
     Null,
+    Void,
     Bytes(Vec<u8>),
-    ArrayDecay(Place),
+    ArrayDecay {
+        place: Place,
+        length: Option<u64>,
+    },
+    Store {
+        place: Place,
+        value: Box<Value>,
+    },
+    Update {
+        place: Place,
+        computation: Box<Value>,
+        postfix: bool,
+    },
+    OldValue,
+    Conditional {
+        condition: Box<Value>,
+        then_value: Box<Value>,
+        else_value: Box<Value>,
+    },
+    Sequence {
+        left: Box<Value>,
+        right: Box<Value>,
+    },
     Call {
         function: BindingId,
         arguments: Vec<Value>,
@@ -64,6 +87,7 @@ pub enum ValueKind {
         left: Box<Value>,
         right: Box<Value>,
         exceptions: Option<Exceptions>,
+        reason: Option<ConversionReason>,
     },
     Logical {
         op: LogicalOp,
@@ -131,9 +155,61 @@ impl Value {
     ) -> fmt::Result {
         match &self.node.value {
             ValueKind::Bytes(bytes) => write!(f, "bytes<{}>({bytes:?})", self.ty),
-            ValueKind::ArrayDecay(place) => {
-                write!(f, "array_decay<{}>(%{})", self.ty, place.binding.0)
+            ValueKind::ArrayDecay { place, length } => {
+                write!(f, "array_decay<{}, length={length:?}>({place})", self.ty)
             }
+            ValueKind::OldValue => write!(f, "old<{}>", self.ty),
+            ValueKind::Store { place, value } => write!(
+                f,
+                "store<{}>({}, {})",
+                self.ty,
+                place,
+                value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
+            ValueKind::Update {
+                place,
+                computation,
+                postfix,
+            } => write!(
+                f,
+                "update<{}, result={}>({}, {})",
+                self.ty,
+                if *postfix { "old" } else { "new" },
+                place,
+                computation
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
+            ValueKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => write!(
+                f,
+                "conditional<{}>({}, {}, {})",
+                self.ty,
+                condition
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                then_value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                else_value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
+            ValueKind::Sequence { left, right } => write!(
+                f,
+                "sequence<{}>({}, {})",
+                self.ty,
+                left.display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                right
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::Call {
                 function,
                 arguments,
@@ -150,9 +226,10 @@ impl Value {
                 }
                 f.write_str(")")
             }
+            ValueKind::Void => f.write_str("void"),
             ValueKind::Null => write!(f, "null<{}>", self.ty),
-            ValueKind::Read(place) => write!(f, "read<{}>(%{})", place.ty, place.binding.0),
-            ValueKind::AddressOf(place) => write!(f, "addr_of<{}>(%{})", self.ty, place.binding.0),
+            ValueKind::Read(place) => write!(f, "read<{}>({place})", place.ty),
+            ValueKind::AddressOf(place) => write!(f, "addr_of<{}>({place})", self.ty),
             ValueKind::Constant(Number::Bool(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::SignedInteger(value)) => {
@@ -258,8 +335,12 @@ impl Value {
                 left,
                 right,
                 exceptions,
+                reason,
             } => {
                 write!(f, "{op}<{}", left.ty)?;
+                if let Some(reason) = reason.filter(|_| !compact) {
+                    write!(f, ", reason={reason}")?;
+                }
                 if let Some(exceptions) = exceptions.filter(|_| !compact) {
                     write!(f, ", exceptions={}", exceptions_name(exceptions))?;
                 }

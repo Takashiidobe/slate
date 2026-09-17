@@ -128,5 +128,24 @@ pub enum Parameters {
 #[derive(Debug, Clone)]
 pub struct Place {
     pub ty: Type,
-    pub binding: BindingId,
+    pub kind: PlaceKind,
+}
+
+#[derive(Debug, Clone)]
+pub enum PlaceKind {
+    Binding(BindingId),
+    Deref(Box<Value>),
+    Field { base: Box<Place>, index: usize },
+    Index { base: Box<Value>, index: Box<Value> },
+}
+
+impl std::fmt::Display for Place {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.kind {
+            PlaceKind::Binding(id) => write!(f, "%{}", id.0),
+            PlaceKind::Deref(value) => write!(f, "deref({value})"),
+            PlaceKind::Field { base, index } => write!(f, "field{index}({base})"),
+            PlaceKind::Index { base, index } => write!(f, "index({base}, {index})"),
+        }
+    }
 }

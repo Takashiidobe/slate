@@ -51,15 +51,16 @@ AST ──sema/lowering──▶ IR ──analysis pass(es)──▶ IR + facts 
 - `src/ir/` — typed node definitions, required semantic properties, source
   spans, and text printing. Does not interpret AST nodes or compiler flags.
 
-### Implemented module seed
+### Implemented module lowering
 
 `slate-parser ir <source.c>` (also `parse <source.c> --dump-ir`) invokes
-`sema::resolve_module`. The first module slice retains the effective target
-and spanned function definitions and statements. Functions have concrete
-scalar or void returns, internal/external linkage, and bodies containing
-numeric expression statements, returns, and nested blocks. Return conversions
-are explicit and carry `reason=return`; spans retain the original AST node
-identity and provenance. The printer preserves function and block boundaries.
+`sema::resolve_module`. The module retains the effective target and spanned
+function declarations, definitions, globals, and statements. Direct calls,
+local declarations, assignment, compound assignment, increments, member and
+index access, conditional and comma expressions, and scalar casts are typed
+while constructing IR. Return, assignment, argument, and variadic conversions
+carry their reasons. Function parameter arrays and functions adjust to pointers.
+Spans retain the original AST node identity and provenance.
 
 The module node model includes named aliases, pointer/array types, records
 with field layouts, enums with typed enumerators, globals, and function
@@ -85,8 +86,7 @@ printer, and lowering must succeed for the whole module before output is
 printed. The expression and name dump modes are separate diagnostic views.
 `slate-parser parse source.c --dump-ir-types --show-metadata` resolves and
 prints type aliases and function signatures without lowering function bodies.
-This declaration view works for `tests/fixtures/add.c` while its statements
-and calls await general module lowering. Derived pointer, array, and function
+This declaration view works for `tests/fixtures/add.c`. Derived pointer, array, and function
 types use `TypeId` definitions. Each resolved declaration carries `c`,
 `c_canon` when different, and `typedef_chain` metadata; qualifiers are kept
 as `c_const`, `c_volatile`, `c_restrict`, and `c_atomic` metadata. The shown
@@ -105,15 +105,12 @@ Thus the latter wins when a CLI option accepts repeated values. Extra arguments
 are split on whitespace; shell quoting is not interpreted.
 `tests/fixtures/sema/ir_module_promotions.c` exercises real C arithmetic,
 explicit narrowing, integer promotion, and return widening. The constructed
-`ir_module` example covers IR nodes that C lowering cannot yet produce.
+`ir_module` example covers the same printer with hand-built IR.
 
-AST lowering still accepts only functions without parameters. Other
-declarations, parameter lists, derived return types, unsupported statements,
-and function attributes are diagnosed instead of omitted. Populating the
-expanded nodes from C belongs to `lh7.2.2` and subsequent lowering tasks.
-In particular, `tests/fixtures/add.c` cannot yet be dumped as a module: its
-stdio declaration, parameters, local variable, calls, strings, and implicit
-return need the `lh7.2.2` C-to-IR lowering work.
+The module dump also handles `tests/fixtures/add.c`: its stdio declaration,
+parameters, local variable, direct calls, string literal, and implicit return.
+Unsupported statements and attributes are diagnosed instead of omitted.
+Control-flow and aggregate lowering remain separate work.
 The constructed module in `examples/ir_module.rs` exercises the declarations,
 the complete worked `add`/`printf`/`main` example and both printer modes through
 generated FileCheck expectations. `SLATE-FILECHECK-EXAMPLE ir_module` selects

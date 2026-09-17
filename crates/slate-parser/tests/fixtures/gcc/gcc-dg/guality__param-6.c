@@ -125,7 +125,7 @@ int main(void) {
 // DEFAULT-NEXT:                               clobbers: [
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "ebx",
 // DEFAULT-NEXT:                                               number: 3,
 // DEFAULT-NEXT:                                               canonical: "bx",

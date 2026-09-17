@@ -318,11 +318,25 @@ impl TypeResolver {
                 for parameter in parameters.parameters() {
                     let parameter_type =
                         self.resolve(&parameter.specifiers, &parameter.declarator)?;
-                    types.push(
-                        parameter_type
-                            .ty
-                            .ok_or(ResolveError::Unsupported("void parameter"))?,
-                    );
+                    let mut ty = parameter_type
+                        .ty
+                        .ok_or(ResolveError::Unsupported("void parameter"))?;
+                    if let Type::Defined(id) = ty
+                        && matches!(
+                            self.definitions[id.0 as usize].kind,
+                            TypeDefinitionKind::Array { .. } | TypeDefinitionKind::Function { .. }
+                        )
+                    {
+                        let pointee = match self.definitions[id.0 as usize].kind {
+                            TypeDefinitionKind::Array { element, .. } => element,
+                            _ => ty,
+                        };
+                        ty = Type::Defined(self.push(TypeDefinitionKind::Pointer {
+                            pointee,
+                            is_const: false,
+                        }));
+                    }
+                    types.push(ty);
                     c_parameters.push(parameter_type.c.spelling);
                 }
                 let id = self.push(TypeDefinitionKind::Function {
@@ -524,7 +538,7 @@ impl TypeResolver {
         Ok(id)
     }
 
-    fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
+    pub(super) fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
         match ty {
             Type::Defined(id) => match &self.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.storage(*inner),
@@ -696,7 +710,7 @@ impl TypeResolver {
         })
     }
 
-    fn push(&mut self, kind: TypeDefinitionKind) -> TypeId {
+    pub(super) fn push(&mut self, kind: TypeDefinitionKind) -> TypeId {
         let id = TypeId(self.definitions.len() as u32);
         self.definitions.push(TypeDefinition {
             id,

@@ -33,6 +33,8 @@ pub enum ResolveError {
         operand: NumericType,
     },
     #[error(transparent)]
+    Names(#[from] super::names::ResolveError),
+    #[error(transparent)]
     Literal(#[from] crate::const_expr::ConstExprError),
     #[error(transparent)]
     Layout(#[from] crate::target_info::LayoutError),
@@ -180,7 +182,7 @@ impl Context {
         })
     }
 
-    fn resolve_binary(
+    pub(super) fn resolve_binary(
         &self,
         op: BinaryOp,
         left: Value,
@@ -271,7 +273,11 @@ impl Context {
         ))
     }
 
-    fn resolve_unary_arith(&self, op: UnaryOp, operand: Value) -> Result<Resolved, ResolveError> {
+    pub(super) fn resolve_unary_arith(
+        &self,
+        op: UnaryOp,
+        operand: Value,
+    ) -> Result<Resolved, ResolveError> {
         let operand = self.promote(operand);
         let arith = match op {
             UnaryOp::Minus => UnaryArithOp::Neg,
@@ -318,6 +324,7 @@ impl Context {
             left: Box::new(left),
             right: Box::new(right),
             exceptions: matches!(ty, NumericType::Float(_)).then_some(self.floating.exceptions),
+            reason: None,
         }
     }
 
@@ -378,7 +385,7 @@ impl Context {
         })
     }
 
-    fn promote(&self, value: Value) -> Value {
+    pub(super) fn promote(&self, value: Value) -> Value {
         match value.ty {
             Type::Bool => self.convert(value, self.int_type(), ConversionReason::Promotion),
             Type::Numeric(NumericType::Integer { width, .. }) if width < self.target.int_width => {
@@ -388,7 +395,7 @@ impl Context {
         }
     }
 
-    fn usual_arithmetic(&self, left: Value, right: Value) -> (Value, Value) {
+    pub(super) fn usual_arithmetic(&self, left: Value, right: Value) -> (Value, Value) {
         let ty = match (left.ty, right.ty) {
             (Type::Numeric(NumericType::Float(a)), Type::Numeric(NumericType::Float(b))) => {
                 Type::Numeric(NumericType::Float(a.max(b)))
@@ -422,7 +429,7 @@ impl Context {
         )
     }
 
-    fn int_type(&self) -> Type {
+    pub(super) fn int_type(&self) -> Type {
         Type::Numeric(NumericType::Integer {
             width: self.target.int_width,
             signed: true,
@@ -434,7 +441,11 @@ impl Context {
             return value;
         }
         if to == Type::Bool {
-            return self.condition(value);
+            let mut value = self.condition(value);
+            if let ValueKind::Compare { reason: why, .. } = &mut value.node.value {
+                *why = Some(reason);
+            }
+            return value;
         }
         if value.ty == Type::Bool {
             let integer = if matches!(to, Type::Numeric(NumericType::Integer { .. })) {
@@ -544,7 +555,7 @@ impl Context {
         }
     }
 
-    fn condition(&self, value: Value) -> Value {
+    pub(super) fn condition(&self, value: Value) -> Value {
         let Type::Numeric(ty) = value.ty else {
             return value;
         };

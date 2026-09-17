@@ -1,3 +1,4 @@
+mod expression;
 mod module;
 pub mod names;
 pub mod numeric;

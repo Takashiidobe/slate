@@ -63,7 +63,7 @@ void f(int x, int y) {
 // DEFAULT-NEXT:                                                   ],
 // DEFAULT-NEXT:                                                   location: HardRegister(
 // DEFAULT-NEXT:                                                       X86(
-// DEFAULT-NEXT:                                                           X86Register {
+// DEFAULT-NEXT:                                                           RegisterInfo {
 // DEFAULT-NEXT:                                                               spelling: "ax",
 // DEFAULT-NEXT:                                                               number: 0,
 // DEFAULT-NEXT:                                                               canonical: "ax",
@@ -88,7 +88,7 @@ void f(int x, int y) {
 // DEFAULT-NEXT:                                               AsmConstraintAlternative {
 // DEFAULT-NEXT:                                                   location: HardRegister(
 // DEFAULT-NEXT:                                                       X86(
-// DEFAULT-NEXT:                                                           X86Register {
+// DEFAULT-NEXT:                                                           RegisterInfo {
 // DEFAULT-NEXT:                                                               spelling: "rdi",
 // DEFAULT-NEXT:                                                               number: 5,
 // DEFAULT-NEXT:                                                               canonical: "di",

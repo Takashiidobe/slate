@@ -282,7 +282,7 @@ void locals(void) {
 // DEFAULT-NEXT:                   asm_label: Some(
 // DEFAULT-NEXT:                       Register(
 // DEFAULT-NEXT:                           X86(
-// DEFAULT-NEXT:                               X86Register {
+// DEFAULT-NEXT:                               RegisterInfo {
 // DEFAULT-NEXT:                                   spelling: "rsp",
 // DEFAULT-NEXT:                                   number: 7,
 // DEFAULT-NEXT:                                   canonical: "sp",
@@ -328,7 +328,7 @@ void locals(void) {
 // DEFAULT-NEXT:                               asm_label: Some(
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "eax",
 // DEFAULT-NEXT:                                               number: 0,
 // DEFAULT-NEXT:                                               canonical: "ax",
@@ -362,7 +362,7 @@ void locals(void) {
 // DEFAULT-NEXT:                               asm_label: Some(
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "%r9",
 // DEFAULT-NEXT:                                               number: 39,
 // DEFAULT-NEXT:                                               canonical: "r9",
@@ -381,7 +381,7 @@ void locals(void) {
 // DEFAULT-NEXT:                               asm_label: Some(
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "#r10b",
 // DEFAULT-NEXT:                                               number: 40,
 // DEFAULT-NEXT:                                               canonical: "r10",
@@ -430,7 +430,7 @@ void locals(void) {
 // DEFAULT-NEXT:                               asm_label: Some(
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "ah",
 // DEFAULT-NEXT:                                               number: 0,
 // DEFAULT-NEXT:                                               canonical: "ax",
@@ -464,7 +464,7 @@ void locals(void) {
 // DEFAULT-NEXT:                               asm_label: Some(
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "0x7",
 // DEFAULT-NEXT:                                               number: 7,
 // DEFAULT-NEXT:                                               canonical: "sp",
@@ -496,7 +496,7 @@ void locals(void) {
 // DEFAULT-NEXT:                               asm_label: Some(
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "xmm16",
 // DEFAULT-NEXT:                                               number: 70,
 // DEFAULT-NEXT:                                               canonical: "xmm16",

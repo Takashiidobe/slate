@@ -25,7 +25,7 @@ fn integer(number: u32) -> Value {
 fn place(id: u32) -> Place {
     Place {
         ty: I32,
-        binding: BindingId(id),
+        kind: PlaceKind::Binding(BindingId(id)),
     }
 }
 
@@ -367,10 +367,13 @@ fn main() {
     module.functions.push(printf);
     let format = Value {
         ty: Type::Defined(TypeId(11)),
-        node: node(ValueKind::ArrayDecay(Place {
-            ty: Type::Defined(TypeId(10)),
-            binding: BindingId(14),
-        })),
+        node: node(ValueKind::ArrayDecay {
+            place: Place {
+                ty: Type::Defined(TypeId(10)),
+                kind: PlaceKind::Binding(BindingId(14)),
+            },
+            length: Some(4),
+        }),
     };
     module
         .metadata

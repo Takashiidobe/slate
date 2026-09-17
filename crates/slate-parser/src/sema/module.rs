@@ -1,225 +1,369 @@
+use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use crate::ast::{
-    DeclKind, Declarator, Expr, ExprKind, IntegerRank, IntegerType, Span, Stmt, StmtKind,
-    StorageClass, TranslationUnit, TypeName, TypeSpecifier,
+    self, DeclKind, Declarator, Initializer, ParameterList, Span, Stmt, StmtKind, StorageClass,
+    TranslationUnit,
 };
-use crate::ir::{ConversionReason, Function, Linkage, Module, Parameters, Statement, Type};
+use crate::ir::*;
+use std::collections::HashMap;
 
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     let context = Context::new(unit.target.clone()).with_options(&unit.options);
-    let mut module = Module::new(context.target.clone());
-    let mut types = TypeResolver::with_tags(context.target.clone(), unit);
+    let names = super::names::resolve(unit)?;
+    let next_id = names
+        .bindings
+        .iter()
+        .map(|b| b.value.id.0 + 1)
+        .max()
+        .unwrap_or(0);
+    let mut lower = Lowerer {
+        types: TypeResolver::with_tags(context.target.clone(), unit),
+        module: Module::new(context.target.clone()),
+        context,
+        names,
+        bindings: HashMap::new(),
+        type_spans: HashMap::new(),
+        next_id,
+    };
     for declaration in &unit.decls {
-        let function = match &declaration.value {
-            DeclKind::Comment(_) => continue,
-            DeclKind::Declaration(item) if item.declarators.is_empty() => {
-                types.resolve(&item.specifiers, &Declarator::Abstract)?;
-                continue;
+        match &declaration.value {
+            DeclKind::Comment(_) => {}
+            DeclKind::Declaration(item) => {
+                lower.declaration(item, true)?;
             }
-            DeclKind::Declaration(item) if item.specifiers.storage == StorageClass::Typedef => {
-                for declarator in &item.declarators {
-                    let start = types.definitions.len();
-                    let name = declarator
-                        .declarator
-                        .name()
-                        .ok_or(ResolveError::Unsupported("anonymous typedef"))?
-                        .to_owned();
-                    let resolved = types.resolve(&item.specifiers, &declarator.declarator)?;
-                    module.metadata.insert(declarator.id, resolved.c.entries());
-                    types.define_alias(name, resolved)?;
-                    for definition in &types.definitions[start..] {
-                        module
-                            .types
-                            .push(declarator.clone().with_value(definition.clone()));
-                    }
+            DeclKind::Function(function) => {
+                check_specifiers(&function.specifiers)?;
+                if !function.attributes.is_empty() {
+                    return Err(ResolveError::Unsupported("function attributes"));
                 }
-                continue;
+                let name = function
+                    .declarator
+                    .name()
+                    .ok_or(ResolveError::Unsupported("unnamed function"))?;
+                let id = lower.declaration_id(declaration.id, name)?;
+                let c_return = lower
+                    .types
+                    .resolve(&function.specifiers, &Declarator::Abstract)?
+                    .c
+                    .spelling;
+                let start = lower.types.definitions.len();
+                let resolved = lower
+                    .types
+                    .resolve(&function.specifiers, &function.declarator)?;
+                for definition in &lower.types.definitions[start..] {
+                    lower.type_spans.insert(
+                        definition.id,
+                        declaration.clone().with_value(definition.clone()),
+                    );
+                }
+                let ty = resolved
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void function type"))?;
+                let Some(TypeDefinitionKind::Function { return_type, .. }) =
+                    lower.kind(ty).cloned()
+                else {
+                    return Err(ResolveError::Unsupported("function definition declarator"));
+                };
+                lower.bindings.insert(id, ty);
+                let mut metadata = vec![
+                    (
+                        "c_storage".into(),
+                        function.specifiers.storage.as_str().into(),
+                    ),
+                    ("c_return".into(), c_return),
+                ];
+                metadata.extend(resolved.c.entries());
+                lower.module.metadata.insert(declaration.id, metadata);
+                let params = function
+                    .declarator
+                    .function_parameters()
+                    .ok_or(ResolveError::Unsupported("missing function parameters"))?;
+                let parameters = lower.parameters(params, true)?;
+                let mut body = lower.statements(&function.body, return_type)?;
+                if name == "main"
+                    && return_type == Some(lower.context.int_type())
+                    && !matches!(body.last().map(|s| &s.value), Some(Statement::Return(_)))
+                {
+                    let zero = lower.value(
+                        declaration,
+                        lower.context.int_type(),
+                        ValueKind::Constant(Number::Integer(0u32.into())),
+                    );
+                    body.push(
+                        declaration
+                            .clone()
+                            .with_value(Statement::Return(Some(zero))),
+                    );
+                }
+                lower
+                    .module
+                    .functions
+                    .push(declaration.clone().with_value(Function {
+                        id,
+                        name: name.into(),
+                        parameters,
+                        return_type,
+                        linkage: linkage(function.specifiers.storage)?,
+                        body: Some(body),
+                    }));
             }
-            DeclKind::Function(function) => function,
             _ => return Err(ResolveError::Unsupported("module declaration")),
-        };
-        if !function.attributes.is_empty()
-            || !function.specifiers.attributes.is_empty()
-            || function.specifiers.is_inline
-            || function.specifiers.is_noreturn
-            || function.specifiers.is_constexpr
-        {
-            return Err(ResolveError::Unsupported(
-                "function attributes or specifiers",
-            ));
         }
-        let Declarator::Function { inner, parameters } = &function.declarator else {
-            return Err(ResolveError::Unsupported("derived function return type"));
-        };
-        let Declarator::Name(name) = inner.as_ref() else {
-            return Err(ResolveError::Unsupported("derived function declarator"));
-        };
-        if !parameters.parameters().is_empty() || parameters.is_variadic() {
-            return Err(ResolveError::Unsupported("function parameters"));
-        }
-        let resolved_return = types.resolve(&function.specifiers, inner)?;
-        let return_type = resolved_return.ty;
-        let linkage = match function.specifiers.storage {
-            StorageClass::Static => Linkage::Internal,
-            StorageClass::None | StorageClass::Extern => Linkage::External,
-            _ => return Err(ResolveError::Unsupported("function storage class")),
-        };
-        module.metadata.insert(
-            declaration.id,
-            vec![
-                (
-                    "c_storage".into(),
-                    function.specifiers.storage.as_str().into(),
-                ),
-                ("c_return".into(), resolved_return.c.spelling.clone()),
-            ],
-        );
-        module
-            .metadata
-            .get_mut(&declaration.id)
-            .ok_or(ResolveError::Unsupported("missing function metadata"))?
-            .extend(resolved_return.c.entries());
-        for statement in &function.body {
-            collect_layout_metadata(statement, &mut module.metadata);
-        }
-        module.functions.push(
-            declaration.clone().with_value(Function {
-                id: crate::ir::BindingId(
-                    u32::try_from(module.functions.len())
-                        .map_err(|_| ResolveError::Unsupported("too many functions"))?,
-                ),
-                name: name.clone(),
-                parameters: Parameters::Prototype {
-                    fixed: Vec::new(),
-                    variadic: false,
-                },
-                return_type,
-                linkage,
-                body: Some(lower_statements(&context, &function.body, return_type)?),
-            }),
-        );
     }
-    for definition in &types.definitions {
-        if module
-            .types
-            .iter()
-            .any(|entry| entry.value.id == definition.id)
-        {
-            continue;
-        }
-        if let Some(tag) = types.tag_span(definition.id, unit) {
-            module
+    for definition in &lower.types.definitions {
+        if let Some(span) = lower.type_spans.get(&definition.id) {
+            lower.module.types.push(span.clone());
+        } else if let Some(tag) = lower.types.tag_span(definition.id, unit) {
+            lower
+                .module
                 .types
                 .push(tag.clone().with_value(definition.clone()));
         } else if let Some(declaration) = unit.decls.first() {
-            module
+            lower
+                .module
                 .types
                 .push(declaration.clone().with_value(definition.clone()));
         }
     }
-    Ok(module)
+    Ok(lower.module)
 }
 
-fn collect_layout_metadata(statement: &Stmt, metadata: &mut crate::ir::Metadata) {
-    let expression = match &statement.value {
-        StmtKind::Return(expression) | StmtKind::Expr(expression) => Some(expression),
-        _ => None,
-    };
-    if let Some(expression) = expression {
-        collect_expression_metadata(expression, metadata);
+fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
+    match storage {
+        StorageClass::Static => Ok(Linkage::Internal),
+        StorageClass::None | StorageClass::Extern => Ok(Linkage::External),
+        _ => Err(ResolveError::Unsupported("linkage storage class")),
     }
 }
 
-fn collect_expression_metadata(expression: &Expr, metadata: &mut crate::ir::Metadata) {
-    match &expression.value {
-        ExprKind::SizeOfType { ty } => {
-            metadata.insert(
-                expression.id,
-                vec![("size_of".into(), scalar_type_name(ty))],
-            );
-        }
-        ExprKind::AlignOf { ty } => {
-            metadata.insert(
-                expression.id,
-                vec![("align_of".into(), scalar_type_name(ty))],
-            );
-        }
-        ExprKind::Paren(inner)
-        | ExprKind::SizeOfExpr(inner)
-        | ExprKind::AlignOfExpr(inner)
-        | ExprKind::Unary { operand: inner, .. }
-        | ExprKind::Postfix { operand: inner, .. } => collect_expression_metadata(inner, metadata),
-        ExprKind::Binary { left, right, .. }
-        | ExprKind::Assign {
-            target: left,
-            value: right,
-            ..
-        }
-        | ExprKind::Comma { left, right } => {
-            collect_expression_metadata(left, metadata);
-            collect_expression_metadata(right, metadata);
-        }
-        _ => {}
+fn check_specifiers(specifiers: &ast::DeclarationSpecifiers) -> Result<(), ResolveError> {
+    if !specifiers.attributes.is_empty()
+        || specifiers.is_inline
+        || specifiers.is_noreturn
+        || specifiers.is_constexpr
+        || specifiers.qualifiers.is_volatile
+        || specifiers.qualifiers.is_atomic
+    {
+        return Err(ResolveError::Unsupported(
+            "attributes, function specifiers, volatile or atomic access",
+        ));
     }
+    Ok(())
 }
 
-fn scalar_type_name(ty: &TypeName) -> String {
-    match &ty.specifiers.ty {
-        TypeSpecifier::Floating(crate::ast::FloatingType::LongDouble) => "long double".into(),
-        TypeSpecifier::Floating(crate::ast::FloatingType::Double) => "double".into(),
-        TypeSpecifier::Floating(crate::ast::FloatingType::Float) => "float".into(),
-        TypeSpecifier::Bool => "_Bool".into(),
-        TypeSpecifier::Integer(IntegerType::Char { signed: None }) => "char".into(),
-        TypeSpecifier::Integer(IntegerType::Char { signed: Some(true) }) => "signed char".into(),
-        TypeSpecifier::Integer(IntegerType::Char {
-            signed: Some(false),
-        }) => "unsigned char".into(),
-        TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
-            let name = match rank {
-                IntegerRank::Short => "short",
-                IntegerRank::Int => "int",
-                IntegerRank::Long => "long",
-                IntegerRank::LongLong => "long long",
-                IntegerRank::Int128 => "__int128",
-            };
-            if *signed {
-                name.into()
+impl Lowerer {
+    fn parameters(
+        &mut self,
+        params: &ParameterList,
+        definition: bool,
+    ) -> Result<Parameters, ResolveError> {
+        if matches!(params, ParameterList::Empty) {
+            return Ok(Parameters::Unprototyped);
+        }
+        let mut fixed = Vec::new();
+        for parameter in params.parameters() {
+            check_specifiers(&parameter.specifiers)?;
+            let start = self.types.definitions.len();
+            let resolved = self
+                .types
+                .resolve(&parameter.specifiers, &parameter.declarator)?;
+            let mut ty = resolved
+                .ty
+                .ok_or(ResolveError::Unsupported("void parameter"))?;
+            match self.kind(ty) {
+                Some(TypeDefinitionKind::Array { element, .. }) => {
+                    ty = self.pointer(*element, false)
+                }
+                Some(TypeDefinitionKind::Function { .. }) => ty = self.pointer(ty, false),
+                _ => {}
+            }
+            let name = parameter.declarator.name();
+            let id = if definition {
+                self.declaration_id(
+                    parameter.id,
+                    name.ok_or(ResolveError::Unsupported("unnamed definition parameter"))?,
+                )?
             } else {
-                format!("unsigned {name}")
+                self.fresh()
+            };
+            self.bindings.insert(id, ty);
+            self.module
+                .metadata
+                .insert(parameter.id, resolved.c.entries());
+            for definition in &self.types.definitions[start..] {
+                self.type_spans.insert(
+                    definition.id,
+                    parameter.clone().with_value(definition.clone()),
+                );
+            }
+            fixed.push(parameter.clone().with_value(Parameter {
+                id,
+                name: name.map(str::to_owned),
+                ty,
+            }));
+        }
+        Ok(Parameters::Prototype {
+            fixed,
+            variadic: params.is_variadic(),
+        })
+    }
+
+    fn declaration(
+        &mut self,
+        item: &ast::Declaration,
+        global: bool,
+    ) -> Result<Vec<Span<Statement>>, ResolveError> {
+        check_specifiers(&item.specifiers)?;
+        if !global
+            && (item.specifiers.storage == StorageClass::Typedef
+                || matches!(item.specifiers.ty, ast::TypeSpecifier::Tag(_)))
+        {
+            return Err(ResolveError::Unsupported(
+                "block scoped typedef or tag declaration",
+            ));
+        }
+        if item.declarators.is_empty() {
+            self.types
+                .resolve(&item.specifiers, &Declarator::Abstract)?;
+        }
+        let mut statements = Vec::new();
+        for declarator in &item.declarators {
+            if !declarator.attributes.is_empty() || declarator.asm_label.is_some() {
+                return Err(ResolveError::Unsupported(
+                    "declarator attributes or asm label",
+                ));
+            }
+            let name = declarator
+                .declarator
+                .name()
+                .ok_or(ResolveError::Unsupported("unnamed declaration"))?;
+            let start = self.types.definitions.len();
+            let resolved = self
+                .types
+                .resolve(&item.specifiers, &declarator.declarator)?;
+            self.module
+                .metadata
+                .insert(declarator.id, resolved.c.entries());
+            if item.specifiers.storage == StorageClass::Typedef {
+                self.types.define_alias(name.into(), resolved)?;
+                for definition in &self.types.definitions[start..] {
+                    self.type_spans.insert(
+                        definition.id,
+                        declarator.clone().with_value(definition.clone()),
+                    );
+                }
+                continue;
+            }
+            for definition in &self.types.definitions[start..] {
+                self.type_spans.insert(
+                    definition.id,
+                    declarator.clone().with_value(definition.clone()),
+                );
+            }
+            let ty = resolved
+                .ty
+                .ok_or(ResolveError::Unsupported("void object"))?;
+            let id = self.declaration_id(declarator.id, name)?;
+            self.bindings.insert(id, ty);
+            if let Some(TypeDefinitionKind::Function { return_type, .. }) = self.kind(ty).cloned() {
+                if !global || declarator.initializer.is_some() {
+                    return Err(ResolveError::Unsupported(
+                        "local function prototype or function initializer",
+                    ));
+                }
+                let params = declarator
+                    .declarator
+                    .function_parameters()
+                    .ok_or(ResolveError::Unsupported("missing prototype"))?;
+                let parameters = self.parameters(params, false)?;
+                self.module
+                    .functions
+                    .push(declarator.clone().with_value(Function {
+                        id,
+                        name: name.into(),
+                        parameters,
+                        return_type,
+                        linkage: linkage(item.specifiers.storage)?,
+                        body: None,
+                    }));
+                continue;
+            }
+            let storage = if global {
+                StorageDuration::Static
+            } else {
+                match item.specifiers.storage {
+                    StorageClass::None | StorageClass::Auto | StorageClass::Register => {
+                        StorageDuration::Automatic
+                    }
+                    _ => return Err(ResolveError::Unsupported("nonautomatic local")),
+                }
+            };
+            let initializer = match &declarator.initializer {
+                None => None,
+                Some(Initializer::Expr(expr)) => {
+                    if global {
+                        return Err(ResolveError::Unsupported("global initializer"));
+                    }
+                    let value = self.expr(expr)?;
+                    Some(self.convert_expr(expr, value, ty, ConversionReason::Assign)?)
+                }
+                _ => return Err(ResolveError::Unsupported("aggregate initializer")),
+            };
+            let variable = Variable {
+                id,
+                name: name.into(),
+                ty,
+                storage,
+                initializer,
+            };
+            if global {
+                self.module
+                    .globals
+                    .push(declarator.clone().with_value(Global {
+                        variable,
+                        linkage: linkage(item.specifiers.storage)?,
+                        definition: item.specifiers.storage != StorageClass::Extern,
+                    }));
+            } else {
+                statements.push(declarator.clone().with_value(Statement::Let(variable)));
             }
         }
-        _ => format!("{:?}", ty.specifiers.ty),
+        Ok(statements)
     }
-}
 
-fn lower_statements(
-    context: &Context,
-    body: &[Stmt],
-    return_type: Option<Type>,
-) -> Result<Vec<Span<Statement>>, ResolveError> {
-    body.iter()
-        .filter(|statement| !matches!(statement.value, StmtKind::Comment(_)))
-        .map(|statement| {
-            let lowered = match &statement.value {
-                StmtKind::Expr(expression) => Statement::Expression(context.resolve(expression)?),
-                StmtKind::Return(expression) => {
+    fn statements(
+        &mut self,
+        body: &[Stmt],
+        return_type: Option<Type>,
+    ) -> Result<Vec<Span<Statement>>, ResolveError> {
+        let mut result = Vec::new();
+        for statement in body {
+            let kind = match &statement.value {
+                StmtKind::Comment(_) => continue,
+                StmtKind::Decl(item) => {
+                    result.extend(self.declaration(item, false)?);
+                    continue;
+                }
+                StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?),
+                StmtKind::Return(expr) => {
                     let ty = return_type
                         .ok_or(ResolveError::Unsupported("value return from void function"))?;
-                    Statement::Return(Some(context.convert(
-                        context.resolve(expression)?,
+                    let value = self.expr(expr)?;
+                    Statement::Return(Some(self.convert_expr(
+                        expr,
+                        value,
                         ty,
                         ConversionReason::Return,
-                    )))
+                    )?))
                 }
                 StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
                 StmtKind::Null => Statement::Block(Vec::new()),
-                StmtKind::Block(body) => {
-                    Statement::Block(lower_statements(context, body, return_type)?)
-                }
+                StmtKind::Block(body) => Statement::Block(self.statements(body, return_type)?),
                 _ => return Err(ResolveError::Unsupported("module statement")),
             };
-            Ok(statement.clone().with_value(lowered))
-        })
-        .collect()
+            result.push(statement.clone().with_value(kind));
+        }
+        Ok(result)
+    }
 }

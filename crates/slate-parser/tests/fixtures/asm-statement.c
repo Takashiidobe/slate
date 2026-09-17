@@ -227,7 +227,7 @@ other:
 // DEFAULT-NEXT:                                   Unwind,
 // DEFAULT-NEXT:                                   Register(
 // DEFAULT-NEXT:                                       X86(
-// DEFAULT-NEXT:                                           X86Register {
+// DEFAULT-NEXT:                                           RegisterInfo {
 // DEFAULT-NEXT:                                               spelling: "%rdx",
 // DEFAULT-NEXT:                                               number: 1,
 // DEFAULT-NEXT:                                               canonical: "dx",

@@ -60,7 +60,7 @@
 // IR-NEXT:     }
 // IR-NEXT:     fn %15 @printf(%16 format: @type11, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %17 @main() -> i32 [linkage=external] {
-// IR-NEXT:         call<i32>(%15, array_decay<@type11>(%14), call<i32>(%10, const<i32>(2), const<i32>(3)));
+// IR-NEXT:         call<i32>(%15, array_decay<@type11, length=Some(4)>(%14), call<i32>(%10, const<i32>(2), const<i32>(3)));
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT: }
@@ -122,7 +122,7 @@
 // IR-NEXT:     }
 // IR-NEXT:     fn %15 @printf(%16 format: @type11, ...) -> i32 [linkage=external] [origin="system:stdio.h"];
 // IR-NEXT:     fn %17 @main() -> i32 [linkage=external] {
-// IR-NEXT:         call<i32>(%15, array_decay<@type11>(%14) [c="char[4]"], call<i32>(%10, const<i32>(2), const<i32>(3)) [vararg_promotion="none"]);
+// IR-NEXT:         call<i32>(%15, array_decay<@type11, length=Some(4)>(%14) [c="char[4]"], call<i32>(%10, const<i32>(2), const<i32>(3)) [vararg_promotion="none"]);
 // IR-NEXT:         return const<i32>(0) [implicit="main_return"];
 // IR-NEXT:     }
 // IR-NEXT: }
