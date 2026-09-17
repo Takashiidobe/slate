@@ -83,7 +83,7 @@ pub struct Preprocessor<'a> {
 const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
     (
         "<clang-x86_64-linux-gnu-predefines>",
-        include_str!("../predefines/clang_x86_64_linux_gnu.h"),
+        include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
     ),
     (
         "<slate-target-defaults>",
