@@ -779,7 +779,9 @@ impl TypeResolver {
             let natural = u64::from(storage.alignment_bytes);
             let align =
                 (if packed || field_packed { 1 } else { natural }).max(field_aligned.unwrap_or(1));
-            if field.bit_width != Some(0) {
+            if field.bit_width == Some(0) && self.target.abi.zero_width_bitfield_aligns_record {
+                aggregate_align = aggregate_align.max(natural);
+            } else if field.bit_width != Some(0) {
                 aggregate_align = aggregate_align.max(align);
             }
             if let Some(width) = field.bit_width {

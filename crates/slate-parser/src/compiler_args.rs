@@ -1,7 +1,7 @@
 use crate::compiler_options::{CompilerOptions, LayoutOptions};
 use crate::ir::Overflow;
 use crate::rules::{Rule, Rules};
-use crate::target_info::{LongDoubleFormat, TargetInfo};
+use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
 use std::collections::BTreeSet;
 use std::str::FromStr;
 
@@ -413,7 +413,25 @@ fn invalid(argument: &str, reason: &str) -> CompilerArgError {
 }
 
 fn validate_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
-    Rules::pipeline([common_rules(), flavor_rules(target)])
+    Rules::pipeline([common_rules(), target_rules(target), flavor_rules(target)])
+}
+
+fn target_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
+    Rule::validate(
+        "target long double options",
+        move |args: &ParsedCompilerArgs| {
+            if args.long_double.is_some()
+                && matches!(target.family, TargetFamily::AArch64 | TargetFamily::Arm32)
+            {
+                Err(format!(
+                    "long double format options are unsupported for {}",
+                    target.triple
+                ))
+            } else {
+                Ok(())
+            }
+        },
+    )
 }
 
 fn common_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
@@ -452,6 +470,12 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                 "GCC preferred stack boundary",
                 move |args: &ParsedCompilerArgs| {
                     let value = args.preferred_stack_boundary.unwrap_or_default();
+                    if !matches!(target.family, TargetFamily::X86 | TargetFamily::X86_64) {
+                        return Err(format!(
+                            "preferred stack boundary is unsupported for {}",
+                            target.triple
+                        ));
+                    }
                     let minimum = if target.triple.starts_with("x86_64-") {
                         4
                     } else {

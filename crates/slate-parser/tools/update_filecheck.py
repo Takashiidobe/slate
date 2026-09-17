@@ -44,6 +44,12 @@ def flavor_args(source: str) -> list[str]:
     return []
 
 
+def target_args(fixture: Path) -> list[str]:
+    if fixture.parent.parent.name == "sema":
+        return [f"--target={fixture.parent.name}"]
+    return []
+
+
 def configurations(source: str) -> list[tuple[str, list[str]]]:
     found = []
     for line in source.splitlines():
@@ -132,6 +138,7 @@ def render(
         command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
+        command.extend(target_args(fixture))
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
                 command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
@@ -160,6 +167,7 @@ def render_error(
         command.extend(flavor_args(source))
         command.extend(std_args)
         command.extend(extra_args)
+        command.extend(target_args(fixture))
         for line in source.splitlines():
             if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
                 command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())

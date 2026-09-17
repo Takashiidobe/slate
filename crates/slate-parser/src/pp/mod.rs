@@ -80,20 +80,9 @@ pub struct Preprocessor<'a> {
     standard: LanguageStandard,
 }
 
-const BUILTIN_PREDEFINES: [(&str, &str); 2] = [
-    (
-        "<clang-x86_64-linux-gnu-predefines>",
-        include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
-    ),
-    (
-        "<slate-target-defaults>",
-        include_str!("../predefines/slate_target_defaults.h"),
-    ),
-];
-
 impl<'a> Preprocessor<'a> {
     pub fn new(search: &'a SearchPaths, standard: LanguageStandard) -> Self {
-        let mut pp = Preprocessor {
+        Preprocessor {
             files: Files::new(),
             macros: HashMap::new(),
             main_file: None,
@@ -111,14 +100,39 @@ impl<'a> Preprocessor<'a> {
             counter: Cell::new(0),
             build_time: SystemTime::now(),
             standard,
-        };
-        pp.seed_builtin_macros();
-        pp.seed_standard_predefines();
-        pp
+        }
     }
 
-    fn seed_builtin_macros(&mut self) {
-        for (name, source) in BUILTIN_PREDEFINES {
+    fn seed_builtin_macros(&mut self, target: &crate::target_info::TargetInfo) {
+        use crate::target_info::TargetFamily;
+        let (name, source, defaults) = match target.family {
+            TargetFamily::X86_64 => (
+                "<clang-x86_64-linux-gnu-predefines>",
+                include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
+                include_str!("../predefines/slate_target_defaults.h"),
+            ),
+            TargetFamily::X86 => (
+                "<clang-i386-linux-gnu-predefines>",
+                include_str!("../predefines/clang-22.1.8_i686_linux_gnu.h"),
+                include_str!("../predefines/slate_x86_linux_defaults.h"),
+            ),
+            TargetFamily::AArch64 => (
+                "<clang-aarch64-linux-gnu-predefines>",
+                include_str!("../predefines/clang-22.1.8_aarch64_linux_gnu.h"),
+                include_str!("../predefines/slate_aarch64_linux_defaults.h"),
+            ),
+            TargetFamily::Arm32 if target.triple.ends_with("gnueabihf") => (
+                "<clang-armv7-linux-gnueabihf-predefines>",
+                include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
+                include_str!("../predefines/slate_arm32_linux_defaults.h"),
+            ),
+            TargetFamily::Arm32 => (
+                "<clang-armv7-linux-gnueabi-predefines>",
+                include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
+                include_str!("../predefines/slate_arm32_linux_defaults.h"),
+            ),
+        };
+        for (name, source) in [(name, source), ("<slate-target-defaults>", defaults)] {
             let file = self.files.intern(PathBuf::from(name), HeaderKind::System);
             let Ok(nodes) = self.parse_source(source, file) else {
                 continue;
@@ -127,6 +141,7 @@ impl<'a> Preprocessor<'a> {
                 continue;
             }
         }
+        self.seed_standard_predefines();
     }
 
     fn seed_standard_predefines(&mut self) {
@@ -173,6 +188,7 @@ impl<'a> Preprocessor<'a> {
         options: &crate::compiler_options::CompilerOptions,
         flavor: CompilerFlavor,
     ) -> Result<(), PPError> {
+        self.seed_builtin_macros(&target);
         let mut defines = target.long_double.predefines();
         if flavor == CompilerFlavor::Gcc
             && options.operations.floating.rounding == crate::ir::Rounding::Environment

@@ -6,9 +6,13 @@ import sys
 from pathlib import Path
 
 
-def clang_layouts(source: Path, clang: str) -> dict[str, tuple[int, int, list[int], list[int | None]]]:
+def clang_layouts(source: Path, clang: str, target: str | None) -> dict[str, tuple[int, int, list[int], list[int | None]]]:
+    command = [clang]
+    if target is not None:
+        command.extend(["-target", target])
+    command.extend(["-std=c23", "-Xclang", "-fdump-record-layouts-complete", "-fsyntax-only", str(source)])
     result = subprocess.run(
-        [clang, "-std=c23", "-Xclang", "-fdump-record-layouts-complete", "-fsyntax-only", str(source)],
+        command,
         capture_output=True,
         text=True,
         check=True,
@@ -37,9 +41,12 @@ def clang_layouts(source: Path, clang: str) -> dict[str, tuple[int, int, list[in
     return layouts
 
 
-def slate_layouts(source: Path, binary: Path) -> dict[str, tuple[int, int, list[int], list[int | None]]]:
+def slate_layouts(source: Path, binary: Path, target: str | None) -> dict[str, tuple[int, int, list[int], list[int | None]]]:
+    command = [str(binary), "parse", str(source), "-std=c23", "--dump-ir-types"]
+    if target is not None:
+        command.append(f"--target={target}")
     result = subprocess.run(
-        [str(binary), "parse", str(source), "-std=c23", "--dump-ir-types"],
+        command,
         capture_output=True,
         text=True,
         check=True,
@@ -64,9 +71,11 @@ def main() -> int:
     parser.add_argument("source", type=Path)
     parser.add_argument("--clang", default="clang-22")
     parser.add_argument("--binary", type=Path, default=Path("target/debug/slate-parser"))
+    parser.add_argument("--target")
     args = parser.parse_args()
-    expected = clang_layouts(args.source, args.clang)
-    actual = slate_layouts(args.source, args.binary)
+    target = args.target or (args.source.parent.name if args.source.parent.parent.name == "sema" else None)
+    expected = clang_layouts(args.source, args.clang, target)
+    actual = slate_layouts(args.source, args.binary, target)
     mismatches = []
     for name, layout in expected.items():
         if name.startswith("__"):

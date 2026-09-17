@@ -115,7 +115,7 @@ Unsupported statements and attributes are diagnosed instead of omitted.
 Control-flow and aggregate lowering remain separate work.
 
 The type view resolves struct, union, and enum tag definitions. On the
-x86_64 SysV target, record layout records byte size, aggregate alignment,
+supported Linux x86_64, x86, AArch64, and ARM32 targets, record layout records byte size, aggregate alignment,
 one byte offset per field, bit offsets for bit-fields, and byte extents for
 contiguous bit-field storage units. It applies packed,
 aligned, and `_Alignas` requests, including local field alignment. Unnamed
@@ -124,8 +124,11 @@ evaluated in declaration order, including references to prior enumerators;
 the underlying integer type is selected from the represented range unless
 the source fixes it. Enum storage retains size and alignment separately so
 alignment attributes need not change the underlying integer type.
-`tools/check_record_layout.py` compares the generated
-layout fixture with clang's record layout dump.
+`tools/check_record_layout.py` compares each target directory's generated
+layout fixture with clang's target-specific record layout dump. The fixture
+runner and expectation generator derive the target triple from that directory.
+ARM targets let zero-width bit-fields raise record alignment, including in
+packed records; x86 targets do not.
 
 The bit-field units describe occupied bytes; access types and bit slices for
 Rust emission remain future work, as do flexible-array semantics. Full
@@ -301,9 +304,9 @@ filter after resolution is required for this design.
 
 - **Scopes and general typing.** The numeric seed does not resolve names,
   declarations, or assignment/argument/return conversions.
-- **Target data layout.** The initial `x86_64-unknown-linux-gnu` target now
-  exposes endian, pointer, scalar storage, long-double, and preferred-stack
-  alignment data. Aggregate layout and calling ABI details remain future work.
+- **Target data layout.** Supported Linux x86_64, x86, AArch64, and ARM32
+  profiles expose endian, pointer, scalar storage, long-double, stack alignment,
+  and record layout policy. Calling ABI details remain future work.
 - **Full provenance model.** Existing spans and macro origins survive the
   numeric lowering. The expansion records proposed below remain future work.
 

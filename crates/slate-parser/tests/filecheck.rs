@@ -5,6 +5,7 @@ use slate_parser::compiler_args::CompilerFlavor;
 use slate_parser::const_expr::Parser as ConstExprParser;
 use slate_parser::files::{SearchPaths, decode_source_bytes};
 use slate_parser::parser::Parser;
+use slate_parser::target_info::TargetInfo;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -162,12 +163,23 @@ fn show_ids_for_prefix(source: &str, prefix: &str) -> bool {
 }
 
 fn fixture_args(fixture: &Path) -> Vec<String> {
-    decode_source_bytes(&std::fs::read(fixture).expect("read fixture arguments"))
-        .lines()
-        .filter_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-ARGS "))
-        .flat_map(str::split_whitespace)
-        .map(str::to_string)
-        .collect()
+    let mut args = Vec::new();
+    if let Some(triple) = fixture
+        .parent()
+        .and_then(Path::file_name)
+        .and_then(|name| name.to_str())
+        .filter(|name| TargetInfo::for_triple(name).is_ok())
+    {
+        args.push(format!("--target={triple}"));
+    }
+    args.extend(
+        decode_source_bytes(&std::fs::read(fixture).expect("read fixture arguments"))
+            .lines()
+            .filter_map(|line| line.trim().strip_prefix("// SLATE-FILECHECK-ARGS "))
+            .flat_map(str::split_whitespace)
+            .map(str::to_string),
+    );
+    args
 }
 
 fn error_configurations(source: &str) -> Vec<String> {

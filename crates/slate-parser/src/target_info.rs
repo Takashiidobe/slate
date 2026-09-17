@@ -18,6 +18,15 @@ pub struct TargetInfo {
     pub scalars: ScalarLayouts,
     pub pointer: StorageLayout,
     pub abi: TargetAbi,
+    pub family: TargetFamily,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TargetFamily {
+    X86_64,
+    X86,
+    AArch64,
+    Arm32,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -49,6 +58,7 @@ impl Default for TargetInfo {
                 alignment_bytes: 8,
             },
             abi: TargetAbi::default(),
+            family: TargetFamily::X86_64,
         }
     }
 }
@@ -77,12 +87,14 @@ pub struct StorageLayout {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TargetAbi {
     pub preferred_stack_alignment: u32,
+    pub zero_width_bitfield_aligns_record: bool,
 }
 
 impl Default for TargetAbi {
     fn default() -> Self {
         Self {
             preferred_stack_alignment: 16,
+            zero_width_bitfield_aligns_record: false,
         }
     }
 }
@@ -140,6 +152,43 @@ impl ScalarLayouts {
         Self { entries }
     }
 
+    fn for_family(family: TargetFamily) -> Self {
+        let mut layouts = Self::x86_64_linux();
+        match family {
+            TargetFamily::X86_64 => {}
+            TargetFamily::X86 => {
+                for signed in [false, true] {
+                    layouts.set(ScalarKey::Integer { width: 64, signed }, 8, 4);
+                }
+                layouts.set(ScalarKey::Float(FloatType::F64), 8, 4);
+                layouts.set(ScalarKey::Float(FloatType::F80), 12, 4);
+            }
+            TargetFamily::AArch64 => {
+                layouts.entries.remove(&ScalarKey::Float(FloatType::F80));
+            }
+            TargetFamily::Arm32 => {
+                layouts.entries.remove(&ScalarKey::Float(FloatType::F80));
+                for signed in [false, true] {
+                    layouts
+                        .entries
+                        .remove(&ScalarKey::Integer { width: 128, signed });
+                }
+                layouts.set(ScalarKey::Float(FloatType::F128), 16, 16);
+            }
+        }
+        layouts
+    }
+
+    fn set(&mut self, key: ScalarKey, size_bytes: u64, alignment_bytes: u32) {
+        self.entries.insert(
+            key,
+            StorageLayout {
+                size_bytes,
+                alignment_bytes,
+            },
+        );
+    }
+
     fn get(&self, key: ScalarKey) -> Option<StorageLayout> {
         self.entries.get(&key).copied()
     }
@@ -153,10 +202,96 @@ pub enum LayoutError {
 
 impl TargetInfo {
     pub fn for_triple(triple: &str) -> Result<Self, TargetError> {
-        if triple == "x86_64-unknown-linux-gnu" {
-            Ok(Self::default())
-        } else {
-            Err(TargetError::UnsupportedTriple(triple.into()))
+        let target = match triple {
+            "x86_64-unknown-linux-gnu" => Self::default(),
+            "i386-unknown-linux-gnu" | "i686-unknown-linux-gnu" => Self::x86_linux(triple),
+            "aarch64-unknown-linux-gnu" => Self::aarch64_linux(),
+            "armv7-unknown-linux-gnueabi" | "armv7-unknown-linux-gnueabihf" => {
+                Self::arm32_linux(triple)
+            }
+            _ => return Err(TargetError::UnsupportedTriple(triple.into())),
+        };
+        Ok(target)
+    }
+
+    fn x86_linux(triple: &str) -> Self {
+        Self {
+            triple: triple.into(),
+            endian: Endian::Little,
+            long_double: LongDoubleFormat::X87,
+            char_signed: true,
+            signed_right_shift: ShiftFill::SignExtend,
+            short_width: 16,
+            int_width: 32,
+            long_width: 32,
+            long_long_width: 64,
+            pointer_width: 32,
+            wchar_signed: true,
+            wchar_width: 32,
+            scalars: ScalarLayouts::for_family(TargetFamily::X86),
+            pointer: StorageLayout {
+                size_bytes: 4,
+                alignment_bytes: 4,
+            },
+            abi: TargetAbi {
+                preferred_stack_alignment: 16,
+                zero_width_bitfield_aligns_record: false,
+            },
+            family: TargetFamily::X86,
+        }
+    }
+
+    fn aarch64_linux() -> Self {
+        Self {
+            triple: "aarch64-unknown-linux-gnu".into(),
+            endian: Endian::Little,
+            long_double: LongDoubleFormat::Binary128,
+            char_signed: false,
+            signed_right_shift: ShiftFill::SignExtend,
+            short_width: 16,
+            int_width: 32,
+            long_width: 64,
+            long_long_width: 64,
+            pointer_width: 64,
+            wchar_signed: false,
+            wchar_width: 32,
+            scalars: ScalarLayouts::for_family(TargetFamily::AArch64),
+            pointer: StorageLayout {
+                size_bytes: 8,
+                alignment_bytes: 8,
+            },
+            abi: TargetAbi {
+                preferred_stack_alignment: 16,
+                zero_width_bitfield_aligns_record: true,
+            },
+            family: TargetFamily::AArch64,
+        }
+    }
+
+    fn arm32_linux(triple: &str) -> Self {
+        Self {
+            triple: triple.into(),
+            endian: Endian::Little,
+            long_double: LongDoubleFormat::Binary64,
+            char_signed: false,
+            signed_right_shift: ShiftFill::SignExtend,
+            short_width: 16,
+            int_width: 32,
+            long_width: 32,
+            long_long_width: 64,
+            pointer_width: 32,
+            wchar_signed: false,
+            wchar_width: 32,
+            scalars: ScalarLayouts::for_family(TargetFamily::Arm32),
+            pointer: StorageLayout {
+                size_bytes: 4,
+                alignment_bytes: 4,
+            },
+            abi: TargetAbi {
+                preferred_stack_alignment: 8,
+                zero_width_bitfield_aligns_record: true,
+            },
+            family: TargetFamily::Arm32,
         }
     }
 

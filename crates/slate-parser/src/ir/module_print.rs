@@ -206,12 +206,13 @@ impl fmt::Display for DisplayModule<'_> {
             ("f80", Type::Numeric(NumericType::Float(FloatType::F80))),
             ("f128", Type::Numeric(NumericType::Float(FloatType::F128))),
         ] {
-            let layout = target.storage_of(ty).map_err(|_| fmt::Error)?;
-            writeln!(
-                f,
-                "        storage {names} [size={}, align={}];",
-                layout.size_bytes, layout.alignment_bytes
-            )?;
+            if let Ok(layout) = target.storage_of(ty) {
+                writeln!(
+                    f,
+                    "        storage {names} [size={}, align={}];",
+                    layout.size_bytes, layout.alignment_bytes
+                )?;
+            }
         }
         writeln!(f, "    }}")?;
         for definition in &self.module.types {

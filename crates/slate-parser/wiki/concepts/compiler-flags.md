@@ -316,9 +316,11 @@ no predefines.
 MSVC flavor rejects these spellings rather than claiming compatible behavior.
 
 `-mlong-double-64/80/128` changes the effective `TargetInfo.long_double` and
-the current x86-64 Linux baseline's long-double predefines together, before
-user `-D` definitions. Sema parses the original literal directly at the
-selected precision. f80 has 80 value bits but 16-byte storage in this baseline.
+the selected x86 Linux target's long-double predefines together, before
+user `-D` definitions. The option is rejected for the supported AArch64 and
+ARM32 Linux targets. Sema parses the original literal directly at the
+selected precision. f80 has 80 value bits with 16-byte storage on x86_64 and
+12-byte storage on x86.
 The target layout is selected by the supported target triple and is printed in
 the IR module header. GCC's `-mpreferred-stack-boundary` and Clang's
 `-mstack-alignment` update the target's stack ABI policy after validating their
