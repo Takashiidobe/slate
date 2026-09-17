@@ -275,6 +275,7 @@ pub enum ConversionKind {
     FloatNarrow,
     FloatToInt,
     PointerCast,
+    EnumToInt,
 }
 
 impl fmt::Display for ConversionKind {
@@ -289,6 +290,7 @@ impl fmt::Display for ConversionKind {
             Self::FloatNarrow => "float_narrow",
             Self::FloatToInt => "float_to_int",
             Self::PointerCast => "pointer_cast",
+            Self::EnumToInt => "enum_to_int",
         })
     }
 }

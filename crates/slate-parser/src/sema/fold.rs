@@ -1,8 +1,12 @@
 use crate::ir::{
-    ArithOp, ArithSema, CompareOp, ConversionKind, LogicalOp, Number, NumericType, Overflow,
-    ShiftFill, Type, UnaryArithOp, Value, ValueKind,
+    ArithOp, ArithSema, CompareOp, ConversionKind, FloatType, LogicalOp, Number, NumericType,
+    Overflow, ShiftFill, Type, UnaryArithOp, Value, ValueKind,
 };
 use num_bigint::{BigInt, Sign};
+use rustc_apfloat::{
+    Float, Status,
+    ieee::{Double, Half, Quad, Single, X87DoubleExtended},
+};
 
 const MAX_WIDTH: u32 = 65_536;
 const MAX_DEPTH: usize = 256;
@@ -30,6 +34,11 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
             }
             value.clone()
         }
+        ValueKind::Convert {
+            kind: ConversionKind::FloatToInt,
+            operand,
+            ..
+        } => float_to_integer(operand, width, signed)?,
         ValueKind::Convert { kind, operand, .. } => {
             match kind {
                 ConversionKind::Widen | ConversionKind::Truncate | ConversionKind::Reinterpret
@@ -116,6 +125,57 @@ fn evaluate(value: &Value, depth: usize) -> Option<BigInt> {
         _ => return None,
     };
     Some(normalize(result, width, signed))
+}
+
+/// Only immediate floating constants (optionally negated) participate here;
+/// this deliberately does not evaluate floating arithmetic or conversions.
+fn float_to_integer(value: &Value, width: u32, signed: bool) -> Option<BigInt> {
+    let Type::Numeric(NumericType::Float(format)) = value.ty else {
+        return None;
+    };
+    let (constant, negate) = match &value.node.value {
+        ValueKind::Unary {
+            op: UnaryArithOp::Neg,
+            operand,
+            semantics: ArithSema::Exact,
+        } if operand.ty == value.ty => (operand.as_ref(), true),
+        _ => (value, false),
+    };
+    let ValueKind::Constant(Number::FloatBits(bits)) = constant.node.value else {
+        return None;
+    };
+    // The IR format already incorporates the target's long-double selection.
+    match format {
+        FloatType::F16 => convert_float::<Half>(bits, negate, width, signed),
+        FloatType::F32 => convert_float::<Single>(bits, negate, width, signed),
+        FloatType::F64 => convert_float::<Double>(bits, negate, width, signed),
+        FloatType::F80 => convert_float::<X87DoubleExtended>(bits, negate, width, signed),
+        FloatType::F128 => convert_float::<Quad>(bits, negate, width, signed),
+    }
+}
+
+fn convert_float<F: Float>(bits: u128, negate: bool, width: u32, signed: bool) -> Option<BigInt> {
+    // APFloat's integer conversion API is limited to 128 bits.
+    if !(1..=128).contains(&width) {
+        return None;
+    }
+    let value = F::from_bits(bits);
+    let value = if negate { -value } else { value };
+    // to_u128 truncates toward zero. INEXACT is expected for fractions;
+    // INVALID_OP rejects infinities, NaNs, and unrepresentable magnitudes.
+    let result = value.abs().to_u128(width as usize);
+    if result.status.contains(Status::INVALID_OP) {
+        return None;
+    }
+    let magnitude = BigInt::from(result.value);
+    let result = if value.is_negative() {
+        -magnitude
+    } else {
+        magnitude
+    };
+    let limit = BigInt::from(1u8) << (width - u32::from(signed));
+    let minimum = if signed { -&limit } else { BigInt::from(0u8) };
+    (result >= minimum && result < limit).then_some(result)
 }
 
 fn integer_type(ty: &Type) -> Option<(u32, bool)> {

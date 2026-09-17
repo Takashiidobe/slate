@@ -131,6 +131,9 @@ absence of a break preserve fallthrough. `[[fallthrough]];` is a null statement
 with source metadata. Case endpoints are folded to the promoted switch type;
 ordinary conditions and arithmetic are not folded. Conditions explicitly become
 boolean values. Missing for conditions remain omitted, meaning unconditional.
+Enum switch operands use an explicit `enum_to_int` conversion to the resolved
+underlying integer type before promotion. Enumerator references in case
+expressions resolve by binding and AST identity to typed constants.
 
 Named labels, gotos, and `label_addr<ptr<void>>` use resolved label binding IDs,
 including distinct GNU local labels. Name resolution records each label

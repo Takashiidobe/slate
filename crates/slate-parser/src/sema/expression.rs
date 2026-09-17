@@ -114,6 +114,27 @@ impl Lowerer {
         Ok(result)
     }
 
+    pub fn enum_integer(&self, value: Value) -> Value {
+        if let Some(TypeDefinitionKind::Enum {
+            underlying: Some(ty),
+            ..
+        }) = self.kind(&value.ty)
+        {
+            let node = value.node.clone();
+            return self.value(
+                &node,
+                ty.clone(),
+                ValueKind::Convert {
+                    kind: ConversionKind::EnumToInt,
+                    operand: Box::new(value),
+                    reason: ConversionReason::Promotion,
+                    semantics: ConversionSema::Exact,
+                },
+            );
+        }
+        value
+    }
+
     pub fn convert(
         &self,
         value: Value,
@@ -414,6 +435,42 @@ impl Lowerer {
     pub fn expr(&mut self, e: &Expr) -> Result<Value, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.expr(inner),
+            ExprKind::Identifier(_)
+                if self
+                    .names
+                    .references
+                    .iter()
+                    .any(|r| r.id == e.id && r.kind == BindingKind::Enumerator) =>
+            {
+                let binding = self.reference(e)?;
+                let node = self
+                    .names
+                    .bindings
+                    .iter()
+                    .find(|b| b.value.id == binding)
+                    .ok_or(ResolveError::Unsupported("missing enumerator binding"))?
+                    .id;
+                let value = self
+                    .types
+                    .definitions
+                    .iter()
+                    .find_map(|definition| {
+                        if let TypeDefinitionKind::Enum {
+                            enumerators: Some(entries),
+                            ..
+                        } = &definition.kind
+                        {
+                            entries
+                                .iter()
+                                .find(|entry| entry.id == node)
+                                .map(|entry| entry.value.value.clone())
+                        } else {
+                            None
+                        }
+                    })
+                    .ok_or(ResolveError::Unsupported("unresolved enumerator constant"))?;
+                Ok(self.value(e, value.ty, value.node.value))
+            }
             ExprKind::Identifier(_)
             | ExprKind::Member { .. }
             | ExprKind::Index { .. }
