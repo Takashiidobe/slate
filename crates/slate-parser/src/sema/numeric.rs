@@ -9,7 +9,7 @@ use crate::const_expr::{
 use crate::ir::{
     ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
     Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
-    ShiftFill, Type, UnaryArithOp, Value, ValueKind,
+    ShiftFill, Type, UbPolicy, UnaryArithOp, Value, ValueKind,
 };
 use crate::target_info::TargetInfo;
 use num_bigint::BigUint;
@@ -46,6 +46,7 @@ const UNSUPPORTED_INCREMENT: &str = "increment and decrement (requires place low
 pub struct Context {
     pub target: TargetInfo,
     pub signed_overflow: Overflow,
+    pub pointer_wrap: bool,
     pub floating: FloatingSemantics,
 }
 
@@ -55,6 +56,7 @@ impl Context {
     pub fn with_options(mut self, options: &crate::compiler_options::CompilerOptions) -> Self {
         self.target = options.effective_target(self.target);
         self.signed_overflow = options.operations.signed_overflow;
+        self.pointer_wrap = options.operations.pointer_wrap;
         self.floating = options.operations.floating;
         self
     }
@@ -62,6 +64,7 @@ impl Context {
         Self {
             target,
             signed_overflow: Overflow::Undefined,
+            pointer_wrap: false,
             floating: FloatingSemantics {
                 rounding: Rounding::NearestEven,
                 exceptions: Exceptions::Ignore,
@@ -241,25 +244,31 @@ impl Context {
                     },
                 }
             }
-            // clang and gcc apply -fwrapv/-ftrapv to add, sub, and mul only
-            (NumericType::Integer { signed, .. }, ArithOp::Div | ArithOp::Rem | ArithOp::Shl) => {
-                ArithSema::Integer {
-                    overflow: if signed {
-                        Overflow::Undefined
-                    } else {
-                        Overflow::Wrap
-                    },
+            (NumericType::Integer { signed, .. }, ArithOp::Div | ArithOp::Rem) => {
+                ArithSema::Division {
+                    by_zero: UbPolicy::Undefined,
+                    min_by_neg_one: signed.then_some(UbPolicy::Undefined),
                 }
             }
+            (NumericType::Integer { signed, .. }, ArithOp::Shl) => ArithSema::ShiftLeft {
+                overflow: if signed {
+                    Overflow::Undefined
+                } else {
+                    Overflow::Wrap
+                },
+                amount_out_of_range: UbPolicy::Undefined,
+                negative_left: signed.then_some(UbPolicy::Undefined),
+            },
             (NumericType::Integer { .. }, ArithOp::And | ArithOp::Or | ArithOp::Xor) => {
                 ArithSema::Exact
             }
             (NumericType::Integer { signed, .. }, ArithOp::Shr) => ArithSema::ShiftRight {
                 fill: if signed {
-                    ShiftFill::SignExtend
+                    self.target.signed_right_shift
                 } else {
                     ShiftFill::ZeroExtend
                 },
+                amount_out_of_range: UbPolicy::Undefined,
             },
         };
         Ok((

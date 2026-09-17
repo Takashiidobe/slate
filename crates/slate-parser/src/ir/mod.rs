@@ -16,7 +16,7 @@ use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
     Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
-    ShiftFill, Type, UnaryArithOp,
+    ShiftFill, Type, UbPolicy, UnaryArithOp,
 };
 use rustc_apfloat::{
     Float,
@@ -50,6 +50,18 @@ pub enum ValueKind {
         postfix: bool,
     },
     OldValue,
+    PointerOffset {
+        pointer: Box<Value>,
+        amount: Box<Value>,
+        subtract: bool,
+        element: Type,
+        overflow: Overflow,
+    },
+    PointerDifference {
+        left: Box<Value>,
+        right: Box<Value>,
+        element: Type,
+    },
     Conditional {
         condition: Box<Value>,
         then_value: Box<Value>,
@@ -156,14 +168,61 @@ impl Value {
         match &self.node.value {
             ValueKind::Bytes(bytes) => write!(f, "bytes<{}>({bytes:?})", self.ty),
             ValueKind::ArrayDecay { place, length } => {
-                write!(f, "array_decay<{}, length={length:?}>({place})", self.ty)
+                write!(
+                    f,
+                    "array_decay<{}, length={length:?}>({})",
+                    self.ty,
+                    place.display_mode(compact)
+                )
             }
             ValueKind::OldValue => write!(f, "old<{}>", self.ty),
+            ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract,
+                element,
+                overflow,
+            } => {
+                write!(f, "ptr_offset<{}, subtract={subtract}", self.ty)?;
+                if !compact {
+                    write!(f, ", element={element}")?;
+                    format_overflow(f, *overflow)?;
+                }
+                write!(
+                    f,
+                    ">({}, {})",
+                    pointer
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact),
+                    amount
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )
+            }
+            ValueKind::PointerDifference {
+                left,
+                right,
+                element,
+            } => {
+                write!(f, "ptr_diff<{}", self.ty)?;
+                if !compact {
+                    write!(f, ", element={element}, same_array=required, overflow=ub")?;
+                }
+                write!(
+                    f,
+                    ">({}, {})",
+                    left.display_metadata(show_spans, metadata)
+                        .with_compact(compact),
+                    right
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )
+            }
             ValueKind::Store { place, value } => write!(
                 f,
                 "store<{}>({}, {})",
                 self.ty,
-                place,
+                place.display_mode(compact),
                 value
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
@@ -177,7 +236,7 @@ impl Value {
                 "update<{}, result={}>({}, {})",
                 self.ty,
                 if *postfix { "old" } else { "new" },
-                place,
+                place.display_mode(compact),
                 computation
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
@@ -228,8 +287,12 @@ impl Value {
             }
             ValueKind::Void => f.write_str("void"),
             ValueKind::Null => write!(f, "null<{}>", self.ty),
-            ValueKind::Read(place) => write!(f, "read<{}>({place})", place.ty),
-            ValueKind::AddressOf(place) => write!(f, "addr_of<{}>({place})", self.ty),
+            ValueKind::Read(place) => {
+                write!(f, "read<{}>({})", place.ty, place.display_mode(compact))
+            }
+            ValueKind::AddressOf(place) => {
+                write!(f, "addr_of<{}>({})", self.ty, place.display_mode(compact))
+            }
             ValueKind::Constant(Number::Bool(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::Integer(value)) => write!(f, "const<{}>({value})", self.ty),
             ValueKind::Constant(Number::SignedInteger(value)) => {
@@ -394,15 +457,27 @@ impl Value {
             return f.write_str(">");
         }
         match semantics {
-            ArithSema::Integer { overflow } => write!(
-                f,
-                ", overflow={}",
-                match overflow {
-                    Overflow::Undefined => "undefined",
-                    Overflow::Wrap => "wrap",
-                    Overflow::Trap => "trap",
+            ArithSema::Integer { overflow } => format_overflow(f, overflow)?,
+            ArithSema::Division {
+                by_zero,
+                min_by_neg_one,
+            } => {
+                write!(f, ", by_zero={by_zero}")?;
+                if let Some(policy) = min_by_neg_one {
+                    write!(f, ", min_by_neg_one={policy}")?;
                 }
-            )?,
+            }
+            ArithSema::ShiftLeft {
+                overflow,
+                amount_out_of_range,
+                negative_left,
+            } => {
+                format_overflow(f, overflow)?;
+                write!(f, ", amount_out_of_range={amount_out_of_range}")?;
+                if let Some(policy) = negative_left {
+                    write!(f, ", negative_left={policy}")?;
+                }
+            }
             ArithSema::Floating(properties) => write!(
                 f,
                 ", rounding={}, exceptions={}",
@@ -413,9 +488,12 @@ impl Value {
                 exceptions_name(properties.exceptions)
             )?,
             ArithSema::Exact => {}
-            ArithSema::ShiftRight { fill } => write!(
+            ArithSema::ShiftRight {
+                fill,
+                amount_out_of_range,
+            } => write!(
                 f,
-                ", fill={}",
+                ", amount_out_of_range={amount_out_of_range}, fill={}",
                 match fill {
                     ShiftFill::SignExtend => "sign_extend",
                     ShiftFill::ZeroExtend => "zero_extend",
@@ -424,6 +502,18 @@ impl Value {
         }
         f.write_str(">")
     }
+}
+
+fn format_overflow(f: &mut fmt::Formatter<'_>, overflow: Overflow) -> fmt::Result {
+    write!(
+        f,
+        ", overflow={}",
+        match overflow {
+            Overflow::Undefined => "ub",
+            Overflow::Wrap => "wrap",
+            Overflow::Trap => "trap",
+        }
+    )
 }
 
 fn exceptions_name(exceptions: Exceptions) -> &'static str {

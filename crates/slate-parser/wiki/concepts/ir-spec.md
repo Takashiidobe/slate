@@ -97,7 +97,8 @@ type is target concrete, so `size_t` and `unsigned long` both display as
 Add `--compact-ir` to either module command for a typed view that hides
 conversion reasons and operation policies such as overflow, rounding,
 exceptions, and shift fill. This affects only printing; the default dump
-retains those facts for FileCheck and semantic inspection.
+retains those facts for FileCheck and semantic inspection. Compact mode also
+propagates through dereference, field, and index places to nested values.
 
 FileCheck fixtures select the module dump with `SLATE-FILECHECK-ARGS --dump-ir`;
 add `--show-metadata` there for the annotated view. The fixture runner and
@@ -148,24 +149,28 @@ conversion. NaNs retain hexadecimal bits in every format.
 These lower to one `ValueKind::Arith` node keyed by `ArithOp`
 (`add`/`sub`/`mul`/`div`/`rem`/`and`/`or`/`xor`/`shl`/`shr`), all carrying `ArithSema` metadata. They are
 not folded or reassociated. Signed overflow defaults to
-`undefined`, unsigned overflow to `wrap`; floating arithmetic defaults to
+`ub`, unsigned overflow to `wraps`; floating arithmetic defaults to
 nearest-even rounding with ignored exceptions for the default Clang flavor
 (observable exceptions for GCC). Translation-unit operation options
 initialize the context's independent integer and floating semantic settings.
 Overflow metadata describes the operation's behavior if overflow occurs,
 not a prediction that these operands overflow. Signed add/sub/mul use the
 context's signed-overflow policy; unsigned operations wrap. Signed `div`/`rem`
-are always `overflow=undefined`: Clang 22 emits plain `sdiv`/`srem` under both
-`-fwrapv` and `-ftrapv`, and GCC documents those flags only for add/sub/mul.
-Integer division by zero is always undefined and is implied by the op, not
-printed. `%` on floating operands is rejected as invalid operands.
+carry `by_zero=ub, min_by_neg_one=ub`: Clang 22 emits plain `sdiv`/`srem`
+under both `-fwrapv` and `-ftrapv`, and GCC documents those flags only for
+add/sub/mul. Unsigned division/remainder carry only `by_zero=ub`; they have
+no overflow case. These are explicit `ArithSema::Division` policies, not
+operand-range predictions. `%` on floating operands is rejected as invalid operands.
 `and`/`or`/`xor` carry no overflow metadata and reject floating operands.
 Shift operands are not converted to a common type: the node takes the left
 operand's type and the amount keeps its own. Clang 22 emits plain
 `shl`/`ashr`/`lshr` under `-fwrapv` and `-ftrapv`, so signed `shl` is always
-`overflow=undefined` (unsigned wraps). `shr` prints `fill=sign_extend` for
-signed and `fill=zero_extend` for unsigned operands; out-of-range amounts are
-always undefined and not printed. Both shift operands independently undergo
+`overflow=ub` (unsigned `overflow=wraps`). Both shifts explicitly carry
+`amount_out_of_range=ub` (negative amounts or amounts at least the promoted
+left width). Signed `shl` also carries `negative_left=ub`, independently of
+overflow flags. `shr` resolves signed fill through `TargetInfo.signed_right_shift`
+(`sign_extend` on the supported x86_64 target); unsigned fill is `zero_extend`.
+Both shift operands independently undergo
 integer promotion. Unary `-` and `~` lower
 to `ValueKind::Unary` keyed by `UnaryArithOp` (`neg`/`not`). Signed `neg`
 uses the context's signed-overflow policy (Clang 22: `sub nsw 0, x`, plain
@@ -193,10 +198,10 @@ promotes through `from_bool<int>` before the usual arithmetic conversions.
 Explicit casts to bool use the same truth comparison, preserving fractional
 nonzero floats and treating both signed zeros as false. Casts from bool to
 integers produce 0 or 1 directly; casts to floats use `from_bool<int>` then
-`int_to_float`, marked exact. A discarded or returned bool currently needs
-no conversion because return-type resolution is not implemented. Assignment,
-compound assignment, and `++`/`--` return unsupported errors until place
-lowering exists.
+`int_to_float`, marked exact. The module path also inserts return and assignment conversions, and
+compound assignments and increments share the same operator lowering as
+ordinary binary expressions. The expression-only diagnostic view has no
+places and therefore still rejects updates.
 
 The initial numeric type stores integer width/signedness or one of five
 floating formats: f16, f32, f64, f80, f128. These denote value formats, not
@@ -217,8 +222,9 @@ Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
 `-f[no-]strict-overflow`, `-f[no-]rounding-math`, and
 `-f[no-]trapping-math`, plus the long-double options above. Scoped pragma
 semantics and function attribute overrides are not yet wired into this path.
-The `pointer_wrap` setting implied by strict-overflow options is retained
-for future pointer lowering; it is not attached to numeric operations.
+The `pointer_wrap` setting implied by strict-overflow options controls pointer
+offset overflow, independently of integer overflow. `-fwrapv` alone does not
+change pointer contracts.
 
 `CompilerOptions` groups operation and layout settings and preserves ordered
 compiler arguments on the translation unit. Argument provenance supplies no
@@ -244,10 +250,10 @@ resolve return conversions, declarations, or control flow. Fixtures live in
 arguments to both the test harness and expectation generator.
 
 ```text
-add<i32, overflow=undefined>(const<i32>(1), const<i32>(2))
-add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
+add<i32, overflow=ub>(const<i32>(1), const<i32>(2))
+add<u32, overflow=wraps>(const<u32>(1), const<u32>(2))
 add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), const<f64>(2.0))
-sub<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
+sub<u32, overflow=wraps>(const<u32>(1), const<u32>(2))
 ```
 
 ### Validation and declaration pruning
@@ -516,7 +522,7 @@ store fits.
 Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
 `shr`, `and`, `or`, `xor`, `neg`, `not`, `eq`/`ne`/`lt`/…
 
-- `overflow=wraps|ub` (unsigned / signed). `impossible` is an analysis fact,
+- `overflow=wrap|ub` (unsigned / signed). `impossible` is an analysis fact,
   not emitted by lowering.
 - `div`/`rem`: `by_zero=ub`; signed also `min_by_neg_one=ub`.
 - `shl`/`shr`: amount type kept separately; `amount_out_of_range=ub`; `shl` of
@@ -535,6 +541,30 @@ A C pointer can be a borrow, a nullable borrow, a slice cursor, an owning
 handle, an out-parameter, a C string, an opaque handle or a function pointer.
 **Lowering does not decide which.** It emits uniform pointer operations and
 keeps every local fact as metadata for the analysis pass and Slate.
+
+### Implemented pointer arithmetic
+
+`PointerOffset` records the pointer, promoted integer amount, element type,
+add/subtract direction, and pointer-overflow policy. Offsets are in element
+units, not bytes. Keeping subtraction as a direction avoids negating an
+unsigned amount (which would wrap before applying the offset). Pointer
+`+`/`-`, `+=`/`-=`, pre/post increment/decrement, and indexing share this path;
+indexing currently lowers to `deref(ptr_offset(...))`. An update keeps a single
+place and an `OldValue` computation, so side-effecting indices are not duplicated.
+
+`PointerDifference` records both pointers and their compatible element type;
+its signed result is pointer-width on the supported x86_64 target (`ptrdiff_t`
+is i64). Its operation contract requires pointers into the same array (or its
+one-past position), and a difference representable in the result type. Neither
+condition is claimed proven. Pointee const differences are allowed. Complete
+record and fixed-array elements retain their structural types; incomplete,
+void, function, incompatible, and noninteger-offset cases are rejected rather
+than guessed. GNU void/function-pointer arithmetic is not implemented.
+
+`ir_operator_semantics.c` and its wrap/trap/compact variants cover numeric
+contracts through module lowering. `ir_pointer_arithmetic.c` and its wrap
+variant cover offsets, differences, updates, and element types. Error fixtures
+cover unsupported pointer cases. No range-based facts are inferred.
 
 ### Places and values
 
@@ -622,7 +652,7 @@ Source metadata shown (excerpt):
 
 ```text
 fn %10 @add(%0 a: i32 [c="int"], %1 b: i32) -> i32 [linkage=external] [source="add.c"] {
-    let %2 c: i32 [storage=automatic] = add<i32, overflow=undefined>(read<i32>(%0) [c="a"], read<i32>(%1)) [source="a + b"] [c="int c"];
+    let %2 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%0) [c="a"], read<i32>(%1)) [source="a + b"] [c="int c"];
     return read<i32>(%2);
 }
 ```
@@ -631,7 +661,7 @@ Source metadata hidden (required semantics remain visible):
 
 ```text
 fn %10 @add(%0 a: i32, %1 b: i32) -> i32 [linkage=external] {
-    let %2 c: i32 [storage=automatic] = add<i32, overflow=undefined>(read<i32>(%0), read<i32>(%1));
+    let %2 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%0), read<i32>(%1));
     return read<i32>(%2);
 }
 

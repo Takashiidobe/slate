@@ -189,18 +189,10 @@ impl Lowerer {
             ExprKind::Index { base, index } => {
                 let base = self.expr(base)?;
                 let index = self.expr(index)?;
-                let index = self.context.promote(index);
-                if !matches!(index.ty, Type::Numeric(NumericType::Integer { .. })) {
-                    return Err(ResolveError::Unsupported("noninteger index"));
-                }
-                let ty = self.pointee(&base.ty)?;
-                self.types.storage(ty.clone())?;
+                let (pointer_ty, kind) = self.binary(BinaryOp::Add, base, index)?;
                 Ok(Place {
-                    ty,
-                    kind: PlaceKind::Index {
-                        base: Box::new(base),
-                        index: Box::new(index),
-                    },
+                    ty: self.pointee(&pointer_ty)?,
+                    kind: PlaceKind::Deref(Box::new(self.value(e, pointer_ty, kind))),
                 })
             }
             ExprKind::Member { base, field, arrow } => {
@@ -256,6 +248,72 @@ impl Lowerer {
         Ok(self.value(e, place.ty.clone(), ValueKind::Read(place)))
     }
 
+    fn binary(
+        &self,
+        op: BinaryOp,
+        left: Value,
+        right: Value,
+    ) -> Result<(Type, ValueKind), ResolveError> {
+        let left_element = self.pointee(&left.ty).ok();
+        let right_element = self.pointee(&right.ty).ok();
+        match (op, left_element, right_element) {
+            (BinaryOp::Sub, Some(element), Some(other)) => {
+                if element != other {
+                    return Err(ResolveError::Unsupported(
+                        "incompatible pointer subtraction",
+                    ));
+                }
+                self.types.storage(element.clone())?;
+                Ok((
+                    Type::Numeric(NumericType::Integer {
+                        width: self.context.target.pointer_width,
+                        signed: true,
+                    }),
+                    ValueKind::PointerDifference {
+                        left: Box::new(left),
+                        right: Box::new(right),
+                        element,
+                    },
+                ))
+            }
+            (BinaryOp::Add | BinaryOp::Sub, Some(element), None) => {
+                self.pointer_offset(left, right, element, op == BinaryOp::Sub)
+            }
+            (BinaryOp::Add, None, Some(element)) => {
+                self.pointer_offset(right, left, element, false)
+            }
+            _ => self.context.resolve_binary(op, left, right),
+        }
+    }
+
+    fn pointer_offset(
+        &self,
+        pointer: Value,
+        amount: Value,
+        element: Type,
+        subtract: bool,
+    ) -> Result<(Type, ValueKind), ResolveError> {
+        self.types.storage(element.clone())?;
+        let amount = self.context.promote(amount);
+        if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
+            return Err(ResolveError::Unsupported("noninteger pointer offset"));
+        }
+        Ok((
+            pointer.ty.clone(),
+            ValueKind::PointerOffset {
+                pointer: Box::new(pointer),
+                amount: Box::new(amount),
+                subtract,
+                element,
+                overflow: if self.context.pointer_wrap {
+                    Overflow::Wrap
+                } else {
+                    Overflow::Undefined
+                },
+            },
+        ))
+    }
+
     fn update(
         &mut self,
         e: &Expr,
@@ -266,7 +324,7 @@ impl Lowerer {
     ) -> Result<Value, ResolveError> {
         let place = self.place(target)?;
         let old = self.value(target, place.ty.clone(), ValueKind::OldValue);
-        let (ty, kind) = self.context.resolve_binary(op, old, rhs)?;
+        let (ty, kind) = self.binary(op, old, rhs)?;
         let computation = self.convert(
             self.value(e, ty, kind),
             place.ty.clone(),
@@ -490,7 +548,7 @@ impl Lowerer {
                         },
                     ));
                 }
-                let (ty, kind) = self.context.resolve_binary(*op, left, right)?;
+                let (ty, kind) = self.binary(*op, left, right)?;
                 Ok(self.value(e, ty, kind))
             }
             ExprKind::Assign { op, target, value } => {

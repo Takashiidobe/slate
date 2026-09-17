@@ -103,7 +103,7 @@ impl DisplayModule<'_> {
                     f,
                     "write<{}>({}, {})",
                     place.ty,
-                    place,
+                    place.display_mode(self.compact),
                     value
                         .display_metadata(false, self.table())
                         .with_compact(self.compact)

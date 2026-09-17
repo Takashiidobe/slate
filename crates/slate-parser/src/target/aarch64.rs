@@ -1,4 +1,4 @@
-#![expect(dead_code)]
+#![expect(dead_code, reason = "will be implemented soon")]
 use crate::{
     ast::{AArch64RegisterWidth, RegisterInfo},
     target::x86::parse_auto_radix,

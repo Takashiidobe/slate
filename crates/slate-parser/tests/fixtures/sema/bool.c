@@ -36,7 +36,7 @@ int bools(void) {
 // CHECK-NEXT: ge<i32>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: eq<i32>(const<i32>(1), const<i32>(2))
 // CHECK-NEXT: ne<i32>(const<i32>(1), const<i32>(2))
-// CHECK-NEXT: lt<i32>(add<i32, overflow=undefined>(const<i32>(1), const<i32>(2)), const<i32>(4))
+// CHECK-NEXT: lt<i32>(add<i32, overflow=ub>(const<i32>(1), const<i32>(2)), const<i32>(4))
 // CHECK-NEXT: lt<f32, exceptions=ignore>(const<f32>(1.0), const<f32>(2.0))
 // CHECK-NEXT: eq<f64, exceptions=ignore>(const<f64>(1.0), const<f64>(2.0))
 // CHECK-NEXT: ne<f80, exceptions=ignore>(const<f80>(1), const<f80>(2))

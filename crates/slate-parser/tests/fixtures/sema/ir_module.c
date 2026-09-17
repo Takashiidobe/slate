@@ -46,9 +46,9 @@ void empty(void) {
 // IR-NEXT:         return int_to_float<f64, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2));
 // IR-NEXT:     }
 // IR-NEXT:     fn %2 @arithmetic() -> i32 [linkage=external] {
-// IR-NEXT:         add<i32, overflow=undefined>(const<i32>(1), const<i32>(2));
+// IR-NEXT:         add<i32, overflow=ub>(const<i32>(1), const<i32>(2));
 // IR-NEXT:         {
-// IR-NEXT:             return mul<i32, overflow=undefined>(const<i32>(3), const<i32>(4));
+// IR-NEXT:             return mul<i32, overflow=ub>(const<i32>(3), const<i32>(4));
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT:     fn %3 @empty() -> void [linkage=external] {

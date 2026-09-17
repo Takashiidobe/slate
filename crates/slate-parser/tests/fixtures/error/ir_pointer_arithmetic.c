@@ -1,0 +1,36 @@
+// SLATE-FILECHECK-DEFINES FLOAT -DFLOAT
+// SLATE-FILECHECK-DEFINES INCOMPATIBLE -DINCOMPATIBLE
+// SLATE-FILECHECK-DEFINES INCOMPLETE -DINCOMPLETE
+// SLATE-FILECHECK-DEFINES VOID -DVOID
+// SLATE-FILECHECK-ERROR FLOAT
+// SLATE-FILECHECK-ERROR INCOMPATIBLE
+// SLATE-FILECHECK-ERROR INCOMPLETE
+// SLATE-FILECHECK-ERROR VOID
+// SLATE-FILECHECK-ARGS --dump-ir
+
+#ifdef FLOAT
+void bad(int *p) { p + 1.0; }
+#endif
+#ifdef INCOMPATIBLE
+void bad(int *p, long *q) { p - q; }
+#endif
+#ifdef INCOMPLETE
+struct S;
+void bad(struct S *p) { p++; }
+#endif
+#ifdef VOID
+void bad(void *p) { p++; }
+#endif
+
+// SLATE-FILECHECK-BEGIN FLOAT
+// FLOAT: Error:   × unsupported in numeric IR lowering: noninteger pointer offset
+// SLATE-FILECHECK-END FLOAT
+// SLATE-FILECHECK-BEGIN INCOMPATIBLE
+// INCOMPATIBLE: Error:   × unsupported in numeric IR lowering: incompatible pointer subtraction
+// SLATE-FILECHECK-END INCOMPATIBLE
+// SLATE-FILECHECK-BEGIN INCOMPLETE
+// INCOMPLETE: Error:   × unresolved tag name `S`
+// SLATE-FILECHECK-END INCOMPLETE
+// SLATE-FILECHECK-BEGIN VOID
+// VOID: Error:   × unsupported scalar storage layout for void
+// SLATE-FILECHECK-END VOID

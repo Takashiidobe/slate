@@ -125,13 +125,44 @@ pub enum PlaceKind {
     Index { base: Box<Value>, index: Box<Value> },
 }
 
-impl std::fmt::Display for Place {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Place {
+    pub(super) fn display_mode(&self, compact: bool) -> impl std::fmt::Display + '_ {
+        struct DisplayPlace<'a>(&'a Place, bool);
+
+        impl std::fmt::Display for DisplayPlace<'_> {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.0.format(f, self.1)
+            }
+        }
+
+        DisplayPlace(self, compact)
+    }
+
+    fn format(&self, f: &mut std::fmt::Formatter<'_>, compact: bool) -> std::fmt::Result {
         match &self.kind {
             PlaceKind::Binding(id) => write!(f, "%{}", id.0),
-            PlaceKind::Deref(value) => write!(f, "deref({value})"),
-            PlaceKind::Field { base, index } => write!(f, "field{index}({base})"),
-            PlaceKind::Index { base, index } => write!(f, "index({base}, {index})"),
+            PlaceKind::Deref(value) => write!(
+                f,
+                "deref({})",
+                value.display_metadata(false, None).with_compact(compact)
+            ),
+            PlaceKind::Index { base, index } => write!(
+                f,
+                "index({}, {})",
+                base.display_metadata(false, None).with_compact(compact),
+                index.display_metadata(false, None).with_compact(compact)
+            ),
+            PlaceKind::Field { base, index } => {
+                write!(f, "field{index}(")?;
+                base.format(f, compact)?;
+                f.write_str(")")
+            }
         }
+    }
+}
+
+impl std::fmt::Display for Place {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.format(f, false)
     }
 }

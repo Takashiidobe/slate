@@ -225,10 +225,37 @@ impl fmt::Display for LogicalOp {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArithSema {
-    Integer { overflow: Overflow },
+    Integer {
+        overflow: Overflow,
+    },
+    Division {
+        by_zero: UbPolicy,
+        min_by_neg_one: Option<UbPolicy>,
+    },
+    ShiftLeft {
+        overflow: Overflow,
+        amount_out_of_range: UbPolicy,
+        negative_left: Option<UbPolicy>,
+    },
     Floating(FloatingSemantics),
     Exact,
-    ShiftRight { fill: ShiftFill },
+    ShiftRight {
+        fill: ShiftFill,
+        amount_out_of_range: UbPolicy,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UbPolicy {
+    Undefined,
+}
+
+impl fmt::Display for UbPolicy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Undefined => f.write_str("ub"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

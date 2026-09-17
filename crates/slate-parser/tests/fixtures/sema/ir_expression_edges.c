@@ -53,7 +53,7 @@ float casts(double d, unsigned long u) { return (short)d + (float)u; }
 // IR-NEXT:     fn %8 @shadow(%9 x: i32) -> i32 [linkage=external] {
 // IR-NEXT:         {
 // IR-NEXT:             let %10 x: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(1));
-// IR-NEXT:             update<i16, result=new>(%10, truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=undefined>(widen<i32, reason=promotion>(old<i16>), const<i32>(2))));
+// IR-NEXT:             update<i16, result=new>(%10, truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(old<i16>), const<i32>(2))));
 // IR-NEXT:         }
 // IR-NEXT:         return read<i32>(%9);
 // IR-NEXT:     }

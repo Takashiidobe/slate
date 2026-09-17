@@ -1,4 +1,4 @@
-use crate::ir::{FloatType, NumericType, Type};
+use crate::ir::{FloatType, NumericType, ShiftFill, Type};
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -7,6 +7,7 @@ pub struct TargetInfo {
     pub endian: Endian,
     pub long_double: LongDoubleFormat,
     pub char_signed: bool,
+    pub signed_right_shift: ShiftFill,
     pub short_width: u32,
     pub int_width: u32,
     pub long_width: u32,
@@ -34,6 +35,7 @@ impl Default for TargetInfo {
             endian: Endian::Little,
             long_double: LongDoubleFormat::X87,
             char_signed: true,
+            signed_right_shift: ShiftFill::SignExtend,
             short_width: 16,
             int_width: 32,
             long_width: 64,
