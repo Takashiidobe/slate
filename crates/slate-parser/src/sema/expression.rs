@@ -756,6 +756,7 @@ impl Lowerer {
                     return_type.as_ref().map_or(Type::Void, |ty| (**ty).clone()),
                     ValueKind::Call {
                         function,
+                        signature: ty,
                         arguments: lowered,
                     },
                 ))

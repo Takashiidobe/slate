@@ -57,7 +57,7 @@ int pointers(int *p) {
 // IR-NEXT:         let %7 byte: u8 [storage=automatic] = truncate<u8, reason=assign, fits=unknown>(read<u64>(%5));
 // IR-NEXT:         let %8 truth: bool [storage=automatic] = ne<f32, reason=assign, exceptions=ignore>(read<f32>(%6), const<f32>(0.0));
 // IR-NEXT:         store<i16>(%4, reinterpret<i16, reason=assign, fits=unknown>(widen<u16, reason=assign>(read<u8>(%7))));
-// IR-NEXT:         call<i32>(%2, reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u64>(%5))), widen<i32, reason=vararg>(read<i16>(%4)), float_widen<f64, reason=vararg>(read<f32>(%6)), from_bool<i32, reason=vararg>(read<bool>(%8)));
+// IR-NEXT:         call<i32, signature=fn(i16, ...) -> i32>(%2, reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u64>(%5))), widen<i32, reason=vararg>(read<i16>(%4)), float_widen<f64, reason=vararg>(read<f32>(%6)), from_bool<i32, reason=vararg>(read<bool>(%8)));
 // IR-NEXT:         return conditional<i32>(read<bool>(%8), sequence<i32>(read<i16>(%4), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %9 @sequencing(%10 p: ptr<i32>, %11 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {

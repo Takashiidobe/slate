@@ -31,7 +31,7 @@ int calls(void) {
 // C23-NEXT:     fn %0 @empty() -> i32 [linkage=external] [c="int()"];
 // C23-NEXT:     fn %1 @explicit_void() -> i32 [linkage=external] [c="int(void)"];
 // C23-NEXT:     fn %2 @calls() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// C23-NEXT:         return add<i32, overflow=ub>(call<i32>(%0), call<i32>(%1));
+// C23-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%0), call<i32, signature=fn() -> i32>(%1));
 // C23-NEXT:     }
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

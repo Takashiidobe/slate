@@ -77,6 +77,7 @@ pub enum ValueKind {
     },
     Call {
         function: BindingId,
+        signature: Type,
         arguments: Vec<Value>,
     },
     Read(Place),
@@ -284,9 +285,14 @@ impl Value {
             ),
             ValueKind::Call {
                 function,
+                signature,
                 arguments,
             } => {
-                write!(f, "call<{}>(%{}", self.ty, function.0)?;
+                write!(f, "call<{}", self.ty)?;
+                if !compact {
+                    write!(f, ", signature={signature}")?;
+                }
+                write!(f, ">(%{}", function.0)?;
                 for argument in arguments {
                     write!(
                         f,

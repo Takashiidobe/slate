@@ -72,6 +72,11 @@ Variables and parameters have binding IDs; root places use those IDs and concret
 Statements support declarations and writes as well as the numeric seed.
 Pointer nulls, address-of values, byte-array constants, array decay, and
 direct calls through function binding IDs are represented explicitly.
+Each call value carries the signature sema resolved at its own call site,
+printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
+and unprototyped distinction even when a later redeclaration of the same
+function changes it
+(`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
 
 `Module::display(false)` prints required semantics, including the available
 target properties, record layout, linkage, storage duration, and operation

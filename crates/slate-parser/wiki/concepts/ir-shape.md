@@ -1043,11 +1043,13 @@ Call {
 ```
 
 The enclosing expression supplies the call's result type and node identity.
+The IR `Call` node carries the resolved signature at its call site, including
+the prototype/variadic distinction, so a later redeclaration cannot
+retroactively change already-resolved argument evaluation or typing.
 Arguments contain explicit conversions; variadic and unprototyped calls
 retain the actual promoted argument types in those values. The call's
-signature and effective contracts reflect what sema resolved at that call
-site, including applicable function-pointer attributes. Later redeclarations
-must not retroactively change already-resolved argument evaluation or typing.
+effective contracts reflect what sema resolved at that call
+site, including applicable function-pointer attributes.
 Repeated signature/contract data may be interned behind references.
 
 Calls evaluate their callee and arguments according to the resolved
