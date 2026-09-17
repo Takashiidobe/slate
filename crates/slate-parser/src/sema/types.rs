@@ -476,10 +476,6 @@ impl TypeResolver {
                 self.derive(inner, resolved)
             }
             Declarator::Array { inner, size, .. } => {
-                let element = resolved
-                    .ty
-                    .take()
-                    .ok_or(ResolveError::Unsupported("void array element"))?;
                 let length = match size {
                     ArraySize::Unspecified => None,
                     ArraySize::Star => {
@@ -490,14 +486,33 @@ impl TypeResolver {
                             .map_err(|_| ResolveError::Unsupported("invalid array length"))?,
                     ),
                 };
-                resolved.ty = Some(Type::Array {
-                    element: Box::new(element),
-                    length,
-                });
                 let suffix = length.map_or("[]".to_owned(), |length| format!("[{length}]"));
-                resolved.c.spelling.push_str(&suffix);
-                resolved.c.canonical.push_str(&suffix);
-                self.derive(inner, resolved)
+                if let Declarator::Grouped(core) = inner.as_ref() {
+                    let element = resolved
+                        .ty
+                        .take()
+                        .ok_or(ResolveError::Unsupported("void array element"))?;
+                    resolved.ty = Some(Type::Array {
+                        element: Box::new(element),
+                        length,
+                    });
+                    resolved.c.spelling.push_str(&suffix);
+                    resolved.c.canonical.push_str(&suffix);
+                    self.derive(core, resolved)
+                } else {
+                    self.derive(inner, resolved)?;
+                    let element = resolved
+                        .ty
+                        .take()
+                        .ok_or(ResolveError::Unsupported("void array element"))?;
+                    resolved.ty = Some(Type::Array {
+                        element: Box::new(element),
+                        length,
+                    });
+                    resolved.c.spelling.push_str(&suffix);
+                    resolved.c.canonical.push_str(&suffix);
+                    Ok(())
+                }
             }
             Declarator::Function { inner, parameters } => {
                 let mut types = Vec::new();
@@ -522,25 +537,40 @@ impl TypeResolver {
                     types.push(ty);
                     c_parameters.push(parameter_type.c.spelling);
                 }
-                resolved.ty = Some(Type::Function {
-                    return_type: resolved.ty.take().map(Box::new),
-                    parameters: types,
-                    variadic: parameters.is_variadic(),
-                    prototyped: self.c23 || !matches!(parameters, ParameterList::Empty),
-                });
+                let variadic = parameters.is_variadic();
+                let prototyped = self.c23 || !matches!(parameters, ParameterList::Empty);
                 let suffix = if matches!(parameters, ParameterList::Empty) {
                     "()".to_owned()
                 } else if matches!(parameters, ParameterList::Void) {
                     "(void)".to_owned()
                 } else {
-                    if parameters.is_variadic() {
+                    if variadic {
                         c_parameters.push("...".into());
                     }
                     format!("({})", c_parameters.join(", "))
                 };
-                resolved.c.spelling.push_str(&suffix);
-                resolved.c.canonical.push_str(&suffix);
-                self.derive(inner, resolved)
+                if let Declarator::Grouped(core) = inner.as_ref() {
+                    resolved.ty = Some(Type::Function {
+                        return_type: resolved.ty.take().map(Box::new),
+                        parameters: types,
+                        variadic,
+                        prototyped,
+                    });
+                    resolved.c.spelling.push_str(&suffix);
+                    resolved.c.canonical.push_str(&suffix);
+                    self.derive(core, resolved)
+                } else {
+                    self.derive(inner, resolved)?;
+                    resolved.ty = Some(Type::Function {
+                        return_type: resolved.ty.take().map(Box::new),
+                        parameters: types,
+                        variadic,
+                        prototyped,
+                    });
+                    resolved.c.spelling.push_str(&suffix);
+                    resolved.c.canonical.push_str(&suffix);
+                    Ok(())
+                }
             }
         }
     }

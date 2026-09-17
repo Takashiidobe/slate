@@ -78,6 +78,17 @@ and unprototyped distinction even when a later redeclaration of the same
 function changes it
 (`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
 
+Declarator type derivation visits prefix pointers and arrays before wrapping
+suffix function and array forms, so `int *f(void)` is `fn() -> ptr<i32>` and
+`int *a[3]` is `array<ptr<i32>, 3>`; grouped declarators such as
+`int (*f)(int)` build the suffix type on the base and let the grouped core
+wrap it, matching C's precedence. Pointer↔integer casts lower as explicit
+`ptr_to_int`/`int_to_ptr` conversions, and pointer relational comparisons
+reuse `CompareOp::{lt, le, gt, ge}` on pointer operands
+(`tests/fixtures/sema/ir_pointers.c`: buffer fill cursor, string walk,
+out-parameter write, pointer round-trip). Function decay to a pointer value
+and indirect calls remain separate work.
+
 `Module::display(false)` prints required semantics, including the available
 target properties, record layout, linkage, storage duration, and operation
 contracts. `display(true)` additionally prints source context from the

@@ -191,6 +191,32 @@ impl Lowerer {
                 ));
             }
         }
+        if self.pointee(&value.ty).is_ok() && matches!(to, Type::Numeric(_)) {
+            let node = value.node.clone();
+            return Ok(self.value(
+                &node,
+                to,
+                ValueKind::Convert {
+                    kind: ConversionKind::PtrToInt,
+                    operand: Box::new(value),
+                    reason,
+                    semantics: ConversionSema::Exact,
+                },
+            ));
+        }
+        if matches!(value.ty, Type::Numeric(_)) && self.pointee(&to).is_ok() {
+            let node = value.node.clone();
+            return Ok(self.value(
+                &node,
+                to,
+                ValueKind::Convert {
+                    kind: ConversionKind::IntToPtr,
+                    operand: Box::new(value),
+                    reason,
+                    semantics: ConversionSema::Exact,
+                },
+            ));
+        }
         Err(ResolveError::Unsupported(
             "incompatible or unsupported conversion",
         ))
@@ -668,6 +694,42 @@ impl Lowerer {
                                 CompareOp::Eq
                             } else {
                                 CompareOp::Ne
+                            },
+                            left: Box::new(self.convert_expr(
+                                left_expr,
+                                left,
+                                ty.clone(),
+                                ConversionReason::UsualArith,
+                            )?),
+                            right: Box::new(self.convert_expr(
+                                right_expr,
+                                right,
+                                ty,
+                                ConversionReason::UsualArith,
+                            )?),
+                            exceptions: None,
+                            reason: None,
+                        },
+                    ));
+                }
+                if matches!(
+                    op,
+                    BinaryOp::Less
+                        | BinaryOp::LessEqual
+                        | BinaryOp::Greater
+                        | BinaryOp::GreaterEqual
+                ) && (self.pointee(&left.ty).is_ok() && self.pointee(&right.ty).is_ok())
+                {
+                    let ty = left.ty.clone();
+                    return Ok(self.value(
+                        e,
+                        Type::Bool,
+                        ValueKind::Compare {
+                            op: match op {
+                                BinaryOp::Less => CompareOp::Lt,
+                                BinaryOp::LessEqual => CompareOp::Le,
+                                BinaryOp::Greater => CompareOp::Gt,
+                                _ => CompareOp::Ge,
                             },
                             left: Box::new(self.convert_expr(
                                 left_expr,
