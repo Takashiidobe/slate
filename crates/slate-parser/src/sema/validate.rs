@@ -78,7 +78,7 @@ impl TranslationUnit {
             }
         }
 
-        let mut errors = Vec::new();
+        let mut errors = super::assertion::validate(self);
         for decl in &self.decls {
             match &decl.value {
                 DeclKind::Comment(_)
@@ -505,7 +505,7 @@ fn check_type_name(
     );
 }
 
-fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaError {
+pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaError {
     SemaError {
         message: message.into(),
         provenance: Some(provenance),

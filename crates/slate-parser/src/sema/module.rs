@@ -9,6 +9,9 @@ use crate::ir::*;
 use std::collections::HashMap;
 
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
+    if let Some(error) = super::assertion::validate(unit).into_iter().next() {
+        return Err(ResolveError::StaticAssertion(error.message));
+    }
     let context = Context::new(unit.target.clone()).with_options(&unit.options);
     let names = super::names::resolve(unit)?;
     let next_id = names
@@ -31,7 +34,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     };
     for declaration in &unit.decls {
         match &declaration.value {
-            DeclKind::Comment(_) => {}
+            DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
             DeclKind::Declaration(item) => {
                 lower.declaration(item, true)?;
             }
@@ -416,7 +419,7 @@ impl Lowerer {
         let mut result = Vec::new();
         for statement in body {
             let kind = match &statement.value {
-                StmtKind::Comment(_) => continue,
+                StmtKind::Comment(_) | StmtKind::StaticAssert(_) => continue,
                 StmtKind::Decl(item) => {
                     result.extend(self.declaration(item, false)?);
                     continue;

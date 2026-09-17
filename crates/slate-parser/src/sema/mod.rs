@@ -1,3 +1,4 @@
+mod assertion;
 mod effects;
 mod effects_statements;
 mod expression;

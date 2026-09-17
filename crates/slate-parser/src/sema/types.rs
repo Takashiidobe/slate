@@ -5,6 +5,7 @@ use crate::ast::{
     FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, Qualifiers, TagBody,
     TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeSpecifier,
 };
+use crate::const_expr::Encoding;
 use crate::ir::{
     BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
     RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
@@ -53,6 +54,7 @@ pub struct ResolvedType {
     pub c: CTypeMetadata,
 }
 
+#[derive(Clone)]
 pub struct TypeResolver {
     target: TargetInfo,
     pub c23: bool,
@@ -61,6 +63,9 @@ pub struct TypeResolver {
     tag_ids: HashMap<TagId, TypeId>,
     tag_names: HashMap<(TagKind, String), TypeId>,
     pub definitions: Vec<TypeDefinition>,
+    pub(super) assertion_scope: bool,
+    pub(super) constants: HashMap<String, Value>,
+    pub(super) objects: HashMap<String, Type>,
 }
 
 impl TypeResolver {
@@ -73,6 +78,9 @@ impl TypeResolver {
             tag_ids: HashMap::new(),
             tag_names: HashMap::new(),
             definitions: Vec::new(),
+            assertion_scope: false,
+            constants: HashMap::new(),
+            objects: HashMap::new(),
         }
     }
 
@@ -103,11 +111,72 @@ impl TypeResolver {
         ))
     }
 
-    fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Value, ResolveError> {
+    pub(super) fn hide_name(&mut self, name: &str) {
+        self.aliases.remove(name);
+        self.constants.remove(name);
+        self.objects.remove(name);
+    }
+
+    pub(super) fn hide_tag(&mut self, kind: TagKind, name: &str) {
+        self.tag_names.retain(|(k, n), _| *k != kind || n != name);
+    }
+
+    pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Value, ResolveError> {
         use crate::ast::ExprKind;
         let context = super::numeric::Context::new(self.target.clone());
         let (ty, kind) = match &e.value {
             ExprKind::Paren(inner) => return self.constant_value(inner),
+            ExprKind::Identifier(name) => {
+                return self
+                    .constants
+                    .get(name)
+                    .cloned()
+                    .ok_or(ResolveError::Unsupported(
+                        "nonconstant or unknown identifier",
+                    ));
+            }
+            ExprKind::CharLiteral(literal) if literal.code_units.len() == 1 => (
+                context.int_type(),
+                ValueKind::Constant(Number::Integer(literal.code_units[0].into())),
+            ),
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
+                let ty = self.assertion_operand_type(operand)?;
+                let layout = self.storage(ty)?;
+                let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
+                    layout.size_bytes
+                } else {
+                    u64::from(layout.alignment_bytes)
+                };
+                (
+                    Type::Numeric(NumericType::Integer {
+                        width: self.target.pointer_width,
+                        signed: false,
+                    }),
+                    ValueKind::Constant(Number::Integer(n.into())),
+                )
+            }
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                let condition = self.constant_value(condition)?;
+                let left = match then_value {
+                    Some(left) => self.constant_value(left)?,
+                    None => condition.clone(),
+                };
+                let right = self.constant_value(else_value)?;
+                let (left, right) =
+                    context.usual_arithmetic(context.promote(left), context.promote(right));
+                (
+                    left.ty.clone(),
+                    ValueKind::Conditional {
+                        condition: Box::new(context.condition(condition)),
+                        then_value: Box::new(left),
+                        else_value: Box::new(right),
+                    },
+                )
+            }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let ty = self
                     .resolve(&ty.specifiers, &ty.declarator)?
@@ -165,27 +234,6 @@ impl TypeResolver {
                     _ => return Err(ResolveError::Unsupported("nonconstant unary expression")),
                 }
             }
-            ExprKind::Conditional {
-                condition,
-                then_value,
-                else_value,
-            } => {
-                let condition = self.constant_value(condition)?;
-                let then_value = match then_value {
-                    Some(value) => self.constant_value(value)?,
-                    None => condition.clone(),
-                };
-                let else_value = self.constant_value(else_value)?;
-                let (then_value, else_value) = context.usual_arithmetic(then_value, else_value);
-                (
-                    then_value.ty.clone(),
-                    ValueKind::Conditional {
-                        condition: Box::new(context.condition(condition)),
-                        then_value: Box::new(then_value),
-                        else_value: Box::new(else_value),
-                    },
-                )
-            }
             ExprKind::Comma { left, right } => {
                 let left = self.constant_value(left)?;
                 let right = self.constant_value(right)?;
@@ -215,6 +263,52 @@ impl TypeResolver {
             ty,
             node: e.clone().with_value(kind),
         })
+    }
+
+    pub(super) fn assertion_operand_type(
+        &mut self,
+        e: &crate::ast::Expr,
+    ) -> Result<Type, ResolveError> {
+        use crate::ast::ExprKind;
+        match &e.value {
+            ExprKind::Paren(inner) => self.assertion_operand_type(inner),
+            ExprKind::Identifier(name) => self
+                .objects
+                .get(name)
+                .cloned()
+                .or_else(|| self.constants.get(name).map(|value| value.ty.clone()))
+                .ok_or(ResolveError::Unsupported(
+                    "unknown or unsupported sizeof operand type",
+                )),
+            ExprKind::StringLiteral(literal) => {
+                let (width, signed) = match literal.encoding {
+                    Encoding::Plain => (8, self.target.char_signed),
+                    Encoding::Utf8 => (8, false),
+                    Encoding::Utf16 => (16, false),
+                    Encoding::Utf32 => (32, false),
+                    Encoding::Wide => (self.target.wchar_width, self.target.wchar_signed),
+                };
+                Ok(Type::Array {
+                    element: Box::new(Type::Numeric(NumericType::Integer { width, signed })),
+                    length: Some(encoded_length(literal, width) + 1),
+                })
+            }
+            ExprKind::Unary {
+                op: crate::const_expr::UnaryOp::Deref,
+                operand,
+            } => match self.assertion_operand_type(operand)? {
+                Type::Pointer { pointee, .. } => Ok(*pointee),
+                _ => Err(ResolveError::Unsupported(
+                    "sizeof dereference of nonpointer",
+                )),
+            },
+            ExprKind::Index { base, .. } => match self.assertion_operand_type(base)? {
+                Type::Array { element, .. } => Ok(*element),
+                Type::Pointer { pointee, .. } => Ok(*pointee),
+                _ => Err(ResolveError::Unsupported("sizeof index of nonarray")),
+            },
+            _ => self.constant_value(e).map(|value| value.ty),
+        }
     }
 
     pub(super) fn offsetof_member(
@@ -368,7 +462,11 @@ impl TypeResolver {
                     let tag = self
                         .tags
                         .iter()
-                        .find(|tag| tag.kind == *kind && tag.name.as_deref() == Some(name))
+                        .find(|tag| {
+                            !self.assertion_scope
+                                && tag.kind == *kind
+                                && tag.name.as_deref() == Some(name)
+                        })
                         .cloned();
                     if let Some(tag) = tag {
                         self.define_tag(&tag.value)?
@@ -1300,4 +1398,21 @@ fn resolve_parameters(
         fixed,
         variadic: signature.is_variadic(),
     })
+}
+
+fn encoded_length(literal: &crate::const_expr::StringLiteral, width: u32) -> u64 {
+    literal
+        .code_units
+        .iter()
+        .map(|codepoint| match literal.encoding {
+            Encoding::Utf8 => match codepoint {
+                0..=0x7F => 1,
+                0x80..=0x7FF => 2,
+                0x800..=0xFFFF => 3,
+                _ => 4,
+            },
+            Encoding::Utf16 | Encoding::Wide if width == 16 => u64::from(*codepoint > 0xFFFF) + 1,
+            _ => 1,
+        })
+        .sum()
 }

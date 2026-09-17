@@ -17,6 +17,8 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ResolveError {
+    #[error("{0}")]
+    StaticAssertion(String),
     #[error("unsupported in numeric IR lowering: {0}")]
     Unsupported(&'static str),
     #[error("integer literal `{0}` has no supported target type")]

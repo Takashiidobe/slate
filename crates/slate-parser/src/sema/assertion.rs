@@ -1,0 +1,389 @@
+use crate::ast::*;
+use crate::const_expr::UnaryOp;
+use crate::ir::{Number, NumericType, Type, Value, ValueKind};
+use num_bigint::{BigInt, Sign};
+
+use super::numeric::ResolveError;
+use super::types::TypeResolver;
+use super::validate::{SemaError, error};
+
+pub(super) fn validate(unit: &TranslationUnit) -> Vec<SemaError> {
+    let mut checker = Checker {
+        unit,
+        types: TypeResolver::with_tags(unit.options.effective_target(unit.target.clone()), unit),
+        errors: Vec::new(),
+    };
+    checker.types.assertion_scope = true;
+    for declaration in &unit.decls {
+        match &declaration.value {
+            DeclKind::StaticAssert(assertion) => checker.assertion(assertion),
+            DeclKind::Declaration(declaration) => checker.declaration(declaration),
+            DeclKind::Function(function) => checker.function(function),
+            _ => {}
+        }
+    }
+    checker.errors
+}
+
+struct Checker<'a> {
+    unit: &'a TranslationUnit,
+    types: TypeResolver,
+    errors: Vec<SemaError>,
+}
+
+impl Checker<'_> {
+    fn assertion(&mut self, assertion: &StaticAssert) {
+        let condition = &assertion.condition;
+        if !ice_shape(condition) {
+            return;
+        }
+        let result = self
+            .types
+            .constant_value(condition)
+            .and_then(|value| match value.ty {
+                Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
+                    super::fold::integer(&value).ok_or(ResolveError::Unsupported(
+                        "nonconstant or undefined integer expression",
+                    ))
+                }
+                _ => Err(ResolveError::Unsupported("non-integer constant expression")),
+            })
+            .map_err(|error| match error {
+                ResolveError::Unsupported(reason) => reason.to_owned(),
+                error => error.to_string(),
+            });
+        let message = match result {
+            Ok(value) if value.sign() != Sign::NoSign => return,
+            Ok(_) => assertion.message.as_ref().map_or_else(
+                || "static assertion failed".to_owned(),
+                |message| format!("static assertion failed: {message}"),
+            ),
+            Err(reason) => {
+                format!("static assertion requires an integer constant expression: {reason}")
+            }
+        };
+        self.errors
+            .push(error(condition.provenance, condition.expansion, message));
+    }
+
+    fn function(&mut self, function: &FunctionDefinition) {
+        let saved = self.types.clone();
+        for parameter in function
+            .declarator
+            .function_parameters()
+            .map_or(&[][..], ParameterList::parameters)
+        {
+            self.tag(&parameter.specifiers.ty);
+            let resolved = self
+                .types
+                .resolve(&parameter.specifiers, &parameter.declarator);
+            if let Some(name) = parameter.declarator.name() {
+                self.types.hide_name(name);
+                if let Ok(resolved) = resolved
+                    && let Some(ty) = resolved.ty
+                {
+                    let ty = match ty {
+                        Type::Array { element, .. } => Type::Pointer {
+                            pointee: element,
+                            is_const: false,
+                        },
+                        ty @ Type::Function { .. } => Type::Pointer {
+                            pointee: Box::new(ty),
+                            is_const: false,
+                        },
+                        ty => ty,
+                    };
+                    self.types.objects.insert(name.to_owned(), ty);
+                }
+            }
+        }
+        for stmt in &function.body {
+            self.statement(stmt);
+        }
+        self.types = saved;
+    }
+
+    fn declaration(&mut self, declaration: &Declaration) {
+        self.tag(&declaration.specifiers.ty);
+        for declarator in &declaration.declarators {
+            let Some(name) = declarator.declarator.name() else {
+                continue;
+            };
+            let resolved = self
+                .types
+                .resolve(&declaration.specifiers, &declarator.declarator);
+            self.types.hide_name(name);
+            if let Ok(mut resolved) = resolved {
+                if declaration.specifiers.storage == StorageClass::Typedef {
+                    let _ = self.types.define_alias(name.to_owned(), resolved);
+                } else if let Some(mut ty) = resolved.ty.take() {
+                    if let Type::Array { length, .. } = &mut ty
+                        && length.is_none()
+                        && let Some(Initializer::Expr(expr)) = &declarator.initializer
+                        && let Ok(Type::Array {
+                            length: inferred, ..
+                        }) = self.types.assertion_operand_type(expr)
+                    {
+                        *length = inferred;
+                    }
+                    self.types.objects.insert(name.to_owned(), ty);
+                }
+            }
+            if let Some(initializer) = &declarator.initializer {
+                self.initializer(initializer);
+            }
+        }
+    }
+
+    fn tag(&mut self, ty: &TypeSpecifier) {
+        let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = ty else {
+            return;
+        };
+        let Some(tag) = self.unit.tag(*id) else {
+            return;
+        };
+        if let Some(name) = &tag.name {
+            self.types.hide_tag(tag.kind, name);
+        }
+        if let TagBody::Enum {
+            enumerators,
+            fixed_type,
+        } = &tag.body
+        {
+            let int_ty = Type::Numeric(NumericType::Integer {
+                width: self.unit.target.int_width,
+                signed: true,
+            });
+            let fixed = fixed_type
+                .as_ref()
+                .and_then(|ty| self.types.resolve(&ty.specifiers, &ty.declarator).ok())
+                .and_then(|ty| ty.ty);
+            let mut previous: Option<BigInt> = Some((-1).into());
+            for item in enumerators {
+                let EnumItemKind::Enumerator(enumerator) = &item.value else {
+                    continue;
+                };
+                let value = match &enumerator.value {
+                    Some(expr) if ice_shape(expr) => self.types.constant_integer(expr).ok(),
+                    Some(_) => None,
+                    None => previous.as_ref().map(|value| value + 1),
+                };
+                self.types.hide_name(&enumerator.name);
+                previous = value.clone();
+                if let Some(value) = value {
+                    let ty = fixed.clone().unwrap_or_else(|| int_ty.clone());
+                    let Type::Numeric(NumericType::Integer { width, signed }) = ty else {
+                        continue;
+                    };
+                    let limit = BigInt::from(1u8) << (width - u32::from(signed));
+                    let min = if signed { -&limit } else { BigInt::from(0u8) };
+                    if value < min || value >= limit {
+                        continue;
+                    }
+                    self.types.constants.insert(
+                        enumerator.name.clone(),
+                        Value {
+                            ty,
+                            node: item
+                                .clone()
+                                .with_value(ValueKind::Constant(Number::SignedInteger(value))),
+                        },
+                    );
+                }
+            }
+        }
+        // Failed dependencies remain unavailable; only a consuming assertion diagnoses them.
+        let specifiers = DeclarationSpecifiers {
+            ty: ty.clone(),
+            qualifiers: Qualifiers::default(),
+            storage: StorageClass::None,
+            is_thread_local: false,
+            is_inline: false,
+            is_noreturn: false,
+            is_constexpr: false,
+            attributes: Vec::new(),
+        };
+        let _ = self.types.resolve(&specifiers, &Declarator::Abstract);
+    }
+
+    fn scoped(&mut self, stmt: &Stmt) {
+        let saved = self.types.clone();
+        self.statement(stmt);
+        self.types = saved;
+    }
+
+    fn statement(&mut self, stmt: &Stmt) {
+        match &stmt.value {
+            StmtKind::StaticAssert(assertion) => self.assertion(assertion),
+            StmtKind::Decl(declaration) => self.declaration(declaration),
+            StmtKind::Block(body) => {
+                let saved = self.types.clone();
+                for stmt in body {
+                    self.statement(stmt);
+                }
+                self.types = saved;
+            }
+            StmtKind::NestedFunction(function) => self.function(function),
+            StmtKind::If {
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                self.expression(condition);
+                self.scoped(then_branch);
+                if let Some(branch) = else_branch {
+                    self.scoped(branch);
+                }
+            }
+            StmtKind::While { condition, body }
+            | StmtKind::DoWhile { condition, body }
+            | StmtKind::Switch {
+                discriminant: condition,
+                body,
+            } => {
+                self.expression(condition);
+                self.scoped(body);
+            }
+            StmtKind::For {
+                init,
+                condition,
+                increment,
+                body,
+            } => {
+                let saved = self.types.clone();
+                if let Some(init) = init {
+                    self.statement(init);
+                }
+                for expr in condition.iter().chain(increment) {
+                    self.expression(expr);
+                }
+                self.scoped(body);
+                self.types = saved;
+            }
+            StmtKind::Labeled { body, .. }
+            | StmtKind::Attributed { body, .. }
+            | StmtKind::SwitchLabel { body, .. } => self.statement(body),
+            StmtKind::Expr(expr) | StmtKind::Return(expr) | StmtKind::ComputedGoto(expr) => {
+                self.expression(expr)
+            }
+            _ => {}
+        }
+    }
+
+    fn initializer(&mut self, initializer: &Initializer) {
+        match initializer {
+            Initializer::Expr(expr) => self.expression(expr),
+            Initializer::List(items) => {
+                for item in items {
+                    self.initializer(&item.value);
+                }
+            }
+        }
+    }
+
+    fn expression(&mut self, expr: &Expr) {
+        match &expr.value {
+            ExprKind::StatementExpression(body) => {
+                let saved = self.types.clone();
+                for stmt in body {
+                    self.statement(stmt);
+                }
+                self.types = saved;
+            }
+            ExprKind::Paren(expr)
+            | ExprKind::Unary { operand: expr, .. }
+            | ExprKind::Postfix { operand: expr, .. }
+            | ExprKind::Cast { value: expr, .. }
+            | ExprKind::BitCast { value: expr, .. }
+            | ExprKind::VaArg { list: expr, .. }
+            | ExprKind::SizeOfExpr(expr)
+            | ExprKind::AlignOfExpr(expr)
+            | ExprKind::Member { base: expr, .. } => self.expression(expr),
+            ExprKind::Binary { left, right, .. }
+            | ExprKind::Assign {
+                target: left,
+                value: right,
+                ..
+            }
+            | ExprKind::Comma { left, right }
+            | ExprKind::Index {
+                base: left,
+                index: right,
+            } => {
+                self.expression(left);
+                self.expression(right);
+            }
+            ExprKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                self.expression(condition);
+                if let Some(expr) = then_value {
+                    self.expression(expr);
+                }
+                self.expression(else_value);
+            }
+            ExprKind::Call { callee, arguments } => {
+                self.expression(callee);
+                for argument in arguments {
+                    self.expression(argument);
+                }
+            }
+            ExprKind::CompoundLiteral { initializer, .. } => {
+                for item in initializer {
+                    self.initializer(&item.value);
+                }
+            }
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                if let GenericControl::Expr(expr) = controlling {
+                    self.expression(expr);
+                }
+                for association in associations {
+                    let (GenericAssociation::Type { value, .. }
+                    | GenericAssociation::Default(value)) = association;
+                    self.expression(value);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+// Fold evaluates executed IR only, so enforce the supported ICE syntax separately.
+fn ice_shape(expr: &Expr) -> bool {
+    match &expr.value {
+        ExprKind::IntegerLiteral(_)
+        | ExprKind::FloatLiteral(_)
+        | ExprKind::CharLiteral(_)
+        | ExprKind::BoolLiteral(_)
+        | ExprKind::Identifier(_)
+        | ExprKind::SizeOfType { .. }
+        | ExprKind::AlignOf { .. }
+        | ExprKind::SizeOfExpr(_)
+        | ExprKind::AlignOfExpr(_)
+        | ExprKind::OffsetOf { .. } => true,
+        ExprKind::Paren(expr) => ice_shape(expr),
+        ExprKind::Unary { op, operand } => {
+            matches!(
+                op,
+                UnaryOp::Plus | UnaryOp::Minus | UnaryOp::Not | UnaryOp::BitNot
+            ) && ice_shape(operand)
+        }
+        ExprKind::Binary { left, right, .. } => ice_shape(left) && ice_shape(right),
+        ExprKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => {
+            ice_shape(condition)
+                && then_value.as_ref().is_none_or(ice_shape)
+                && ice_shape(else_value)
+        }
+        ExprKind::Cast { value, .. } => ice_shape(value),
+        _ => false,
+    }
+}
