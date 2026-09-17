@@ -2,6 +2,22 @@ use crate::ast::{FileId, Loc, Span};
 use crate::compiler_args::LanguageStandard;
 use crate::files::raw_byte_for_char;
 
+// a numeric escape or a raw source byte names a code unit directly; anything
+// else names a character that the execution encoding still has to encode
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum SourceUnit {
+    Character(u32),
+    CodeUnit(u32),
+}
+
+impl SourceUnit {
+    pub(crate) fn value(self) -> u32 {
+        match self {
+            Self::Character(value) | Self::CodeUnit(value) => value,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Keyword {
     Bool,
@@ -846,29 +862,36 @@ impl Lexer {
     }
 
     pub(crate) fn decode_escapes(chars: &[char], start: usize, end: usize) -> Vec<u32> {
-        let mut codepoints = Vec::new();
+        Self::decode_source_units(chars, start, end)
+            .into_iter()
+            .map(SourceUnit::value)
+            .collect()
+    }
+
+    pub(crate) fn decode_source_units(chars: &[char], start: usize, end: usize) -> Vec<SourceUnit> {
+        let mut units = Vec::new();
         let mut i = start;
         while i < end {
-            let (codepoint, next) = Self::decode_char_escape(chars, i, end);
-            codepoints.push(codepoint);
+            let (unit, next) = Self::decode_char_escape(chars, i, end);
+            units.push(unit);
             i = next;
         }
-        codepoints
+        units
     }
 
     fn char_in(chars: &[char], i: usize, end: usize) -> Option<char> {
         (i < end).then(|| chars[i])
     }
 
-    fn decode_char_escape(chars: &[char], i: usize, end: usize) -> (u32, usize) {
+    fn decode_char_escape(chars: &[char], i: usize, end: usize) -> (SourceUnit, usize) {
         if chars[i] != '\\' {
-            let value = raw_byte_for_char(chars[i])
-                .map(u32::from)
-                .unwrap_or(chars[i] as u32);
-            return (value, i + 1);
+            return match raw_byte_for_char(chars[i]) {
+                Some(byte) => (SourceUnit::CodeUnit(u32::from(byte)), i + 1),
+                None => (SourceUnit::Character(chars[i] as u32), i + 1),
+            };
         }
         let j = i + 1;
-        match Self::char_in(chars, j, end) {
+        let (value, next) = match Self::char_in(chars, j, end) {
             Some('n') => (0x0A, j + 1),
             Some('t') => (0x09, j + 1),
             Some('r') => (0x0D, j + 1),
@@ -881,7 +904,10 @@ impl Lexer {
             Some('\'') => (0x27, j + 1),
             Some('"') => (0x22, j + 1),
             Some('?') => (0x3F, j + 1),
-            Some('x') => Self::hex_char_escape(chars, j + 1, end, usize::MAX),
+            Some('x') => {
+                let (value, next) = Self::hex_char_escape(chars, j + 1, end, usize::MAX);
+                return (SourceUnit::CodeUnit(value), next);
+            }
             Some('u') => Self::hex_char_escape(chars, j + 1, end, 4),
             Some('U') => Self::hex_char_escape(chars, j + 1, end, 8),
             Some(digit) if digit.is_digit(8) => {
@@ -893,11 +919,12 @@ impl Lexer {
                     e += 1;
                     count += 1;
                 }
-                (value, e)
+                return (SourceUnit::CodeUnit(value), e);
             }
             Some(other) => (other as u32, j + 1),
             None => (0, j),
-        }
+        };
+        (SourceUnit::Character(value), next)
     }
 
     fn hex_char_escape(

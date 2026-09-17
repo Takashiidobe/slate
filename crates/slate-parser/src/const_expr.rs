@@ -512,6 +512,63 @@ pub struct StringLiteral {
     pub pieces: Vec<Span<String>>,
 }
 
+impl StringLiteral {
+    pub fn unit_width(&self, wchar_width: u32) -> u32 {
+        match self.encoding {
+            Encoding::Plain | Encoding::Utf8 => 8,
+            Encoding::Utf16 => 16,
+            Encoding::Utf32 => 32,
+            Encoding::Wide => wchar_width,
+        }
+    }
+
+    // code_units holds characters; sizes and contents need execution-charset units
+    pub fn execution_units(&self, wchar_width: u32) -> Vec<u32> {
+        let width = self.unit_width(wchar_width);
+        let mut units = Vec::with_capacity(self.code_units.len());
+        for piece in &self.pieces {
+            let chars: Vec<char> = piece.value.chars().collect();
+            for unit in crate::lexer::Lexer::decode_source_units(&chars, 0, chars.len()) {
+                match unit {
+                    crate::lexer::SourceUnit::CodeUnit(value) => units.push(truncate(value, width)),
+                    crate::lexer::SourceUnit::Character(value) => encode(value, width, &mut units),
+                }
+            }
+        }
+        units
+    }
+}
+
+fn truncate(value: u32, width: u32) -> u32 {
+    match width {
+        32 => value,
+        width => value & ((1 << width) - 1),
+    }
+}
+
+fn encode(value: u32, width: u32, units: &mut Vec<u32>) {
+    match (width, value) {
+        (8, 0..=0x7F) | (16, 0..=0xFFFF) | (32, _) => units.push(value),
+        (8, 0x80..=0x7FF) => units.extend([0xC0 | value >> 6, 0x80 | value & 0x3F]),
+        (8, 0x800..=0xFFFF) => units.extend([
+            0xE0 | value >> 12,
+            0x80 | (value >> 6) & 0x3F,
+            0x80 | value & 0x3F,
+        ]),
+        (8, _) => units.extend([
+            0xF0 | value >> 18,
+            0x80 | (value >> 12) & 0x3F,
+            0x80 | (value >> 6) & 0x3F,
+            0x80 | value & 0x3F,
+        ]),
+        (16, _) => {
+            let value = value - 0x1_0000;
+            units.extend([0xD800 | value >> 10, 0xDC00 | value & 0x3FF]);
+        }
+        _ => units.push(truncate(value, width)),
+    }
+}
+
 fn strip_imaginary(digits: &str) -> (&str, bool) {
     match digits.strip_suffix(['i', 'j']) {
         Some(stripped) => (stripped, true),

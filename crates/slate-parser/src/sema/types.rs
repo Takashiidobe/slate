@@ -280,19 +280,7 @@ impl TypeResolver {
                 .ok_or(ResolveError::Unsupported(
                     "unknown or unsupported sizeof operand type",
                 )),
-            ExprKind::StringLiteral(literal) => {
-                let (width, signed) = match literal.encoding {
-                    Encoding::Plain => (8, self.target.char_signed),
-                    Encoding::Utf8 => (8, false),
-                    Encoding::Utf16 => (16, false),
-                    Encoding::Utf32 => (32, false),
-                    Encoding::Wide => (self.target.wchar_width, self.target.wchar_signed),
-                };
-                Ok(Type::Array {
-                    element: Box::new(Type::Numeric(NumericType::Integer { width, signed })),
-                    length: Some(encoded_length(literal, width) + 1),
-                })
-            }
+            ExprKind::StringLiteral(literal) => Ok(string_literal_type(literal, &self.target)),
             ExprKind::Unary {
                 op: crate::const_expr::UnaryOp::Deref,
                 operand,
@@ -1400,19 +1388,18 @@ fn resolve_parameters(
     })
 }
 
-fn encoded_length(literal: &crate::const_expr::StringLiteral, width: u32) -> u64 {
-    literal
-        .code_units
-        .iter()
-        .map(|codepoint| match literal.encoding {
-            Encoding::Utf8 => match codepoint {
-                0..=0x7F => 1,
-                0x80..=0x7FF => 2,
-                0x800..=0xFFFF => 3,
-                _ => 4,
-            },
-            Encoding::Utf16 | Encoding::Wide if width == 16 => u64::from(*codepoint > 0xFFFF) + 1,
-            _ => 1,
-        })
-        .sum()
+pub(super) fn string_literal_type(
+    literal: &crate::const_expr::StringLiteral,
+    target: &TargetInfo,
+) -> Type {
+    let width = literal.unit_width(target.wchar_width);
+    let signed = match literal.encoding {
+        Encoding::Plain => target.char_signed,
+        Encoding::Wide => target.wchar_signed,
+        _ => false,
+    };
+    Type::Array {
+        element: Box::new(Type::Numeric(NumericType::Integer { width, signed })),
+        length: Some(literal.execution_units(target.wchar_width).len() as u64 + 1),
+    }
 }

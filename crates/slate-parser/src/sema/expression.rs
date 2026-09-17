@@ -423,16 +423,7 @@ impl Lowerer {
             return self.unevaluated_type(inner);
         }
         if let ExprKind::StringLiteral(lit) = &operand.value {
-            if lit.encoding != Encoding::Plain {
-                return Err(ResolveError::Unsupported("encoded string literal"));
-            }
-            return Ok(Type::Array {
-                element: Box::new(Type::Numeric(NumericType::Integer {
-                    width: 8,
-                    signed: self.context.target.char_signed,
-                })),
-                length: Some(lit.code_units.len() as u64 + 1),
-            });
+            return Ok(super::types::string_literal_type(lit, &self.context.target));
         }
         let globals = self.module.globals.len();
         let next_id = self.next_id;
@@ -536,10 +527,11 @@ impl Lowerer {
                     return Err(ResolveError::Unsupported("encoded string literal"));
                 }
                 let mut bytes = lit
-                    .code_units
-                    .iter()
-                    .map(|c| {
-                        u8::try_from(*c).map_err(|_| ResolveError::Unsupported("string code unit"))
+                    .execution_units(self.context.target.wchar_width)
+                    .into_iter()
+                    .map(|unit| {
+                        u8::try_from(unit)
+                            .map_err(|_| ResolveError::Unsupported("string code unit"))
                     })
                     .collect::<Result<Vec<_>, _>>()?;
                 bytes.push(0);
