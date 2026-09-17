@@ -123,3 +123,5 @@ sys/procfs.h
 sys/ptrace.h
 sys/quota.h
 sys/random.h
+sys/select.h
+sys/sem.h

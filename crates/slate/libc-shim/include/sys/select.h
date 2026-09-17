@@ -17,7 +17,7 @@
 
 #else
 
-enum { FD_SETSIZE = 1024 };
+#define FD_SETSIZE 1024
 
 typedef unsigned long fd_mask;
 
@@ -25,10 +25,19 @@ typedef struct {
   unsigned long fds_bits[FD_SETSIZE / 8 / sizeof(long)];
 } fd_set;
 
-void FD_ZERO(fd_set *set);
-void FD_SET(int fd, fd_set *set);
-void FD_CLR(int fd, fd_set *set);
-int  FD_ISSET(int fd, fd_set *set);
+#define FD_ZERO(s)                                                           \
+  do {                                                                       \
+    int __i;                                                                 \
+    unsigned long *__b = (s)->fds_bits;                                      \
+    for (__i = sizeof(fd_set) / sizeof(long); __i; __i--)                    \
+      *__b++ = 0;                                                            \
+  } while (0)
+#define FD_SET(d, s)                                                         \
+  ((s)->fds_bits[(d) / (8 * sizeof(long))] |= (1UL << ((d) % (8 * sizeof(long)))))
+#define FD_CLR(d, s)                                                         \
+  ((s)->fds_bits[(d) / (8 * sizeof(long))] &= ~(1UL << ((d) % (8 * sizeof(long)))))
+#define FD_ISSET(d, s)                                                       \
+  !!((s)->fds_bits[(d) / (8 * sizeof(long))] & (1UL << ((d) % (8 * sizeof(long)))))
 
 int select(int, fd_set *__restrict, fd_set *__restrict, fd_set *__restrict,
            struct timeval *__restrict);
@@ -36,7 +45,7 @@ int pselect(int, fd_set *__restrict, fd_set *__restrict, fd_set *__restrict,
             const struct timespec *__restrict, const sigset_t *__restrict);
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-enum { NFDBITS = (8 * (int)sizeof(long)) };
+#define NFDBITS (8 * (int)sizeof(long))
 #endif
 
 #if _REDIR_TIME64

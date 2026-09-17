@@ -5,6 +5,10 @@
 #error "Never include <bits/sem.h> directly; include a standard header instead."
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
+
 #if defined(__SLATE_ARCH_ARM)
 #include <bits/arm/sem.h>
 #elif defined(__SLATE_ARCH_RISCV32)
