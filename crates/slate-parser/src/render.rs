@@ -64,7 +64,7 @@ impl<W: Write> Renderer<W> {
     }
 
     fn render_debug<T: Debug>(&mut self, label: &str, value: &T) -> io::Result<()> {
-        let rendered = format!("{value:#?}");
+        let rendered = expand(&format!("{value:?}"));
         for (line_index, line) in rendered.lines().enumerate() {
             if line_index == 0 {
                 self.line(&format!("{label}: {line}"))?;
@@ -78,6 +78,95 @@ impl<W: Write> Renderer<W> {
     fn line(&mut self, text: &str) -> io::Result<()> {
         writeln!(self.out, "{text}")
     }
+}
+
+// `{:#?}` layers a PadAdapter per nesting level, so a deep AST costs O(bytes x depth);
+// re-laying out the flat form ourselves keeps it linear
+fn expand(compact: &str) -> String {
+    let source = compact.as_bytes();
+    let mut out = Vec::with_capacity(source.len() * 2);
+    let mut depth = 0usize;
+    let mut index = 0;
+    while index < source.len() {
+        let byte = source[index];
+        match byte {
+            b'"' | b'\'' => index = copy_literal(source, index, &mut out),
+            b'{' | b'[' | b'(' => {
+                out.push(byte);
+                index += 1;
+                let empty = skip_spaces(source, index);
+                if source.get(empty) == Some(&closer(byte)) {
+                    out.push(closer(byte));
+                    index = empty + 1;
+                    continue;
+                }
+                depth += 1;
+                indent(&mut out, depth);
+                index = empty;
+            }
+            b'}' | b']' | b')' => {
+                while out.last() == Some(&b' ') {
+                    out.pop();
+                }
+                out.push(b',');
+                depth -= 1;
+                indent(&mut out, depth);
+                out.push(byte);
+                index += 1;
+            }
+            b',' => {
+                out.push(byte);
+                index = skip_spaces(source, index + 1);
+                indent(&mut out, depth);
+            }
+            _ => {
+                out.push(byte);
+                index += 1;
+            }
+        }
+    }
+    String::from_utf8(out).unwrap_or_else(|_| compact.to_owned())
+}
+
+fn closer(open: u8) -> u8 {
+    match open {
+        b'{' => b'}',
+        b'[' => b']',
+        _ => b')',
+    }
+}
+
+fn skip_spaces(source: &[u8], mut index: usize) -> usize {
+    while source.get(index) == Some(&b' ') {
+        index += 1;
+    }
+    index
+}
+
+fn indent(out: &mut Vec<u8>, depth: usize) {
+    out.push(b'\n');
+    out.extend(std::iter::repeat_n(b' ', depth * 4));
+}
+
+fn copy_literal(source: &[u8], start: usize, out: &mut Vec<u8>) -> usize {
+    let quote = source[start];
+    out.push(quote);
+    let mut index = start + 1;
+    while let Some(&byte) = source.get(index) {
+        out.push(byte);
+        index += 1;
+        match byte {
+            b'\\' => {
+                if let Some(&escaped) = source.get(index) {
+                    out.push(escaped);
+                    index += 1;
+                }
+            }
+            _ if byte == quote => break,
+            _ => {}
+        }
+    }
+    index
 }
 
 fn strip_comments(unit: &mut TranslationUnit) {
