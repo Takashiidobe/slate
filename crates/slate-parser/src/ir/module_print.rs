@@ -2,7 +2,10 @@ use super::{
     FloatType, Linkage, Metadata, Module, NumericType, Parameters, RecordKind, Statement,
     StorageDuration, Type, TypeDefinitionKind, Variable,
 };
-use crate::ast::{NodeId, Span};
+use crate::{
+    ast::{NodeId, Span},
+    ir::Fallthrough,
+};
 use std::fmt;
 
 pub struct DisplayModule<'a> {
@@ -359,6 +362,17 @@ impl fmt::Display for DisplayModule<'_> {
                 None => f.write_str("void")?,
             }
             write!(f, " [linkage={}]", function.linkage)?;
+            if let Some(fallthrough) = function.fallthrough {
+                write!(
+                    f,
+                    " [fallthrough={}]",
+                    match fallthrough {
+                        Fallthrough::ReturnZero => "ret_zero",
+                        Fallthrough::ReturnVoid => "ret_void",
+                        Fallthrough::UndefinedIfUsed => "ub_if_used",
+                    }
+                )?;
+            }
             metadata(f, self.table(), function.id)?;
             if let Some(body) = &function.body {
                 writeln!(f, " {{")?;

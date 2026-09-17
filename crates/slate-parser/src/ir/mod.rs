@@ -8,7 +8,7 @@ pub use declarations::{
     BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
     RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
-pub use module::{Function, Linkage, Metadata, Module, Statement};
+pub use module::{Fallthrough, Function, Linkage, Metadata, Module, Statement};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 
@@ -33,6 +33,10 @@ pub struct Value {
 #[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
+    Copy {
+        operand: Box<Value>,
+        reason: ConversionReason,
+    },
     Null,
     Void,
     Bytes(Vec<u8>),
@@ -166,6 +170,15 @@ impl Value {
         compact: bool,
     ) -> fmt::Result {
         match &self.node.value {
+            ValueKind::Copy { operand, reason } => write!(
+                f,
+                "copy<{}, reason={}>({})",
+                self.ty,
+                reason,
+                operand
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::Bytes(bytes) => write!(f, "bytes<{}>({bytes:?})", self.ty),
             ValueKind::ArrayDecay { place, length } => {
                 write!(

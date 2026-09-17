@@ -16,6 +16,17 @@ pub(super) struct Lowerer {
 }
 
 impl Lowerer {
+    fn is_record(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Defined(_) => match self.kind(ty) {
+                Some(TypeDefinitionKind::Record { .. }) => true,
+                Some(TypeDefinitionKind::Alias(inner)) => self.is_record(inner),
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+
     pub fn fresh(&mut self) -> BindingId {
         let id = BindingId(self.next_id);
         self.next_id += 1;
@@ -107,6 +118,22 @@ impl Lowerer {
         reason: ConversionReason,
     ) -> Result<Value, ResolveError> {
         if value.ty == to {
+            if self.is_record(&to)
+                && matches!(
+                    reason,
+                    ConversionReason::Assign | ConversionReason::Arg | ConversionReason::Return
+                )
+            {
+                let node = value.node.clone();
+                return Ok(self.value(
+                    &node,
+                    to,
+                    ValueKind::Copy {
+                        operand: Box::new(value),
+                        reason,
+                    },
+                ));
+            }
             return Ok(value);
         }
         if to == Type::Bool {

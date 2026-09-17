@@ -32,13 +32,13 @@ double floating(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @add() -> i32 [linkage=external] {
+// IR-NEXT:     fn %0 @add() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<i32>(const<i32>(1), const<i32>(2));
 // IR-NEXT:     }
-// IR-NEXT:     fn %1 @promoted() -> i64 [linkage=external] {
+// IR-NEXT:     fn %1 @promoted() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return widen<i64>(add<i32>(widen<i32>(truncate<i16>(const<i32>(1))), const<i32>(2)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @floating() -> f64 [linkage=external] {
+// IR-NEXT:     fn %2 @floating() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<f64>(const<f64>(1.0), const<f64>(2.0));
 // IR-NEXT:     }
 // IR-NEXT: }

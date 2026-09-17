@@ -24,7 +24,7 @@ int one(void) {
 // CHECK-NEXT:         storage f80 [size=16, align=16];
 // CHECK-NEXT:         storage f128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     fn %0 @one() -> i32 [linkage=external] {
+// CHECK-NEXT:     fn %0 @one() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return const<i32>(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

@@ -55,6 +55,7 @@ pub struct ResolvedType {
 
 pub struct TypeResolver {
     target: TargetInfo,
+    pub c23: bool,
     aliases: HashMap<String, ResolvedType>,
     tags: Vec<crate::ast::Span<TagDefinition>>,
     tag_ids: HashMap<TagId, TypeId>,
@@ -66,6 +67,7 @@ impl TypeResolver {
     pub fn new(target: TargetInfo) -> Self {
         Self {
             target,
+            c23: false,
             aliases: HashMap::new(),
             tags: Vec::new(),
             tag_ids: HashMap::new(),
@@ -76,6 +78,7 @@ impl TypeResolver {
 
     pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
         let mut resolver = Self::new(target);
+        resolver.c23 = unit.standard.is_c23_or_later();
         resolver.tags = unit.tags.clone();
         resolver
     }
@@ -523,7 +526,7 @@ impl TypeResolver {
                     return_type: resolved.ty.take().map(Box::new),
                     parameters: types,
                     variadic: parameters.is_variadic(),
-                    prototyped: !matches!(parameters, ParameterList::Empty),
+                    prototyped: self.c23 || !matches!(parameters, ParameterList::Empty),
                 });
                 let suffix = if matches!(parameters, ParameterList::Empty) {
                     "()".to_owned()
@@ -1133,6 +1136,7 @@ pub fn resolve_type_module(
                             Linkage::External
                         },
                         body: None,
+                        fallthrough: None,
                     }));
                 next_binding += 1;
             }
@@ -1168,6 +1172,7 @@ pub fn resolve_type_module(
                                 Linkage::External
                             },
                             body: None,
+                            fallthrough: None,
                         }));
                     next_binding += 1;
                 }
@@ -1203,7 +1208,7 @@ fn resolve_parameters(
     next_binding: &mut u32,
 ) -> Result<crate::ir::Parameters, ResolveError> {
     use crate::ir::{BindingId, Parameter, Parameters};
-    if matches!(signature, ParameterList::Empty) {
+    if matches!(signature, ParameterList::Empty) && !resolver.c23 {
         return Ok(Parameters::Unprototyped);
     }
     let mut fixed = Vec::new();

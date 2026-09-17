@@ -53,7 +53,7 @@ void operators(int s, unsigned u, short small, unsigned long amount, double f) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @operators(%1 s: i32, %2 u: u32, %3 small: i16, %4 amount: u64, %5 f: f64) -> void [linkage=external] {
+// IR-NEXT:     fn %0 @operators(%1 s: i32, %2 u: u32, %3 small: i16, %4 amount: u64, %5 f: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         add<i32>(read<i32>(%1), read<i32>(%1));
 // IR-NEXT:         sub<i32>(read<i32>(%1), read<i32>(%1));
 // IR-NEXT:         mul<i32>(read<i32>(%1), read<i32>(%1));

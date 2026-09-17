@@ -42,7 +42,7 @@ unsigned long layout(int x) {
 // IR-NEXT:         field1 inner: @type0;
 // IR-NEXT:         field2 items: array<i32, 3>;
 // IR-NEXT:     } [size=24, align=4, offsets=[0, 4, 12]];
-// IR-NEXT:     fn %2 @layout(%3 x: i32 [c="int"]) -> u64 [linkage=external] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(int)"] {
+// IR-NEXT:     fn %2 @layout(%3 x: i32 [c="int"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(int)"] {
 // IR-NEXT:         const<u64>(4) [size_of="i32"];
 // IR-NEXT:         const<u64>(8) [align_of="f64"];
 // IR-NEXT:         const<u64>(24) [size_of="@type1"];

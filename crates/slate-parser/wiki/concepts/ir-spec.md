@@ -110,7 +110,7 @@ are split on whitespace; shell quoting is not interpreted.
 explicit narrowing, integer promotion, and return widening.
 
 The module dump also handles `tests/fixtures/add.c`: its stdio declaration,
-parameters, local variable, direct calls, string literal, and implicit return.
+parameters, local variable, direct calls, string literal, and fallthrough metadata.
 Unsupported statements and attributes are diagnosed instead of omitted.
 Control-flow and aggregate lowering remain separate work.
 
@@ -636,16 +636,16 @@ is shown in the type (`*const T`) since Rust distinguishes it.
 
 ## Things C leaves implicit that the IR materializes
 
-- `main` falling off the end → `return 0i32 [implicit=main_return]`.
-- Non-void function falling off the end → `unreachable [ub]`.
+- C99 and later `main` falling off the end → `fallthrough=ret_zero` on its definition.
+- A void function falling off the end → `fallthrough=ret_void`; a non-void function reached at the end has `fallthrough=ub_if_used`.
 - Constant `sizeof`/`_Alignof`/`offsetof` → folded value with `size_of=T`
   metadata; runtime array sizes use captured extents.
 - String literals: `c"..."` typed `*const i8`, metadata `c=char[N]`, `decay[len=N]`.
-- Tentative definitions and `extern` merging → one global with linkage.
-- Unprototyped `f()` (pre-C23) vs `f(void)`.
+- Tentative definitions and `extern` declarations merge into one global with linkage; an incomplete tentative array completes to one element.
+- Pre-C23 `f()` is unprototyped; C23 `f()` and `f(void)` are zero-parameter prototypes.
 - Default argument promotions for variadic calls → `widen`/`float_widen`
   with `reason=vararg`.
-- Struct copy on assign/pass/return → `copy` metadata.
+- Struct and union copy on initialize/assign/pass/return → `copy<T, reason=...>` around the source value.
 
 ## Worked example
 

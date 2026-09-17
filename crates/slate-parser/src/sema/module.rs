@@ -78,23 +78,18 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
-                let parameters = lower.parameters(params, true)?;
-                let mut body = lower.statements(&function.body, return_type.clone())?;
-                if name == "main"
+                let parameters = lower.parameters(params, true, unit.standard.is_c23_or_later())?;
+                let body = lower.statements(&function.body, return_type.clone())?;
+                let fallthrough = if name == "main"
                     && return_type == Some(lower.context.int_type())
-                    && !matches!(body.last().map(|s| &s.value), Some(Statement::Return(_)))
+                    && unit.standard.stdc_version().is_some()
                 {
-                    let zero = lower.value(
-                        declaration,
-                        lower.context.int_type(),
-                        ValueKind::Constant(Number::Integer(0u32.into())),
-                    );
-                    body.push(
-                        declaration
-                            .clone()
-                            .with_value(Statement::Return(Some(zero))),
-                    );
-                }
+                    Fallthrough::ReturnZero
+                } else if return_type.is_none() {
+                    Fallthrough::ReturnVoid
+                } else {
+                    Fallthrough::UndefinedIfUsed
+                };
                 lower
                     .module
                     .functions
@@ -105,6 +100,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                         return_type,
                         linkage: linkage(function.specifiers.storage)?,
                         body: Some(body),
+                        fallthrough: Some(fallthrough),
                     }));
             }
             _ => return Err(ResolveError::Unsupported("module declaration")),
@@ -123,6 +119,14 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 .module
                 .types
                 .push(declaration.clone().with_value(definition.clone()));
+        }
+    }
+    for global in &mut lower.module.globals {
+        if global.definition
+            && let Type::Array { length, .. } = &mut global.value.variable.ty
+            && length.is_none()
+        {
+            *length = Some(1);
         }
     }
     Ok(lower.module)
@@ -156,8 +160,9 @@ impl Lowerer {
         &mut self,
         params: &ParameterList,
         definition: bool,
+        c23: bool,
     ) -> Result<Parameters, ResolveError> {
-        if matches!(params, ParameterList::Empty) {
+        if matches!(params, ParameterList::Empty) && !c23 {
             return Ok(Parameters::Unprototyped);
         }
         let mut fixed = Vec::new();
@@ -273,7 +278,7 @@ impl Lowerer {
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing prototype"))?;
-                let parameters = self.parameters(params, false)?;
+                let parameters = self.parameters(params, false, self.types.c23)?;
                 self.module
                     .functions
                     .push(declarator.clone().with_value(Function {
@@ -283,6 +288,7 @@ impl Lowerer {
                         return_type: return_type.as_ref().map(|ty| (**ty).clone()),
                         linkage: linkage(item.specifiers.storage)?,
                         body: None,
+                        fallthrough: None,
                     }));
                 continue;
             }
@@ -299,9 +305,6 @@ impl Lowerer {
             let initializer = match &declarator.initializer {
                 None => None,
                 Some(Initializer::Expr(expr)) => {
-                    if global {
-                        return Err(ResolveError::Unsupported("global initializer"));
-                    }
                     let value = self.expr(expr)?;
                     Some(self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?)
                 }
@@ -315,13 +318,63 @@ impl Lowerer {
                 initializer,
             };
             if global {
-                self.module
+                let declared_linkage = linkage(item.specifiers.storage)?;
+                let definition = item.specifiers.storage != StorageClass::Extern
+                    || variable.initializer.is_some();
+                if let Some(existing) = self
+                    .module
                     .globals
-                    .push(declarator.clone().with_value(Global {
-                        variable,
-                        linkage: linkage(item.specifiers.storage)?,
-                        definition: item.specifiers.storage != StorageClass::Extern,
-                    }));
+                    .iter_mut()
+                    .find(|global| global.variable.name == name)
+                {
+                    if existing.value.variable.ty != variable.ty {
+                        match (&existing.value.variable.ty, &variable.ty) {
+                            (
+                                Type::Array {
+                                    element: a,
+                                    length: None,
+                                },
+                                Type::Array {
+                                    element: b,
+                                    length: Some(_),
+                                },
+                            ) if a == b => existing.value.variable.ty = variable.ty.clone(),
+                            (
+                                Type::Array {
+                                    element: a,
+                                    length: Some(_),
+                                },
+                                Type::Array {
+                                    element: b,
+                                    length: None,
+                                },
+                            ) if a == b => {}
+                            _ => {
+                                return Err(ResolveError::Unsupported(
+                                    "incompatible global redeclaration",
+                                ));
+                            }
+                        }
+                    }
+                    if variable.initializer.is_some() {
+                        if existing.value.variable.initializer.is_some() {
+                            return Err(ResolveError::Unsupported("multiple global initializers"));
+                        }
+                        existing.value.variable.initializer = variable.initializer;
+                    }
+                    existing.value.definition |= definition;
+                    if matches!(declared_linkage, Linkage::Internal) {
+                        existing.value.linkage = Linkage::Internal;
+                    }
+                } else {
+                    self.module
+                        .globals
+                        .push(declarator.clone().with_value(Global {
+                            variable,
+                            linkage: declared_linkage,
+                            definition,
+                        }));
+                }
             } else {
                 statements.push(declarator.clone().with_value(Statement::Let(variable)));
             }

@@ -28,6 +28,14 @@ pub struct Function {
     pub return_type: Option<Type>,
     pub linkage: Linkage,
     pub body: Option<Vec<Span<Statement>>>,
+    pub fallthrough: Option<Fallthrough>,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Fallthrough {
+    ReturnZero,
+    ReturnVoid,
+    UndefinedIfUsed,
 }
 
 #[derive(Debug, Clone)]

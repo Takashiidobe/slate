@@ -28,10 +28,10 @@ long promoted(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @add() -> i32 [linkage=external] {
+// IR-NEXT:     fn %0 @add() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<i32, overflow=ub>(const<i32>(1), const<i32>(2));
 // IR-NEXT:     }
-// IR-NEXT:     fn %1 @promoted() -> i64 [linkage=external] {
+// IR-NEXT:     fn %1 @promoted() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return widen<i64, reason=return>(add<i32, overflow=ub>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=always>(const<i32>(1))), const<i32>(2)));
 // IR-NEXT:     }
 // IR-NEXT: }

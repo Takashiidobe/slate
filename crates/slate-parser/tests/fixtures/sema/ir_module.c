@@ -39,19 +39,19 @@ void empty(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @narrow() -> i16 [linkage=internal] {
+// IR-NEXT:     fn %0 @narrow() -> i16 [linkage=internal] [fallthrough=ub_if_used] {
 // IR-NEXT:         return truncate<i16, reason=return, fits=unknown>(const<i32>(65537));
 // IR-NEXT:     }
-// IR-NEXT:     fn %1 @widen() -> f64 [linkage=external] {
+// IR-NEXT:     fn %1 @widen() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return int_to_float<f64, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2));
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @arithmetic() -> i32 [linkage=external] {
+// IR-NEXT:     fn %2 @arithmetic() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         add<i32, overflow=ub>(const<i32>(1), const<i32>(2));
 // IR-NEXT:         {
 // IR-NEXT:             return mul<i32, overflow=ub>(const<i32>(3), const<i32>(4));
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %3 @empty() -> void [linkage=external] {
+// IR-NEXT:     fn %3 @empty() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         return;
 // IR-NEXT:     }
 // IR-NEXT: }

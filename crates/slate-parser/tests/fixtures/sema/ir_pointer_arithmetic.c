@@ -43,7 +43,7 @@ long pointers(Element *p, const int *q, unsigned long n, struct Pair *r, int (*r
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:         field1 y: i64;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     fn %2 @pointers(%3 p: ptr<i32>, %4 q: ptr<const i32>, %5 n: u64, %6 r: ptr<@type1>, %7 rows: ptr<array<i32, 3>>) -> i64 [linkage=external] {
+// IR-NEXT:     fn %2 @pointers(%3 p: ptr<i32>, %4 q: ptr<const i32>, %5 n: u64, %6 r: ptr<@type1>, %7 rows: ptr<array<i32, 3>>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<u64>(%5));
 // IR-NEXT:         ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<u64>(%5));
 // IR-NEXT:         ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<u64>(%5));

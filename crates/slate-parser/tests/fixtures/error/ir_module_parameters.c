@@ -24,7 +24,7 @@ int identity(int value) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @identity(%1 value: i32) -> i32 [linkage=external] {
+// IR-NEXT:     fn %0 @identity(%1 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i32>(%1);
 // IR-NEXT:     }
 // IR-NEXT: }
