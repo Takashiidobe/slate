@@ -47,15 +47,29 @@ long pointers(Element *p, const int *q, unsigned long n, struct Pair *r, int (*r
 // IR-NEXT:         ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%3), read<u64>(%5));
 // IR-NEXT:         ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%3), read<u64>(%5));
 // IR-NEXT:         ptr_offset<ptr<i32>, subtract=true>(read<ptr<i32>>(%3), read<u64>(%5));
-// IR-NEXT:         update<ptr<i32>, result=new>(%3, ptr_offset<ptr<i32>, subtract=false>(old<ptr<i32>>, read<u64>(%5)));
-// IR-NEXT:         update<ptr<i32>, result=new>(%3, ptr_offset<ptr<i32>, subtract=true>(old<ptr<i32>>, read<u64>(%5)));
-// IR-NEXT:         update<ptr<i32>, result=old>(%3, ptr_offset<ptr<i32>, subtract=false>(old<ptr<i32>>, const<i32>(1)));
-// IR-NEXT:         update<ptr<i32>, result=new>(%3, ptr_offset<ptr<i32>, subtract=true>(old<ptr<i32>>, const<i32>(1)));
+// IR-NEXT:         let %8: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
+// IR-NEXT:         let %9: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%8), read<u64>(%5));
+// IR-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%9));
+// IR-NEXT:         let %10: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
+// IR-NEXT:         let %11: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true>(read<ptr<i32>>(%10), read<u64>(%5));
+// IR-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%11));
+// IR-NEXT:         let %12: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
+// IR-NEXT:         let %13: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%12), const<i32>(1));
+// IR-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%13));
+// IR-NEXT:         let %14: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
+// IR-NEXT:         let %15: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=true>(read<ptr<i32>>(%14), const<i32>(1));
+// IR-NEXT:         write<ptr<i32>>(%3, read<ptr<i32>>(%15));
 // IR-NEXT:         ptr_offset<ptr<@type1>, subtract=false>(read<ptr<@type1>>(%6), read<u64>(%5));
 // IR-NEXT:         ptr_offset<ptr<array<i32, 3>>, subtract=false>(read<ptr<array<i32, 3>>>(%7), const<i32>(1));
 // IR-NEXT:         ptr_diff<i64>(read<ptr<@type1>>(%6), read<ptr<@type1>>(%6));
 // IR-NEXT:         ptr_diff<i64>(read<ptr<array<i32, 3>>>(%7), read<ptr<array<i32, 3>>>(%7));
-// IR-NEXT:         update<i32, result=new>(deref(ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%3), update<u64, result=old>(%5, add<u64>(old<u64>, reinterpret<u64>(widen<i64>(const<i32>(1))))))), add<i32>(old<i32>, const<i32>(1)));
+// IR-NEXT:         let %16: u64 [synthetic] = read<u64>(%5);
+// IR-NEXT:         let %17: u64 [synthetic] = add<u64>(read<u64>(%16), reinterpret<u64>(widen<i64>(const<i32>(1))));
+// IR-NEXT:         write<u64>(%5, read<u64>(%17));
+// IR-NEXT:         let %18: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false>(read<ptr<i32>>(%3), read<u64>(%16));
+// IR-NEXT:         let %19: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%18)));
+// IR-NEXT:         let %20: i32 [synthetic] = add<i32>(read<i32>(%19), const<i32>(1));
+// IR-NEXT:         write<i32>(deref(read<ptr<i32>>(%18)), read<i32>(%20));
 // IR-NEXT:         return ptr_diff<i64>(read<ptr<i32>>(%3), read<ptr<const i32>>(%4));
 // IR-NEXT:     }
 // IR-NEXT: }

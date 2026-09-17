@@ -1,6 +1,6 @@
 use super::{
-    FloatType, Linkage, Metadata, Module, NumericType, Parameters, RecordKind, Statement,
-    StorageDuration, Type, TypeDefinitionKind, Variable,
+    Evaluation, FloatType, Linkage, Metadata, Module, NumericType, Parameters, RecordKind,
+    Statement, StorageDuration, Type, TypeDefinitionKind, Variable,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -89,6 +89,37 @@ impl DisplayModule<'_> {
         Ok(())
     }
 
+    fn evaluation(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        evaluation: &Evaluation,
+        indent: usize,
+    ) -> fmt::Result {
+        if evaluation.statements.is_empty() {
+            return write!(
+                f,
+                "{}",
+                evaluation
+                    .value
+                    .display_metadata(false, self.table())
+                    .with_compact(self.compact)
+            );
+        }
+        writeln!(f, "{{")?;
+        self.statements(f, &evaluation.statements, indent + 4)?;
+        writeln!(
+            f,
+            "{:width$}yield {};",
+            "",
+            evaluation
+                .value
+                .display_metadata(false, self.table())
+                .with_compact(self.compact),
+            width = indent + 4
+        )?;
+        write!(f, "{:indent$}}}", "")
+    }
+
     fn statements(
         &self,
         f: &mut fmt::Formatter<'_>,
@@ -98,6 +129,22 @@ impl DisplayModule<'_> {
         for statement in body {
             write!(f, "{:indent$}", "")?;
             match &statement.value {
+                Statement::Temporary {
+                    id,
+                    ty,
+                    initializer,
+                } => {
+                    write!(f, "let %{}: {} [synthetic]", id.0, ty)?;
+                    if let Some(value) = initializer {
+                        write!(
+                            f,
+                            " = {}",
+                            value
+                                .display_metadata(false, self.table())
+                                .with_compact(self.compact)
+                        )?;
+                    }
+                }
                 Statement::Let(variable) => {
                     f.write_str("let ")?;
                     self.variable(f, variable)?;
@@ -152,14 +199,8 @@ impl DisplayModule<'_> {
                     condition,
                     body,
                 } => {
-                    write!(
-                        f,
-                        "while %{} {}",
-                        id.0,
-                        condition
-                            .display_metadata(false, self.table())
-                            .with_compact(self.compact)
-                    )?;
+                    write!(f, "while %{} ", id.0)?;
+                    self.evaluation(f, condition, indent)?;
                     metadata(f, self.table(), statement.id)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
@@ -174,14 +215,9 @@ impl DisplayModule<'_> {
                     metadata(f, self.table(), statement.id)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
-                    writeln!(
-                        f,
-                        "{:indent$}while {};",
-                        "",
-                        condition
-                            .display_metadata(false, self.table())
-                            .with_compact(self.compact)
-                    )?;
+                    write!(f, "{:indent$}while ", "")?;
+                    self.evaluation(f, condition, indent)?;
+                    writeln!(f, ";")?;
                     continue;
                 }
                 Statement::For {
@@ -198,26 +234,14 @@ impl DisplayModule<'_> {
                     self.statements(f, init, indent + 8)?;
                     write!(f, "{:indent$}    condition: ", "")?;
                     if let Some(value) = condition {
-                        write!(
-                            f,
-                            "{}",
-                            value
-                                .display_metadata(false, self.table())
-                                .with_compact(self.compact)
-                        )?;
+                        self.evaluation(f, value, indent + 4)?;
                     } else {
                         f.write_str("omitted")?;
                     }
                     writeln!(f)?;
                     write!(f, "{:indent$}    increment: ", "")?;
                     if let Some(value) = increment {
-                        write!(
-                            f,
-                            "{}",
-                            value
-                                .display_metadata(false, self.table())
-                                .with_compact(self.compact)
-                        )?;
+                        self.evaluation(f, value, indent + 4)?;
                     } else {
                         f.write_str("omitted")?;
                     }

@@ -31,27 +31,40 @@ int loops(int x) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %0 @loops(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// IR-NEXT:             update<i32, result=old>(%1, sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// IR-NEXT:             let %8: i32 [synthetic] = read<i32>(%1);
+// IR-NEXT:             let %9: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
+// IR-NEXT:             write<i32>(%1, read<i32>(%9));
 // IR-NEXT:         else
 // IR-NEXT:             {
-// IR-NEXT:                 update<i32, result=old>(%1, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// IR-NEXT:                 let %10: i32 [synthetic] = read<i32>(%1);
+// IR-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
+// IR-NEXT:                 write<i32>(%1, read<i32>(%11));
 // IR-NEXT:             }
 // IR-NEXT:         while %4 ne<i32>(read<i32>(%1), const<i32>(0))
 // IR-NEXT:             {
 // IR-NEXT:                 if eq<i32>(read<i32>(%1), const<i32>(2))
 // IR-NEXT:                     break %4;
-// IR-NEXT:                 update<i32, result=old>(%1, sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// IR-NEXT:                 let %12: i32 [synthetic] = read<i32>(%1);
+// IR-NEXT:                 let %13: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
+// IR-NEXT:                 write<i32>(%1, read<i32>(%13));
 // IR-NEXT:                 continue %4;
 // IR-NEXT:             }
 // IR-NEXT:         do %5
-// IR-NEXT:             update<i32, result=old>(%1, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// IR-NEXT:             let %14: i32 [synthetic] = read<i32>(%1);
+// IR-NEXT:             let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
+// IR-NEXT:             write<i32>(%1, read<i32>(%15));
 // IR-NEXT:         while lt<i32>(read<i32>(%1), const<i32>(3));
 // IR-NEXT:         for %6
 // IR-NEXT:             init:
 // IR-NEXT:                 let %2 i: i32 [storage=automatic] = const<i32>(0);
 // IR-NEXT:                 let %3 j: i32 [storage=automatic] = const<i32>(2);
 // IR-NEXT:             condition: lt<i32>(read<i32>(%2), read<i32>(%3))
-// IR-NEXT:             increment: update<i32, result=old>(%2, add<i32, overflow=ub>(old<i32>, const<i32>(1)))
+// IR-NEXT:             increment: {
+// IR-NEXT:                 let %16: i32 [synthetic] = read<i32>(%2);
+// IR-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
+// IR-NEXT:                 write<i32>(%2, read<i32>(%17));
+// IR-NEXT:                 yield void;
+// IR-NEXT:             }
 // IR-NEXT:             body:
 // IR-NEXT:                 {
 // IR-NEXT:                     if ne<i32>(read<i32>(%1), const<i32>(0))

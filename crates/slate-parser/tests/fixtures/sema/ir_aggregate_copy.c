@@ -57,14 +57,14 @@ union Item copy_item(union Item source) {
 // IR-NEXT:     fn %6 @copy_pair(%7 source: @type0) -> @type0 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %8 initialized: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%7));
 // IR-NEXT:         let %9 assigned: @type0 [storage=automatic];
-// IR-NEXT:         store<@type0>(%9, copy<@type0, reason=assign>(read<@type0>(%8)));
+// IR-NEXT:         write<@type0>(%9, copy<@type0, reason=assign>(read<@type0>(%8)));
 // IR-NEXT:         call<void, signature=fn(@type0) -> void>(%4, copy<@type0, reason=arg>(read<@type0>(%9)));
 // IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%9));
 // IR-NEXT:     }
 // IR-NEXT:     fn %10 @copy_item(%11 source: @type1) -> @type1 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %12 initialized: @type1 [storage=automatic] = copy<@type1, reason=assign>(read<@type1>(%11));
 // IR-NEXT:         let %13 assigned: @type1 [storage=automatic];
-// IR-NEXT:         store<@type1>(%13, copy<@type1, reason=assign>(read<@type1>(%12)));
+// IR-NEXT:         write<@type1>(%13, copy<@type1, reason=assign>(read<@type1>(%12)));
 // IR-NEXT:         call<void, signature=fn(@type1) -> void>(%5, copy<@type1, reason=arg>(read<@type1>(%13)));
 // IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%13));
 // IR-NEXT:     }

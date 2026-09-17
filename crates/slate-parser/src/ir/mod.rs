@@ -8,7 +8,7 @@ pub use declarations::{
     BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
     RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
-pub use module::{Fallthrough, Function, Linkage, Metadata, Module, Statement};
+pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 

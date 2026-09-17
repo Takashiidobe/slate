@@ -132,6 +132,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
             *length = Some(1);
         }
     }
+    super::effects_statements::normalize(&mut lower.module, lower.next_id)?;
     Ok(lower.module)
 }
 
@@ -459,7 +460,7 @@ impl Lowerer {
                     let body = self.loop_body(id, body, return_type.clone())?;
                     Statement::While {
                         id,
-                        condition,
+                        condition: condition.into(),
                         body,
                     }
                 }
@@ -470,7 +471,7 @@ impl Lowerer {
                     Statement::DoWhile {
                         id,
                         body,
-                        condition: self.condition(value, None)?,
+                        condition: self.condition(value, None)?.into(),
                     }
                 }
                 StmtKind::For {
@@ -498,8 +499,8 @@ impl Lowerer {
                     Statement::For {
                         id,
                         init,
-                        condition,
-                        increment,
+                        condition: condition.map(Into::into),
+                        increment: increment.map(Into::into),
                         body,
                     }
                 }

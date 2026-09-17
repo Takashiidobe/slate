@@ -32,7 +32,9 @@ void fallthrough(int x) {
 // IR-NEXT:         switch %2 read<i32>(%1)
 // IR-NEXT:             {
 // IR-NEXT:                 case %2 const<i32>(0):
-// IR-NEXT:                     update<i32, result=old>(%1, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// IR-NEXT:                     let %3: i32 [synthetic] = read<i32>(%1);
+// IR-NEXT:                     let %4: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%3), const<i32>(1));
+// IR-NEXT:                     write<i32>(%1, read<i32>(%4));
 // IR-NEXT:                  [c_attribute="fallthrough"];
 // IR-NEXT:                 case %2 const<i32>(1):
 // IR-NEXT:                     break %2;

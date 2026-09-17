@@ -39,7 +39,27 @@ pub enum Fallthrough {
 }
 
 #[derive(Debug, Clone)]
+pub struct Evaluation {
+    pub statements: Vec<Span<Statement>>,
+    pub value: Value,
+}
+
+impl From<Value> for Evaluation {
+    fn from(value: Value) -> Self {
+        Self {
+            statements: Vec::new(),
+            value,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum Statement {
+    Temporary {
+        id: BindingId,
+        ty: Type,
+        initializer: Option<Value>,
+    },
     Let(Variable),
     Write {
         place: Place,
@@ -56,19 +76,19 @@ pub enum Statement {
     },
     While {
         id: BindingId,
-        condition: Value,
+        condition: Evaluation,
         body: Vec<Span<Statement>>,
     },
     DoWhile {
         id: BindingId,
         body: Vec<Span<Statement>>,
-        condition: Value,
+        condition: Evaluation,
     },
     For {
         id: BindingId,
         init: Vec<Span<Statement>>,
-        condition: Option<Value>,
-        increment: Option<Value>,
+        condition: Option<Evaluation>,
+        increment: Option<Evaluation>,
         body: Vec<Span<Statement>>,
     },
     Switch {

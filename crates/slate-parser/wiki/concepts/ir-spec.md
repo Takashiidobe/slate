@@ -138,10 +138,30 @@ expressions resolve by binding and AST identity to typed constants.
 Named labels, gotos, and `label_addr<ptr<void>>` use resolved label binding IDs,
 including distinct GNU local labels. Name resolution records each label
 definition's AST identity separately from its declaration binding identity.
-Computed goto retains its pointer-valued operand. Short-circuit and conditional
-expressions remain expression nodes; side-effect hoisting is separate work in
-`slate-parser-lh7.2.5`. The `ir_control_*.c` FileCheck fixtures cover these forms,
-nesting, compact output, and invalid control contexts.
+Computed goto retains its pointer-valued operand. The `ir_control_*.c` FileCheck
+fixtures cover these forms, nesting, compact output, and invalid control
+contexts.
+
+Side-effect hoisting runs as a final sema pass over the resolved module rather
+than during expression lowering. Assignment (`a = b`), compound assignment, and
+`++`/`--` become `Statement::Write` on a place; the written value is the
+lowered store result, so `x = y = 0` chains through a read of the first store
+result without re-reading y. `update<i...>` expression nodes are gone: the old
+value is snapshotted into a `[synthetic]` temporary and postfix forms read that
+snapshot, while the write targets the one-evaluation stable place. Calls stay
+expression values; call arguments evaluate left to right, so later arguments
+read earlier state and no cross-argument freezing is needed. Comma sequences
+lower left-to-right with the last operand as the value. Short-circuit `&&`/`||`
+and `?:` with effectful operands become `Statement::If` writing a result
+temporary per branch (void operands discard instead). Loop conditions and for
+increments carry an `Evaluation` block of leading statements plus the condition
+or increment value; the increment block discards its value (`yield void`).
+Do-while condition evaluations run inside the loop after the body. Synthetic
+temporaries print as `let %id: ty [synthetic] = ...` and reuse the `Evaluation`
+statement list rather than entering name resolution. `ir_side_effects_hoisted.c`
+and `ir_effects_sequencing.c` cover the acceptance cases (a[i++], chained
+assignment, getc loop, f(i++), short-circuit member increment) plus ternary and
+comma sequencing.
 
 Other unsupported statements and attributes are diagnosed instead of omitted.
 Aggregate initialization and general attributed-statement lowering remain

@@ -56,22 +56,57 @@ int pointers(int *p) {
 // IR-NEXT:     fn %3 @decisions(%4 s: i16, %5 wide: u64, %6 f: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %7 byte: u8 [storage=automatic] = truncate<u8, reason=assign, fits=unknown>(read<u64>(%5));
 // IR-NEXT:         let %8 truth: bool [storage=automatic] = ne<f32, reason=assign, exceptions=ignore>(read<f32>(%6), const<f32>(0.0));
-// IR-NEXT:         store<i16>(%4, reinterpret<i16, reason=assign, fits=unknown>(widen<u16, reason=assign>(read<u8>(%7))));
+// IR-NEXT:         write<i16>(%4, reinterpret<i16, reason=assign, fits=unknown>(widen<u16, reason=assign>(read<u8>(%7))));
 // IR-NEXT:         call<i32, signature=fn(i16, ...) -> i32>(%2, reinterpret<i16, reason=arg, fits=unknown>(truncate<u16, reason=arg, fits=unknown>(read<u64>(%5))), widen<i32, reason=vararg>(read<i16>(%4)), float_widen<f64, reason=vararg>(read<f32>(%6)), from_bool<i32, reason=vararg>(read<bool>(%8)));
-// IR-NEXT:         return conditional<i32>(read<bool>(%8), sequence<i32>(read<i16>(%4), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7))))), neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4))));
+// IR-NEXT:         let %21: i32 [synthetic];
+// IR-NEXT:         if read<bool>(%8)
+// IR-NEXT:             read<i16>(%4);
+// IR-NEXT:             write<i32>(%21, add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7)))));
+// IR-NEXT:         else
+// IR-NEXT:             write<i32>(%21, neg<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4))));
+// IR-NEXT:         return read<i32>(%21);
 // IR-NEXT:     }
 // IR-NEXT:     fn %9 @sequencing(%10 p: ptr<i32>, %11 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         update<i32, result=new>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), update<i32, result=old>(%11, add<i32, overflow=ub>(old<i32>, const<i32>(1))))), add<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// IR-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(sequence<bool>(store<i32>(%11, const<i32>(0)), logical_and<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), read<i32>(%11)))), const<i32>(0)), ne<i32>(store<i32>(%11, const<i32>(3)), const<i32>(0)))), ne<i32>(conditional<i32>(ne<i32>(read<i32>(%11), const<i32>(0)), update<i32, result=new>(%11, add<i32, overflow=ub>(old<i32>, const<i32>(1))), update<i32, result=old>(%11, sub<i32, overflow=ub>(old<i32>, const<i32>(1)))), const<i32>(0))));
+// IR-NEXT:         let %22: i32 [synthetic] = read<i32>(%11);
+// IR-NEXT:         let %23: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%22), const<i32>(1));
+// IR-NEXT:         write<i32>(%11, read<i32>(%23));
+// IR-NEXT:         let %24: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), read<i32>(%22));
+// IR-NEXT:         let %25: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%24)));
+// IR-NEXT:         let %26: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%25), const<i32>(2));
+// IR-NEXT:         write<i32>(deref(read<ptr<i32>>(%24)), read<i32>(%26));
+// IR-NEXT:         write<i32>(%11, const<i32>(0));
+// IR-NEXT:         let %27: bool [synthetic];
+// IR-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), read<i32>(%11)))), const<i32>(0))
+// IR-NEXT:             write<i32>(%11, const<i32>(3));
+// IR-NEXT:             write<bool>(%27, ne<i32>(const<i32>(3), const<i32>(0)));
+// IR-NEXT:         else
+// IR-NEXT:             write<bool>(%27, const<bool>(false));
+// IR-NEXT:         let %28: bool [synthetic];
+// IR-NEXT:         if read<bool>(%27)
+// IR-NEXT:             write<bool>(%28, const<bool>(true));
+// IR-NEXT:         else
+// IR-NEXT:             let %29: i32 [synthetic];
+// IR-NEXT:             if ne<i32>(read<i32>(%11), const<i32>(0))
+// IR-NEXT:                 let %30: i32 [synthetic] = read<i32>(%11);
+// IR-NEXT:                 let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1));
+// IR-NEXT:                 write<i32>(%11, read<i32>(%31));
+// IR-NEXT:                 write<i32>(%29, read<i32>(%31));
+// IR-NEXT:             else
+// IR-NEXT:                 let %32: i32 [synthetic] = read<i32>(%11);
+// IR-NEXT:                 let %33: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%32), const<i32>(1));
+// IR-NEXT:                 write<i32>(%11, read<i32>(%33));
+// IR-NEXT:                 write<i32>(%29, read<i32>(%32));
+// IR-NEXT:             write<bool>(%28, ne<i32>(read<i32>(%29), const<i32>(0)));
+// IR-NEXT:         return from_bool<i32, reason=return>(read<bool>(%28));
 // IR-NEXT:     }
 // IR-NEXT:     fn %13 @fields(%14 p: ptr<@type0>, %15 q: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         store<i16>(field0(deref(read<ptr<@type0>>(%14))), truncate<i16, reason=assign, fits=unknown>(read<i32>(field1(%15))));
+// IR-NEXT:         write<i16>(field0(deref(read<ptr<@type0>>(%14))), truncate<i16, reason=assign, fits=unknown>(read<i32>(field1(%15))));
 // IR-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field0(%15))), read<i32>(field1(deref(read<ptr<@type0>>(%14)))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %16 @pointers(%17 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %18 a: array<i32, 3> [storage=automatic];
 // IR-NEXT:         let %19 q: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// IR-NEXT:         store<ptr<i32>>(%19, array_decay<ptr<i32>, length=Some(3)>(%18));
+// IR-NEXT:         write<ptr<i32>>(%19, array_decay<ptr<i32>, length=Some(3)>(%18));
 // IR-NEXT:         return conditional<i32>(ne<ptr<i32>>(read<ptr<i32>>(%17), null<ptr<i32>>), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%19), const<i32>(1)))), from_bool<i32, reason=promotion>(not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%17), null<ptr<i32>>))));
 // IR-NEXT:     }
 // IR-NEXT: }
