@@ -16,7 +16,7 @@ use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
 pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
 use input::{Annotation, ParserInput};
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
@@ -97,6 +97,9 @@ impl<'p, 'a> Cursor for TokenCursor<'p, 'a> {
     }
 }
 
+// recursive-descent frames, not source nesting levels; well above C's guaranteed 63 parens / 127 blocks
+pub(crate) const NESTING_LIMIT: u32 = 1024;
+
 pub struct Parser {
     search: SearchPaths,
     source_name: String,
@@ -113,6 +116,7 @@ pub struct Parser {
     options: Option<crate::compiler_options::CompilerOptions>,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
     line_starts: HashMap<FileId, Vec<usize>>,
+    nesting: Cell<u32>,
 }
 
 #[derive(Clone, Copy)]
@@ -224,6 +228,10 @@ impl Parser {
         self.names.enter()
     }
 
+    pub(crate) fn nesting(&self) -> &Cell<u32> {
+        &self.nesting
+    }
+
     pub fn new(search: SearchPaths) -> Self {
         Self {
             search,
@@ -241,6 +249,7 @@ impl Parser {
             options: None,
             tags: Rc::default(),
             line_starts: HashMap::new(),
+            nesting: Cell::new(0),
         }
     }
 

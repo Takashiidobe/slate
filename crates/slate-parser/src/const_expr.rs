@@ -7,6 +7,7 @@ use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use miette::Diagnostic;
 use num_bigint::{BigInt, BigUint};
+use std::cell::Cell;
 use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -306,6 +307,8 @@ pub enum ConstExprError {
     InvalidFloatLiteral(String),
     #[error("{0}")]
     StatementExpression(String),
+    #[error("nesting level exceeded maximum")]
+    NestingTooDeep,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -714,6 +717,7 @@ pub struct Parser<'a> {
     tokens: &'a [Span<Token>],
     position: usize,
     context: Option<&'a crate::parser::Parser>,
+    nesting: Cell<u32>,
 }
 
 impl<'a> Parser<'a> {
@@ -1107,7 +1111,27 @@ impl<'a> Parser<'a> {
             tokens,
             position: 0,
             context,
+            nesting: Cell::new(0),
         }
+    }
+
+    fn nested<T>(
+        &mut self,
+        parse: impl FnOnce(&mut Self) -> Result<T, ConstExprError>,
+    ) -> Result<T, ConstExprError> {
+        let depth = self.nesting().get();
+        if depth >= crate::parser::NESTING_LIMIT {
+            return Err(ConstExprError::NestingTooDeep);
+        }
+        self.nesting().set(depth + 1);
+        let parsed = parse(self);
+        self.nesting().set(depth);
+        parsed
+    }
+
+    fn nesting(&self) -> &Cell<u32> {
+        self.context
+            .map_or(&self.nesting, crate::parser::Parser::nesting)
     }
 
     fn node(&self, kind: ExprKind, start: usize) -> Expr {
@@ -1246,6 +1270,10 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_cast(&mut self) -> Result<Expr, ConstExprError> {
+        self.nested(Self::cast_expression)
+    }
+
+    fn cast_expression(&mut self) -> Result<Expr, ConstExprError> {
         let start = self.position;
         if self.peek() == Some(&Token::LParen)
             && let Some(next) = self.peek_at(1)
@@ -1342,6 +1370,10 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_initializer_value(&mut self) -> Result<Initializer, ConstExprError> {
+        self.nested(Self::initializer_value)
+    }
+
+    fn initializer_value(&mut self) -> Result<Initializer, ConstExprError> {
         if self.peek() == Some(&Token::LBrace) {
             Ok(Initializer::List(self.parse_initializer_list()?))
         } else {
@@ -1381,6 +1413,10 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_unary(&mut self) -> Result<Expr, ConstExprError> {
+        self.nested(Self::unary_expression)
+    }
+
+    fn unary_expression(&mut self) -> Result<Expr, ConstExprError> {
         let start = self.position;
         if let Some(Token::Ident(name)) = self.peek()
             && name == "__extension__"

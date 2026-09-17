@@ -9,7 +9,19 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
+// deeply nested sources outgrow the default main-thread stack long before NESTING_LIMIT
+const STACK_SIZE: usize = 256 << 20;
+
 fn main() -> miette::Result<()> {
+    std::thread::Builder::new()
+        .stack_size(STACK_SIZE)
+        .spawn(run)
+        .map_err(|error| miette::miette!(error))?
+        .join()
+        .map_err(|_| miette::miette!("parser thread panicked"))?
+}
+
+fn run() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     let command = args.next();
     if !matches!(command.as_deref(), Some("parse" | "ir")) {

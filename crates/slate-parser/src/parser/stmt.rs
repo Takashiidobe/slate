@@ -244,6 +244,17 @@ impl Parser {
     }
 
     pub(super) fn parse_one_stmt(&self, cursor: &mut TokenCursor) -> Result<StmtKind, ParseError> {
+        let depth = self.nesting().get();
+        if depth >= super::NESTING_LIMIT {
+            return Err(cursor.error("nesting level exceeded maximum"));
+        }
+        self.nesting().set(depth + 1);
+        let statement = self.one_stmt(cursor);
+        self.nesting().set(depth);
+        statement
+    }
+
+    fn one_stmt(&self, cursor: &mut TokenCursor) -> Result<StmtKind, ParseError> {
         let tokens = cursor.tokens;
 
         if tokens.value_at(cursor.pos) == Some(&Token::Semi) {
