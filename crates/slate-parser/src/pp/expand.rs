@@ -20,6 +20,12 @@ fn origin_for_expansion(
     })
 }
 
+struct Invocation {
+    arguments: Vec<Vec<Span<Token>>>,
+    end: usize,
+    from_tail: usize,
+}
+
 impl Preprocessor<'_> {
     fn expand_builtin_macro(&self, name: &str, token: &Span<Token>) -> Option<Span<Token>> {
         let loc = token.expansion;
@@ -120,8 +126,21 @@ impl Preprocessor<'_> {
         tokens: &[Span<Token>],
         disabled: &mut HashSet<String>,
     ) -> Vec<Span<Token>> {
+        self.expand_rescanning(tokens, &[], disabled).0
+    }
+
+    // `tail` is what follows `tokens` in the enclosing stream: rescanning a
+    // replacement may complete an invocation out of it, and reports how much
+    // of it the expansion swallowed
+    fn expand_rescanning(
+        &self,
+        tokens: &[Span<Token>],
+        tail: &[Span<Token>],
+        disabled: &mut HashSet<String>,
+    ) -> (Vec<Span<Token>>, usize) {
         let mut expanded = Vec::new();
         let mut i = 0;
+        let mut taken = 0;
         while i < tokens.len() {
             let token = &tokens[i];
             let Token::Ident(name) = &token.value else {
@@ -145,6 +164,7 @@ impl Preprocessor<'_> {
                 i += 1;
                 continue;
             }
+            let rest = &tokens[i + 1..];
             let Some(parameters) = macro_def.parameters.clone() else {
                 let origin = origin_for_expansion(name, macro_entry.provenance, token);
                 let replacement = macro_def
@@ -158,12 +178,19 @@ impl Preprocessor<'_> {
                     })
                     .collect::<Vec<_>>();
                 disabled.insert(name.clone());
-                expanded.extend(self.expand_macros(&replacement, disabled));
+                let (produced, used) = self.rescan(&replacement, rest, tail, disabled);
                 disabled.remove(name);
-                i += 1;
+                expanded.extend(produced);
+                i += 1 + used.min(rest.len());
+                taken += used.saturating_sub(rest.len());
                 continue;
             };
-            let Some((mut arguments, end)) = invocation_arguments(tokens, i + 1) else {
+            let Some(Invocation {
+                mut arguments,
+                end,
+                from_tail,
+            }) = self.invocation(rest, tail)
+            else {
                 expanded.push(token.clone());
                 i += 1;
                 continue;
@@ -192,11 +219,78 @@ impl Preprocessor<'_> {
             disabled.insert(name.clone());
             let replacement =
                 substitute_function_macro(&macro_def, &parameters, &arguments, &expanded_arguments);
-            expanded.extend(self.expand_macros(&replacement, disabled));
+            let consumed = i + 1 + end - from_tail;
+            let (produced, used) = self.rescan(
+                &replacement,
+                &tokens[consumed..],
+                &tail[from_tail..],
+                disabled,
+            );
             disabled.remove(&name);
-            i = end;
+            expanded.extend(produced);
+            i = consumed + used.min(tokens.len() - consumed);
+            taken += from_tail + used.saturating_sub(tokens.len() - consumed);
         }
-        expanded
+        (expanded, taken)
+    }
+
+    fn rescan(
+        &self,
+        replacement: &[Span<Token>],
+        rest: &[Span<Token>],
+        tail: &[Span<Token>],
+        disabled: &mut HashSet<String>,
+    ) -> (Vec<Span<Token>>, usize) {
+        let isolated = self.expand_macros(replacement, disabled);
+        if (rest.is_empty() && tail.is_empty()) || !self.wants_more(&isolated) {
+            return (isolated, 0);
+        }
+        let following = rest.iter().chain(tail).cloned().collect::<Vec<_>>();
+        self.expand_rescanning(replacement, &following, disabled)
+    }
+
+    // an expansion that ends mid-invocation is the only one worth rescanning
+    // against the caller's stream, and expanding in isolation is how we tell
+    fn wants_more(&self, expansion: &[Span<Token>]) -> bool {
+        let mut depth = 0i32;
+        for token in expansion {
+            match token.value {
+                Token::LParen => depth += 1,
+                Token::RParen => depth -= 1,
+                _ => {}
+            }
+        }
+        if depth > 0 {
+            return true;
+        }
+        match expansion.last().map(|token| &token.value) {
+            Some(Token::Ident(name)) => self
+                .macros
+                .get(name)
+                .is_some_and(|entry| entry.definition.parameters.is_some()),
+            _ => false,
+        }
+    }
+
+    // an invocation may open in `rest` and close in the caller's `tail`
+    fn invocation(&self, rest: &[Span<Token>], tail: &[Span<Token>]) -> Option<Invocation> {
+        if let Some((arguments, end)) = invocation_arguments(rest, 0) {
+            return Some(Invocation {
+                arguments,
+                end,
+                from_tail: 0,
+            });
+        }
+        if tail.is_empty() {
+            return None;
+        }
+        let spliced = rest.iter().chain(tail).cloned().collect::<Vec<_>>();
+        let (arguments, end) = invocation_arguments(&spliced, 0)?;
+        Some(Invocation {
+            arguments,
+            end,
+            from_tail: end.saturating_sub(rest.len()),
+        })
     }
 
     pub(super) fn expand_condition(&self, tokens: &[Span<Token>]) -> Vec<Span<Token>> {

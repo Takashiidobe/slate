@@ -289,22 +289,17 @@ _Static_assert(__LINE__ == 456789);
 // DEFAULT-NEXT:       StaticAssert {
 // DEFAULT-NEXT:           condition: Binary {
 // DEFAULT-NEXT:               op: Equal,
-// DEFAULT-NEXT:               left: Call {
-// DEFAULT-NEXT:                   callee: Identifier(
-// DEFAULT-NEXT:                       "c0",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:                   arguments: [
-// DEFAULT-NEXT:                       CharLiteral(
-// DEFAULT-NEXT:                           CharLiteral {
-// DEFAULT-NEXT:                               encoding: Plain,
-// DEFAULT-NEXT:                               code_units: [
-// DEFAULT-NEXT:                                   192,
-// DEFAULT-NEXT:                               ],
-// DEFAULT-NEXT:                               spelling: "\\u00c0",
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       ),
-// DEFAULT-NEXT:                   ],
-// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               left: IntegerLiteral(
+// DEFAULT-NEXT:                   IntegerLiteral {
+// DEFAULT-NEXT:                       value: 0,
+// DEFAULT-NEXT:                       radix: Decimal,
+// DEFAULT-NEXT:                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                           unsigned: false,
+// DEFAULT-NEXT:                           size: None,
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       spelling: "0",
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:               right: IntegerLiteral(
 // DEFAULT-NEXT:                   IntegerLiteral {
 // DEFAULT-NEXT:                       value: 0,
