@@ -245,7 +245,8 @@ impl Resolver {
             }
             StmtKind::Labeled { label, body } => {
                 if self.collecting_labels {
-                    self.bind_label(label)?;
+                    let entry = self.bind_label(label)?;
+                    self.resolution.label_definitions.insert(label.id, entry.id);
                 }
                 self.statement(body)
             }

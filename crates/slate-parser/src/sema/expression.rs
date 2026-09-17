@@ -13,6 +13,9 @@ pub(super) struct Lowerer {
     pub bindings: HashMap<BindingId, Type>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub next_id: u32,
+    pub break_targets: Vec<BindingId>,
+    pub continue_targets: Vec<BindingId>,
+    pub switches: Vec<(BindingId, Type)>,
 }
 
 impl Lowerer {
@@ -429,6 +432,17 @@ impl Lowerer {
                     self.context.int_type(),
                     ValueKind::Constant(Number::Integer(lit.code_units[0].into())),
                 ))
+            }
+            ExprKind::LabelAddress(label) => {
+                let id = self
+                    .names
+                    .references
+                    .iter()
+                    .find(|r| r.id == label.id)
+                    .map(|r| r.binding)
+                    .ok_or(ResolveError::Unsupported("missing label address binding"))?;
+                let ty = self.pointer(Type::Void, false);
+                Ok(self.value(e, ty, ValueKind::LabelAddress(id)))
             }
             ExprKind::NullPtrLiteral => {
                 let ty = self.pointer(Type::Void, false);

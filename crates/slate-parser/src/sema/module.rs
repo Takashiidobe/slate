@@ -25,6 +25,9 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         bindings: HashMap::new(),
         type_spans: HashMap::new(),
         next_id,
+        break_targets: Vec::new(),
+        continue_targets: Vec::new(),
+        switches: Vec::new(),
     };
     for declaration in &unit.decls {
         match &declaration.value {
@@ -382,6 +385,28 @@ impl Lowerer {
         Ok(statements)
     }
 
+    fn case_value(&mut self, expr: &ast::Expr, ty: Type) -> Result<Value, ResolveError> {
+        let value = self.expr(expr)?;
+        let value = self.convert(value, ty.clone(), ConversionReason::Promotion)?;
+        let number = super::fold::integer(&value)
+            .ok_or(ResolveError::Unsupported("nonconstant case expression"))?;
+        Ok(self.value(expr, ty, ValueKind::Constant(Number::SignedInteger(number))))
+    }
+
+    fn loop_body(
+        &mut self,
+        id: BindingId,
+        body: &Stmt,
+        return_type: Option<Type>,
+    ) -> Result<Vec<Span<Statement>>, ResolveError> {
+        self.break_targets.push(id);
+        self.continue_targets.push(id);
+        let result = self.statements(std::slice::from_ref(body), return_type);
+        self.continue_targets.pop();
+        self.break_targets.pop();
+        result
+    }
+
     fn statements(
         &mut self,
         body: &[Stmt],
@@ -409,7 +434,174 @@ impl Lowerer {
                     )?))
                 }
                 StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
-                StmtKind::Null => Statement::Block(Vec::new()),
+                StmtKind::If {
+                    condition,
+                    then_branch,
+                    else_branch,
+                } => {
+                    let value = self.expr(condition)?;
+                    Statement::If {
+                        condition: self.condition(value, None)?,
+                        then_body: self
+                            .statements(std::slice::from_ref(then_branch), return_type.clone())?,
+                        else_body: else_branch
+                            .as_ref()
+                            .map(|body| {
+                                self.statements(std::slice::from_ref(body), return_type.clone())
+                            })
+                            .transpose()?,
+                    }
+                }
+                StmtKind::While { condition, body } => {
+                    let id = self.fresh();
+                    let value = self.expr(condition)?;
+                    let condition = self.condition(value, None)?;
+                    let body = self.loop_body(id, body, return_type.clone())?;
+                    Statement::While {
+                        id,
+                        condition,
+                        body,
+                    }
+                }
+                StmtKind::DoWhile { body, condition } => {
+                    let id = self.fresh();
+                    let body = self.loop_body(id, body, return_type.clone())?;
+                    let value = self.expr(condition)?;
+                    Statement::DoWhile {
+                        id,
+                        body,
+                        condition: self.condition(value, None)?,
+                    }
+                }
+                StmtKind::For {
+                    init,
+                    condition,
+                    increment,
+                    body,
+                } => {
+                    let id = self.fresh();
+                    let init = match init {
+                        Some(init) => {
+                            self.statements(std::slice::from_ref(init), return_type.clone())?
+                        }
+                        None => Vec::new(),
+                    };
+                    let condition = condition
+                        .as_ref()
+                        .map(|expr| {
+                            let value = self.expr(expr)?;
+                            self.condition(value, None)
+                        })
+                        .transpose()?;
+                    let increment = increment.as_ref().map(|expr| self.expr(expr)).transpose()?;
+                    let body = self.loop_body(id, body, return_type.clone())?;
+                    Statement::For {
+                        id,
+                        init,
+                        condition,
+                        increment,
+                        body,
+                    }
+                }
+                StmtKind::Break => Statement::Break(
+                    *self
+                        .break_targets
+                        .last()
+                        .ok_or(ResolveError::Unsupported("break outside loop or switch"))?,
+                ),
+                StmtKind::Continue => Statement::Continue(
+                    *self
+                        .continue_targets
+                        .last()
+                        .ok_or(ResolveError::Unsupported("continue outside loop"))?,
+                ),
+                StmtKind::Switch { discriminant, body } => {
+                    let value = self.expr(discriminant)?;
+                    let discriminant = self.context.promote(value);
+                    if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
+                        return Err(ResolveError::Unsupported("noninteger switch discriminant"));
+                    }
+                    let id = self.fresh();
+                    self.break_targets.push(id);
+                    self.switches.push((id, discriminant.ty.clone()));
+                    let body = self.statements(std::slice::from_ref(body), return_type.clone());
+                    self.switches.pop();
+                    self.break_targets.pop();
+                    Statement::Switch {
+                        id,
+                        discriminant,
+                        body: body?,
+                    }
+                }
+                StmtKind::SwitchLabel { label, body } => {
+                    let (switch, ty) = self
+                        .switches
+                        .last()
+                        .cloned()
+                        .ok_or(ResolveError::Unsupported("case or default outside switch"))?;
+                    match label {
+                        ast::SwitchLabel::Default => Statement::Default {
+                            switch,
+                            body: self
+                                .statements(std::slice::from_ref(body), return_type.clone())?,
+                        },
+                        ast::SwitchLabel::Case(start) => Statement::Case {
+                            switch,
+                            start: self.case_value(start, ty)?,
+                            end: None,
+                            body: self
+                                .statements(std::slice::from_ref(body), return_type.clone())?,
+                        },
+                        ast::SwitchLabel::CaseRange { start, end } => Statement::Case {
+                            switch,
+                            start: self.case_value(start, ty.clone())?,
+                            end: Some(self.case_value(end, ty)?),
+                            body: self
+                                .statements(std::slice::from_ref(body), return_type.clone())?,
+                        },
+                    }
+                }
+                StmtKind::Null => Statement::Null,
+                StmtKind::Attribute(attributes)
+                    if attributes
+                        .iter()
+                        .all(|a| matches!(a, ast::Attribute::Fallthrough)) =>
+                {
+                    if self.switches.is_empty() {
+                        return Err(ResolveError::Unsupported("fallthrough outside switch"));
+                    }
+                    self.module
+                        .metadata
+                        .entry(statement.id)
+                        .or_default()
+                        .push(("c_attribute".into(), "fallthrough".into()));
+                    Statement::Null
+                }
+                StmtKind::LocalLabelDecl(_) => continue,
+                StmtKind::ComputedGoto(expr) => {
+                    let value = self.expr(expr)?;
+                    if !matches!(value.ty, Type::Pointer { .. }) {
+                        return Err(ResolveError::Unsupported("nonpointer computed goto"));
+                    }
+                    Statement::ComputedGoto(value)
+                }
+                StmtKind::Goto(label) => Statement::Goto(
+                    self.names
+                        .references
+                        .iter()
+                        .find(|r| r.id == label.id)
+                        .map(|r| r.binding)
+                        .ok_or(ResolveError::Unsupported("missing goto binding"))?,
+                ),
+                StmtKind::Labeled { label, body } => Statement::Label {
+                    id: *self
+                        .names
+                        .label_definitions
+                        .get(&label.id)
+                        .ok_or(ResolveError::Unsupported("missing label binding"))?,
+                    name: label.value.clone(),
+                    body: self.statements(std::slice::from_ref(body), return_type.clone())?,
+                },
                 StmtKind::Block(body) => {
                     Statement::Block(self.statements(body, return_type.clone())?)
                 }

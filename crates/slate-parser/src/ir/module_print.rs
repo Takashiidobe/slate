@@ -126,6 +126,177 @@ impl DisplayModule<'_> {
                         .with_compact(self.compact)
                 )?,
                 Statement::Return(None) => f.write_str("return")?,
+                Statement::If {
+                    condition,
+                    then_body,
+                    else_body,
+                } => {
+                    write!(
+                        f,
+                        "if {}",
+                        condition
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, then_body, indent + 4)?;
+                    if let Some(body) = else_body {
+                        writeln!(f, "{:indent$}else", "")?;
+                        self.statements(f, body, indent + 4)?;
+                    }
+                    continue;
+                }
+                Statement::While {
+                    id,
+                    condition,
+                    body,
+                } => {
+                    write!(
+                        f,
+                        "while %{} {}",
+                        id.0,
+                        condition
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    continue;
+                }
+                Statement::DoWhile {
+                    id,
+                    body,
+                    condition,
+                } => {
+                    write!(f, "do %{}", id.0)?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    writeln!(
+                        f,
+                        "{:indent$}while {};",
+                        "",
+                        condition
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?;
+                    continue;
+                }
+                Statement::For {
+                    id,
+                    init,
+                    condition,
+                    increment,
+                    body,
+                } => {
+                    write!(f, "for %{}", id.0)?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    writeln!(f, "{:indent$}    init:", "")?;
+                    self.statements(f, init, indent + 8)?;
+                    write!(f, "{:indent$}    condition: ", "")?;
+                    if let Some(value) = condition {
+                        write!(
+                            f,
+                            "{}",
+                            value
+                                .display_metadata(false, self.table())
+                                .with_compact(self.compact)
+                        )?;
+                    } else {
+                        f.write_str("omitted")?;
+                    }
+                    writeln!(f)?;
+                    write!(f, "{:indent$}    increment: ", "")?;
+                    if let Some(value) = increment {
+                        write!(
+                            f,
+                            "{}",
+                            value
+                                .display_metadata(false, self.table())
+                                .with_compact(self.compact)
+                        )?;
+                    } else {
+                        f.write_str("omitted")?;
+                    }
+                    writeln!(f)?;
+                    writeln!(f, "{:indent$}    body:", "")?;
+                    self.statements(f, body, indent + 8)?;
+                    continue;
+                }
+                Statement::Break(id) => write!(f, "break %{}", id.0)?,
+                Statement::Continue(id) => write!(f, "continue %{}", id.0)?,
+                Statement::Switch {
+                    id,
+                    discriminant,
+                    body,
+                } => {
+                    write!(
+                        f,
+                        "switch %{} {}",
+                        id.0,
+                        discriminant
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    continue;
+                }
+                Statement::Case {
+                    switch,
+                    start,
+                    end,
+                    body,
+                } => {
+                    write!(
+                        f,
+                        "case %{} {}",
+                        switch.0,
+                        start
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?;
+                    if let Some(end) = end {
+                        write!(
+                            f,
+                            " ... {}",
+                            end.display_metadata(false, self.table())
+                                .with_compact(self.compact)
+                        )?;
+                    }
+                    f.write_str(":")?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    continue;
+                }
+                Statement::Default { switch, body } => {
+                    write!(f, "default %{}:", switch.0)?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    continue;
+                }
+                Statement::Null => {}
+                Statement::Goto(id) => write!(f, "goto %{}", id.0)?,
+                Statement::ComputedGoto(value) => write!(
+                    f,
+                    "goto *{}",
+                    value
+                        .display_metadata(false, self.table())
+                        .with_compact(self.compact)
+                )?,
+                Statement::Label { id, name, body } => {
+                    write!(f, "label %{} {name}:", id.0)?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    continue;
+                }
                 Statement::Block(body) => {
                     f.write_str("{")?;
                     metadata(f, self.table(), statement.id)?;

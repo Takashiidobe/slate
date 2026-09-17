@@ -116,8 +116,33 @@ explicit narrowing, integer promotion, and return widening.
 
 The module dump also handles `tests/fixtures/add.c`: its stdio declaration,
 parameters, local variable, direct calls, string literal, and fallthrough metadata.
-Unsupported statements and attributes are diagnosed instead of omitted.
-Control-flow and aggregate lowering remain separate work.
+Control flow retains `if`, `while`, `do/while`, `for`, `switch`, case/range/default
+labels, named labels, goto, computed goto, and blocks rather than canonicalizing
+loops or switches. Controlled bodies retain explicit `Block` nodes; `Null` is
+separate from an empty block. A body is a list to accommodate declarations with
+multiple declarators without inventing a C scope. For clauses retain their
+initializer list, optional condition, and optional increment separately.
+
+Loops and switches have unique IDs. Break targets the nearest loop or switch;
+continue targets the nearest loop (including through a switch). Case labels
+retain their nearest switch ID even when nested inside loops (Duff's device),
+and remain nested statements rather than flattened arms. Statement order and
+absence of a break preserve fallthrough. `[[fallthrough]];` is a null statement
+with source metadata. Case endpoints are folded to the promoted switch type;
+ordinary conditions and arithmetic are not folded. Conditions explicitly become
+boolean values. Missing for conditions remain omitted, meaning unconditional.
+
+Named labels, gotos, and `label_addr<ptr<void>>` use resolved label binding IDs,
+including distinct GNU local labels. Name resolution records each label
+definition's AST identity separately from its declaration binding identity.
+Computed goto retains its pointer-valued operand. Short-circuit and conditional
+expressions remain expression nodes; side-effect hoisting is separate work in
+`slate-parser-lh7.2.5`. The `ir_control_*.c` FileCheck fixtures cover these forms,
+nesting, compact output, and invalid control contexts.
+
+Other unsupported statements and attributes are diagnosed instead of omitted.
+Aggregate initialization and general attributed-statement lowering remain
+separate work.
 
 Target selection separates CPU family (`TargetFamily`), OS (`TargetOs`), and
 ABI environment (`TargetEnvironment`) from compiler flavor. Existing Linux

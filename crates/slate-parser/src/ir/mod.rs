@@ -38,6 +38,7 @@ pub enum ValueKind {
         reason: ConversionReason,
     },
     Null,
+    LabelAddress(BindingId),
     Void,
     Bytes(Vec<u8>),
     ArrayDecay {
@@ -304,6 +305,7 @@ impl Value {
                 }
                 f.write_str(")")
             }
+            ValueKind::LabelAddress(id) => write!(f, "label_addr<{}>(%{})", self.ty, id.0),
             ValueKind::Void => f.write_str("void"),
             ValueKind::Null => write!(f, "null<{}>", self.ty),
             ValueKind::Read(place) => {

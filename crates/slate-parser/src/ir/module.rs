@@ -41,10 +41,60 @@ pub enum Fallthrough {
 #[derive(Debug, Clone)]
 pub enum Statement {
     Let(Variable),
-    Write { place: Place, value: Value },
+    Write {
+        place: Place,
+        value: Value,
+    },
     Expression(Value),
     Return(Option<Value>),
     Block(Vec<Span<Statement>>),
+    Null,
+    If {
+        condition: Value,
+        then_body: Vec<Span<Statement>>,
+        else_body: Option<Vec<Span<Statement>>>,
+    },
+    While {
+        id: BindingId,
+        condition: Value,
+        body: Vec<Span<Statement>>,
+    },
+    DoWhile {
+        id: BindingId,
+        body: Vec<Span<Statement>>,
+        condition: Value,
+    },
+    For {
+        id: BindingId,
+        init: Vec<Span<Statement>>,
+        condition: Option<Value>,
+        increment: Option<Value>,
+        body: Vec<Span<Statement>>,
+    },
+    Switch {
+        id: BindingId,
+        discriminant: Value,
+        body: Vec<Span<Statement>>,
+    },
+    Case {
+        switch: BindingId,
+        start: Value,
+        end: Option<Value>,
+        body: Vec<Span<Statement>>,
+    },
+    Default {
+        switch: BindingId,
+        body: Vec<Span<Statement>>,
+    },
+    Break(BindingId),
+    Continue(BindingId),
+    Goto(BindingId),
+    ComputedGoto(Value),
+    Label {
+        id: BindingId,
+        name: String,
+        body: Vec<Span<Statement>>,
+    },
 }
 
 impl Module {
