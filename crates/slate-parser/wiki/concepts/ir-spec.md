@@ -114,6 +114,24 @@ parameters, local variable, direct calls, string literal, and fallthrough metada
 Unsupported statements and attributes are diagnosed instead of omitted.
 Control-flow and aggregate lowering remain separate work.
 
+Target selection separates CPU family (`TargetFamily`), OS (`TargetOs`), and
+ABI environment (`TargetEnvironment`) from compiler flavor. Existing Linux
+profiles use GNU, GNU EABI, or GNU EABI hard-float environments.
+`x86_64-pc-windows-msvc` and `aarch64-pc-windows-msvc` are experimental Windows
+MSVC-environment profiles, with LLP64 widths, binary64 long double, and unsigned
+16-bit wchar_t. Their target triples do not implicitly select compiler flavor:
+`--flavor=msvc` loads the checked-in MSVC 19.51.36256 snapshots; the default
+Clang flavor loads the Clang 22.1.8 Windows snapshots. Neither loads Linux/glibc
+shim defaults. GCC on these Windows profiles is rejected rather than falling
+back to Linux macros. Existing Linux flavor behavior is unchanged.
+
+This is selection scaffolding, not Windows compatibility: Microsoft record
+layout, calling conventions, extended-type availability, compiler-option
+validation, standard-mode macro adjustments for native MSVC, and SDK/header
+integration remain incomplete. In particular, the current aggregate algorithm
+must not be treated as a Microsoft ABI oracle. Only 64-bit Windows targets are
+selected for now; the checked-in 32-bit snapshots remain unwired.
+
 The type view resolves struct, union, and enum tag definitions. On the
 supported Linux x86_64, x86, AArch64, and ARM32 targets, record layout records byte size, aggregate alignment,
 one byte offset per field, bit offsets for bit-fields, and byte extents for

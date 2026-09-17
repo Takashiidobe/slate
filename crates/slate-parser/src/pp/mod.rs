@@ -103,34 +103,87 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
-    fn seed_builtin_macros(&mut self, target: &crate::target_info::TargetInfo) {
-        use crate::target_info::TargetFamily;
-        let (name, source, defaults) = match target.family {
-            TargetFamily::X86_64 => (
+    fn seed_builtin_macros(
+        &mut self,
+        target: &crate::target_info::TargetInfo,
+        flavor: CompilerFlavor,
+    ) -> Result<(), PPError> {
+        use crate::target_info::{TargetEnvironment, TargetFamily, TargetOs};
+        let (name, source, defaults) = match (target.os, target.environment, target.family, flavor)
+        {
+            (
+                TargetOs::Windows,
+                TargetEnvironment::Msvc,
+                TargetFamily::X86_64,
+                CompilerFlavor::Msvc,
+            ) => (
+                "<msvc-x86_64-windows-predefines>",
+                include_str!("../predefines/msvc_19.51.36256_x86_64_windows.h"),
+                "",
+            ),
+            (
+                TargetOs::Windows,
+                TargetEnvironment::Msvc,
+                TargetFamily::AArch64,
+                CompilerFlavor::Msvc,
+            ) => (
+                "<msvc-aarch64-windows-predefines>",
+                include_str!("../predefines/msvc_19.51.36256_aarch64_windows.h"),
+                "",
+            ),
+            (
+                TargetOs::Windows,
+                TargetEnvironment::Msvc,
+                TargetFamily::X86_64,
+                CompilerFlavor::Clang,
+            ) => (
+                "<clang-x86_64-windows-msvc-predefines>",
+                include_str!("../predefines/clang-22.1.8_x86_64_windows_msvc.h"),
+                "",
+            ),
+            (
+                TargetOs::Windows,
+                TargetEnvironment::Msvc,
+                TargetFamily::AArch64,
+                CompilerFlavor::Clang,
+            ) => (
+                "<clang-aarch64-windows-msvc-predefines>",
+                include_str!("../predefines/clang-22.1.8_aarch64_windows_msvc.h"),
+                "",
+            ),
+            (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86_64, _) => (
                 "<clang-x86_64-linux-gnu-predefines>",
                 include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
                 include_str!("../predefines/slate_target_defaults.h"),
             ),
-            TargetFamily::X86 => (
+            (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86, _) => (
                 "<clang-i386-linux-gnu-predefines>",
                 include_str!("../predefines/clang-22.1.8_i686_linux_gnu.h"),
                 include_str!("../predefines/slate_x86_linux_defaults.h"),
             ),
-            TargetFamily::AArch64 => (
+            (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::AArch64, _) => (
                 "<clang-aarch64-linux-gnu-predefines>",
                 include_str!("../predefines/clang-22.1.8_aarch64_linux_gnu.h"),
                 include_str!("../predefines/slate_aarch64_linux_defaults.h"),
             ),
-            TargetFamily::Arm32 if target.triple.ends_with("gnueabihf") => (
+            (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
                 "<clang-armv7-linux-gnueabihf-predefines>",
                 include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
                 include_str!("../predefines/slate_arm32_linux_defaults.h"),
             ),
-            TargetFamily::Arm32 => (
+            (TargetOs::Linux, TargetEnvironment::GnuEabi, TargetFamily::Arm32, _) => (
                 "<clang-armv7-linux-gnueabi-predefines>",
                 include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
                 include_str!("../predefines/slate_arm32_linux_defaults.h"),
             ),
+            _ => {
+                return Err(
+                    self.render_error(PPFailure::unlocated(PPErrorKind::Directive(format!(
+                        "no predefines for {flavor:?} on {}",
+                        target.triple
+                    )))),
+                );
+            }
         };
         for (name, source) in [(name, source), ("<slate-target-defaults>", defaults)] {
             let file = self.files.intern(PathBuf::from(name), HeaderKind::System);
@@ -142,6 +195,7 @@ impl<'a> Preprocessor<'a> {
             }
         }
         self.seed_standard_predefines();
+        Ok(())
     }
 
     fn seed_standard_predefines(&mut self) {
@@ -188,8 +242,14 @@ impl<'a> Preprocessor<'a> {
         options: &crate::compiler_options::CompilerOptions,
         flavor: CompilerFlavor,
     ) -> Result<(), PPError> {
-        self.seed_builtin_macros(&target);
-        let mut defines = target.long_double.predefines();
+        self.seed_builtin_macros(&target, flavor)?;
+        let mut defines = if target.os == crate::target_info::TargetOs::Windows
+            && flavor == CompilerFlavor::Msvc
+        {
+            Vec::new()
+        } else {
+            target.long_double.predefines()
+        };
         if flavor == CompilerFlavor::Gcc
             && options.operations.floating.rounding == crate::ir::Rounding::Environment
         {

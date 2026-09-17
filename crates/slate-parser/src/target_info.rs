@@ -19,6 +19,22 @@ pub struct TargetInfo {
     pub pointer: StorageLayout,
     pub abi: TargetAbi,
     pub family: TargetFamily,
+    pub os: TargetOs,
+    pub environment: TargetEnvironment,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TargetOs {
+    Linux,
+    Windows,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TargetEnvironment {
+    Gnu,
+    GnuEabi,
+    GnuEabiHf,
+    Msvc,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -59,6 +75,8 @@ impl Default for TargetInfo {
             },
             abi: TargetAbi::default(),
             family: TargetFamily::X86_64,
+            os: TargetOs::Linux,
+            environment: TargetEnvironment::Gnu,
         }
     }
 }
@@ -209,9 +227,28 @@ impl TargetInfo {
             "armv7-unknown-linux-gnueabi" | "armv7-unknown-linux-gnueabihf" => {
                 Self::arm32_linux(triple)
             }
+            "x86_64-pc-windows-msvc" => Self::windows_msvc(triple, TargetFamily::X86_64),
+            "aarch64-pc-windows-msvc" => Self::windows_msvc(triple, TargetFamily::AArch64),
             _ => return Err(TargetError::UnsupportedTriple(triple.into())),
         };
         Ok(target)
+    }
+
+    fn windows_msvc(triple: &str, family: TargetFamily) -> Self {
+        let mut scalars = ScalarLayouts::for_family(family);
+        scalars.entries.remove(&ScalarKey::Float(FloatType::F80));
+        Self {
+            triple: triple.into(),
+            os: TargetOs::Windows,
+            environment: TargetEnvironment::Msvc,
+            family,
+            long_width: 32,
+            long_double: LongDoubleFormat::Binary64,
+            wchar_signed: false,
+            wchar_width: 16,
+            scalars,
+            ..Self::default()
+        }
     }
 
     fn x86_linux(triple: &str) -> Self {
@@ -238,6 +275,8 @@ impl TargetInfo {
                 zero_width_bitfield_aligns_record: false,
             },
             family: TargetFamily::X86,
+            os: TargetOs::Linux,
+            environment: TargetEnvironment::Gnu,
         }
     }
 
@@ -265,6 +304,8 @@ impl TargetInfo {
                 zero_width_bitfield_aligns_record: true,
             },
             family: TargetFamily::AArch64,
+            os: TargetOs::Linux,
+            environment: TargetEnvironment::Gnu,
         }
     }
 
@@ -292,6 +333,12 @@ impl TargetInfo {
                 zero_width_bitfield_aligns_record: true,
             },
             family: TargetFamily::Arm32,
+            os: TargetOs::Linux,
+            environment: if triple.ends_with("gnueabihf") {
+                TargetEnvironment::GnuEabiHf
+            } else {
+                TargetEnvironment::GnuEabi
+            },
         }
     }
 
