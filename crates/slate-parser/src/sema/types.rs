@@ -54,18 +54,22 @@ pub struct ResolvedType {
     pub c: CTypeMetadata,
 }
 
-#[derive(Clone)]
 pub struct TypeResolver {
     target: TargetInfo,
     pub c23: bool,
-    aliases: HashMap<String, ResolvedType>,
     tags: Vec<crate::ast::Span<TagDefinition>>,
     tag_ids: HashMap<TagId, TypeId>,
-    tag_names: HashMap<(TagKind, String), TypeId>,
+    ordinary: Vec<HashMap<String, Ordinary>>,
+    tag_names: Vec<HashMap<(TagKind, String), TypeId>>,
     pub definitions: Vec<TypeDefinition>,
     pub(super) assertion_scope: bool,
-    pub(super) constants: HashMap<String, Value>,
-    pub(super) objects: HashMap<String, Type>,
+}
+
+pub(super) enum Ordinary {
+    Declared,
+    Alias(ResolvedType),
+    Constant(Value),
+    Object(Type),
 }
 
 impl TypeResolver {
@@ -73,14 +77,12 @@ impl TypeResolver {
         Self {
             target,
             c23: false,
-            aliases: HashMap::new(),
             tags: Vec::new(),
             tag_ids: HashMap::new(),
-            tag_names: HashMap::new(),
+            ordinary: vec![HashMap::new()],
+            tag_names: vec![HashMap::new()],
             definitions: Vec::new(),
             assertion_scope: false,
-            constants: HashMap::new(),
-            objects: HashMap::new(),
         }
     }
 
@@ -111,14 +113,40 @@ impl TypeResolver {
         ))
     }
 
-    pub(super) fn hide_name(&mut self, name: &str) {
-        self.aliases.remove(name);
-        self.constants.remove(name);
-        self.objects.remove(name);
+    pub(super) fn push_scope(&mut self) {
+        self.ordinary.push(HashMap::new());
+        self.tag_names.push(HashMap::new());
     }
 
-    pub(super) fn hide_tag(&mut self, kind: TagKind, name: &str) {
-        self.tag_names.retain(|(k, n), _| *k != kind || n != name);
+    pub(super) fn pop_scope(&mut self) {
+        if self.ordinary.len() > 1 {
+            self.ordinary.pop();
+            self.tag_names.pop();
+        }
+    }
+
+    pub(super) fn declare(&mut self, name: &str, entry: Ordinary) {
+        if let Some(scope) = self.ordinary.last_mut() {
+            scope.insert(name.to_owned(), entry);
+        }
+    }
+
+    fn lookup(&self, name: &str) -> Option<&Ordinary> {
+        self.ordinary.iter().rev().find_map(|scope| scope.get(name))
+    }
+
+    fn declare_tag(&mut self, key: (TagKind, String), id: TypeId) {
+        if let Some(scope) = self.tag_names.last_mut() {
+            scope.insert(key, id);
+        }
+    }
+
+    fn lookup_tag(&self, key: &(TagKind, String)) -> Option<TypeId> {
+        self.tag_names
+            .iter()
+            .rev()
+            .find_map(|scope| scope.get(key))
+            .copied()
     }
 
     pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Value, ResolveError> {
@@ -127,13 +155,12 @@ impl TypeResolver {
         let (ty, kind) = match &e.value {
             ExprKind::Paren(inner) => return self.constant_value(inner),
             ExprKind::Identifier(name) => {
-                return self
-                    .constants
-                    .get(name)
-                    .cloned()
-                    .ok_or(ResolveError::Unsupported(
+                return match self.lookup(name) {
+                    Some(Ordinary::Constant(value)) => Ok(value.clone()),
+                    _ => Err(ResolveError::Unsupported(
                         "nonconstant or unknown identifier",
-                    ));
+                    )),
+                };
             }
             ExprKind::CharLiteral(literal) if literal.code_units.len() == 1 => (
                 context.int_type(),
@@ -263,14 +290,13 @@ impl TypeResolver {
         use crate::ast::ExprKind;
         match &e.value {
             ExprKind::Paren(inner) => self.assertion_operand_type(inner),
-            ExprKind::Identifier(name) => self
-                .objects
-                .get(name)
-                .cloned()
-                .or_else(|| self.constants.get(name).map(|value| value.ty.clone()))
-                .ok_or(ResolveError::Unsupported(
+            ExprKind::Identifier(name) => match self.lookup(name) {
+                Some(Ordinary::Object(ty)) => Ok(ty.clone()),
+                Some(Ordinary::Constant(value)) => Ok(value.ty.clone()),
+                _ => Err(ResolveError::Unsupported(
                     "unknown or unsupported sizeof operand type",
                 )),
+            },
             ExprKind::StringLiteral(literal) => Ok(string_literal_type(literal, &self.target)),
             ExprKind::Unary {
                 op: crate::const_expr::UnaryOp::Deref,
@@ -374,7 +400,7 @@ impl TypeResolver {
             .ok_or(ResolveError::Unsupported("void typedef"))?;
         let id = self.push(TypeDefinitionKind::Alias(ty));
         self.definitions[id.0 as usize].name = Some(name.clone());
-        self.aliases.insert(name, resolved);
+        self.declare(&name, Ordinary::Alias(resolved));
         Ok(())
     }
 
@@ -405,10 +431,9 @@ impl TypeResolver {
         let scalar = match specifier {
             TypeSpecifier::Void => return Ok((None, "void".into(), "void".into(), Vec::new())),
             TypeSpecifier::Named(name) => {
-                let alias = self
-                    .aliases
-                    .get(name)
-                    .ok_or(ResolveError::Unsupported("unknown typedef"))?;
+                let Some(Ordinary::Alias(alias)) = self.lookup(name) else {
+                    return Err(ResolveError::Unsupported("unknown typedef"));
+                };
                 let mut chain = vec![name.clone()];
                 chain.extend(alias.c.typedef_chain.iter().cloned());
                 return Ok((
@@ -435,8 +460,8 @@ impl TypeResolver {
                 fixed_type,
             }) => {
                 let key = (*kind, name.clone());
-                let id = if let Some(id) = self.tag_names.get(&key) {
-                    *id
+                let id = if let Some(id) = self.lookup_tag(&key) {
+                    id
                 } else {
                     let tag = self
                         .tags
@@ -452,7 +477,7 @@ impl TypeResolver {
                     } else {
                         let id = self.push(incomplete_tag(*kind));
                         self.definitions[id.0 as usize].name = Some(name.clone());
-                        self.tag_names.insert(key, id);
+                        self.declare_tag(key, id);
                         id
                     }
                 };
@@ -677,7 +702,10 @@ impl TypeResolver {
             return Ok(*id);
         }
         let id = if let Some(name) = &tag.name {
-            self.tag_names.get(&(tag.kind, name.clone())).copied()
+            self.tag_names
+                .last()
+                .and_then(|scope| scope.get(&(tag.kind, name.clone())))
+                .copied()
         } else {
             None
         }
@@ -685,7 +713,7 @@ impl TypeResolver {
         self.tag_ids.insert(tag.id, id);
         self.definitions[id.0 as usize].name = tag.name.clone();
         if let Some(name) = &tag.name {
-            self.tag_names.insert((tag.kind, name.clone()), id);
+            self.declare_tag((tag.kind, name.clone()), id);
         }
         let kind = match &tag.body {
             TagBody::Record(items) => {

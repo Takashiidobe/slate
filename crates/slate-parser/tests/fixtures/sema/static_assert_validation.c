@@ -5,12 +5,14 @@
 // SLATE-FILECHECK-DEFINES DIVZERO DIVZERO
 // SLATE-FILECHECK-DEFINES FLOAT FLOAT
 // SLATE-FILECHECK-DEFINES SHADOW SHADOW
+// SLATE-FILECHECK-DEFINES SHADOW_TAG SHADOW_TAG
 // SLATE-FILECHECK-ERROR FALSE_FILE
 // SLATE-FILECHECK-ERROR FALSE_BLOCK
 // SLATE-FILECHECK-ERROR NONCONSTANT
 // SLATE-FILECHECK-ERROR DIVZERO
 // SLATE-FILECHECK-ERROR FLOAT
 // SLATE-FILECHECK-ERROR SHADOW
+// SLATE-FILECHECK-ERROR SHADOW_TAG
 // SLATE-FILECHECK-ARGS -std=c23
 
 #if defined(FALSE_FILE)
@@ -26,6 +28,9 @@ static_assert(1.0, "integer required");
 #elif defined(SHADOW)
 enum { VALUE = 1 };
 void shadow(void) { int VALUE = 1; static_assert(VALUE, "object shadows enum"); }
+#elif defined(SHADOW_TAG)
+struct Tag { int a; };
+void tag(void) { struct Tag { long long a, b; }; static_assert(sizeof(struct Tag) == 4, "inner tag"); }
 #else
 typedef unsigned char byte;
 enum { FIRST = 2, SECOND = FIRST + 1 };
@@ -37,10 +42,15 @@ static_assert((int)3.5 == 3);
 static_assert(1 || (1 / 0));
 static_assert(1 ? 7 : (1 / 0));
 static_assert(-1 < 0 && ~(unsigned)0 > 0);
+struct Outer { int a; };
 void valid(int n) {
     static_assert(sizeof(n) == sizeof(int));
     { typedef short byte; static_assert(sizeof(byte) == sizeof(short)); }
     static_assert(sizeof(byte) == 1);
+    { struct Outer { long long a, b; }; static_assert(sizeof(struct Outer) == 16); }
+    static_assert(sizeof(struct Outer) == sizeof(int));
+    { int SECOND = 1; (void)SECOND; }
+    static_assert(SECOND == 3);
 }
 #endif
 
@@ -107,6 +117,17 @@ void valid(int n) {
 // SHADOW: 13 │ enum { VALUE = 1 };
 // SHADOW: 14 │ void shadow(void) { int VALUE = 1; static_assert(VALUE, "object shadows enum"); }
 // SHADOW: ·                                                  ─────
-// SHADOW: 15 │ #else
+// SHADOW: 15 │ #elif defined(SHADOW_TAG)
 // SHADOW: ╰────
 // SLATE-FILECHECK-END SHADOW
+// SLATE-FILECHECK-BEGIN SHADOW_TAG
+// SHADOW_TAG: Error:   × semantic analysis failed
+// SHADOW_TAG: Error:
+// SHADOW_TAG: × static assertion failed: inner tag
+// SHADOW_TAG: ╭─[tests/fixtures/sema/static_assert_validation.c:17:64]
+// SHADOW_TAG: 16 │ struct Tag { int a; };
+// SHADOW_TAG: 17 │ void tag(void) { struct Tag { long long a, b; }; static_assert(sizeof(struct Tag) == 4, "inner tag"); }
+// SHADOW_TAG: ·                                                                ───────────────────────
+// SHADOW_TAG: 18 │ #else
+// SHADOW_TAG: ╰────
+// SLATE-FILECHECK-END SHADOW_TAG

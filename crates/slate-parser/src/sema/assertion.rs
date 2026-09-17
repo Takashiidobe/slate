@@ -4,7 +4,7 @@ use crate::ir::{Number, NumericType, Type, Value, ValueKind};
 use num_bigint::{BigInt, Sign};
 
 use super::numeric::ResolveError;
-use super::types::TypeResolver;
+use super::types::{Ordinary, TypeResolver};
 use super::validate::{SemaError, error};
 
 pub(super) fn validate(unit: &TranslationUnit) -> Vec<SemaError> {
@@ -67,7 +67,7 @@ impl Checker<'_> {
     }
 
     fn function(&mut self, function: &FunctionDefinition) {
-        let saved = self.types.clone();
+        self.types.push_scope();
         for parameter in function
             .declarator
             .function_parameters()
@@ -78,7 +78,7 @@ impl Checker<'_> {
                 .types
                 .resolve(&parameter.specifiers, &parameter.declarator);
             if let Some(name) = parameter.declarator.name() {
-                self.types.hide_name(name);
+                self.types.declare(name, Ordinary::Declared);
                 if let Ok(resolved) = resolved
                     && let Some(ty) = resolved.ty
                 {
@@ -93,14 +93,14 @@ impl Checker<'_> {
                         },
                         ty => ty,
                     };
-                    self.types.objects.insert(name.to_owned(), ty);
+                    self.types.declare(name, Ordinary::Object(ty));
                 }
             }
         }
         for stmt in &function.body {
             self.statement(stmt);
         }
-        self.types = saved;
+        self.types.pop_scope();
     }
 
     fn declaration(&mut self, declaration: &Declaration) {
@@ -112,7 +112,7 @@ impl Checker<'_> {
             let resolved = self
                 .types
                 .resolve(&declaration.specifiers, &declarator.declarator);
-            self.types.hide_name(name);
+            self.types.declare(name, Ordinary::Declared);
             if let Ok(mut resolved) = resolved {
                 if declaration.specifiers.storage == StorageClass::Typedef {
                     let _ = self.types.define_alias(name.to_owned(), resolved);
@@ -126,7 +126,7 @@ impl Checker<'_> {
                     {
                         *length = inferred;
                     }
-                    self.types.objects.insert(name.to_owned(), ty);
+                    self.types.declare(name, Ordinary::Object(ty));
                 }
             }
             if let Some(initializer) = &declarator.initializer {
@@ -142,9 +142,6 @@ impl Checker<'_> {
         let Some(tag) = self.unit.tag(*id) else {
             return;
         };
-        if let Some(name) = &tag.name {
-            self.types.hide_tag(tag.kind, name);
-        }
         if let TagBody::Enum {
             enumerators,
             fixed_type,
@@ -165,7 +162,7 @@ impl Checker<'_> {
                     Some(_) => None,
                     None => previous.as_ref().map(|value| value + 1),
                 };
-                self.types.hide_name(&enumerator.name);
+                self.types.declare(&enumerator.name, Ordinary::Declared);
                 previous = value.clone();
                 if let Some(value) = value {
                     let ty = fixed.clone().unwrap_or_else(|| int_ty.clone());
@@ -177,14 +174,14 @@ impl Checker<'_> {
                     if value < min || value >= limit {
                         continue;
                     }
-                    self.types.constants.insert(
-                        enumerator.name.clone(),
-                        Value {
+                    self.types.declare(
+                        &enumerator.name,
+                        Ordinary::Constant(Value {
                             ty,
                             node: item
                                 .clone()
                                 .with_value(ValueKind::Constant(Number::SignedInteger(value))),
-                        },
+                        }),
                     );
                 }
             }
@@ -204,9 +201,9 @@ impl Checker<'_> {
     }
 
     fn scoped(&mut self, stmt: &Stmt) {
-        let saved = self.types.clone();
+        self.types.push_scope();
         self.statement(stmt);
-        self.types = saved;
+        self.types.pop_scope();
     }
 
     fn statement(&mut self, stmt: &Stmt) {
@@ -214,11 +211,11 @@ impl Checker<'_> {
             StmtKind::StaticAssert(assertion) => self.assertion(assertion),
             StmtKind::Decl(declaration) => self.declaration(declaration),
             StmtKind::Block(body) => {
-                let saved = self.types.clone();
+                self.types.push_scope();
                 for stmt in body {
                     self.statement(stmt);
                 }
-                self.types = saved;
+                self.types.pop_scope();
             }
             StmtKind::NestedFunction(function) => self.function(function),
             StmtKind::If {
@@ -247,7 +244,7 @@ impl Checker<'_> {
                 increment,
                 body,
             } => {
-                let saved = self.types.clone();
+                self.types.push_scope();
                 if let Some(init) = init {
                     self.statement(init);
                 }
@@ -255,7 +252,7 @@ impl Checker<'_> {
                     self.expression(expr);
                 }
                 self.scoped(body);
-                self.types = saved;
+                self.types.pop_scope();
             }
             StmtKind::Labeled { body, .. }
             | StmtKind::Attributed { body, .. }
@@ -281,11 +278,11 @@ impl Checker<'_> {
     fn expression(&mut self, expr: &Expr) {
         match &expr.value {
             ExprKind::StatementExpression(body) => {
-                let saved = self.types.clone();
+                self.types.push_scope();
                 for stmt in body {
                     self.statement(stmt);
                 }
-                self.types = saved;
+                self.types.pop_scope();
             }
             ExprKind::Paren(expr)
             | ExprKind::Unary { operand: expr, .. }
