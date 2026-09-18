@@ -11,7 +11,12 @@ struct S s = {.a = 1, 2, 3, 4};
 struct T t = {.p[1] = 5, 6, 7};
 struct F f = {1};
 struct F named = {.n = 2};
+struct F braced = {3, {'a', 'b'}};
+struct F elided = {4, 'x', 'y', 'z'};
+struct F designated = {.d = {'q'}};
+struct G wide = {'c', {7, 8}};
 static_assert(sizeof(struct F) == 4);
+static_assert(sizeof(braced) == 4);
 static_assert(sizeof(struct G) == 8);
 static_assert(_Alignof(struct G) == 8);
 
@@ -63,9 +68,13 @@ int local(void) {
 // IR-NEXT:     global %6 t: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = aggregate<array<@type1, 2>, zero_fill=true>(index1 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(5), field1 = const<i32>(6))), field1 = const<i32>(7)) [linkage=external];
 // IR-NEXT:     global %7 f: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
 // IR-NEXT:     global %8 named: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = const<i32>(2)) [linkage=external];
-// IR-NEXT:     fn %9 @local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %10 l: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<i32, 3>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)), field1 = const<i32>(9));
-// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field0(%10)), const<i32>(1))));
+// IR-NEXT:     global %9 braced: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(98)))) [linkage=external];
+// IR-NEXT:     global %10 elided: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = const<i32>(4), field1 = aggregate<array<i8, 3>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(120)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(121)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(122)))) [linkage=external];
+// IR-NEXT:     global %11 designated: @type3 [storage=static] = aggregate<@type3, zero_fill=true>(field1 = aggregate<array<i8, 1>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(113)))) [linkage=external];
+// IR-NEXT:     global %12 wide: @type4 [storage=static] = aggregate<@type4, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(99)), field1 = aggregate<array<i64, 2>, zero_fill=false>(index0 = widen<i64, reason=assign>(const<i32>(7)), index1 = widen<i64, reason=assign>(const<i32>(8)))) [linkage=external];
+// IR-NEXT:     fn %13 @local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %14 l: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<i32, 3>, zero_fill=true>(index0 = const<i32>(1), index1 = const<i32>(2)), field1 = const<i32>(9));
+// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field0(%14)), const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

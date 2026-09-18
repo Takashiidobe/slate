@@ -291,7 +291,7 @@ see it: `_Generic`'s controlling operand undergoes lvalue conversion but not
 integer promotion, and therefore selects on the declared bit-field type
 (`_Generic(f->low, unsigned: .., int: ..)` picks `unsigned`).
 
-Flexible-array semantics remain future work (layout and omitted-member initialization exist; element initializers do not), as do full qualifiers,
+Flexible-array semantics remain future work (layout and initializers exist; the extent lives on the initializer value), as do full qualifiers,
 and callable types/ABI contracts, in their respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
 records, unions, anonymous members, and bit-field reads, writes, compound
 assignment, and increment. The name-resolution dump remains a separate
@@ -773,10 +773,12 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
   expression continues brace elision with the following items
   (`.a = 1, 2, 3` fills `a[0..3]`).
 - A trailing flexible array member has size 0 and the element's alignment in
-  the record layout, is skipped by positional initialization and `zero_fill`,
-  and stays out of the aggregate members. Initializing its elements is
-  `Unsupported`: the object's type would need an extent the record type
-  cannot carry.
+  the record layout. Omitted, it is skipped by `zero_fill` and absent from the
+  members. Initialized (`{1, {2, 3}}`, elided `{1, 2, 3}`, or `.d = {..}`),
+  it appears as a normal `Field(last)` member whose value has a sized
+  `array<T, N>` type. The variable and aggregate keep the declared record
+  type; the object's extent is the record size plus that member's size, so
+  consumers read it from the initializer rather than the type.
 
 These facts support Rust storage and initialization choices; ownership,
 escape, and definite-initialization analysis can derive additional facts

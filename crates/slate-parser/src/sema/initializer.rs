@@ -33,8 +33,11 @@ struct Cursor<'a> {
 type Step = (AggregateTarget, Type);
 
 fn initializable(field: &Field) -> bool {
-    (field.name.is_some() || field.bit_width.is_none())
-        && !matches!(field.ty, Type::Array { length: None, .. })
+    field.name.is_some() || field.bit_width.is_none()
+}
+
+fn is_flexible(field: &Field) -> bool {
+    matches!(field.ty, Type::Array { length: None, .. })
 }
 
 fn bounds(target: AggregateTarget) -> (u64, u64) {
@@ -64,19 +67,6 @@ impl Builder {
         }
     }
 
-    fn excess_message(&self) -> &'static str {
-        match &self.shape {
-            Shape::Struct(fields)
-                if fields
-                    .last()
-                    .is_some_and(|field| matches!(field.ty, Type::Array { length: None, .. })) =>
-            {
-                "flexible array member initializer"
-            }
-            _ => "excess elements in initializer",
-        }
-    }
-
     fn next_target(&self) -> Result<Step, ResolveError> {
         match &self.shape {
             Shape::Struct(fields) | Shape::Union(fields) => fields
@@ -85,8 +75,7 @@ impl Builder {
                 .skip(self.next as usize)
                 .find(|(_, field)| initializable(field))
                 .map(|(index, field)| (AggregateTarget::Field(index), field.ty.clone()))
-                .ok_or(ResolveError::Unsupported("excess elements in initializer"))
-                .and_then(|(target, ty)| Ok((target, sized(&ty)?))),
+                .ok_or(ResolveError::Unsupported("excess elements in initializer")),
             Shape::Array { element, .. } => {
                 Ok((AggregateTarget::Index(self.next), sized(element)?))
             }
@@ -163,10 +152,20 @@ impl Builder {
             })
             .sum();
         let (ty, zero_fill) = match &self.shape {
-            Shape::Struct(fields) => (
-                self.ty.clone(),
-                covered < fields.iter().filter(|field| initializable(field)).count() as u64,
-            ),
+            Shape::Struct(fields) => {
+                let flexible = self
+                    .members
+                    .iter()
+                    .filter(|(target, _)| {
+                        matches!(target, AggregateTarget::Field(index) if is_flexible(&fields[*index]))
+                    })
+                    .count() as u64;
+                let required = fields
+                    .iter()
+                    .filter(|field| initializable(field) && !is_flexible(field))
+                    .count() as u64;
+                (self.ty.clone(), covered - flexible < required)
+            }
             Shape::Union(_) => (self.ty.clone(), false),
             Shape::Array { element, length } => {
                 let length = match length {
@@ -428,7 +427,7 @@ impl Lowerer {
             }
             if builder.full() {
                 if braced {
-                    return Err(ResolveError::Unsupported(builder.excess_message()));
+                    return Err(ResolveError::Unsupported("excess elements in initializer"));
                 }
                 break;
             }
