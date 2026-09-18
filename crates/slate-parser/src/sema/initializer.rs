@@ -1,5 +1,6 @@
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
+use super::types::TypeResolver;
 use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, Span};
 use crate::const_expr::{Encoding, Parser};
 use crate::ir::*;
@@ -207,16 +208,11 @@ fn consume(cursor: &mut Option<&mut Cursor<'_>>) {
     }
 }
 
-impl Lowerer {
-    pub(super) fn initializer_value(
-        &mut self,
-        ty: &Type,
-        initializer: &Initializer,
-        anchor: &Span<()>,
-    ) -> Result<Value, ResolveError> {
-        match self.init_initializer(ty, initializer)? {
-            Entry::Leaf(value) => Ok(value),
-            Entry::Sub(builder) => builder.finish(anchor),
+impl TypeResolver {
+    pub(super) fn kind(&self, ty: &Type) -> Option<&TypeDefinitionKind> {
+        match ty {
+            Type::Defined(id) => self.definitions.get(id.0 as usize).map(|d| &d.kind),
+            _ => None,
         }
     }
 
@@ -255,8 +251,103 @@ impl Lowerer {
         }
     }
 
+    pub(super) fn inferred_array_length(
+        &mut self,
+        element: &Type,
+        items: &[InitializerItem],
+    ) -> Result<u64, ResolveError> {
+        let (mut next, mut length, mut index) = (0, 0, 0);
+        while index < items.len() {
+            let item = &items[index];
+            match item.designators.first() {
+                None => {
+                    index = self.consumed(element, items, index)?;
+                    next += 1;
+                }
+                Some(Designator::Array(at)) => {
+                    next = array_index(at, None)? + 1;
+                    index += 1;
+                }
+                Some(Designator::ArrayRange { end, .. }) => {
+                    next = array_index(end, None)? + 1;
+                    index += 1;
+                }
+                Some(Designator::Field(_)) => {
+                    return Err(ResolveError::Unsupported(
+                        "designator does not match aggregate type",
+                    ));
+                }
+            }
+            length = length.max(next);
+        }
+        Ok(length)
+    }
+
+    fn consumed(
+        &mut self,
+        ty: &Type,
+        items: &[InitializerItem],
+        index: usize,
+    ) -> Result<usize, ResolveError> {
+        let Initializer::Expr(expr) = &items[index].value else {
+            return Ok(index + 1);
+        };
+        let children: Vec<Type> = match self.shape(ty)? {
+            Shape::Scalar => return Ok(index + 1),
+            Shape::Array { element, length } => {
+                if matches!(expr.value, ExprKind::StringLiteral(_))
+                    && matches!(element, Type::Numeric(NumericType::Integer { .. }))
+                {
+                    return Ok(index + 1);
+                }
+                let length = length.ok_or(ResolveError::Unsupported(
+                    "flexible array member initializer",
+                ))?;
+                (0..length).map(|_| element.clone()).collect()
+            }
+            shape @ (Shape::Struct(_) | Shape::Union(_)) => {
+                let (Shape::Struct(fields) | Shape::Union(fields)) = &shape else {
+                    return Ok(index + 1);
+                };
+                let value = self.assertion_operand_type(expr)?;
+                if self.unaliased(&value) == self.unaliased(ty) {
+                    return Ok(index + 1);
+                }
+                let fields = fields.iter().filter(|field| initializable(field));
+                let take = if matches!(shape, Shape::Union(_)) {
+                    1
+                } else {
+                    usize::MAX
+                };
+                fields.take(take).map(|field| field.ty.clone()).collect()
+            }
+        };
+        let mut index = index;
+        for (position, child) in children.iter().enumerate() {
+            if position > 0 && (index >= items.len() || !items[index].designators.is_empty()) {
+                break;
+            }
+            index = self.consumed(child, items, index)?;
+        }
+        Ok(index)
+    }
+}
+
+impl Lowerer {
+    pub(super) fn initializer_value(
+        &mut self,
+        ty: &Type,
+        initializer: &Initializer,
+        anchor: &Span<()>,
+    ) -> Result<Value, ResolveError> {
+        match self.init_initializer(ty, initializer)? {
+            Entry::Leaf(value) => Ok(value),
+            Entry::Sub(builder) => builder.finish(anchor),
+        }
+    }
+
     fn builder(&self, ty: &Type) -> Result<Builder, ResolveError> {
-        match self.shape(ty)? {
+        match self.types.shape(ty)? {
             Shape::Scalar => Err(ResolveError::Unsupported(
                 "braced initializer or designator for scalar",
             )),
@@ -277,7 +368,7 @@ impl Lowerer {
     }
 
     fn braced(&mut self, ty: &Type, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
-        let shape = self.shape(ty)?;
+        let shape = self.types.shape(ty)?;
         if matches!(shape, Shape::Scalar) {
             return match items {
                 [item] if item.designators.is_empty() => self.init_initializer(ty, &item.value),
@@ -357,7 +448,7 @@ impl Lowerer {
         expr: &Expr,
         mut cursor: Option<&mut Cursor<'_>>,
     ) -> Result<Entry, ResolveError> {
-        let shape = self.shape(ty)?;
+        let shape = self.types.shape(ty)?;
         if matches!(shape, Shape::Array { .. })
             && let Some((_, value)) = self.string_array_initializer(expr, ty)?
         {
@@ -373,7 +464,9 @@ impl Lowerer {
         };
         let whole = match shape {
             Shape::Scalar => true,
-            Shape::Struct(_) | Shape::Union(_) => self.unaliased(&value.ty) == self.unaliased(ty),
+            Shape::Struct(_) | Shape::Union(_) => {
+                self.types.unaliased(&value.ty) == self.types.unaliased(ty)
+            }
             Shape::Array { .. } => false,
         };
         if whole {
@@ -468,7 +561,7 @@ impl Lowerer {
             }
             if field.name.is_none()
                 && field.bit_width.is_none()
-                && let Ok(Shape::Struct(inner) | Shape::Union(inner)) = self.shape(&field.ty)
+                && let Ok(Shape::Struct(inner) | Shape::Union(inner)) = self.types.shape(&field.ty)
                 && let Some(path) = self.field_path(&inner, name)
             {
                 return Some([vec![step], path].concat());

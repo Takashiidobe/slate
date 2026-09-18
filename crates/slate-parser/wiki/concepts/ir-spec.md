@@ -760,9 +760,17 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
 - `T a[] = ...` completes the array length from the last initialized
   element. `char`-like arrays from string literals (also `{"..."}`) stay
   `CodeUnits` on the declared array type, zero-padded or truncated to length.
-- Not yet: compound literals, flexible-array-member initializers, brace
-  elision after a designator, and `sizeof` of a brace-inferred array inside
-  `static_assert` (assertion.rs infers only string-initialized lengths).
+- Compound literals lower to `PlaceKind::CompoundLiteral { object, storage,
+  initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
+  Each literal gets a fresh `BindingId` (its own object identity) and its type
+  is the initializer value's type, so `(int[]){1,2}` is `array<i32, 2>`.
+  Storage is `Static` outside a function body and `Automatic` inside; values
+  read or decay from the place like any other object.
+- `sizeof` of a brace-inferred array (or an unsized compound literal) in
+  `static_assert` uses `TypeResolver::inferred_array_length`, which counts
+  elements with the same designator and brace-elision rules.
+- Not yet: flexible-array-member initializers and brace elision after a
+  designator.
 
 These facts support Rust storage and initialization choices; ownership,
 escape, and definite-initialization analysis can derive additional facts

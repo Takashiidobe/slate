@@ -144,6 +144,11 @@ pub struct Place {
 pub enum PlaceKind {
     Binding(BindingId),
     Deref(Box<Value>),
+    CompoundLiteral {
+        object: BindingId,
+        storage: StorageDuration,
+        initializer: Box<Value>,
+    },
     ComplexPart {
         base: Box<Place>,
         imaginary: bool,
@@ -188,6 +193,23 @@ impl Place {
                 f,
                 "deref({})",
                 value.display_metadata(false, None).with_compact(compact)
+            ),
+            PlaceKind::CompoundLiteral {
+                object,
+                storage,
+                initializer,
+            } => write!(
+                f,
+                "compound_literal %{} [storage={}] = {}",
+                object.0,
+                match storage {
+                    StorageDuration::Automatic => "automatic",
+                    StorageDuration::Static => "static",
+                    StorageDuration::Thread => "thread",
+                },
+                initializer
+                    .display_metadata(false, None)
+                    .with_compact(compact)
             ),
             PlaceKind::ComplexPart { base, imaginary } => {
                 f.write_str(if *imaginary { "imag(" } else { "real(" })?;

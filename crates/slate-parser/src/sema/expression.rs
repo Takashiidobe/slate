@@ -1,6 +1,6 @@
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
-use crate::ast::{Expr, ExprKind, NodeId, Span};
+use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::*;
 use std::collections::HashMap;
@@ -16,6 +16,7 @@ pub(super) struct Lowerer {
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
     pub switches: Vec<(BindingId, Type)>,
+    pub in_function: bool,
 }
 
 impl Lowerer {
@@ -56,10 +57,7 @@ impl Lowerer {
     }
 
     pub fn kind(&self, ty: &Type) -> Option<&TypeDefinitionKind> {
-        match ty {
-            Type::Defined(id) => self.types.definitions.get(id.0 as usize).map(|d| &d.kind),
-            _ => None,
-        }
+        self.types.kind(ty)
     }
 
     pub fn pointer(&mut self, pointee: Type, is_const: bool) -> Type {
@@ -311,6 +309,35 @@ impl Lowerer {
                 Ok(Place {
                     ty,
                     kind: PlaceKind::Binding(id),
+                })
+            }
+            ExprKind::CompoundLiteral { ty, initializer } => {
+                let declared = self
+                    .types
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void compound literal"))?;
+                let anchor = e.clone().with_value(());
+                let value = self.initializer_value(
+                    &declared,
+                    &Initializer::List(initializer.clone()),
+                    &anchor,
+                )?;
+                let object = self.fresh();
+                let ty = value.ty.clone();
+                self.bindings.insert(object, ty.clone());
+                let storage = if self.in_function {
+                    StorageDuration::Automatic
+                } else {
+                    StorageDuration::Static
+                };
+                Ok(Place {
+                    ty,
+                    kind: PlaceKind::CompoundLiteral {
+                        object,
+                        storage,
+                        initializer: Box::new(value),
+                    },
                 })
             }
             ExprKind::Unary {
@@ -729,6 +756,7 @@ impl Lowerer {
             ExprKind::Identifier(_)
             | ExprKind::Member { .. }
             | ExprKind::Index { .. }
+            | ExprKind::CompoundLiteral { .. }
             | ExprKind::Unary {
                 op: UnaryOp::Deref, ..
             } => {

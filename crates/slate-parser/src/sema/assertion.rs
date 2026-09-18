@@ -117,14 +117,23 @@ impl Checker<'_> {
                 if declaration.specifiers.storage == StorageClass::Typedef {
                     let _ = self.types.define_alias(name.to_owned(), resolved);
                 } else if let Some(mut ty) = resolved.ty.take() {
-                    if let Type::Array { length, .. } = &mut ty
+                    if let Type::Array { element, length } = &mut ty
                         && length.is_none()
-                        && let Some(Initializer::Expr(expr)) = &declarator.initializer
-                        && let Ok(Type::Array {
-                            length: inferred, ..
-                        }) = self.types.assertion_operand_type(expr)
                     {
-                        *length = inferred;
+                        match &declarator.initializer {
+                            Some(Initializer::Expr(expr)) => {
+                                if let Ok(Type::Array {
+                                    length: inferred, ..
+                                }) = self.types.assertion_operand_type(expr)
+                                {
+                                    *length = inferred;
+                                }
+                            }
+                            Some(Initializer::List(items)) => {
+                                *length = self.types.inferred_array_length(element, items).ok();
+                            }
+                            None => {}
+                        }
                     }
                     self.types.declare(name, Ordinary::Object(ty));
                 }

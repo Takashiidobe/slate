@@ -379,6 +379,25 @@ impl TypeResolver {
             ExprKind::StringLiteral(literal) => {
                 Ok(string_literal_type(literal, &self.target, self.features))
             }
+            ExprKind::CompoundLiteral { ty, initializer } => {
+                let declared = self
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("void compound literal"))?;
+                match declared {
+                    Type::Array {
+                        element,
+                        length: None,
+                    } => {
+                        let length = self.inferred_array_length(&element, initializer)?;
+                        Ok(Type::Array {
+                            element,
+                            length: Some(length),
+                        })
+                    }
+                    declared => Ok(declared),
+                }
+            }
             ExprKind::Unary {
                 op: crate::const_expr::UnaryOp::Deref,
                 operand,

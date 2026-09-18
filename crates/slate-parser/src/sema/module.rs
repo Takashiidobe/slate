@@ -33,6 +33,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
         switches: Vec::new(),
+        in_function: false,
     };
     for declaration in &unit.decls {
         match &declaration.value {
@@ -88,7 +89,10 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
                 let parameters = lower.parameters(params, true)?;
-                let body = lower.statements(&function.body, return_type.clone())?;
+                lower.in_function = true;
+                let body = lower.statements(&function.body, return_type.clone());
+                lower.in_function = false;
+                let body = body?;
                 let fallthrough = if name == "main"
                     && return_type == Some(lower.context.int_type())
                     && features.main_implicit_return_zero
