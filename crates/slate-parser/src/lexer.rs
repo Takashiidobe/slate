@@ -30,6 +30,9 @@ pub enum Keyword {
     Float64x,
     Float128,
     Float128Ext,
+    Decimal32,
+    Decimal64,
+    Decimal128,
     Int,
     Long,
     Return,
@@ -106,6 +109,9 @@ impl From<Keyword> for &'static str {
             Keyword::Float64x => "_Float64x",
             Keyword::Float128 => "_Float128",
             Keyword::Float128Ext => "__float128",
+            Keyword::Decimal32 => "_Decimal32",
+            Keyword::Decimal64 => "_Decimal64",
+            Keyword::Decimal128 => "_Decimal128",
             Keyword::Int => "int",
             Keyword::Long => "long",
             Keyword::Return => "return",
@@ -699,6 +705,15 @@ impl Lexer {
                 "_Float64x" => Token::Keyword(Keyword::Float64x),
                 "_Float128" | "_Float128x" => Token::Keyword(Keyword::Float128),
                 "__float128" => Token::Keyword(Keyword::Float128Ext),
+                "_Decimal32" if self.features.decimal_floating_point.is_accepted() => {
+                    Token::Keyword(Keyword::Decimal32)
+                }
+                "_Decimal64" if self.features.decimal_floating_point.is_accepted() => {
+                    Token::Keyword(Keyword::Decimal64)
+                }
+                "_Decimal128" if self.features.decimal_floating_point.is_accepted() => {
+                    Token::Keyword(Keyword::Decimal128)
+                }
                 "int" => Token::Keyword(Keyword::Int),
                 "long" => Token::Keyword(Keyword::Long),
                 "return" => Token::Keyword(Keyword::Return),

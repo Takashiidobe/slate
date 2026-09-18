@@ -1974,6 +1974,9 @@ pub(crate) fn starts_type_name(token: &Token, context: Option<&crate::parser::Pa
                 | Keyword::Float64x
                 | Keyword::Float128
                 | Keyword::Float128Ext
+                | Keyword::Decimal32
+                | Keyword::Decimal64
+                | Keyword::Decimal128
                 | Keyword::Int
                 | Keyword::Long
                 | Keyword::Short

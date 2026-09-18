@@ -138,6 +138,11 @@ impl<'a> DeclaratorParser<'a> {
             Token::Keyword(Keyword::Float128Ext) => {
                 TypeSpecifier::Floating(FloatingType::Float128Ext)
             }
+            Token::Keyword(Keyword::Decimal32) => TypeSpecifier::Floating(FloatingType::Decimal32),
+            Token::Keyword(Keyword::Decimal64) => TypeSpecifier::Floating(FloatingType::Decimal64),
+            Token::Keyword(Keyword::Decimal128) => {
+                TypeSpecifier::Floating(FloatingType::Decimal128)
+            }
             Token::Keyword(Keyword::Int) => TypeSpecifier::Integer(IntegerType::Ranked {
                 rank: IntegerRank::Int,
                 signed: true,

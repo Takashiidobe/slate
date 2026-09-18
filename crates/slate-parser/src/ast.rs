@@ -858,6 +858,9 @@ pub enum FloatingType {
     LongDouble,
     Float128,
     Float128Ext,
+    Decimal32,
+    Decimal64,
+    Decimal128,
 }
 
 #[derive(Debug, Clone, PartialEq)]

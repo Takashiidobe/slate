@@ -222,6 +222,7 @@ or functions; those come only from declarators.
 | `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | including `__int128_t`/`__uint128_t`                                   |
 | `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                        |
 | `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, … |
+| `Float(Decimal32 \| Decimal64 \| Decimal128)`                      | `_Decimal32`, `_Decimal64`, `_Decimal128`; literals `DF`/`DD`/`DL`     |
 | `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                        |
 | `FixedPoint { kind, rank, saturated }`                             | `_Fract`/`_Accum`                                                      |
 | `Atomic(TypeName)`                                                 | `_Atomic(T)` specifier form                                            |
@@ -230,6 +231,15 @@ or functions; those come only from declarators.
 | `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                |
 | `TargetBuiltin(String)`                                            | `__builtin_va_list` etc.                                               |
 | `Vector { element, size }`                                         | GNU vector types                                                       |
+
+Decimal floating types (C23 Annex H, and a GNU extension before C23) are
+accepted in every standard mode and on every target:
+`StandardFeatures::decimal_floating_point` is `Standard` from C23 and
+`Extension` before it, never `Rejected`. Real compilers differ (clang
+rejects them, gcc only enables them on some targets), but that's the
+implementation's choice. The input is assumed to have compiled with the
+real compiler, so whether it's usable is Slate's decision, not the
+front end's. IR lowering does not handle them yet.
 
 ### `Declarator`
 
