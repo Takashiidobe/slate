@@ -1,7 +1,6 @@
-use super::{MacroDef, Preprocessor, lex, stringized_source};
+use super::{MacroDef, Preprocessor, stringized_source};
 use crate::ast::{MacroOrigin, Span};
 use crate::lexer::{Token, TokenSpanExt};
-use crate::standard_features::StandardFeatures;
 use std::collections::HashSet;
 use std::rc::Rc;
 
@@ -220,7 +219,7 @@ impl Preprocessor<'_> {
             }
             let name = name.clone();
             disabled.insert(name.clone());
-            let replacement = substitute_function_macro(
+            let replacement = self.substitute_function_macro(
                 &macro_def,
                 &parameters,
                 &Arguments {
@@ -228,7 +227,6 @@ impl Preprocessor<'_> {
                     expanded: &expanded_arguments,
                     commas: &commas,
                 },
-                self.features,
             );
             let consumed = i + 1 + end - from_tail;
             let (produced, used) = self.rescan(
@@ -425,106 +423,110 @@ fn inherit_leading_space(mut tokens: Vec<Span<Token>>, name: &Span<Token>) -> Ve
     tokens
 }
 
-fn substitute_function_macro(
-    definition: &MacroDef,
-    parameters: &[String],
-    arguments: &Arguments,
-    features: StandardFeatures,
-) -> Vec<Span<Token>> {
-    let mut output = Vec::new();
-    let mut i = 0;
-    while i < definition.replacement.len() {
-        let token = &definition.replacement[i];
-        if token.value == Token::Ident("__VA_OPT__".to_string())
-            && let Some((optional, _, end)) = invocation_arguments(&definition.replacement, i + 1)
-        {
-            if arguments
-                .raw
-                .iter()
-                .skip(parameters.len())
-                .any(|argument| !argument.is_empty())
+impl Preprocessor<'_> {
+    fn substitute_function_macro(
+        &self,
+        definition: &MacroDef,
+        parameters: &[String],
+        arguments: &Arguments,
+    ) -> Vec<Span<Token>> {
+        let mut output = Vec::new();
+        let mut i = 0;
+        while i < definition.replacement.len() {
+            let token = &definition.replacement[i];
+            if token.value == Token::Ident("__VA_OPT__".to_string())
+                && let Some((optional, _, end)) =
+                    invocation_arguments(&definition.replacement, i + 1)
             {
-                for optional_token in optional.into_iter().flatten() {
-                    output.extend(replacement_tokens(
-                        &optional_token,
-                        parameters,
-                        arguments,
-                        true,
-                    ));
+                if arguments
+                    .raw
+                    .iter()
+                    .skip(parameters.len())
+                    .any(|argument| !argument.is_empty())
+                {
+                    for optional_token in optional.into_iter().flatten() {
+                        output.extend(replacement_tokens(
+                            &optional_token,
+                            parameters,
+                            arguments,
+                            true,
+                        ));
+                    }
+                }
+                i = end;
+                continue;
+            }
+            if token.value == Token::Hash
+                && i + 1 < definition.replacement.len()
+                && let Token::Ident(name) = &definition.replacement[i + 1].value
+            {
+                let argument = if name == "__VA_ARGS__" {
+                    Some(variadic_tokens(
+                        arguments.raw,
+                        arguments.commas,
+                        parameters.len(),
+                    ))
+                } else {
+                    macro_argument(name, parameters, arguments.raw).map(<[Span<Token>]>::to_vec)
+                };
+                if let Some(argument) = argument {
+                    output.push(
+                        token
+                            .clone()
+                            .with_value(Token::StringLit(stringized_source(&argument))),
+                    );
+                    i += 2;
+                    continue;
                 }
             }
-            i = end;
-            continue;
-        }
-        if token.value == Token::Hash
-            && i + 1 < definition.replacement.len()
-            && let Token::Ident(name) = &definition.replacement[i + 1].value
-        {
-            let argument = if name == "__VA_ARGS__" {
-                Some(variadic_tokens(
-                    arguments.raw,
-                    arguments.commas,
-                    parameters.len(),
-                ))
-            } else {
-                macro_argument(name, parameters, arguments.raw).map(<[Span<Token>]>::to_vec)
-            };
-            if let Some(argument) = argument {
-                output.push(
-                    token
-                        .clone()
-                        .with_value(Token::StringLit(stringized_source(&argument))),
+            if token.value == Token::HashHash && i + 1 < definition.replacement.len() {
+                let Some(left) = output.pop() else {
+                    i += 1;
+                    continue;
+                };
+                let right_tokens = replacement_tokens(
+                    &definition.replacement[i + 1],
+                    parameters,
+                    arguments,
+                    false,
                 );
-                i += 2;
-                continue;
-            }
-        }
-        if token.value == Token::HashHash && i + 1 < definition.replacement.len() {
-            let Some(left) = output.pop() else {
-                i += 1;
-                continue;
-            };
-            let right_tokens =
-                replacement_tokens(&definition.replacement[i + 1], parameters, arguments, false);
-            if let Some(right) = right_tokens.first() {
-                let pasted = lex(
-                    &format!(
+                if let Some(right) = right_tokens.first() {
+                    let pasted = self.lex(&format!(
                         "{}{}",
                         String::from(&left.value),
                         String::from(&right.value)
-                    ),
-                    features,
-                );
-                if pasted.len() == 1 {
-                    output.push(
-                        Span::new(
-                            pasted[0].clone(),
-                            left.spelling.through(right.spelling),
-                            left.expansion.through(right.expansion),
-                        )
-                        .with_leading_space(left.leading_space),
-                    );
-                    output.extend(right_tokens.into_iter().skip(1));
+                    ));
+                    if pasted.len() == 1 {
+                        output.push(
+                            Span::new(
+                                pasted[0].clone(),
+                                left.spelling.through(right.spelling),
+                                left.expansion.through(right.expansion),
+                            )
+                            .with_leading_space(left.leading_space),
+                        );
+                        output.extend(right_tokens.into_iter().skip(1));
+                    } else {
+                        output.push(left);
+                        output.extend(right_tokens);
+                    }
                 } else {
                     output.push(left);
-                    output.extend(right_tokens);
                 }
-            } else {
-                output.push(left);
+                i += 2;
+                continue;
             }
-            i += 2;
-            continue;
+            output.extend(replacement_tokens(
+                token,
+                parameters,
+                arguments,
+                i + 1 >= definition.replacement.len()
+                    || definition.replacement[i + 1].value != Token::HashHash,
+            ));
+            i += 1;
         }
-        output.extend(replacement_tokens(
-            token,
-            parameters,
-            arguments,
-            i + 1 >= definition.replacement.len()
-                || definition.replacement[i + 1].value != Token::HashHash,
-        ));
-        i += 1;
+        output
     }
-    output
 }
 
 fn macro_argument<'a>(

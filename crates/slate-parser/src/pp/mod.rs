@@ -84,6 +84,15 @@ pub struct Preprocessor<'a> {
 }
 
 impl<'a> Preprocessor<'a> {
+    fn lex(&self, src: &str) -> Vec<Token> {
+        Lexer::new(FileId(0), src)
+            .with_features(self.features)
+            .tokenize()
+            .into_iter()
+            .map(|span| span.value)
+            .collect()
+    }
+
     pub fn new(
         search: &'a SearchPaths,
         standard: LanguageStandard,
@@ -664,11 +673,10 @@ impl<'a> Preprocessor<'a> {
                 }
                 let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
                 let origin = Span::cover((), &expanded[index..index + 4]);
-                let pragma_tokens = Lexer::new(FileId(0), &decoded)
-                    .with_features(self.features)
-                    .tokenize()
+                let pragma_tokens = self
+                    .lex(&decoded)
                     .into_iter()
-                    .map(|token| origin.clone().with_value(token.value))
+                    .map(|token| origin.clone().with_value(token))
                     .collect::<Vec<_>>();
                 let pragma_loc = expanded[index]
                     .spelling
@@ -1174,17 +1182,4 @@ fn stringized_source(tokens: &[Span<Token>]) -> String {
         previous = Some(token);
     }
     text
-}
-
-fn lex(src: &str, features: StandardFeatures) -> Vec<Token> {
-    lex_spanned(src, features)
-        .into_iter()
-        .map(|span| span.value)
-        .collect()
-}
-
-fn lex_spanned(src: &str, features: StandardFeatures) -> Vec<Span<Token>> {
-    Lexer::new(FileId(0), src)
-        .with_features(features)
-        .tokenize()
 }
