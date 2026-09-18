@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 extern struct win *windows, *wtab[];
 struct win

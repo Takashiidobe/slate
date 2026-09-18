@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 struct z_candidate { struct z_candidate *next;int viable;};
 int pedantic;

@@ -286,7 +286,10 @@ promotions (small integers to `int`, `float` to `double`), so a rewritten
 parameter's `specifiers` is the promoted, ABI-visible type; `declared_specifiers`
 recovers the type as written, for the function-body local. An
 implicit-int parameter (no declaration at all) is already `int`, so
-`declared_specifiers` stays `None`.
+`declared_specifiers` stays `None`. C23 removed identifier lists, so
+`StandardFeatures::identifier_list_definitions` is `Rejected` there and the
+parser reports an error instead of rewriting; fixtures using K&R pin
+`SLATE-FILECHECK-STD DEFAULT c17` because the default standard is C23.
 
 ### `TypeName`
 

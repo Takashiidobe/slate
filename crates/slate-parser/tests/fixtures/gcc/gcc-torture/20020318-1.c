@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 /* PR c/5656
    This testcase ICEd on IA-32 at -O3, due to tree inliner not converting

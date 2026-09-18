@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 typedef __SIZE_TYPE__ size_t;
 typedef unsigned long int reg_syntax_t;

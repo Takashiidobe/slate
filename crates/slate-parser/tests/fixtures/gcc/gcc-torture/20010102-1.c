@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 /* This testcase derives from gnu obstack.c/obstack.h and failed with
    -O3 -funroll-all-loops, or -O1 -frename-registers -funroll-loops on

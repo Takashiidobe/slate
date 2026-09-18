@@ -410,6 +410,13 @@ impl Parser {
             let identifier_list =
                 std::mem::replace(&mut parser.identifier_list, IdentifierList::Rejected);
             if let IdentifierList::Parsed(names) = identifier_list {
+                if !self.features().identifier_list_definitions.is_accepted() {
+                    return Err(self.error_at_tokens(
+                        tokens,
+                        start,
+                        "identifier lists in function definitions were removed in C23",
+                    ));
+                }
                 let (parameters, end) =
                     self.parse_kr_parameter_declarations(tokens, parser.pos, &names)?;
                 if let Some(list) = first.value.declarator.function_parameters_mut() {

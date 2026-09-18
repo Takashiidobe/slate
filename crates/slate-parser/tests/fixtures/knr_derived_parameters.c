@@ -7,6 +7,7 @@ float (*f)(void);
 }
 
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: decl[{{[0-9]+}}]: Function(

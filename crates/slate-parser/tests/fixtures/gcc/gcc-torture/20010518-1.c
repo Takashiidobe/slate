@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 /* This was cut down from reload1.c in May 2001, was observed to cause
    a bootstrap failure for powerpc-apple-darwin1.3.

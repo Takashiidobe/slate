@@ -1,4 +1,5 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
+// SLATE-FILECHECK-STD DEFAULT c17
 
 /* Origin: PR c/3116 from Andreas Jaeger <aj@suse.de>.  */
 /* When determining type compatibility of function types, we must remove
