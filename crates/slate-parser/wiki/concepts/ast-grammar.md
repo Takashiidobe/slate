@@ -1,0 +1,486 @@
+# AST Grammar
+
+The grammar of the AST dump printed by `slate-parser parse source.c`. It is
+the reference for what each AST node can be and which choices it has.
+[AST Spec](ast-spec.md) explains what the nodes mean and why the AST has this
+shape.
+
+The types in `src/ast.rs` and the literal and operator types in
+`src/const_expr.rs` are the source of truth. The dump is their Rust `Debug`
+form (derived, or `custom_debug` where fields are skipped) as laid out by
+`src/render.rs`. **Any change to those types, their `Debug` output or the
+renderer must update this file in the same change.**
+
+## Notation
+
+- `a = ... ;` defines `a`; `|` separates choices; `[ x ]` is optional;
+  `{ x }` is zero or more; `( ... )` groups; `(* ... *)` is a comment.
+- Node shapes are written as they print:
+  - `Name { f: t, g: t }` is a struct or struct variant.
+  - `Name(t)` is a tuple variant.
+  - A bare `Name` is a unit variant.
+  - A field written `g?: t` is omitted when it is empty, `None`, `false` or
+    default. When it is printed it is `t`, so `g?: Some(t)` means the field
+    is absent or `Some(..)`, and `g?: true` means absent or `true`.
+- `opt<t>` is `"Some(" t ")" | "None"`, `vec<t>` is `"[" [ t { "," t } ] "]"`,
+  and `span<t>` is a [spanned node](#spans) holding `t`.
+- `Box` is transparent. `expr` is `span<ExprKind>` and `stmt` is
+  `span<StmtKind>`.
+- Layout: the renderer prints one field or element per line, indented 4
+  spaces per level, with a trailing `,` after each. The productions use the
+  flat form; whitespace and trailing commas are layout.
+
+## Lexical
+
+```ebnf
+int    = digits ;
+bool   = "true" | "false" ;
+string = '"' { char | escape } '"' ;        (* Rust {:?} quoting *)
+char   = "'" ( char | escape ) "'" ;
+FileId = "FileId(" int ")" ;
+TagId  = "TagId(" int ")" ;
+```
+
+## Dump
+
+```ebnf
+dump      = { tag_line } { decl_line } ;
+tag_line  = "tag[" int "]" [ " #" int ] ": " span<TagDefinition> ;
+decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
+```
+
+- All tag definitions print first, ordered by `TagId`; the index in
+  `tag[N]` is the `TagId`. Declarations follow in source order, `decl[N]`
+  being the position.
+- The `TranslationUnit`'s `standard`, `options`, `flavor` and `target` are
+  not printed.
+- Without `--show-comments`, `Comment` items are removed from declarations,
+  function bodies, records and enums before printing.
+
+## Spans
+
+```ebnf
+span<t>    = [ "#" int " " ] ( t | "Spanned {" "value:" t ","
+                                   "provenance:" Provenance "}" ) ;
+Provenance = "Provenance {" "file:" FileId "," "kind:" ( "System" | "User" ) ","
+             "line:" int "," "system_header:" opt<FileId> "}" ;
+```
+
+- `#N` is the `NodeId`, printed only with `--show-ids`. The line label then
+  repeats it: `decl[2] #2869: #2869 Declaration(..)`.
+- A span prints bare unless it came from a system header, in which case it
+  is wrapped in `Spanned` with its provenance. Locations (`spelling`,
+  `expansion`) and macro origins are never printed.
+
+## Declarations
+
+```ebnf
+DeclKind = "Comment(" CommentGroup ")"
+         | "Function(" FunctionDefinition ")"
+         | "Declaration(" Declaration ")"
+         | "StaticAssert(" StaticAssert ")"
+         | "Asm(" GnuAsm ")"
+         | "Pragma(" Pragma ")" ;
+
+FunctionDefinition = FunctionDefinition {
+                       specifiers: DeclarationSpecifiers,
+                       declarator: Declarator,
+                       attributes?: vec<Attribute>,
+                       body?: vec<stmt> } ;
+Declaration        = Declaration {
+                       specifiers: DeclarationSpecifiers,
+                       declarators?: vec<span<InitDeclaratorKind>> } ;
+InitDeclaratorKind = InitDeclaratorKind {
+                       declarator: Declarator,
+                       asm_label?: Some(span<AsmLabel>),
+                       attributes?: vec<Attribute>,
+                       initializer?: Some(Initializer) } ;
+StaticAssert       = StaticAssert { condition: expr, message?: Some(string) } ;
+
+CommentGroup = CommentGroup { comment: Comment } ;
+Comment      = Comment { text: vec<string>, loc: Loc } ;
+Loc          = Loc { file: FileId, offset: int, length: int } ;
+```
+
+- There is no typedef, record or enum declaration: `typedef` is a storage
+  class, and tag bodies are in `tag[..]` lines, referenced by `TagId`.
+- A `FunctionDefinition` with an empty body prints without `body`.
+
+## Specifiers
+
+```ebnf
+DeclarationSpecifiers = DeclarationSpecifiers {
+                          ty: TypeSpecifier,
+                          qualifiers?: Qualifiers,
+                          storage?: StorageClass,
+                          is_thread_local?: true,
+                          is_inline?: true,
+                          is_noreturn?: true,
+                          is_constexpr?: true,
+                          attributes?: vec<Attribute> } ;
+Qualifiers   = Qualifiers { is_const?: true, is_volatile?: true,
+                            is_restrict?: true, is_atomic?: true } ;
+StorageClass = "Typedef" | "Extern" | "Static" | "Auto" | "Register" ;
+TypeName     = TypeName { specifiers: DeclarationSpecifiers,
+                          declarator: Declarator } ;
+```
+
+`Qualifiers` with every field false prints as the bare word `Qualifiers`.
+
+## Type specifiers
+
+```ebnf
+TypeSpecifier = "Void" | "Bool"
+              | "Integer(" IntegerType ")"
+              | "Floating(" FloatingType ")"
+              | "Complex(" TypeSpecifier ")"
+              | "Imaginary(" TypeSpecifier ")"
+              | "Atomic(" TypeName ")"
+              | "Vector(" VectorType ")"
+              | "FixedPoint(" FixedPointType ")"
+              | "TypeOf(" TypeOfOperand ")"
+              | "TypeOfUnqual(" TypeOfOperand ")"
+              | "TargetBuiltin(" string ")"
+              | "Named(" string ")"
+              | "Tag(" TagSpecifier ")" ;
+
+IntegerType  = Char { signed: opt<bool> }
+             | Ranked { rank: IntegerRank, signed: bool }
+             | BitInt { width: expr, signed: bool } ;
+IntegerRank  = "Short" | "Int" | "Long" | "LongLong" | "Int128" ;
+FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16" | "Float64x"
+             | "Double" | "LongDouble" | "Float128" | "Float128Ext"
+             | "Decimal32" | "Decimal64" | "Decimal128" ;
+
+VectorType     = VectorType { element: TypeSpecifier, size: VectorSize } ;
+VectorSize     = "Bytes(" expr ")" | "Lanes(" expr ")" ;
+FixedPointType = FixedPointType {
+                   kind: ( "Fract" | "Accum" ),
+                   rank: ( "Default" | "Short" | "Long" | "LongLong" ),
+                   saturated: bool } ;
+TypeOfOperand  = "Expression(" expr ")" | "Type(" TypeName ")" ;
+
+TagSpecifier = Reference { kind: TagKind, name: string,
+                           fixed_type?: Some(TypeName) }
+             | "Definition(" TagId ")" ;
+TagKind      = "Struct" | "Union" | "Enum" ;
+```
+
+- `Char { signed: None }` is plain `char`, distinct from `signed char` and
+  `unsigned char`.
+- `Named` is a typedef name; `TargetBuiltin` is a compiler-provided type
+  name such as `__builtin_va_list` or `__auto_type`.
+- `Definition(TagId(N))` is where a tag body was written; the body is
+  `tag[N]`. `Reference` names a tag without a body.
+
+## Declarators
+
+```ebnf
+Declarator = "Abstract"
+           | "Name(" string ")"
+           | "Grouped(" Declarator ")"
+           | Attributed { inner: Declarator, attributes: vec<Attribute> }
+           | Pointer { qualifiers: Qualifiers, attributes?: vec<Attribute>,
+                       inner: Declarator }
+           | Array { inner: Declarator, size: ArraySize,
+                     qualifiers?: Qualifiers, is_static?: true }
+           | Function { inner: Declarator, parameters: ParameterList } ;
+ArraySize  = "Unspecified" | "Expression(" expr ")" | "Star" ;
+
+ParameterList            = Prototype { parameters: vec<span<ParameterDeclarationKind>>,
+                                       variadic?: true }
+                         | "Void" | "Empty" ;
+ParameterDeclarationKind = ParameterDeclarationKind {
+                             specifiers: DeclarationSpecifiers,
+                             declarator: Declarator,
+                             declared_specifiers?: Some(DeclarationSpecifiers),
+                             attributes?: vec<Attribute> } ;
+```
+
+- Declarators keep the written nesting, not the derivation order:
+  `int *a[3]` (an array of pointers) is
+  `Array { inner: Pointer { inner: Name("a") } }`, and `int (*fp)(int)` is
+  `Function { inner: Grouped(Pointer { inner: Name("fp") }) }`. `Grouped` is
+  a parenthesized declarator.
+- `Void` is `(void)`; `Empty` is `()`, an unprototyped list.
+- `declared_specifiers` is present only on a parameter of a rewritten K&R
+  definition whose `specifiers` were promoted; it keeps the type as written.
+
+## Tags
+
+```ebnf
+TagDefinition = TagDefinition { id: TagId, kind: TagKind, name: opt<string>,
+                                attributes?: vec<Attribute>, body: TagBody } ;
+TagBody       = "Record(" vec<span<FieldItemKind>> ")"
+              | Enum { fixed_type?: Some(TypeName),
+                       enumerators: vec<span<EnumItemKind>> } ;
+
+FieldItemKind       = "Comment(" CommentGroup ")" | "Field(" FieldDecl ")" ;
+FieldDecl           = FieldDecl { specifiers: DeclarationSpecifiers,
+                                  declarators?: vec<span<FieldDeclaratorKind>> } ;
+FieldDeclaratorKind = FieldDeclaratorKind { declarator: Declarator,
+                                            bit_width?: Some(expr),
+                                            attributes?: vec<Attribute> } ;
+
+EnumItemKind = "Comment(" CommentGroup ")" | "Enumerator(" Enumerator ")" ;
+Enumerator   = Enumerator { name: string, attributes?: vec<Attribute>,
+                            value: opt<expr> } ;
+```
+
+A `FieldDecl` without declarators is an anonymous struct or union member.
+
+## Statements
+
+```ebnf
+StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
+         | "Comment(" CommentGroup ")"
+         | "Return(" expr ")"
+         | "Expr(" expr ")"
+         | "Decl(" Declaration ")"
+         | "StaticAssert(" StaticAssert ")"
+         | "Attribute(" vec<Attribute> ")"
+         | Attributed { attributes: vec<Attribute>, body: stmt }
+         | "Block(" vec<stmt> ")"
+         | If { condition: expr, then_branch: stmt, else_branch: opt<stmt> }
+         | While { condition: expr, body: stmt }
+         | DoWhile { body: stmt, condition: expr }
+         | For { init: opt<stmt>, condition: opt<expr>,
+                 increment: opt<expr>, body: stmt }
+         | Switch { discriminant: expr, body: stmt }
+         | Labeled { label: span<string>, body: stmt }
+         | SwitchLabel { label: SwitchLabel, body: stmt }
+         | "LocalLabelDecl(" vec<span<string>> ")"
+         | "Goto(" span<string> ")"
+         | "ComputedGoto(" expr ")"
+         | "Asm(" GnuAsm ")"
+         | "NestedFunction(" FunctionDefinition ")"
+         | "Pragma(" Pragma ")" ;
+SwitchLabel = "Case(" expr ")"
+            | CaseRange { start: expr, end: expr }
+            | "Default" ;
+```
+
+- `Attribute` is an attribute declaration (`[[fallthrough]];`);
+  `Attributed` is attributes applied to the statement that follows.
+- `For.init` is an expression or declaration statement.
+- `LocalLabelDecl` is GNU `__label__`; `ComputedGoto` is `goto *e`.
+
+## Expressions
+
+```ebnf
+ExprKind = "Identifier(" string ")"
+         | "IntegerLiteral(" IntegerLiteral ")"
+         | "FloatLiteral(" FloatLiteral ")"
+         | "CharLiteral(" CharLiteral ")"
+         | "StringLiteral(" StringLiteral ")"
+         | "BoolLiteral(" bool ")"
+         | "NullPtrLiteral"
+         | "Paren(" expr ")"
+         | Unary { op: UnaryOp, operand: expr }
+         | Postfix { op: PostfixOp, operand: expr }
+         | Binary { op: BinaryOp, left: expr, right: expr }
+         | Assign { op: AssignOp, target: expr, value: expr }
+         | Conditional { condition: expr, then_value?: Some(expr),
+                         else_value: expr }
+         | Comma { left: expr, right: expr }
+         | Call { callee: expr, arguments: vec<expr> }
+         | Member { base: expr, field: span<string>, arrow?: true }
+         | Index { base: expr, index: expr }
+         | Cast { ty: TypeName, value: expr }
+         | CompoundLiteral { ty: TypeName, initializer: vec<InitializerItem> }
+         | "SizeOfExpr(" expr ")"
+         | SizeOfType { ty: TypeName }
+         | "AlignOfExpr(" expr ")"
+         | AlignOf { ty: TypeName }
+         | OffsetOf { ty: TypeName, member: expr }
+         | Generic { controlling: GenericControl,
+                     associations: vec<GenericAssociation> }
+         | VaArg { list: expr, ty: TypeName }
+         | TypesCompatible { left_ty: TypeName, right_ty: TypeName }
+         | BitCast { ty: TypeName, value: expr }
+         | "LabelAddress(" span<string> ")"
+         | "StatementExpression(" vec<stmt> ")" ;
+
+GenericControl     = "Expr(" expr ")" | Type { ty: TypeName } ;
+GenericAssociation = Type { ty: TypeName, value: expr } | "Default(" expr ")" ;
+
+UnaryOp   = "Plus" | "Minus" | "BitNot" | "Not" | "AddrOf" | "Deref"
+          | "PreIncrement" | "PreDecrement" | "Real" | "Imag" ;
+PostfixOp = "Increment" | "Decrement" ;
+BinaryOp  = "Add" | "Sub" | "Mul" | "Div" | "Rem"
+          | "Less" | "LessEqual" | "Greater" | "GreaterEqual"
+          | "Equal" | "NotEqual"
+          | "BitAnd" | "BitXor" | "BitOr" | "And" | "Or"
+          | "ShiftLeft" | "ShiftRight" ;
+AssignOp  = "Assign" | "AddAssign" | "SubAssign" | "MulAssign" | "DivAssign"
+          | "RemAssign" | "BitAndAssign" | "BitOrAssign" | "BitXorAssign"
+          | "ShiftLeftAssign" | "ShiftRightAssign" ;
+```
+
+- `Conditional` without `then_value` is GNU `a ?: b`.
+- `Member.arrow` is `->`; its absence is `.`.
+- `OffsetOf.member` is the member designator written as an expression
+  (identifiers, `Member` and `Index`).
+- `Real`/`Imag` are GNU `__real__`/`__imag__`; `And`/`Or` are `&&`/`||`.
+
+## Literals
+
+```ebnf
+IntegerLiteral = IntegerLiteral { value: digits, radix: Radix,
+                                  suffix: IntegerSuffix, spelling: string,
+                                  imaginary?: true } ;
+Radix          = "Decimal" | "Hex" | "Octal" | "Binary" ;
+IntegerSuffix  = IntegerSuffix { unsigned: bool,
+                                 size: ( "None" | "Long" | "LongLong" | "BitInt" ) } ;
+
+FloatLiteral = FloatLiteral { spelling: string, radix: ( "Decimal" | "Hex" ),
+                              suffix: FloatSuffix, imaginary?: true } ;
+FloatSuffix  = "None" | "F" | "L" | "F16" | "F32" | "F64" | "F128"
+             | "F32x" | "F64x" | "Q"
+             | "DecimalF32" | "DecimalF64" | "DecimalF128" ;
+
+CharLiteral   = CharLiteral { encoding: Encoding, code_units: vec<int>,
+                              spelling: string } ;
+StringLiteral = StringLiteral { encoding: Encoding, code_units: vec<int>,
+                                pieces: vec<span<string>> } ;
+Encoding      = "Plain" | "Utf8" | "Utf16" | "Utf32" | "Wide" ;
+```
+
+- An integer literal's `value` is the decoded magnitude in decimal; its type
+  is not resolved in the AST.
+- A float literal keeps only its spelling; sema interprets it at the target
+  precision.
+- `pieces` are the adjacent string tokens that were concatenated, in order.
+  `code_units` is the decoded concatenation.
+
+## Initializers
+
+```ebnf
+Initializer     = "Expr(" expr ")" | "List(" vec<InitializerItem> ")" ;
+InitializerItem = InitializerItem { designators: vec<Designator>,
+                                    value: Initializer } ;
+Designator      = "Array(" expr ")"
+                | ArrayRange { start: expr, end: expr }
+                | "Field(" span<string> ")" ;
+```
+
+`ArrayRange` is GNU `[a ... b]`.
+
+## Pragmas
+
+```ebnf
+Pragma     = Pragma { kind: PragmaKind } ;
+PragmaKind = Pack { action: StackAction, alignment: opt<expr> }
+           | Weak { name: string, alias: opt<string> }
+           | Visibility { action: StackAction, visibility: opt<string> }
+           | Stdc { option: ( "FenvAccess" | "FpContract" | "CxLimitedRange" ),
+                    enabled: bool }
+           | FloatControl { option: ( "Precise" | "Except" ), enabled: bool }
+           | MsStruct { action: StackAction }
+           | "Opaque(" string ")" ;
+StackAction = "Push" | "Pop" | "Show" | "Set" ;
+```
+
+`Opaque` holds the text of any pragma without a typed form.
+
+## Inline assembly
+
+```ebnf
+GnuAsm      = GnuAsm { qualifiers?: vec<span<AsmQualifier>>,
+                       template: span<string>,
+                       operands?: Some(AsmOperands) } ;
+AsmQualifier = "Volatile" | "Inline" | "Goto" ;
+AsmOperands = AsmOperands { pieces: vec<AsmTemplatePiece>,
+                            outputs?: vec<AsmOperand>,
+                            inputs?: vec<AsmOperand>,
+                            clobbers?: vec<span<AsmClobber>>,
+                            labels?: vec<span<string>> } ;
+AsmTemplatePiece = "Text(" string ")"
+                 | Operand { index: int, modifier?: Some(char) }
+                 | "Label(" int ")"
+                 | "Percent" | "UniqueId" | "LBrace" | "Pipe" | "RBrace" ;
+AsmOperand  = AsmOperand { name?: Some(span<string>),
+                           constraint: span<AsmConstraint>, expr: expr } ;
+AsmConstraint            = AsmConstraint { alternatives: vec<AsmConstraintAlternative> } ;
+AsmConstraintAlternative = AsmConstraintAlternative {
+                             modifiers?: vec<AsmConstraintModifier>,
+                             location: AsmConstraintLocation } ;
+AsmConstraintModifier    = "Overwrite" | "ReadWrite" | "EarlyClobber"
+                         | "Commutative" | "Pic" ;
+AsmConstraintLocation    = "HardRegister(" Register ")"
+                         | "Matching(" int ")"
+                         | "Letters(" string ")" ;
+AsmClobber = "Memory" | "Cc" | "Unwind" | "Register(" Register ")" ;
+AsmLabel   = "Symbol(" string ")" | "Register(" Register ")" ;
+
+Register     = "X86(" RegisterInfo<X86Width> ")"
+             | "Aarch64(" RegisterInfo<AArch64Width> ")"
+             | "Other(" string ")" ;
+RegisterInfo<w> = RegisterInfo { spelling: string, number: int,
+                                 canonical: string, width: opt<w> } ;
+X86Width     = "Low8" | "High8" | "Bits16" | "Bits32" | "Bits64" ;
+AArch64Width = "Bits8" | "Bits16" | "Bits32" | "Bits64" | "Bits128"
+             | "ScalableVector" | "ScalablePredicate" ;
+```
+
+- `operands` is absent for basic asm (`asm("...")` without colons).
+- `pieces` is the template split into text and `%` references; `Label(N)`
+  is a reference to a goto label, as an index into `labels`.
+- `AsmLabel` is a declarator's `asm("name")`: a symbol name, or a register
+  for a GNU register variable.
+
+## Attributes
+
+```ebnf
+Attribute = (* no arguments *)
+            "Packed" | "LifetimeBound" | "Overloadable" | "GnuInline"
+          | "NoThrow" | "SelectAny" | "ThreadLocal" | "NoAlias"
+          | "RestrictReturn" | "OptimizeNone" | "Weak" | "Used" | "Retain"
+          | "NoInline" | "AlwaysInline" | "NoReturn" | "Malloc"
+          | "ReturnsNonNull" | "WarnUnusedResult" | "Cold" | "Flatten"
+          | "Hot" | "Leaf" | "NoIpa" | "NoClone" | "Naked" | "Interrupt"
+          | "NoSplitStack" | "ReturnsTwice" | "DllImport" | "DllExport"
+          | "WeakImport" | "MsStruct" | "NoMips16" | "TransparentUnion"
+          | "GccStruct" | "Common" | "NoCommon" | "Pure" | "Const"
+          | "MayAlias" | "MaybeUnused" | "Fallthrough"
+            (* expression arguments *)
+          | "AddressSpace(" expr ")" | "Aligned(" expr ")"
+          | "VectorSize(" expr ")" | "AllocAlign(" expr ")"
+          | "ExtVectorType(" expr ")"
+          | "AssumeAligned(" vec<expr> ")" | "AllocSize(" vec<expr> ")"
+          | PassObjectSize { size_type: expr, dynamic: bool }
+          | "AlignAs(" AlignAsOperand ")"
+            (* string arguments *)
+          | "CodeSeg(" string ")" | "Mode(" string ")"
+          | "Visibility(" string ")" | "Section(" string ")"
+          | "Annotate(" string ")" | "Target(" string ")"
+          | "Alias(" string ")" | "WeakRef(" string ")"
+          | "Cleanup(" string ")" | "Ifunc(" string ")"
+          | "TlsModel(" string ")" | "ScalarStorageOrder(" string ")"
+          | "Optimize(" vec<string> ")" | "CpuDispatch(" vec<string> ")"
+          | "CpuSpecific(" vec<string> ")" | "TargetClones(" vec<string> ")"
+          | "Availability(" vec<string> ")" | "Format(" vec<string> ")"
+          | "FormatArg(" vec<string> ")"
+          | "Deprecated(" opt<string> ")" | "NoDiscard(" opt<string> ")"
+            (* integer arguments *)
+          | "Constructor(" opt<int> ")" | "Destructor(" opt<int> ")"
+          | "Sentinel(" opt<int> ")" | "NonNull(" vec<int> ")"
+            (* other *)
+          | "CallingConvention(" CallingConvention ")"
+          | Unknown { name: string, arguments: vec<string> }
+          | Invalid { name: string, arguments: vec<string> } ;
+
+AlignAsOperand    = Type { ty: TypeName } | "Expr(" expr ")" ;
+CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall"
+                  | "Thiscall" | "MsAbi" | "SysVAbi" | "PreserveMost"
+                  | "PreserveAll" | "PreserveNone"
+                  | "RegParm(" expr ")"
+                  | "Pcs(" ( "Aapcs" | "AapcsVfp" ) ")" ;
+```
+
+- Every attribute syntax (GNU `__attribute__`, C23 `[[...]]`, keywords such
+  as `_Alignas` and `__cdecl`) produces an `Attribute`; which syntax was
+  used is not kept.
+- `Unknown` is an attribute the parser does not model, kept by name with
+  its argument token spellings. `Invalid` is a known attribute whose
+  arguments did not fit its form.

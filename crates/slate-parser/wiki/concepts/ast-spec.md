@@ -8,6 +8,8 @@ grammar closely (declaration specifiers + declarator lists, labeled
 statements, type names), in the same spirit as clang's parser output before
 Sema.
 
+- For the syntax of the printed AST (every node, its fields, and their
+  choices), see [AST Grammar](ast-grammar.md).
 - For where each enum is matched exhaustively, see [[ast-enum-touchpoints]].
 - For what the AST lowers into, see [[ir-spec]].
 - The **Target design** sections are the spec. **Migration** at the end lists

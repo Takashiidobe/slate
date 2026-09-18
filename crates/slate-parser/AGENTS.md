@@ -58,6 +58,10 @@ re-deriving something from scratch:
 - `wiki/concepts/ir-grammar.md` — EBNF of the printed IR, derived from
   the printers in `src/ir/`. Update it in the same change as anything that
   alters what the IR printer emits.
+- `wiki/concepts/ast-grammar.md` — EBNF of the printed AST, derived from
+  the types in `src/ast.rs` and `src/const_expr.rs`. Update it in the same
+  change as any AST type change or anything that alters what
+  `slate-parser parse` prints.
 - `wiki/concepts/ast-enum-touchpoints.md` — before adding a variant to
   `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`: every file that matches it
   exhaustively, so you don't have to grep the whole crate to find out
