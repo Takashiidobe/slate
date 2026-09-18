@@ -444,8 +444,7 @@ Builtin scalar casts and mixed-type arithmetic insert conversion nodes with
 changes. Float narrowing and integer-to-float conversions carry rounding
 and exception settings; float-to-int truncates toward zero and records
 `out_of_range=ub` plus exception settings. Widening floats is exact.
-Target-dependent `f64x` suffixes and integer-spelled imaginary literals
-(`3i`) return explicit unsupported errors.
+Target-dependent `f64x` suffixes return explicit unsupported errors.
 Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
 `-f[no-]strict-overflow`, `-f[no-]rounding-math`, and
 `-f[no-]trapping-math`, plus the long-double options above. Scoped pragma
@@ -689,11 +688,13 @@ operands; unary `-` is exact negation. The conditional operator and other
 usual-arithmetic sites use imaginary for two imaginary operands and complex
 for mixed domains.
 
-Imaginary literals (`2.0i`, `3.0fj`) are a GNU extension that the standard
-does not define; GNU types them as complex, so they lower to
-`aggregate<complex<fN>>(index0 = +0, index1 = value)`, the same shape as a
-braced complex initializer. `3i` currently lexes as a floating literal and
-is rejected until integer imaginary literals are lexed as integers.
+Imaginary literals (`2.0i`, `3.0fj`, `3i`, `3ui`) are a GNU extension that
+the standard does not define; GNU types them as complex, so they lower to
+`aggregate<complex<T>>(index0 = 0, index1 = value)`, the same shape as a
+braced complex initializer. An integer imaginary literal's component is the
+type the literal would have without `i`/`j` (`5000000000i` is
+`complex<i64>`), matching clang. Imaginary literals are not integer
+constant expressions, so `#if 3i` and array bounds reject them.
 `tests/fixtures/sema/ir_imaginary.c` and `ir_imaginary_invalid.c` pin these
 forms.
 

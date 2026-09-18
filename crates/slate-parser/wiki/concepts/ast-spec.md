@@ -515,6 +515,7 @@ IntegerLiteral {
     radix: Decimal | Hex | Octal | Binary,
     suffix: IntegerSuffix { unsigned: bool, size: None | Long | LongLong | BitInt },
     spelling: String,
+    imaginary: bool,                         // GNU i/j suffix, anywhere among u/l
 }
 
 FloatLiteral {

@@ -235,6 +235,9 @@ impl Token {
         let Token::IntLit(spelling) = self else {
             return None;
         };
+        if Lexer::is_imaginary_integer(spelling) {
+            return None;
+        }
         let digits = Lexer::integer_digits(spelling).replace('\'', "");
         let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
             (16, &digits[2..])
@@ -254,6 +257,9 @@ impl Token {
         let Token::IntLit(spelling) = self else {
             return None;
         };
+        if Lexer::is_imaginary_integer(spelling) {
+            return None;
+        }
         let digits = Lexer::integer_digits(spelling).replace('\'', "");
         let (radix, digits) = if digits.starts_with("0x") || digits.starts_with("0X") {
             (16, &digits[2..])
@@ -887,6 +893,10 @@ impl Lexer {
         }
     }
 
+    pub(crate) fn is_imaginary_integer(spelling: &str) -> bool {
+        spelling.contains(['i', 'I', 'j', 'J'])
+    }
+
     pub(crate) fn integer_digits(spelling: &str) -> String {
         let mut end = spelling.len();
         let bytes = spelling.as_bytes();
@@ -895,7 +905,12 @@ impl Lexer {
             if end >= 2 && bytes[end - 2..end].eq_ignore_ascii_case(b"wb") {
                 end -= 2;
             }
-            while end > 0 && matches!(bytes[end - 1], b'u' | b'U' | b'l' | b'L' | b'w' | b'W') {
+            while end > 0
+                && matches!(
+                    bytes[end - 1],
+                    b'u' | b'U' | b'l' | b'L' | b'w' | b'W' | b'i' | b'I' | b'j' | b'J'
+                )
+            {
                 end -= 1;
             }
             if end == previous {

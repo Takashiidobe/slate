@@ -343,6 +343,8 @@ pub struct IntegerLiteral {
     pub radix: Radix,
     pub suffix: IntegerSuffix,
     pub spelling: String,
+    #[debug(skip_if = crate::ast::is_false)]
+    pub imaginary: bool,
 }
 
 impl IntegerLiteral {
@@ -356,6 +358,7 @@ impl IntegerLiteral {
                 unsigned: false,
                 size: IntegerSizeSuffix::None,
             },
+            imaginary: false,
         }
     }
 }
@@ -706,6 +709,7 @@ fn parse_integer_literal(spelling: &str) -> IntegerLiteral {
         radix,
         suffix,
         spelling: spelling.to_string(),
+        imaginary: Lexer::is_imaginary_integer(spelling),
     }
 }
 
@@ -876,6 +880,9 @@ impl<'a> Parser<'a> {
 
     fn evaluate_expr(expression: &Expr, ctx: EvalContext<'_>) -> Result<i64, ConstExprError> {
         match &expression.value {
+            ExprKind::IntegerLiteral(literal) if literal.imaginary => {
+                Err(ConstExprError::NotConstant("imaginary literal"))
+            }
             ExprKind::IntegerLiteral(literal) => Ok(integer_literal_i64(literal)),
             ExprKind::CharLiteral(literal) => match ctx.target {
                 Some(target) => literal.value(target),
@@ -1034,6 +1041,9 @@ impl<'a> Parser<'a> {
 
     fn evaluate_wide(expression: &Expr, ctx: EvalContext<'_>) -> Result<WideInt, ConstExprError> {
         match &expression.value {
+            ExprKind::IntegerLiteral(literal) if literal.imaginary => {
+                Err(ConstExprError::NotConstant("imaginary literal"))
+            }
             ExprKind::IntegerLiteral(literal) if ctx.is_defined.is_some() => {
                 if literal.value.bits() > 64 {
                     return Err(ConstExprError::IntegerOverflow);

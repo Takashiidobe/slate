@@ -93,17 +93,21 @@ impl Context {
                     select_integer_candidate(literal, &self.target, self.features)
                         .map(|(rank, signed)| (integer_rank_width(rank, &self.target), signed))
                         .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
-                (
-                    Type::integer(width, signed),
-                    ValueKind::Constant(Number::Integer(literal.value.clone())),
-                )
+                let number = Number::Integer(literal.value.clone());
+                if literal.imaginary {
+                    imaginary_literal(
+                        expression,
+                        NumericType::integer(width, signed),
+                        Number::Integer(BigUint::default()),
+                        number,
+                    )
+                } else {
+                    (Type::integer(width, signed), ValueKind::Constant(number))
+                }
             }
             ExprKind::FloatLiteral(literal) => {
                 if literal.suffix == FloatSuffix::F64x {
                     return Err(ResolveError::Unsupported("target-dependent f64x literals"));
-                }
-                if literal.imaginary && is_integer_spelling(&literal.spelling) {
-                    return Err(ResolveError::Unsupported("integer imaginary literals"));
                 }
                 let (format, number) = match resolve_float_literal(literal, &self.target)?.value {
                     FloatValue::Half(bits) => (FloatType::F16, Number::FloatBits(u128::from(bits))),
@@ -124,20 +128,11 @@ impl Context {
                     }
                 };
                 if literal.imaginary {
-                    let component = Type::Numeric(NumericType::Float(format));
-                    let member = |index, number| AggregateMember {
-                        target: AggregateTarget::Index(index),
-                        value: Value {
-                            ty: component.clone(),
-                            node: expression.clone().with_value(ValueKind::Constant(number)),
-                        },
-                    };
-                    (
-                        Type::Complex(NumericType::Float(format)),
-                        ValueKind::Aggregate {
-                            members: vec![member(0, Number::float_zero(format)), member(1, number)],
-                            zero_fill: false,
-                        },
+                    imaginary_literal(
+                        expression,
+                        NumericType::Float(format),
+                        Number::float_zero(format),
+                        number,
                     )
                 } else {
                     (
@@ -1032,14 +1027,30 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
     }
 }
 
-fn has_imaginary(left: &Value, right: &Value) -> bool {
-    matches!(left.ty, Type::Imaginary(_)) || matches!(right.ty, Type::Imaginary(_))
+fn imaginary_literal(
+    expression: &Expr,
+    component: NumericType,
+    zero: Number,
+    value: Number,
+) -> Resolved {
+    let member = |index, number| AggregateMember {
+        target: AggregateTarget::Index(index),
+        value: Value {
+            ty: Type::Numeric(component),
+            node: expression.clone().with_value(ValueKind::Constant(number)),
+        },
+    };
+    (
+        Type::Complex(component),
+        ValueKind::Aggregate {
+            members: vec![member(0, zero), member(1, value)],
+            zero_fill: false,
+        },
+    )
 }
 
-fn is_integer_spelling(spelling: &str) -> bool {
-    let lowered = spelling.to_ascii_lowercase();
-    let exponent = if lowered.starts_with("0x") { 'p' } else { 'e' };
-    !lowered.contains('.') && !lowered.contains(exponent)
+fn has_imaginary(left: &Value, right: &Value) -> bool {
+    matches!(left.ty, Type::Imaginary(_)) || matches!(right.ty, Type::Imaginary(_))
 }
 
 fn reject_mixed_decimal(

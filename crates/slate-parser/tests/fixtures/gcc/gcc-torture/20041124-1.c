@@ -148,11 +148,15 @@ int main() {
 // DEFAULT-NEXT:                                                   spelling: "100",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: FloatLiteral(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   spelling: "200i",
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 200,
 // DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: None,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "200i",
 // DEFAULT-NEXT:                                                   imaginary: true,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),

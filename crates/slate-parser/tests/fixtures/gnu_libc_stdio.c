@@ -1502,6 +1502,246 @@ int main(void) {
 // DEFAULT-NEXT:           Declaration {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Named(
+// DEFAULT-NEXT:                       "FILE",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Function {
+// DEFAULT-NEXT:                               inner: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "fmemopen",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               parameters: Prototype {
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Void,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                       is_restrict: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "size_t",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Abstract,
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                       is_const: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
+// DEFAULT-NEXT:                                                       is_restrict: true,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE1]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE1]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Named(
+// DEFAULT-NEXT:                       "FILE",
+// DEFAULT-NEXT:                   ),
+// DEFAULT-NEXT:               },
+// DEFAULT-NEXT:               declarators: [
+// DEFAULT-NEXT:                   Spanned {
+// DEFAULT-NEXT:                       value: InitDeclaratorKind {
+// DEFAULT-NEXT:                           declarator: Function {
+// DEFAULT-NEXT:                               inner: Pointer {
+// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                   inner: Name(
+// DEFAULT-NEXT:                                       "open_memstream",
+// DEFAULT-NEXT:                                   ),
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                               parameters: Prototype {
+// DEFAULT-NEXT:                                   parameters: [
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Integer(
+// DEFAULT-NEXT:                                                       Char {
+// DEFAULT-NEXT:                                                           signed: None,
+// DEFAULT-NEXT:                                                       },
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Pointer {
+// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                       inner: Abstract,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       Spanned {
+// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
+// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                                                   ty: Named(
+// DEFAULT-NEXT:                                                       "size_t",
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               declarator: Pointer {
+// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
+// DEFAULT-NEXT:                                                   inner: Abstract,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                           provenance: Provenance {
+// DEFAULT-NEXT:                                               file: FileId(
+// DEFAULT-NEXT:                                                   [[#FILE1]],
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                               kind: System,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
+// DEFAULT-NEXT:                                               system_header: Some(
+// DEFAULT-NEXT:                                                   FileId(
+// DEFAULT-NEXT:                                                       [[#FILE1]],
+// DEFAULT-NEXT:                                                   ),
+// DEFAULT-NEXT:                                               ),
+// DEFAULT-NEXT:                                           },
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                   ],
+// DEFAULT-NEXT:                               },
+// DEFAULT-NEXT:                           },
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                       provenance: Provenance {
+// DEFAULT-NEXT:                           file: FileId(
+// DEFAULT-NEXT:                               [[#FILE1]],
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                           kind: System,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
+// DEFAULT-NEXT:                           system_header: Some(
+// DEFAULT-NEXT:                               FileId(
+// DEFAULT-NEXT:                                   [[#FILE1]],
+// DEFAULT-NEXT:                               ),
+// DEFAULT-NEXT:                           ),
+// DEFAULT-NEXT:                       },
+// DEFAULT-NEXT:                   },
+// DEFAULT-NEXT:               ],
+// DEFAULT-NEXT:           },
+// DEFAULT-NEXT:       ),
+// DEFAULT-NEXT:       provenance: Provenance {
+// DEFAULT-NEXT:           file: FileId(
+// DEFAULT-NEXT:               [[#FILE1]],
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:           kind: System,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
+// DEFAULT-NEXT:           system_header: Some(
+// DEFAULT-NEXT:               FileId(
+// DEFAULT-NEXT:                   [[#FILE1]],
+// DEFAULT-NEXT:               ),
+// DEFAULT-NEXT:           ),
+// DEFAULT-NEXT:       },
+// DEFAULT-NEXT:   }
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
+// DEFAULT-NEXT:       value: Declaration(
+// DEFAULT-NEXT:           Declaration {
+// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
+// DEFAULT-NEXT:                   ty: Named(
 // DEFAULT-NEXT:                       "ssize_t",
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               },
@@ -1745,246 +1985,6 @@ int main(void) {
 // DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
 // DEFAULT-NEXT:                                                       is_restrict: true,
 // DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE1]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE1]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE1]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "FILE",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "fmemopen",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Void,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                                       is_restrict: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE1]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "size_t",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Abstract,
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE1]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Char {
-// DEFAULT-NEXT:                                                           signed: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                                       is_const: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers {
-// DEFAULT-NEXT:                                                       is_restrict: true,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                                   inner: Abstract,
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE1]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                   ],
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                           },
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                       provenance: Provenance {
-// DEFAULT-NEXT:                           file: FileId(
-// DEFAULT-NEXT:                               [[#FILE1]],
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: {{[0-9]+}},
-// DEFAULT-NEXT:                           system_header: Some(
-// DEFAULT-NEXT:                               FileId(
-// DEFAULT-NEXT:                                   [[#FILE1]],
-// DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                           ),
-// DEFAULT-NEXT:                       },
-// DEFAULT-NEXT:                   },
-// DEFAULT-NEXT:               ],
-// DEFAULT-NEXT:           },
-// DEFAULT-NEXT:       ),
-// DEFAULT-NEXT:       provenance: Provenance {
-// DEFAULT-NEXT:           file: FileId(
-// DEFAULT-NEXT:               [[#FILE1]],
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: {{[0-9]+}},
-// DEFAULT-NEXT:           system_header: Some(
-// DEFAULT-NEXT:               FileId(
-// DEFAULT-NEXT:                   [[#FILE1]],
-// DEFAULT-NEXT:               ),
-// DEFAULT-NEXT:           ),
-// DEFAULT-NEXT:       },
-// DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[{{[0-9]+}}]: Spanned {
-// DEFAULT-NEXT:       value: Declaration(
-// DEFAULT-NEXT:           Declaration {
-// DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                   ty: Named(
-// DEFAULT-NEXT:                       "FILE",
-// DEFAULT-NEXT:                   ),
-// DEFAULT-NEXT:               },
-// DEFAULT-NEXT:               declarators: [
-// DEFAULT-NEXT:                   Spanned {
-// DEFAULT-NEXT:                       value: InitDeclaratorKind {
-// DEFAULT-NEXT:                           declarator: Function {
-// DEFAULT-NEXT:                               inner: Pointer {
-// DEFAULT-NEXT:                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                   inner: Name(
-// DEFAULT-NEXT:                                       "open_memstream",
-// DEFAULT-NEXT:                                   ),
-// DEFAULT-NEXT:                               },
-// DEFAULT-NEXT:                               parameters: Prototype {
-// DEFAULT-NEXT:                                   parameters: [
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Integer(
-// DEFAULT-NEXT:                                                       Char {
-// DEFAULT-NEXT:                                                           signed: None,
-// DEFAULT-NEXT:                                                       },
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                   inner: Pointer {
-// DEFAULT-NEXT:                                                       qualifiers: Qualifiers,
-// DEFAULT-NEXT:                                                       inner: Abstract,
-// DEFAULT-NEXT:                                                   },
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           provenance: Provenance {
-// DEFAULT-NEXT:                                               file: FileId(
-// DEFAULT-NEXT:                                                   [[#FILE1]],
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: {{[0-9]+}},
-// DEFAULT-NEXT:                                               system_header: Some(
-// DEFAULT-NEXT:                                                   FileId(
-// DEFAULT-NEXT:                                                       [[#FILE1]],
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               ),
-// DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                       },
-// DEFAULT-NEXT:                                       Spanned {
-// DEFAULT-NEXT:                                           value: ParameterDeclarationKind {
-// DEFAULT-NEXT:                                               specifiers: DeclarationSpecifiers {
-// DEFAULT-NEXT:                                                   ty: Named(
-// DEFAULT-NEXT:                                                       "size_t",
-// DEFAULT-NEXT:                                                   ),
-// DEFAULT-NEXT:                                               },
-// DEFAULT-NEXT:                                               declarator: Pointer {
-// DEFAULT-NEXT:                                                   qualifiers: Qualifiers,
 // DEFAULT-NEXT:                                                   inner: Abstract,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           },

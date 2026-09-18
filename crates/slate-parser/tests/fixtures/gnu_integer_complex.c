@@ -138,11 +138,15 @@ int main(void) {
 // DEFAULT-NEXT:                                       spelling: "17",
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
-// DEFAULT-NEXT:                               right: FloatLiteral(
-// DEFAULT-NEXT:                                   FloatLiteral {
-// DEFAULT-NEXT:                                       spelling: "19i",
+// DEFAULT-NEXT:                               right: IntegerLiteral(
+// DEFAULT-NEXT:                                   IntegerLiteral {
+// DEFAULT-NEXT:                                       value: 19,
 // DEFAULT-NEXT:                                       radix: Decimal,
-// DEFAULT-NEXT:                                       suffix: None,
+// DEFAULT-NEXT:                                       suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                           unsigned: false,
+// DEFAULT-NEXT:                                           size: None,
+// DEFAULT-NEXT:                                       },
+// DEFAULT-NEXT:                                       spelling: "19i",
 // DEFAULT-NEXT:                                       imaginary: true,
 // DEFAULT-NEXT:                                   },
 // DEFAULT-NEXT:                               ),
@@ -202,11 +206,15 @@ int main(void) {
 // DEFAULT-NEXT:                                                   spelling: "5",
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
-// DEFAULT-NEXT:                                           right: FloatLiteral(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   spelling: "7i",
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 7,
 // DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: None,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "7i",
 // DEFAULT-NEXT:                                                   imaginary: true,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -252,11 +260,15 @@ int main(void) {
 // DEFAULT-NEXT:                                                   },
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                           },
-// DEFAULT-NEXT:                                           right: FloatLiteral(
-// DEFAULT-NEXT:                                               FloatLiteral {
-// DEFAULT-NEXT:                                                   spelling: "11i",
+// DEFAULT-NEXT:                                           right: IntegerLiteral(
+// DEFAULT-NEXT:                                               IntegerLiteral {
+// DEFAULT-NEXT:                                                   value: 11,
 // DEFAULT-NEXT:                                                   radix: Decimal,
-// DEFAULT-NEXT:                                                   suffix: None,
+// DEFAULT-NEXT:                                                   suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                       unsigned: false,
+// DEFAULT-NEXT:                                                       size: None,
+// DEFAULT-NEXT:                                                   },
+// DEFAULT-NEXT:                                                   spelling: "11i",
 // DEFAULT-NEXT:                                                   imaginary: true,
 // DEFAULT-NEXT:                                               },
 // DEFAULT-NEXT:                                           ),
@@ -286,11 +298,15 @@ int main(void) {
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               initializer: Some(
 // DEFAULT-NEXT:                                   Expr(
-// DEFAULT-NEXT:                                       FloatLiteral(
-// DEFAULT-NEXT:                                           FloatLiteral {
-// DEFAULT-NEXT:                                               spelling: "13i",
+// DEFAULT-NEXT:                                       IntegerLiteral(
+// DEFAULT-NEXT:                                           IntegerLiteral {
+// DEFAULT-NEXT:                                               value: 13,
 // DEFAULT-NEXT:                                               radix: Decimal,
-// DEFAULT-NEXT:                                               suffix: None,
+// DEFAULT-NEXT:                                               suffix: IntegerSuffix {
+// DEFAULT-NEXT:                                                   unsigned: false,
+// DEFAULT-NEXT:                                                   size: None,
+// DEFAULT-NEXT:                                               },
+// DEFAULT-NEXT:                                               spelling: "13i",
 // DEFAULT-NEXT:                                               imaginary: true,
 // DEFAULT-NEXT:                                           },
 // DEFAULT-NEXT:                                       ),
