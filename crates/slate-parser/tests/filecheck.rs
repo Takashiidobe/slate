@@ -182,6 +182,17 @@ fn fixture_args(fixture: &Path) -> Vec<String> {
     args
 }
 
+fn warning_configurations(source: &str) -> Vec<String> {
+    source
+        .lines()
+        .filter_map(|line| {
+            line.trim()
+                .strip_prefix("// SLATE-FILECHECK-WARNING ")
+                .map(str::to_string)
+        })
+        .collect()
+}
+
 fn error_configurations(source: &str) -> Vec<String> {
     source
         .lines()
@@ -202,6 +213,7 @@ struct FixtureJob {
     standard: Option<String>,
     show_ids: bool,
     error: bool,
+    warnings: bool,
     slot: usize,
 }
 
@@ -226,6 +238,7 @@ fn run_job(job: FixtureJob) {
             job.flavor.as_deref(),
             job.standard.as_deref(),
             job.show_ids,
+            job.warnings,
             job.slot,
         );
     }
@@ -243,6 +256,7 @@ fn run_fixture(
     flavor: Option<&str>,
     standard: Option<&str>,
     show_ids: bool,
+    warnings: bool,
     slot: usize,
 ) {
     let source = fixture_source(fixture);
@@ -321,7 +335,17 @@ fn run_fixture(
         String::from_utf8_lossy(&rendered.stderr)
     );
 
-    if rendered.stdout.is_empty() {
+    let checked = if warnings {
+        String::from_utf8_lossy(&rendered.stderr)
+            .replace(
+                parsed_fixture.file_name().unwrap().to_str().unwrap(),
+                fixture.file_name().unwrap().to_str().unwrap(),
+            )
+            .into_bytes()
+    } else {
+        rendered.stdout.clone()
+    };
+    if checked.is_empty() {
         let raw_source = decode_source_bytes(&std::fs::read(fixture).expect("read fixture"));
         let has_checks = raw_source.lines().any(|line| {
             line.starts_with(&format!("// {prefix}:"))
@@ -345,7 +369,7 @@ fn run_fixture(
         ));
     std::fs::create_dir_all(&work).expect("create FileCheck work directory");
     let input = work.join("rendered.txt");
-    std::fs::write(&input, rendered.stdout).expect("write rendered AST");
+    std::fs::write(&input, checked).expect("write rendered AST");
 
     let result = Command::new(filecheck())
         .arg(fixture)
@@ -1036,6 +1060,7 @@ fn fixtures_are_filechecked() {
         let source = decode_source_bytes(&std::fs::read(&fixture).expect("read fixture"));
         let configs = configurations(&source);
         let errors = error_configurations(&source);
+        let warnings = warning_configurations(&source);
         let flavor = flavor(&source);
         let isystem = isystem_paths(&source);
         if !errors.is_empty() {
@@ -1053,6 +1078,7 @@ fn fixtures_are_filechecked() {
                     standard: std_for_prefix(&source, prefix),
                     show_ids: show_ids_for_prefix(&source, prefix),
                     error: true,
+                    warnings: false,
                     slot,
                 });
             }
@@ -1073,6 +1099,7 @@ fn fixtures_are_filechecked() {
                 standard: std_for_prefix(&source, prefix),
                 show_ids: show_ids_for_prefix(&source, prefix),
                 error: false,
+                warnings: warnings.contains(prefix),
                 slot,
             });
         }
@@ -1096,6 +1123,7 @@ fn fixtures_are_filechecked() {
                             standard: job.standard.clone(),
                             show_ids: job.show_ids,
                             error: job.error,
+                            warnings: job.warnings,
                             slot: job.slot,
                         })
                     })

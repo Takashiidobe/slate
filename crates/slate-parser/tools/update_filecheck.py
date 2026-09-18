@@ -20,6 +20,7 @@ def _no_color_env() -> dict:
 DEFINE_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-DEFINES\s+([A-Za-z0-9_-]+)(?:\s+(.*))?$")
 BEGIN_RE = re.compile(r"^// SLATE-FILECHECK-BEGIN ([A-Za-z0-9_-]+)$")
 ERROR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ERROR\s+([A-Za-z0-9_-]+)$")
+WARNING_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-WARNING\s+([A-Za-z0-9_-]+)$")
 ISYSTEM_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-ISYSTEM\s+(.*)$")
 FLAVOR_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-FLAVOR\s+(\S+)\s*$")
 STD_RE = re.compile(r"^\s*//\s*SLATE-FILECHECK-STD\s+([A-Za-z0-9_-]+)\s+(\S+)\s*$")
@@ -90,6 +91,10 @@ def error_configurations(source: str) -> list[str]:
     return [match.group(1) for line in source.splitlines() if (match := ERROR_RE.match(line))]
 
 
+def warning_configurations(source: str) -> list[str]:
+    return [match.group(1) for line in source.splitlines() if (match := WARNING_RE.match(line))]
+
+
 def fixture_source(source: str) -> str:
     kept = []
     in_checks = False
@@ -146,6 +151,41 @@ def render(
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
     return result.stdout.rstrip("\n")
+
+
+def render_warnings(
+    repo: Path,
+    fixture: Path,
+    source: str,
+    defines: list[str],
+    isystem: list[str],
+    std_args: list[str],
+    extra_args: list[str] = (),
+) -> list[str]:
+    parsed_name = f".{fixture.stem}.filecheck.{os.getpid()}.0.c"
+    parsed_fixture = fixture.with_name(parsed_name)
+    parsed_fixture.write_text(fixture_source(source), errors="surrogateescape")
+    try:
+        command = ["cargo", "run", "--quiet", "--", "parse", str(parsed_fixture)]
+        command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
+        command.extend(f"-isystem{path}" for path in isystem)
+        command.extend(flavor_args(source))
+        command.extend(std_args)
+        command.extend(extra_args)
+        command.extend(target_args(fixture))
+        for line in source.splitlines():
+            if line.strip().startswith("// SLATE-FILECHECK-ARGS "):
+                command.extend(line.strip().removeprefix("// SLATE-FILECHECK-ARGS ").split())
+        result = subprocess.run(command, cwd=repo, text=True, capture_output=True, env=_no_color_env())
+    finally:
+        parsed_fixture.unlink()
+    if result.returncode:
+        raise RuntimeError(f"expected {fixture} to parse successfully:\n{result.stderr}")
+    return [
+        line.strip().replace(parsed_name, fixture.name)
+        for line in result.stderr.splitlines()
+        if re.match(r"^\s*(?:-W[a-z0-9-]+$|\d+ │|│|×|⚠|╭─|·|╰─)", line)
+    ]
 
 
 def render_error(
@@ -334,7 +374,21 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
         block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
-    if error_configurations(source):
+    for prefix in warning_configurations(source):
+        output = render_warnings(
+            repo,
+            fixture,
+            source,
+            configuration_defines(source, prefix),
+            isystem,
+            configuration_std_args(source, prefix),
+            configuration_show_ids_args(source, prefix),
+        )
+        block = [f"// SLATE-FILECHECK-BEGIN {prefix}"]
+        block.extend(f"// {prefix}: {escape_filecheck_literal(line)}" for line in output)
+        block.append(f"// SLATE-FILECHECK-END {prefix}")
+        blocks.extend(block)
+    if error_configurations(source) or warning_configurations(source):
         return "\n".join(blocks)
     for prefix, defines in configurations(source):
         output = render(
@@ -388,7 +442,11 @@ def replace_blocks(source: str, generated: str, prefixes: list[str]) -> str:
 
 def update(repo: Path, fixture: Path) -> tuple[str, str]:
     source = fixture.read_text(errors="surrogateescape")
-    prefixes = error_configurations(source) or [prefix for prefix, _ in configurations(source)]
+    prefixes = (
+        error_configurations(source)
+        or warning_configurations(source)
+        or [prefix for prefix, _ in configurations(source)]
+    )
     updated = replace_blocks(source, generated_blocks(repo, fixture, source), prefixes)
     return source, updated
 

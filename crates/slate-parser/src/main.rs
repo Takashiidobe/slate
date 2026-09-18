@@ -117,7 +117,9 @@ fn run() -> miette::Result<()> {
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;
-    ast.analyze(&files)?;
+    for warning in ast.analyze(&files)? {
+        eprintln!("{:?}", miette::Report::new(warning));
+    }
     if dump_ir || dump_ir_types {
         let module = if dump_ir_types {
             slate_parser::sema::types::resolve_type_module(&ast)

@@ -1,4 +1,4 @@
-use super::validate::{fits_rank, integer_candidates, integer_rank_width};
+use super::validate::{fits_rank, integer_rank_width, select_integer_candidate};
 use crate::ast::{
     Declarator, Expr, ExprKind, FloatingType, IntegerType, Span, TypeName, TypeSpecifier,
 };
@@ -88,13 +88,10 @@ impl Context {
                 if literal.suffix.size == IntegerSizeSuffix::BitInt {
                     return Err(ResolveError::Unsupported("bit-precise integer literals"));
                 }
-                let (width, signed) = integer_candidates(literal, self.features)
-                    .into_iter()
-                    .map(|(rank, signed)| (integer_rank_width(rank, &self.target), signed))
-                    .find(|(width, signed)| {
-                        *width > 0 && fits_rank(&literal.value, *width, *signed)
-                    })
-                    .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
+                let (width, signed) =
+                    select_integer_candidate(literal, &self.target, self.features)
+                        .map(|(rank, signed)| (integer_rank_width(rank, &self.target), signed))
+                        .ok_or_else(|| ResolveError::IntegerLiteral(literal.spelling.clone()))?;
                 (
                     Type::integer(width, signed),
                     ValueKind::Constant(Number::Integer(literal.value.clone())),

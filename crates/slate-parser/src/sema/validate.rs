@@ -1,24 +1,44 @@
 use crate::ast::*;
-use crate::compiler_args::CompilerFlavor;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr::{CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp};
+use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
-use miette::{Diagnostic, NamedSource, SourceSpan};
+use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
 use num_bigint::BigUint;
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
-#[derive(Debug, Error, Diagnostic, Clone)]
+#[derive(Debug, Error, Clone)]
 #[error("{message}")]
 pub struct SemaError {
     pub message: String,
+    pub severity: Severity,
+    pub warning: Option<Warning>,
     pub provenance: Option<Provenance>,
     pub loc: Option<Loc>,
-    #[source_code]
     pub source_code: NamedSource<String>,
-    #[label]
     pub span: SourceSpan,
+}
+
+impl Diagnostic for SemaError {
+    fn severity(&self) -> Option<Severity> {
+        Some(self.severity)
+    }
+
+    fn code(&self) -> Option<Box<dyn std::fmt::Display + '_>> {
+        self.warning
+            .map(|warning| Box::new(format!("-W{warning}")) as Box<dyn std::fmt::Display>)
+    }
+
+    fn source_code(&self) -> Option<&dyn SourceCode> {
+        Some(&self.source_code)
+    }
+
+    fn labels(&self) -> Option<Box<dyn Iterator<Item = LabeledSpan> + '_>> {
+        Some(Box::new(std::iter::once(LabeledSpan::underline(self.span))))
+    }
 }
 
 #[derive(Debug, Error, Diagnostic)]
@@ -29,9 +49,15 @@ pub struct SemaErrors {
 }
 
 impl TranslationUnit {
-    pub fn analyze(&self, files: &Files) -> Result<(), SemaErrors> {
+    pub fn analyze(&self, files: &Files) -> Result<Vec<SemaError>, SemaErrors> {
         let flavor = self.flavor;
         let features = StandardFeatures::new(self.standard);
+        let literals = LiteralContext {
+            target: &self.target,
+            features,
+            diagnostics: &self.options.diagnostics,
+            standard: self.standard,
+        };
         let typedefs = self
             .decls
             .iter()
@@ -112,7 +138,7 @@ impl TranslationUnit {
                     if flavor == CompilerFlavor::Clang {
                         check_function_asm(self, function, provenance, &mut errors);
                     }
-                    check_literals(function, &self.target, features, provenance, &mut errors);
+                    check_literals(function, literals, provenance, &mut errors);
                 }
                 DeclKind::Declaration(declaration) => {
                     let provenance = decl.provenance;
@@ -136,13 +162,7 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
-                    check_declaration_literals(
-                        declaration,
-                        &self.target,
-                        features,
-                        provenance,
-                        &mut errors,
-                    );
+                    check_declaration_literals(declaration, literals, provenance, &mut errors);
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
                         if matches!(specifiers.ty, TypeSpecifier::Void)
@@ -192,10 +212,10 @@ impl TranslationUnit {
             .into_iter()
             .map(|error| error.with_source(files))
             .collect();
-        if errors.is_empty() {
-            Ok(())
-        } else {
+        if errors.iter().any(|error| error.severity == Severity::Error) {
             Err(SemaErrors { errors })
+        } else {
+            Ok(errors)
         }
     }
 }
@@ -516,6 +536,8 @@ fn check_type_name(
 pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaError {
     SemaError {
         message: message.into(),
+        severity: Severity::Error,
+        warning: None,
         provenance: Some(provenance),
         loc: Some(loc),
         source_code: NamedSource::new("<unknown>", String::new()),
@@ -764,24 +786,72 @@ pub(super) fn integer_candidates(
     candidates
 }
 
-fn resolve_integer_literal(
+pub(super) fn select_integer_candidate(
     literal: &IntegerLiteral,
     target: &TargetInfo,
     features: StandardFeatures,
-) -> Result<(), String> {
-    if literal.suffix.size == IntegerSizeSuffix::BitInt {
-        return Ok(());
-    }
+) -> Option<(IntegerRank, bool)> {
     integer_candidates(literal, features)
         .into_iter()
-        .any(|(rank, signed)| fits_rank(&literal.value, integer_rank_width(rank, target), signed))
-        .then_some(())
-        .ok_or_else(|| {
+        .find(|(rank, signed)| {
+            let width = integer_rank_width(*rank, target);
+            width > 0 && fits_rank(&literal.value, width, *signed)
+        })
+}
+
+fn integer_literal_warnings(
+    literal: &IntegerLiteral,
+    rank: IntegerRank,
+    signed: bool,
+    features: StandardFeatures,
+) -> Vec<(Warning, String)> {
+    let mut warnings = Vec::new();
+    if rank == IntegerRank::LongLong && features.long_long_type != Availability::Standard {
+        warnings.push((
+            Warning::LongLong,
+            "'long long' is an extension when C99 mode is not enabled".to_string(),
+        ));
+    }
+    if !literal.suffix.unsigned && literal.radix == Radix::Decimal && !signed {
+        warnings.push(if rank == IntegerRank::Long {
+            (
+                Warning::C99Compat,
+                "integer literal is too large to be represented in type 'long', interpreting as \
+                 'unsigned long' per C89; this literal will have type 'long long' in C99 onwards"
+                    .to_string(),
+            )
+        } else {
+            (
+                Warning::ImplicitlyUnsignedLiteral,
+                "integer literal is too large to be represented in a signed integer type, \
+                 interpreting as unsigned"
+                    .to_string(),
+            )
+        });
+    }
+    warnings
+}
+
+fn integer_literal_diagnostics(
+    literal: &IntegerLiteral,
+    context: LiteralContext<'_>,
+) -> Vec<(Option<Warning>, String)> {
+    if literal.suffix.size == IntegerSizeSuffix::BitInt {
+        return Vec::new();
+    }
+    match select_integer_candidate(literal, context.target, context.features) {
+        None => vec![(
+            None,
             format!(
                 "integer literal `{}` is too large to be represented in any integer type",
                 literal.spelling
-            )
-        })
+            ),
+        )],
+        Some((rank, signed)) => integer_literal_warnings(literal, rank, signed, context.features)
+            .into_iter()
+            .map(|(warning, message)| (Some(warning), message))
+            .collect(),
+    }
 }
 
 fn char_literal_max(encoding: Encoding, target: &TargetInfo) -> u32 {
@@ -818,27 +888,57 @@ fn resolve_char_literal(literal: &CharLiteral, target: &TargetInfo) -> Result<()
     Ok(())
 }
 
-fn check_literal_expr(
-    expr: &Expr,
-    target: &TargetInfo,
+#[derive(Clone, Copy)]
+struct LiteralContext<'a> {
+    target: &'a TargetInfo,
     features: StandardFeatures,
-) -> Option<String> {
+    diagnostics: &'a DiagnosticOptions,
+    standard: LanguageStandard,
+}
+
+fn check_literal_expr(expr: &Expr, context: LiteralContext<'_>) -> Vec<(Option<Warning>, String)> {
     match &expr.value {
-        ExprKind::IntegerLiteral(literal) => {
-            resolve_integer_literal(literal, target, features).err()
-        }
-        ExprKind::CharLiteral(literal) => resolve_char_literal(literal, target).err(),
-        ExprKind::FloatLiteral(literal) => super::numeric::resolve_float_literal(literal, target)
+        ExprKind::IntegerLiteral(literal) => integer_literal_diagnostics(literal, context),
+        ExprKind::CharLiteral(literal) => resolve_char_literal(literal, context.target)
             .err()
-            .map(|error| error.to_string()),
-        _ => None,
+            .map(|message| (None, message))
+            .into_iter()
+            .collect(),
+        ExprKind::FloatLiteral(literal) => {
+            super::numeric::resolve_float_literal(literal, context.target)
+                .err()
+                .map(|error| (None, error.to_string()))
+                .into_iter()
+                .collect()
+        }
+        _ => Vec::new(),
+    }
+}
+
+fn push_literal_diagnostics(
+    expr: &Expr,
+    context: LiteralContext<'_>,
+    provenance: Provenance,
+    errors: &mut Vec<SemaError>,
+) {
+    for (warning, message) in check_literal_expr(expr, context) {
+        let severity = match warning {
+            None => Severity::Error,
+            Some(warning) => match context.diagnostics.severity(warning, context.standard) {
+                Some(severity) => severity,
+                None => continue,
+            },
+        };
+        let mut diagnostic = error(provenance, expr.expansion, message);
+        diagnostic.severity = severity;
+        diagnostic.warning = warning;
+        errors.push(diagnostic);
     }
 }
 
 fn check_literals(
     function: &FunctionDefinition,
-    target: &TargetInfo,
-    features: StandardFeatures,
+    context: LiteralContext<'_>,
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
@@ -846,16 +946,13 @@ fn check_literals(
         let BodyNode::Expr(expr) = node else {
             return;
         };
-        if let Some(message) = check_literal_expr(expr, target, features) {
-            errors.push(error(provenance, expr.expansion, message));
-        }
+        push_literal_diagnostics(expr, context, provenance, errors);
     });
 }
 
 fn check_declaration_literals(
     declaration: &Declaration,
-    target: &TargetInfo,
-    features: StandardFeatures,
+    context: LiteralContext<'_>,
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
@@ -867,9 +964,7 @@ fn check_declaration_literals(
             let BodyNode::Expr(expr) = node else {
                 return;
             };
-            if let Some(message) = check_literal_expr(expr, target, features) {
-                errors.push(error(provenance, expr.expansion, message));
-            }
+            push_literal_diagnostics(expr, context, provenance, errors);
         });
     }
 }

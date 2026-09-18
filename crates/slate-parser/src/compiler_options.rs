@@ -1,4 +1,5 @@
 use crate::compiler_args::CompilerFlavor;
+use crate::diagnostics::DiagnosticOptions;
 use crate::ir::{Exceptions, FloatingSemantics, Overflow, Rounding};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
@@ -6,6 +7,7 @@ use crate::target_info::{LongDoubleFormat, TargetInfo};
 pub struct CompilerOptions {
     pub operations: OperationOptions,
     pub layout: LayoutOptions,
+    pub diagnostics: DiagnosticOptions,
     pub arguments: Vec<String>,
 }
 
@@ -14,6 +16,14 @@ pub struct OperationOptions {
     pub signed_overflow: Overflow,
     pub pointer_wrap: bool,
     pub floating: FloatingSemantics,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct OperationValues {
+    pub signed_overflow: Overflow,
+    pub strict_overflow: Option<bool>,
+    pub rounding_math: Option<bool>,
+    pub trapping_math: Option<bool>,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -34,6 +44,7 @@ impl Default for CompilerOptions {
                 },
             },
             layout: LayoutOptions::default(),
+            diagnostics: DiagnosticOptions::default(),
             arguments: Vec::new(),
         }
     }
@@ -51,32 +62,31 @@ impl CompilerOptions {
     pub fn from_values(
         flavor: CompilerFlavor,
         layout: LayoutOptions,
+        diagnostics: DiagnosticOptions,
         arguments: Vec<String>,
-        signed_overflow: Overflow,
-        strict_overflow: Option<bool>,
-        rounding_math: Option<bool>,
-        trapping_math: Option<bool>,
+        values: OperationValues,
     ) -> Self {
         let mut options = Self::for_flavor(flavor);
         options.layout = layout;
-        if let Some(value) = strict_overflow {
+        options.diagnostics = diagnostics;
+        if let Some(value) = values.strict_overflow {
             options.operations.pointer_wrap = !value;
         }
-        if let Some(value) = rounding_math {
+        if let Some(value) = values.rounding_math {
             options.operations.floating.rounding = if value {
                 Rounding::Environment
             } else {
                 Rounding::NearestEven
             };
         }
-        if let Some(value) = trapping_math {
+        if let Some(value) = values.trapping_math {
             options.operations.floating.exceptions = if value {
                 Exceptions::Observable
             } else {
                 Exceptions::Ignore
             };
         }
-        options.operations.signed_overflow = signed_overflow;
+        options.operations.signed_overflow = values.signed_overflow;
         options.arguments = arguments;
         options
     }

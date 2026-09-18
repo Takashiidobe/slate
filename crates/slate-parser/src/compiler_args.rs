@@ -1,4 +1,5 @@
-use crate::compiler_options::{CompilerOptions, LayoutOptions};
+use crate::compiler_options::{CompilerOptions, LayoutOptions, OperationValues};
+use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::ir::Overflow;
 use crate::rules::{Rule, Rules};
 use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
@@ -118,6 +119,7 @@ struct ParsedCompilerArgs {
     rounding_math: Option<bool>,
     trapping_math: Option<bool>,
     long_double: Option<LongDoubleFormat>,
+    diagnostics: DiagnosticOptions,
     present: BTreeSet<Opt>,
 }
 
@@ -136,6 +138,8 @@ enum Opt {
     RoundingMath,
     TrappingMath,
     LongDouble,
+    Warning,
+    Pedantic,
 }
 
 impl std::fmt::Display for Opt {
@@ -154,6 +158,8 @@ impl std::fmt::Display for Opt {
             Self::RoundingMath => "rounding-math",
             Self::TrappingMath => "trapping-math",
             Self::LongDouble => "long-double",
+            Self::Warning => "W",
+            Self::Pedantic => "pedantic",
         };
         formatter.write_str(name)
     }
@@ -214,11 +220,14 @@ impl CompilerArgParser {
             options: CompilerOptions::from_values(
                 flavor,
                 layout,
+                raw.diagnostics,
                 arguments,
-                raw.signed_overflow,
-                raw.strict_overflow,
-                raw.rounding_math,
-                raw.trapping_math,
+                OperationValues {
+                    signed_overflow: raw.signed_overflow,
+                    strict_overflow: raw.strict_overflow,
+                    rounding_math: raw.rounding_math,
+                    trapping_math: raw.trapping_math,
+                },
             ),
             defines: raw.defines,
             standard: raw.standard.unwrap_or_default(),
@@ -226,6 +235,42 @@ impl CompilerArgParser {
             flavor,
             target,
         })
+    }
+}
+
+fn parse_pedantic(argument: &str, diagnostics: &mut DiagnosticOptions) -> bool {
+    match argument {
+        "-pedantic" | "--pedantic" | "-Wpedantic" => diagnostics.pedantic = true,
+        "-pedantic-errors" | "--pedantic-errors" => diagnostics.pedantic_errors = true,
+        "-Wno-pedantic" => {
+            diagnostics.pedantic = false;
+            diagnostics.pedantic_errors = false;
+        }
+        _ => return false,
+    }
+    true
+}
+
+// unrecognized -W names are accepted and ignored, as clang does by default
+fn apply_warning_flag(name: &str, diagnostics: &mut DiagnosticOptions) {
+    if name == "error" {
+        diagnostics.werror = true;
+    } else if name == "no-error" {
+        diagnostics.werror = false;
+    } else if let Some(name) = name.strip_prefix("error=") {
+        if let Some(warning) = Warning::from_name(name) {
+            diagnostics.set_error(warning, true);
+        }
+    } else if let Some(name) = name.strip_prefix("no-error=") {
+        if let Some(warning) = Warning::from_name(name) {
+            diagnostics.set_error(warning, false);
+        }
+    } else if let Some(name) = name.strip_prefix("no-") {
+        if let Some(warning) = Warning::from_name(name) {
+            diagnostics.set_enabled(warning, false);
+        }
+    } else if let Some(warning) = Warning::from_name(name) {
+        diagnostics.set_enabled(warning, true);
     }
 }
 
@@ -299,6 +344,11 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 argument,
                 "long double format",
             )?);
+        } else if parse_pedantic(argument, &mut parsed.diagnostics) {
+            parsed.present.insert(Opt::Pedantic);
+        } else if let Some(name) = argument.strip_prefix("-W") {
+            parsed.present.insert(Opt::Warning);
+            apply_warning_flag(name, &mut parsed.diagnostics);
         } else if let Some(format) = long_double_flag(argument) {
             parsed.present.insert(Opt::LongDouble);
             parsed.long_double = Some(format);

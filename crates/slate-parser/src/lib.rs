@@ -2,6 +2,7 @@ pub mod ast;
 pub mod compiler_args;
 pub mod compiler_options;
 pub mod const_expr;
+pub mod diagnostics;
 pub mod error;
 pub mod files;
 pub mod ir;

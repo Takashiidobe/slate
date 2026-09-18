@@ -7,3 +7,4 @@
 - [IR Shape](concepts/ir-shape.md)
 - [Compiler flags](concepts/compiler-flags.md)
 - [Compiler argument rules](concepts/compiler-arg-rules.md)
+- [Diagnostic severity](concepts/diagnostic-severity.md)
