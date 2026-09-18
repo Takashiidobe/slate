@@ -7,7 +7,7 @@
 
 #ifndef _LINUX_VT_H
 #define _LINUX_VT_H
-#include <sys/ioctl.h>
+#include <bits/ioctl.h>
 #define MIN_NR_CONSOLES 1
 #define MAX_NR_CONSOLES 63
 

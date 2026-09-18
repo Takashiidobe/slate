@@ -206,3 +206,8 @@ sys/un.h
 sys/unistd.h
 sys/user.h
 sys/utsname.h
+sys/vfs.h
+sys/vlimit.h
+sys/vt.h
+sys/wait.h
+sys/xattr.h

@@ -5,12 +5,14 @@
 
 #define __NEED_ssize_t
 #define __NEED_size_t
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_MUSL)
+#define XATTR_CREATE 1
+#define XATTR_REPLACE 2
+#endif
 #include <bits/types.h>
-
-enum {
-  XATTR_CREATE  = 1,
-  XATTR_REPLACE = 2,
-};
 
 ssize_t getxattr(const char *, const char *, void *, size_t);
 ssize_t lgetxattr(const char *, const char *, void *, size_t);

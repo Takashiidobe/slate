@@ -150,3 +150,6 @@ sys/uio.h
 sys/un.h
 sys/user.h
 sys/utsname.h
+sys/vfs.h
+sys/wait.h
+sys/xattr.h
