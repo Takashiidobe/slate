@@ -1380,7 +1380,10 @@ pub fn resolve_type_module(
                 let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
                     return_type.ty.as_ref(),
                     &parameter_types,
-                    matches!(&parameters, crate::ir::Parameters::Prototype { variadic: true, .. }),
+                    matches!(
+                        &parameters,
+                        crate::ir::Parameters::Prototype { variadic: true, .. }
+                    ),
                     parameter_types.len(),
                 )?;
                 module
@@ -1421,12 +1424,16 @@ pub fn resolve_type_module(
                         &mut next_binding,
                     )?;
                     let parameter_types = parameter_types(&parameters);
-                    let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
-                        return_type.ty.as_ref(),
-                        &parameter_types,
-                        matches!(&parameters, crate::ir::Parameters::Prototype { variadic: true, .. }),
-                        parameter_types.len(),
-                    )?;
+                    let abi = super::abi::AbiClassifier::new(&resolver, &module.target)
+                        .from_parts(
+                            return_type.ty.as_ref(),
+                            &parameter_types,
+                            matches!(
+                                &parameters,
+                                crate::ir::Parameters::Prototype { variadic: true, .. }
+                            ),
+                            parameter_types.len(),
+                        )?;
                     module
                         .metadata
                         .insert(declarator.id, return_type.c.entries());

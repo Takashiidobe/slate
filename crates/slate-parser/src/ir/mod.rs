@@ -5,12 +5,12 @@ mod module_print;
 mod names;
 mod numeric;
 
+pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use declarations::{
     BitFieldAccess, BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place,
     PlaceKind, RecordKind, RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind,
     TypeId, Variable,
 };
-pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};

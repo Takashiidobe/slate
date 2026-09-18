@@ -57,6 +57,7 @@ impl TranslationUnit {
             features,
             diagnostics: &self.options.diagnostics,
             standard: self.standard,
+            flavor,
         };
         let typedefs = self
             .decls
@@ -944,8 +945,17 @@ fn char_literal_max(encoding: Encoding, target: &TargetInfo) -> u32 {
     }
 }
 
-fn resolve_char_literal(literal: &CharLiteral, target: &TargetInfo) -> Result<(), String> {
+fn resolve_char_literal(
+    literal: &CharLiteral,
+    target: &TargetInfo,
+    flavor: CompilerFlavor,
+) -> Result<(), String> {
     if literal.encoding == Encoding::Plain {
+        if flavor == CompilerFlavor::Clang
+            && literal.execution_units(target.wchar_width).len() > literal.code_units.len()
+        {
+            return Err("character too large for enclosing character literal type".to_string());
+        }
         return Ok(());
     }
     if literal.code_units.len() > 1 {
@@ -969,16 +979,19 @@ struct LiteralContext<'a> {
     features: StandardFeatures,
     diagnostics: &'a DiagnosticOptions,
     standard: LanguageStandard,
+    flavor: CompilerFlavor,
 }
 
 fn check_literal_expr(expr: &Expr, context: LiteralContext<'_>) -> Vec<(Option<Warning>, String)> {
     match &expr.value {
         ExprKind::IntegerLiteral(literal) => integer_literal_diagnostics(literal, context),
-        ExprKind::CharLiteral(literal) => resolve_char_literal(literal, context.target)
-            .err()
-            .map(|message| (None, message))
-            .into_iter()
-            .collect(),
+        ExprKind::CharLiteral(literal) => {
+            resolve_char_literal(literal, context.target, context.flavor)
+                .err()
+                .map(|message| (None, message))
+                .into_iter()
+                .collect()
+        }
         ExprKind::FloatLiteral(literal) => {
             super::numeric::resolve_float_literal(literal, context.target)
                 .err()

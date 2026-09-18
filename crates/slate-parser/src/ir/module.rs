@@ -1,4 +1,6 @@
-use super::{AbiSignature, BindingId, Global, Parameters, Place, Type, TypeDefinition, Value, Variable};
+use super::{
+    AbiSignature, BindingId, Global, Parameters, Place, Type, TypeDefinition, Value, Variable,
+};
 use crate::ast::{NodeId, Span};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
