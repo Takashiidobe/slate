@@ -169,7 +169,8 @@ impl Lowerer {
         params: &ParameterList,
         definition: bool,
     ) -> Result<Parameters, ResolveError> {
-        if matches!(params, ParameterList::Empty) && !self.types.empty_parens_are_prototype {
+        if matches!(params, ParameterList::Empty) && !self.types.features.empty_parens_are_prototype
+        {
             return Ok(Parameters::Unprototyped);
         }
         let mut fixed = Vec::new();

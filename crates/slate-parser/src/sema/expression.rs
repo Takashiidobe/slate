@@ -601,7 +601,11 @@ impl Lowerer {
             return self.unevaluated_type(inner);
         }
         if let ExprKind::StringLiteral(lit) = &operand.value {
-            return Ok(super::types::string_literal_type(lit, &self.context.target));
+            return Ok(super::types::string_literal_type(
+                lit,
+                &self.context.target,
+                self.types.features,
+            ));
         }
         let globals = self.module.globals.len();
         let next_id = self.next_id;
@@ -706,7 +710,11 @@ impl Lowerer {
             ExprKind::StringLiteral(lit) => {
                 let mut units = lit.execution_units(self.context.target.wchar_width);
                 units.push(0);
-                let ty = super::types::string_literal_type(lit, &self.context.target);
+                let ty = super::types::string_literal_type(
+                    lit,
+                    &self.context.target,
+                    self.types.features,
+                );
                 let id = self.fresh();
                 let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
                 self.module.globals.push(e.clone().with_value(Global {

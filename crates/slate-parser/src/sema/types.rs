@@ -57,7 +57,7 @@ pub struct ResolvedType {
 
 pub struct TypeResolver {
     target: TargetInfo,
-    pub empty_parens_are_prototype: bool,
+    pub features: StandardFeatures,
     tags: Vec<crate::ast::Span<TagDefinition>>,
     tag_ids: HashMap<TagId, TypeId>,
     ordinary: Vec<HashMap<String, Ordinary>>,
@@ -77,7 +77,7 @@ impl TypeResolver {
     pub fn new(target: TargetInfo) -> Self {
         Self {
             target,
-            empty_parens_are_prototype: false,
+            features: StandardFeatures::default(),
             tags: Vec::new(),
             tag_ids: HashMap::new(),
             ordinary: vec![HashMap::new()],
@@ -89,8 +89,7 @@ impl TypeResolver {
 
     pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
         let mut resolver = Self::new(target);
-        resolver.empty_parens_are_prototype =
-            StandardFeatures::new(unit.standard).empty_parens_are_prototype;
+        resolver.features = StandardFeatures::new(unit.standard);
         resolver.tags = unit.tags.clone();
         resolver
     }
@@ -376,7 +375,9 @@ impl TypeResolver {
                     "unknown or unsupported sizeof operand type",
                 )),
             },
-            ExprKind::StringLiteral(literal) => Ok(string_literal_type(literal, &self.target)),
+            ExprKind::StringLiteral(literal) => {
+                Ok(string_literal_type(literal, &self.target, self.features))
+            }
             ExprKind::Unary {
                 op: crate::const_expr::UnaryOp::Deref,
                 operand,
@@ -739,8 +740,8 @@ impl TypeResolver {
                     c_parameters.push(parameter_type.c.spelling);
                 }
                 let variadic = parameters.is_variadic();
-                let prototyped =
-                    self.empty_parens_are_prototype || !matches!(parameters, ParameterList::Empty);
+                let prototyped = self.features.empty_parens_are_prototype
+                    || !matches!(parameters, ParameterList::Empty);
                 let suffix = if matches!(parameters, ParameterList::Empty) {
                     "()".to_owned()
                 } else if matches!(parameters, ParameterList::Void) {
@@ -1450,7 +1451,7 @@ fn resolve_parameters(
     next_binding: &mut u32,
 ) -> Result<crate::ir::Parameters, ResolveError> {
     use crate::ir::{BindingId, Parameter, Parameters};
-    if matches!(signature, ParameterList::Empty) && !resolver.empty_parens_are_prototype {
+    if matches!(signature, ParameterList::Empty) && !resolver.features.empty_parens_are_prototype {
         return Ok(Parameters::Unprototyped);
     }
     let mut fixed = Vec::new();
@@ -1482,12 +1483,14 @@ fn resolve_parameters(
 pub(super) fn string_literal_type(
     literal: &crate::const_expr::StringLiteral,
     target: &TargetInfo,
+    features: StandardFeatures,
 ) -> Type {
     let width = literal.unit_width(target.wchar_width);
     let signed = match literal.encoding {
         Encoding::Plain => target.char_signed,
         Encoding::Wide => target.wchar_signed,
-        _ => false,
+        Encoding::Utf8 => !features.u8_literals_are_unsigned && target.char_signed,
+        Encoding::Utf16 | Encoding::Utf32 => false,
     };
     Type::Array {
         element: Box::new(Type::integer(width, signed)),

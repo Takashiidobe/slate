@@ -810,10 +810,18 @@ impl Lexer {
         if self.peek() == Some(quote) {
             return Some(0);
         }
+        let unicode = self.features.unicode_literal_prefixes.is_accepted();
         if self.peek_str("u8") {
-            return (self.peek_at(2) == Some(quote)).then_some(2);
+            let accepted = match quote {
+                '\'' => self.features.u8_character_constant.is_accepted(),
+                _ => unicode,
+            };
+            return (accepted && self.peek_at(2) == Some(quote)).then_some(2);
         }
-        if matches!(self.peek(), Some('u' | 'U' | 'L')) {
+        if matches!(self.peek(), Some('u' | 'U')) {
+            return (unicode && self.peek_at(1) == Some(quote)).then_some(1);
+        }
+        if self.peek() == Some('L') {
             return (self.peek_at(1) == Some(quote)).then_some(1);
         }
         None

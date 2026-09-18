@@ -25,6 +25,9 @@ pub struct StandardFeatures {
     pub keyword_typeof_unqual: Availability,
     pub keyword_constexpr: Availability,
     pub implicit_int: Availability,
+    pub unicode_literal_prefixes: Availability,
+    pub u8_character_constant: Availability,
+    pub u8_literals_are_unsigned: bool,
     pub control_statement_scopes: bool,
     pub auto_type_inference: bool,
     pub empty_parens_are_prototype: bool,
@@ -35,6 +38,7 @@ impl StandardFeatures {
     pub fn new(standard: LanguageStandard) -> Self {
         use Availability::{Extension, Rejected, Standard};
         let c89 = matches!(standard, LanguageStandard::C89 | LanguageStandard::Gnu89);
+        let c11 = standard.stdc_version() >= Some(201112);
         let c23 = matches!(standard, LanguageStandard::C23 | LanguageStandard::Gnu23);
         let c23_keyword = if c23 { Standard } else { Rejected };
         Self {
@@ -56,6 +60,9 @@ impl StandardFeatures {
             keyword_typeof_unqual: c23_keyword,
             keyword_constexpr: c23_keyword,
             implicit_int: if c89 { Standard } else { Rejected },
+            unicode_literal_prefixes: if c11 { Standard } else { Rejected },
+            u8_character_constant: c23_keyword,
+            u8_literals_are_unsigned: c23,
             control_statement_scopes: !c89,
             auto_type_inference: c23,
             empty_parens_are_prototype: c23,
