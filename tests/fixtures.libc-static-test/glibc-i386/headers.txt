@@ -200,3 +200,8 @@ sys/sysmacros.h
 sys/termios.h
 sys/time.h
 sys/timeb.h
+sys/timerfd.h
+sys/times.h
+sys/timex.h
+sys/ttychars.h
+sys/ttydefaults.h

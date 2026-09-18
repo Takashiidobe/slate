@@ -12,6 +12,13 @@
 struct ntptimeval {
   struct timeval time;
   long           maxerror, esterror;
+#if defined(__SLATE_LIBC_GLIBC)
+  long           tai;
+  long           __glibc_reserved1;
+  long           __glibc_reserved2;
+  long           __glibc_reserved3;
+  long           __glibc_reserved4;
+#endif
 };
 
 #if defined(__SLATE_LIBC_GLIBC)
@@ -97,6 +104,10 @@ int clock_adjtime(clockid_t, struct timex *);
 #if _REDIR_TIME64
 __REDIR(adjtimex, __adjtimex_time64);
 __REDIR(clock_adjtime, __clock_adjtime64);
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define NTP_API 4
 #endif
 
 #endif
