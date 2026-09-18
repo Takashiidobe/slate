@@ -684,16 +684,7 @@ impl TypeResolver {
             Declarator::Pointer {
                 inner, qualifiers, ..
             } => {
-                let pointee = resolved.ty.take().unwrap_or(Type::Void);
-                let grouped = matches!(pointee, Type::Function { .. } | Type::Array { .. });
-                resolved.ty = Some(Type::Pointer {
-                    pointee: Box::new(pointee),
-                    is_const: resolved.c.qualifiers.is_const,
-                });
-                resolved.c.spelling = pointer_spelling(&resolved.c.spelling, *qualifiers, grouped);
-                resolved.c.canonical =
-                    pointer_spelling(&resolved.c.canonical, *qualifiers, grouped);
-                resolved.c.qualifiers = *qualifiers;
+                Self::apply_pointer(*qualifiers, resolved);
                 self.derive(inner, resolved)
             }
             Declarator::Array { .. } => {
@@ -717,13 +708,7 @@ impl TypeResolver {
                     .rev()
                     .map(|length| length.map_or("[]".to_owned(), |length| format!("[{length}]")))
                     .collect();
-                let grouped = match core {
-                    Declarator::Grouped(grouped) => Some(grouped),
-                    _ => None,
-                };
-                if grouped.is_none() {
-                    self.derive(core, resolved)?;
-                }
+                let core = Self::apply_pointers(core, resolved);
                 for length in lengths {
                     let element = resolved
                         .ty
@@ -736,10 +721,7 @@ impl TypeResolver {
                 }
                 resolved.c.spelling.push_str(&suffix);
                 resolved.c.canonical.push_str(&suffix);
-                match grouped {
-                    Some(grouped) => self.derive(grouped, resolved),
-                    None => Ok(()),
-                }
+                self.derive(core, resolved)
             }
             Declarator::Function { inner, parameters } => {
                 let mut types = Vec::new();
@@ -777,30 +759,42 @@ impl TypeResolver {
                     }
                     format!("({})", c_parameters.join(", "))
                 };
-                if let Declarator::Grouped(core) = inner.as_ref() {
-                    resolved.ty = Some(Type::Function {
-                        return_type: resolved.ty.take().map(Box::new),
-                        parameters: types,
-                        variadic,
-                        prototyped,
-                    });
-                    resolved.c.spelling.push_str(&suffix);
-                    resolved.c.canonical.push_str(&suffix);
-                    self.derive(core, resolved)
-                } else {
-                    self.derive(inner, resolved)?;
-                    resolved.ty = Some(Type::Function {
-                        return_type: resolved.ty.take().map(Box::new),
-                        parameters: types,
-                        variadic,
-                        prototyped,
-                    });
-                    resolved.c.spelling.push_str(&suffix);
-                    resolved.c.canonical.push_str(&suffix);
-                    Ok(())
-                }
+                let core = Self::apply_pointers(inner, resolved);
+                resolved.ty = Some(Type::Function {
+                    return_type: resolved.ty.take().map(Box::new),
+                    parameters: types,
+                    variadic,
+                    prototyped,
+                });
+                resolved.c.spelling.push_str(&suffix);
+                resolved.c.canonical.push_str(&suffix);
+                self.derive(core, resolved)
             }
         }
+    }
+
+    fn apply_pointer(qualifiers: Qualifiers, resolved: &mut ResolvedType) {
+        let pointee = resolved.ty.take().unwrap_or(Type::Void);
+        let grouped = matches!(pointee, Type::Function { .. } | Type::Array { .. });
+        resolved.ty = Some(Type::Pointer {
+            pointee: Box::new(pointee),
+            is_const: resolved.c.qualifiers.is_const,
+        });
+        resolved.c.spelling = pointer_spelling(&resolved.c.spelling, qualifiers, grouped);
+        resolved.c.canonical = pointer_spelling(&resolved.c.canonical, qualifiers, grouped);
+        resolved.c.qualifiers = qualifiers;
+    }
+
+    // pointers under an array or function node bind to its element or return type
+    fn apply_pointers<'d>(mut core: &'d Declarator, resolved: &mut ResolvedType) -> &'d Declarator {
+        while let Declarator::Pointer {
+            inner, qualifiers, ..
+        } = core
+        {
+            Self::apply_pointer(*qualifiers, resolved);
+            core = inner;
+        }
+        core
     }
 
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
