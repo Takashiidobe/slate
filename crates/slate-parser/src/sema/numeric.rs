@@ -104,19 +104,27 @@ impl Context {
                 if literal.imaginary {
                     return Err(ResolveError::Unsupported("imaginary literals"));
                 }
-                let (format, bits) = match resolve_float_literal(literal, &self.target)?.value {
-                    FloatValue::Half(bits) => (FloatType::F16, u128::from(bits)),
-                    FloatValue::Single(value) => (FloatType::F32, u128::from(value.to_bits())),
-                    FloatValue::Double(value) => (FloatType::F64, u128::from(value.to_bits())),
-                    FloatValue::Quad(bits) => (FloatType::F128, bits),
-                    FloatValue::LongDouble(bits) => (FloatType::F80, bits),
-                    _ => {
-                        return Err(ResolveError::Unsupported("decimal floating literals"));
+                let (format, number) = match resolve_float_literal(literal, &self.target)?.value {
+                    FloatValue::Half(bits) => (FloatType::F16, Number::FloatBits(u128::from(bits))),
+                    FloatValue::Single(value) => (
+                        FloatType::F32,
+                        Number::FloatBits(u128::from(value.to_bits())),
+                    ),
+                    FloatValue::Double(value) => (
+                        FloatType::F64,
+                        Number::FloatBits(u128::from(value.to_bits())),
+                    ),
+                    FloatValue::Quad(bits) => (FloatType::F128, Number::FloatBits(bits)),
+                    FloatValue::LongDouble(bits) => (FloatType::F80, Number::FloatBits(bits)),
+                    FloatValue::Decimal32(digits) => (FloatType::D32, Number::DecimalFloat(digits)),
+                    FloatValue::Decimal64(digits) => (FloatType::D64, Number::DecimalFloat(digits)),
+                    FloatValue::Decimal128(digits) => {
+                        (FloatType::D128, Number::DecimalFloat(digits))
                     }
                 };
                 (
                     Type::Numeric(NumericType::Float(format)),
-                    ValueKind::Constant(Number::FloatBits(bits)),
+                    ValueKind::Constant(number),
                 )
             }
             ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
@@ -229,6 +237,7 @@ impl Context {
         if matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_)) {
             return self.complex_binary(op, left, right);
         }
+        reject_mixed_decimal(operator, &left, &right)?;
         let is_shift = matches!(arith, ArithOp::Shl | ArithOp::Shr);
         let (left, right) = if is_shift {
             (left, right)
@@ -361,6 +370,15 @@ impl Context {
     fn compare(&self, op: CompareOp, left: Value, right: Value) -> Result<Resolved, ResolveError> {
         let left = self.promote(left);
         let right = self.promote(right);
+        let operator = match op {
+            CompareOp::Eq => "==",
+            CompareOp::Ne => "!=",
+            CompareOp::Lt => "<",
+            CompareOp::Le => "<=",
+            CompareOp::Gt => ">",
+            CompareOp::Ge => ">=",
+        };
+        reject_mixed_decimal(operator, &left, &right)?;
         let (left, right) = self.usual_arithmetic(left, right);
         let left_ty = numeric(&left)?;
         Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
@@ -492,6 +510,9 @@ impl Context {
                     crate::target_info::LongDoubleFormat::X87 => FloatType::F80,
                     crate::target_info::LongDoubleFormat::Binary128 => FloatType::F128,
                 },
+                FloatingType::Decimal32 => FloatType::D32,
+                FloatingType::Decimal64 => FloatType::D64,
+                FloatingType::Decimal128 => FloatType::D128,
                 _ => return Err(ResolveError::Unsupported("floating cast type")),
             }),
             _ => return Err(ResolveError::Unsupported("cast type")),
@@ -622,22 +643,15 @@ impl Context {
             }
             (Type::Complex(from), Type::Complex(target)) => {
                 let semantics = match (from, target) {
-                    (NumericType::Float(a), NumericType::Float(b)) if a < b => {
+                    (NumericType::Float(a), NumericType::Float(b)) if b.widens_from(a) => {
                         ConversionSema::Exact
                     }
                     (NumericType::Float(_), NumericType::Float(_)) => {
                         ConversionSema::Floating(self.floating)
                     }
                     (NumericType::Integer { width, signed, .. }, NumericType::Float(format)) => {
-                        let precision = match format {
-                            FloatType::F16 => 11,
-                            FloatType::F32 => 24,
-                            FloatType::F64 => 53,
-                            FloatType::F80 => 64,
-                            FloatType::F128 => 113,
-                        };
                         ConversionSema::IntToFloat {
-                            exact: width - u32::from(signed) <= precision,
+                            exact: width - u32::from(signed) <= format.exact_integer_bits(),
                             floating: self.floating,
                         }
                     }
@@ -719,14 +733,7 @@ impl Context {
                 Type::Numeric(NumericType::Integer { width, signed, .. }),
                 Type::Numeric(NumericType::Float(format)),
             ) => {
-                let precision = match format {
-                    FloatType::F16 => 11,
-                    FloatType::F32 => 24,
-                    FloatType::F64 => 53,
-                    FloatType::F80 => 64,
-                    FloatType::F128 => 113,
-                };
-                let exact = width - u32::from(signed) <= precision
+                let exact = width - u32::from(signed) <= format.exact_integer_bits()
                     || matches!(
                         value.node.value,
                         ValueKind::Convert {
@@ -749,8 +756,13 @@ impl Context {
                 Type::Numeric(NumericType::Float(from)),
                 Type::Numeric(NumericType::Float(to_format)),
             ) => {
-                let (kind, semantics) = if from < to_format {
+                let (kind, semantics) = if to_format.widens_from(from) {
                     (ConversionKind::FloatWiden, ConversionSema::Exact)
+                } else if from.is_decimal() != to_format.is_decimal() {
+                    (
+                        ConversionKind::FloatConvert,
+                        ConversionSema::Floating(self.floating),
+                    )
                 } else {
                     (
                         ConversionKind::FloatNarrow,
@@ -778,7 +790,7 @@ impl Context {
         };
         let zero = match ty {
             NumericType::Integer { .. } => Number::Integer(BigUint::default()),
-            NumericType::Float(_) => Number::FloatBits(0),
+            NumericType::Float(format) => Number::float_zero(format),
         };
         let node = derived_span(&value.node, ValueKind::Constant(zero));
         let zero = Value {
@@ -805,6 +817,27 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         | Type::Array { .. }
         | Type::Function { .. }
         | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
+    }
+}
+
+fn reject_mixed_decimal(
+    operator: &'static str,
+    left: &Value,
+    right: &Value,
+) -> Result<(), ResolveError> {
+    let family = |ty: &Type| match ty {
+        Type::Numeric(NumericType::Float(format)) | Type::Complex(NumericType::Float(format)) => {
+            Some(format.is_decimal())
+        }
+        _ => None,
+    };
+    match (family(&left.ty), family(&right.ty)) {
+        (Some(a), Some(b)) if a != b => Err(ResolveError::InvalidOperands {
+            left: numeric(left)?,
+            operator,
+            right: numeric(right)?,
+        }),
+        _ => Ok(()),
     }
 }
 

@@ -158,6 +158,9 @@ impl ScalarLayouts {
             (FloatType::F64, 8, 8),
             (FloatType::F80, 16, 16),
             (FloatType::F128, 16, 16),
+            (FloatType::D32, 4, 4),
+            (FloatType::D64, 8, 8),
+            (FloatType::D128, 16, 16),
         ] {
             entries.insert(
                 ScalarKey::Float(format),

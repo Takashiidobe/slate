@@ -370,7 +370,15 @@ ordinary binary expressions. The expression-only diagnostic view has no
 places and therefore still rejects updates.
 
 The initial numeric type stores integer width/signedness/bit-precision or
-one of five floating formats: f16, f32, f64, f80, f128. Bit-precise
+one of eight floating formats: binary f16, f32, f64, f80, f128 and decimal
+d32, d64, d128 (`_Decimal32/64/128`, size and alignment 4/8/16 on every
+target; availability is not target-gated). Decimal literals (`1.5DF`) keep
+their digit spelling as `const<d32>(1.5)` and are never converted to binary.
+Decimal arithmetic is never folded. Mixing a decimal and a binary floating
+operand in arithmetic or comparison is rejected (C23 6.3.1.8); integers
+convert to the decimal operand's format. Explicit casts and assignments between
+the families use `float_convert`, since the value is neither widened nor
+narrowed. Bit-precise
 integers (`_BitInt(N)`) are a distinct type from the standard integer of
 the same width and print with a `b` suffix (`i128b`, `u32b`): on x86-64
 `__int128` is `i128` with size 16 align 16 while `_BitInt(128)` is `i128b`
@@ -603,6 +611,7 @@ original C type is metadata.
 | `float` / `double`                       | `f32` / `f64`                    | `c=float` / `c=double`                |
 | `long double` (x86)                      | `f80`                            | `c=long double`                       |
 | `__float128`                             | `f128`                           |                                       |
+| `_Decimal32` / `_Decimal64` / `_Decimal128` | `d32` / `d64` / `d128`        |                                       |
 | `_BitInt(128)`                           | `i128b`                          | `c=_BitInt(128)`                      |
 | `const char *`                           | `*const i8`                      | `c=const char *`                      |
 | `enum E`                                 | `enum E` (underlying `u32`)      | underlying type computed per compiler |
@@ -756,7 +765,7 @@ Each conversion node does exactly one thing; the reason is metadata.
 | `truncate<i8>(x)`                              | keep low bits                                            | `fits=always\|unknown`                                         |
 | `reinterpret<u32>(x)`                          | same width, sign change                                  | `fits=always\|unknown`                                         |
 | `from_bool<i32>(b)`                            | 0-1 (truth conversion is `ne(x, 0)`, not a node)         |                                                                |
-| `float_widen<f64>(x)` / `float_narrow<f32>(x)` |                                                          |                                                                |
+| `float_widen<f64>(x)` / `float_narrow<f32>(x)` / `float_convert<d64>(x)` |                                                          |                                                                |
 | `int_to_float<f64>(x)`                         |                                                          | `exact=true\|false`                                            |
 | `float_to_int<i32>(x)`                         |                                                          | `out_of_range=ub`                                              |
 

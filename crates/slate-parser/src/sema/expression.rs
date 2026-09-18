@@ -101,7 +101,7 @@ impl Lowerer {
                     Type::Numeric(component),
                     ValueKind::Constant(match component {
                         NumericType::Integer { .. } => Number::Integer(0u32.into()),
-                        NumericType::Float(_) => Number::FloatBits(0),
+                        NumericType::Float(format) => Number::float_zero(format),
                     }),
                 );
                 let zero =

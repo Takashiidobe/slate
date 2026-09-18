@@ -151,6 +151,7 @@ fn float_to_integer(value: &Value, width: u32, signed: bool) -> Option<BigInt> {
         FloatType::F64 => convert_float::<Double>(bits, negate, width, signed),
         FloatType::F80 => convert_float::<X87DoubleExtended>(bits, negate, width, signed),
         FloatType::F128 => convert_float::<Quad>(bits, negate, width, signed),
+        FloatType::D32 | FloatType::D64 | FloatType::D128 => None,
     }
 }
 

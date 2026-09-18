@@ -354,6 +354,9 @@ impl Value {
             ValueKind::Constant(Number::SignedInteger(value)) => {
                 write!(f, "const<{}>({value})", self.ty)
             }
+            ValueKind::Constant(Number::DecimalFloat(digits)) => {
+                write!(f, "const<{}>({digits})", self.ty)
+            }
             ValueKind::Constant(Number::FloatBits(bits)) => match self.ty {
                 Type::Numeric(NumericType::Float(FloatType::F32))
                     if !f32::from_bits(*bits as u32).is_nan() =>

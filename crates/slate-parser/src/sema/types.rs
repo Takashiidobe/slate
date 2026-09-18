@@ -656,6 +656,9 @@ impl TypeResolver {
                     FloatingType::Float128 | FloatingType::Float128Ext => {
                         (FloatType::F128, "__float128")
                     }
+                    FloatingType::Decimal32 => (FloatType::D32, "_Decimal32"),
+                    FloatingType::Decimal64 => (FloatType::D64, "_Decimal64"),
+                    FloatingType::Decimal128 => (FloatType::D128, "_Decimal128"),
                     _ => return Err(ResolveError::Unsupported("floating type")),
                 };
                 (Type::Numeric(NumericType::Float(kind)), spelling.into())

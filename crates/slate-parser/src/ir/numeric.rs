@@ -120,6 +120,42 @@ pub enum FloatType {
     F64,
     F80,
     F128,
+    D32,
+    D64,
+    D128,
+}
+
+impl FloatType {
+    pub fn is_decimal(self) -> bool {
+        matches!(self, Self::D32 | Self::D64 | Self::D128)
+    }
+
+    pub fn exact_integer_bits(self) -> u32 {
+        match self {
+            Self::F16 => 11,
+            Self::F32 => 24,
+            Self::F64 => 53,
+            Self::F80 => 64,
+            Self::F128 => 113,
+            Self::D32 => 23,
+            Self::D64 => 53,
+            Self::D128 => 112,
+        }
+    }
+
+    pub fn widens_from(self, from: Self) -> bool {
+        self.is_decimal() == from.is_decimal() && from < self
+    }
+}
+
+impl Number {
+    pub fn float_zero(format: FloatType) -> Self {
+        if format.is_decimal() {
+            Self::DecimalFloat("0".to_owned())
+        } else {
+            Self::FloatBits(0)
+        }
+    }
 }
 
 impl fmt::Display for FloatType {
@@ -130,6 +166,9 @@ impl fmt::Display for FloatType {
             Self::F64 => "f64",
             Self::F80 => "f80",
             Self::F128 => "f128",
+            Self::D32 => "d32",
+            Self::D64 => "d64",
+            Self::D128 => "d128",
         })
     }
 }
@@ -321,6 +360,7 @@ pub enum ConversionKind {
     IntToFloat,
     FloatWiden,
     FloatNarrow,
+    FloatConvert,
     FloatToInt,
     PointerCast,
     RealToComplex,
@@ -343,6 +383,7 @@ impl fmt::Display for ConversionKind {
             Self::IntToFloat => "int_to_float",
             Self::FloatWiden => "float_widen",
             Self::FloatNarrow => "float_narrow",
+            Self::FloatConvert => "float_convert",
             Self::FloatToInt => "float_to_int",
             Self::PointerCast => "pointer_cast",
             Self::RealToComplex => "real_to_complex",
@@ -406,4 +447,5 @@ pub enum Number {
     Integer(BigUint),
     SignedInteger(BigInt),
     FloatBits(u128),
+    DecimalFloat(String),
 }
