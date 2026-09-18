@@ -535,6 +535,7 @@ impl<'a> Preprocessor<'a> {
                 let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
                 let origin = Span::cover((), &expanded[index..index + 4]);
                 let pragma_tokens = Lexer::new(FileId(0), &decoded)
+                    .with_features(self.features)
                     .tokenize()
                     .into_iter()
                     .map(|token| origin.clone().with_value(token.value))

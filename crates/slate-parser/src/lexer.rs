@@ -713,13 +713,18 @@ impl Lexer {
                 "enum" => Token::Keyword(Keyword::Enum),
                 "const" | "__const" | "__const__" => Token::Keyword(Keyword::Const),
                 "volatile" | "__volatile" | "__volatile__" => Token::Keyword(Keyword::Volatile),
-                "restrict" => Token::Keyword(Keyword::Restrict),
+                "restrict" if self.features.keyword_restrict.is_accepted() => {
+                    Token::Keyword(Keyword::Restrict)
+                }
                 "_Atomic" => Token::Keyword(Keyword::Atomic),
                 "extern" => Token::Keyword(Keyword::Extern),
                 "static" => Token::Keyword(Keyword::Static),
                 "auto" => Token::Keyword(Keyword::Auto),
                 "register" => Token::Keyword(Keyword::Register),
-                "inline" | "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
+                "__inline" | "__inline__" => Token::Keyword(Keyword::Inline),
+                "inline" if self.features.keyword_inline.is_accepted() => {
+                    Token::Keyword(Keyword::Inline)
+                }
                 "__int128" => Token::Keyword(Keyword::Int128),
                 "_Noreturn" => Token::Keyword(Keyword::Noreturn),
                 "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
@@ -731,11 +736,17 @@ impl Lexer {
                 "_Accum" => Token::Keyword(Keyword::Accum),
                 "_Fract" => Token::Keyword(Keyword::Fract),
                 "_Sat" => Token::Keyword(Keyword::Saturated),
-                "typeof" | "__typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
-                "typeof_unqual" | "__typeof_unqual" | "__typeof_unqual__" => {
+                "__typeof" | "__typeof__" => Token::Keyword(Keyword::Typeof),
+                "typeof" if self.features.keyword_typeof.is_accepted() => {
+                    Token::Keyword(Keyword::Typeof)
+                }
+                "__typeof_unqual" | "__typeof_unqual__" => Token::Keyword(Keyword::TypeofUnqual),
+                "typeof_unqual" if self.features.keyword_typeof_unqual.is_accepted() => {
                     Token::Keyword(Keyword::TypeofUnqual)
                 }
-                "constexpr" => Token::Keyword(Keyword::Constexpr),
+                "constexpr" if self.features.keyword_constexpr.is_accepted() => {
+                    Token::Keyword(Keyword::Constexpr)
+                }
                 "_Imaginary" => Token::Keyword(Keyword::Imaginary),
                 "if" => Token::Keyword(Keyword::If),
                 "else" => Token::Keyword(Keyword::Else),

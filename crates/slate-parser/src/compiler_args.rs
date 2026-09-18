@@ -42,6 +42,13 @@ pub enum LanguageStandard {
 }
 
 impl LanguageStandard {
+    pub fn is_gnu(self) -> bool {
+        matches!(
+            self,
+            Self::Gnu89 | Self::Gnu99 | Self::Gnu11 | Self::Gnu17 | Self::Gnu23
+        )
+    }
+
     pub fn stdc_version(self) -> Option<i64> {
         match self {
             Self::C89 | Self::Gnu89 => None,

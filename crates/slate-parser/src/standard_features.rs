@@ -19,6 +19,11 @@ pub struct StandardFeatures {
     pub keyword_nullptr: Availability,
     pub keyword_static_assert: Availability,
     pub keyword_thread_local: Availability,
+    pub keyword_restrict: Availability,
+    pub keyword_inline: Availability,
+    pub keyword_typeof: Availability,
+    pub keyword_typeof_unqual: Availability,
+    pub keyword_constexpr: Availability,
     pub implicit_int: Availability,
     pub control_statement_scopes: bool,
     pub auto_type_inference: bool,
@@ -28,7 +33,7 @@ pub struct StandardFeatures {
 
 impl StandardFeatures {
     pub fn new(standard: LanguageStandard) -> Self {
-        use Availability::{Rejected, Standard};
+        use Availability::{Extension, Rejected, Standard};
         let c89 = matches!(standard, LanguageStandard::C89 | LanguageStandard::Gnu89);
         let c23 = matches!(standard, LanguageStandard::C23 | LanguageStandard::Gnu23);
         let c23_keyword = if c23 { Standard } else { Rejected };
@@ -37,6 +42,19 @@ impl StandardFeatures {
             keyword_nullptr: c23_keyword,
             keyword_static_assert: c23_keyword,
             keyword_thread_local: c23_keyword,
+            keyword_restrict: if c89 { Rejected } else { Standard },
+            keyword_inline: match (c89, standard.is_gnu()) {
+                (false, _) => Standard,
+                (true, true) => Extension,
+                (true, false) => Rejected,
+            },
+            keyword_typeof: match (c23, standard.is_gnu()) {
+                (true, _) => Standard,
+                (false, true) => Extension,
+                (false, false) => Rejected,
+            },
+            keyword_typeof_unqual: c23_keyword,
+            keyword_constexpr: c23_keyword,
             implicit_int: if c89 { Standard } else { Rejected },
             control_statement_scopes: !c89,
             auto_type_inference: c23,
