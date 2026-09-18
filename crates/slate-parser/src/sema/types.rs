@@ -295,13 +295,34 @@ impl TypeResolver {
         controlling: &'e crate::ast::GenericControl,
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e crate::ast::Expr, ResolveError> {
-        use crate::ast::{GenericAssociation, GenericControl};
+        use crate::ast::GenericControl;
         let controlling = match controlling {
             GenericControl::Type { ty } => self
                 .resolve(&ty.specifiers, &ty.declarator)?
                 .ty
                 .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
             GenericControl::Expr(expr) => self.assertion_operand_type(expr)?,
+        };
+        self.select_association(controlling, associations)
+    }
+
+    // The controlling operand is lvalue-converted, so array and function associations never match.
+    pub(super) fn select_association<'e>(
+        &mut self,
+        controlling: Type,
+        associations: &'e [crate::ast::GenericAssociation],
+    ) -> Result<&'e crate::ast::Expr, ResolveError> {
+        use crate::ast::GenericAssociation;
+        let controlling = match controlling {
+            Type::Array { element, .. } => Type::Pointer {
+                pointee: element,
+                is_const: false,
+            },
+            ty @ Type::Function { .. } => Type::Pointer {
+                pointee: Box::new(ty),
+                is_const: false,
+            },
+            ty => ty,
         };
         let mut selected = None;
         let mut fallback = None;

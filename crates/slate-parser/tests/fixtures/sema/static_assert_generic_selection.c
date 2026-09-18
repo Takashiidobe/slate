@@ -11,6 +11,10 @@ static_assert(_Generic((int)0, int: 1, default: 0));
 static_assert(_Generic(0, long: 0, default: 1));
 static_assert(_Generic((byte)0, unsigned char: 1, default: 0));
 static_assert(_Generic(1.0, double: 1, default: 0));
+extern int table[4];
+extern void routine(void);
+static_assert(_Generic(table, int *: 1, default: 0));
+static_assert(_Generic(routine, void (*)(void): 1, default: 0));
 static_assert(_Generic(int, int: 1, default: 0));
 static_assert(_Generic(0, int: _Generic(0.0f, float: 1, default: 0), default: 0));
 void selected(int n) {

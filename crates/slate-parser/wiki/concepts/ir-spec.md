@@ -81,6 +81,15 @@ and unprototyped distinction even when a later redeclaration of the same
 function changes it
 (`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
 
+`_Generic` resolves during lowering rather than reaching the IR: sema types the
+controlling operand, matches it against the association types, and lowers only
+the selected expression, so the selected branch can be constant or runtime and
+the others produce no IR at all (`tests/fixtures/sema/ir_generic_selection.c`).
+The controlling operand is unevaluated, so typing it rolls back any binding IDs
+or string-literal globals its lowering would have created. A selection is also a
+place when the selected expression is one, which is what makes `_Generic(...) = v`
+and `&_Generic(...)` lower.
+
 Declarator type derivation visits prefix pointers and arrays before wrapping
 suffix function and array forms, so `int *f(void)` is `fn() -> ptr<i32>` and
 `int *a[3]` is `array<ptr<i32>, 3>`; grouped declarators such as

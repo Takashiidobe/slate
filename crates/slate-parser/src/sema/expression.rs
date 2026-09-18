@@ -241,6 +241,13 @@ impl Lowerer {
     fn place(&mut self, e: &Expr) -> Result<Place, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                let selected = self.generic_selected(controlling, associations)?;
+                self.place(selected)
+            }
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
                 let ty = self
@@ -311,6 +318,32 @@ impl Lowerer {
                 "expression is not a supported place",
             )),
         }
+    }
+
+    fn generic_selected<'e>(
+        &mut self,
+        controlling: &crate::ast::GenericControl,
+        associations: &'e [crate::ast::GenericAssociation],
+    ) -> Result<&'e Expr, ResolveError> {
+        let controlling = match controlling {
+            crate::ast::GenericControl::Type { ty } => self
+                .types
+                .resolve(&ty.specifiers, &ty.declarator)?
+                .ty
+                .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
+            crate::ast::GenericControl::Expr(expr) => self.unevaluated(expr)?,
+        };
+        self.types.select_association(controlling, associations)
+    }
+
+    // _Generic's controlling operand is never evaluated, so keep only the type it lowered to.
+    fn unevaluated(&mut self, e: &Expr) -> Result<Type, ResolveError> {
+        let next_id = self.next_id;
+        let globals = self.module.globals.len();
+        let ty = self.expr(e).map(|value| value.ty);
+        self.next_id = next_id;
+        self.module.globals.truncate(globals);
+        ty
     }
 
     // A function designator decays to a pointer, so both call forms arrive here as one.
@@ -840,6 +873,13 @@ impl Lowerer {
                         else_value: Box::new(right),
                     },
                 ))
+            }
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                let selected = self.generic_selected(controlling, associations)?;
+                self.expr(selected)
             }
             ExprKind::Call { callee, arguments } => {
                 let (callee, ty) = self.callee(callee)?;

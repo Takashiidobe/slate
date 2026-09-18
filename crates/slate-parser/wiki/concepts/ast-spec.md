@@ -479,6 +479,11 @@ GenericAssociation = Type { ty: TypeName, value: Expr } | Default(Expr)
 MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
 ```
 
+The AST keeps every `_Generic` association; sema picks one. The controlling
+operand is lvalue-converted first (array and function types decay to pointers,
+top-level qualifiers drop), so an association of array type can never be
+selected, matching clang's `-Wunreachable-code-generic-assoc`.
+
 Whether an identifier in `_Generic`, `sizeof(x)` or `(x)(y)` is a type is
 decided by the typedef-name set, the same as everywhere else in C parsing.
 
