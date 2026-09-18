@@ -191,6 +191,7 @@ unsigned long long int stdc_bit_ceil_ull(unsigned long long int value);
       unsigned long int: stdc_bit_ceil_ul,                                   \
       unsigned long long int: stdc_bit_ceil_ull)(value)
 
+#if !defined(__SLATE_LIBC_GLIBC)
 unsigned char  stdc_rotate_left_uc(unsigned char value, unsigned int count);
 unsigned short stdc_rotate_left_us(unsigned short value, unsigned int count);
 unsigned int   stdc_rotate_left_ui(unsigned int value, unsigned int count);
@@ -218,6 +219,7 @@ unsigned long long stdc_rotate_right_ull(unsigned long long value,
       unsigned int: stdc_rotate_right_ui,                                    \
       unsigned long int: stdc_rotate_right_ul,                               \
       unsigned long long int: stdc_rotate_right_ull)(value, count)
+#endif
 
 #if defined(__SLATE_LIBC_GLIBC)
 #define stdc_leading_zeros_uc(x) (stdc_leading_zeros_uc)(x)
