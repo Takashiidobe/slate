@@ -199,8 +199,8 @@ int   posix_memalign(void **memptr, size_t alignment, size_t size);
 int   setenv(const char *name, const char *value, int overwrite);
 int   unsetenv(const char *name);
 int   mkstemp(char *template);
-#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 int   mkostemp(char *template, int flags);
 #endif
 char *mkdtemp(char *template);
@@ -215,8 +215,8 @@ void   srandom(unsigned int seed);
 char  *initstate(unsigned int seed, char *state, size_t size);
 char  *setstate(char *state);
 int    putenv(char *string);
-#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 int    posix_openpt(int flags);
 int    grantpt(int fd);
 int    unlockpt(int fd);
@@ -224,8 +224,8 @@ char  *ptsname(int fd);
 #endif
 char  *l64a(long value);
 long   a64l(const char *s);
-#if !defined(__SLATE_LIBC_GLIBC) ||                                           \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 void   setkey(const char *key);
 #endif
 double drand48(void);
@@ -244,13 +244,13 @@ void            lcong48(unsigned short param[7]);
 #include <alloca.h>
 char *mktemp(char *template);
 int   mkstemps(char *template, int suffixlen);
-#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 int   mkostemps(char *template, int suffixlen, int flags);
 #endif
 void *valloc(size_t size);
-#if !defined(__SLATE_LIBC_GLIBC) ||                                           \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 void *memalign(size_t alignment, size_t size);
 #endif
 int   getloadavg(double loadavg[], int nelem);
@@ -259,8 +259,8 @@ int   clearenv(void);
 int   on_exit(void (*function)(int, void *), void *arg);
 #endif
 void *reallocarray(void *ptr, size_t nmemb, size_t size);
-#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 void  qsort_r(void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *, void *), void *arg);
 #endif

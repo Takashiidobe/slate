@@ -715,10 +715,11 @@ fn merge_record_layouts(surface: &mut OracleTypeSurface, dump: &str) {
     }
 }
 
-fn header_preprocessor_output(
+fn header_preprocessor_output_with_args(
     config: &ProbeConfig,
     header: &str,
     source: &Path,
+    language_args: &[&str],
 ) -> Result<String, String> {
     std::fs::write(source, format!("#include <{header}>\n"))
         .map_err(|error| format!("write {}: {error}", source.display()))?;
@@ -727,16 +728,18 @@ fn header_preprocessor_output(
     command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
-    command.args(["-std=gnu23", "-D_GNU_SOURCE", "-E", "-dD"]);
+    command.args(language_args);
+    command.args(["-E", "-dD"]);
     command.args(&config.defines);
     command.arg(source);
     command_output(command, &format!("extract oracle macros {header}"))
 }
 
-fn shim_header_preprocessor_output(
+fn shim_header_preprocessor_output_with_args(
     config: &ProbeConfig,
     header: &str,
     source: &Path,
+    language_args: &[&str],
 ) -> Result<String, String> {
     std::fs::write(source, format!("#include <{header}>\n"))
         .map_err(|error| format!("write {}: {error}", source.display()))?;
@@ -747,7 +750,8 @@ fn shim_header_preprocessor_output(
     command.arg("-nostdlibinc");
     command.arg("-isystem").arg(libc_shim_dir());
     command.arg("-D__SLATE_LIBC_SHIM");
-    command.args(["-std=gnu23", "-D_GNU_SOURCE", "-E", "-dD"]);
+    command.args(language_args);
+    command.args(["-E", "-dD"]);
     command.args(&config.defines);
     command.arg(source);
     command_output(command, &format!("extract shim macros {header}"))
@@ -850,10 +854,24 @@ pub fn extract_oracle_header_macros(
     header: &str,
     output_dir: &Path,
 ) -> Result<Vec<OracleMacro>, String> {
+    extract_oracle_header_macros_with_args(
+        config,
+        header,
+        output_dir,
+        &["-std=gnu23", "-D_GNU_SOURCE"],
+    )
+}
+
+pub fn extract_oracle_header_macros_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+    language_args: &[&str],
+) -> Result<Vec<OracleMacro>, String> {
     std::fs::create_dir_all(output_dir)
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
     let source = output_dir.join("oracle-macros.c");
-    let output = header_preprocessor_output(config, header, &source)?;
+    let output = header_preprocessor_output_with_args(config, header, &source, language_args)?;
     let raw = output_dir.join("oracle-macros.dD");
     std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
     parse_macro_directives(header, &output, &source, &|file| {
@@ -866,10 +884,24 @@ pub fn extract_shim_header_macros(
     header: &str,
     output_dir: &Path,
 ) -> Result<Vec<OracleMacro>, String> {
+    extract_shim_header_macros_with_args(
+        config,
+        header,
+        output_dir,
+        &["-std=gnu23", "-D_GNU_SOURCE"],
+    )
+}
+
+pub fn extract_shim_header_macros_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+    language_args: &[&str],
+) -> Result<Vec<OracleMacro>, String> {
     std::fs::create_dir_all(output_dir)
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
     let source = output_dir.join("shim-macros.c");
-    let output = shim_header_preprocessor_output(config, header, &source)?;
+    let output = shim_header_preprocessor_output_with_args(config, header, &source, language_args)?;
     let raw = output_dir.join("shim-macros.dD");
     std::fs::write(&raw, &output).map_err(|error| format!("write {}: {error}", raw.display()))?;
     parse_macro_directives(header, &output, &source, &|file| {
