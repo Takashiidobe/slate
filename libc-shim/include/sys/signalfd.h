@@ -1,14 +1,22 @@
 #ifndef _SLATE_SYS_SIGNALFD_H
 #define _SLATE_SYS_SIGNALFD_H
 
-#include <fcntl.h>
 #include <stdint.h>
+
+#if defined(__SLATE_LIBC_MUSL)
+#include <fcntl.h>
+#endif
 
 #define __NEED_sigset_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_MUSL)
 #define SFD_CLOEXEC  O_CLOEXEC
 #define SFD_NONBLOCK O_NONBLOCK
+#else
+#define SFD_CLOEXEC 02000000
+#define SFD_NONBLOCK 04000
+#endif
 
 int signalfd(int, const sigset_t *, int);
 

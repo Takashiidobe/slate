@@ -184,3 +184,6 @@ sys/sem.h
 sys/sendfile.h
 sys/shm.h
 sys/signal.h
+sys/signalfd.h
+sys/single_threaded.h
+sys/socket.h

@@ -128,3 +128,5 @@ sys/sem.h
 sys/sendfile.h
 sys/shm.h
 sys/signal.h
+sys/signalfd.h
+sys/socket.h
