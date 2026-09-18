@@ -612,6 +612,41 @@ The whole typedef chain is kept in metadata (`uint32_t` → `__uint32_t` →
 `unsigned int`) since it's the strongest idiomization signal
 (`size_t` → `usize`, `c_int` in FFI signatures).
 
+### Complex, imaginary, vector, and fixed-point types
+
+**Decided (shape only):** these are four distinct value-type families, not
+`NumericType` variants. A complex type contains a resolved real component
+type; an imaginary type contains a resolved component type but is not a
+complex value with a known-zero real part. A vector contains a resolved scalar
+element type and a lane count; source byte sizing is converted to lanes after
+the element's target storage size is known. A fixed-point type contains its
+kind (`_Fract` or `_Accum`), rank, signedness, saturation mode, and resolved
+scale/storage information. Source spelling and typedefs stay in type metadata.
+These are intended as structural `Type` variants, like pointer and array,
+because arithmetic and representation must remain visible without consulting
+source metadata. This is the type-shape decision of `slate-parser-lh7.2.17`,
+not an implemented IR API.
+
+**Out of scope for current IR lowering:** none of the four families is yet
+represented by `ir::Type`, and module lowering currently rejects their
+`TypeSpecifier`s. The separate implementation work is tracked by the four
+children of `slate-parser-lh7.2.17`:
+
+| Family | Reason lowering remains out of scope |
+| ------ | ------------------------------------ |
+| Complex | Real/complex conversions, pair arithmetic, equality, and component storage need contracts beyond scalar `ArithSema::Floating`; GNU integer-complex types also need a deliberate component rule. |
+| Imaginary | Imaginary literals are explicitly rejected today; mixed real/imaginary operations can change the result family and cannot use scalar usual-arithmetic conversion unchanged. |
+| Vector | Byte-sized and lane-sized AST forms need validated target-dependent lane counts and alignment; vector arithmetic and comparisons require per-lane result and operation contracts. |
+| Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled. |
+
+`ArithSema` needs a distinct saturating fixed-point case rather than treating
+saturation as integer overflow. Vector operations need an explicit per-lane
+contract; complex and imaginary operations need their own result-family and
+floating-exception rules. No numeric operation should silently accept one of
+these types until its contract and conversions are pinned by FileCheck
+fixtures. Declaration-only support also requires target storage and ABI
+rules, so adding bare `Type` variants alone would not make headers lower.
+
 ### Records
 
 Layout is computed during lowering: field offsets, padding, alignment,
