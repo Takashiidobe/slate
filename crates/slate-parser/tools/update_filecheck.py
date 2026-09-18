@@ -186,6 +186,9 @@ def render_error(
 
 FILECHECK_LITERAL_RE = re.compile(r"\{\{|\}\}|\[\[")
 TEMP_FILECHECK_PATH_RE = re.compile(r'(["])[^"]*\.filecheck\.[^"]*(["])')
+# provenance line numbers track whatever the include path resolves to, so an
+# edit to a system header would otherwise restamp every fixture that reads it
+PROVENANCE_LINE_RE = re.compile(r"^(\s*line: )[0-9]+(,)$")
 FILECHECK_LITERAL_ESCAPES = {
     "{{": "{{\\{\\{}}",
     "}}": "{{[}][}]}}",
@@ -197,7 +200,8 @@ def escape_filecheck_literal(line: str) -> str:
     line = FILECHECK_LITERAL_RE.sub(
         lambda match: FILECHECK_LITERAL_ESCAPES[match.group(0)], line
     )
-    return TEMP_FILECHECK_PATH_RE.sub(r"\1{{.*}}\2", line)
+    line = TEMP_FILECHECK_PATH_RE.sub(r"\1{{.*}}\2", line)
+    return PROVENANCE_LINE_RE.sub(r"\1{{[0-9]+}}\2", line)
 
 
 CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")

@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               8,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 719,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -62,7 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 719,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -93,7 +93,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               8,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 723,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -109,7 +109,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 723,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -125,7 +125,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 718,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -164,7 +164,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 5,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -180,7 +180,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 5,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -208,7 +208,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 6,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -224,7 +224,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 6,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -252,7 +252,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 7,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -268,7 +268,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 7,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -296,7 +296,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 9,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -312,7 +312,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 9,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -340,7 +340,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 10,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -356,7 +356,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 10,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -384,7 +384,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 11,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -400,7 +400,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 11,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -431,7 +431,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 12,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -447,7 +447,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 12,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -475,7 +475,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 13,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -491,7 +491,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 13,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -519,7 +519,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 14,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -535,7 +535,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 14,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -563,7 +563,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 15,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -579,7 +579,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 15,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -607,7 +607,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 16,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -623,7 +623,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 16,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -654,7 +654,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 18,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -670,7 +670,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 18,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -701,7 +701,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 19,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -717,7 +717,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 19,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -748,7 +748,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 20,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -764,7 +764,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 20,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -808,7 +808,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                               11,
 // DEFAULT-NEXT:                                                           ),
 // DEFAULT-NEXT:                                                           kind: System,
-// DEFAULT-NEXT:                                                           line: 21,
+// DEFAULT-NEXT:                                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                                           system_header: Some(
 // DEFAULT-NEXT:                                                               FileId(
 // DEFAULT-NEXT:                                                                   9,
@@ -824,7 +824,7 @@ int main(void) {
 // DEFAULT-NEXT:                                               11,
 // DEFAULT-NEXT:                                           ),
 // DEFAULT-NEXT:                                           kind: System,
-// DEFAULT-NEXT:                                           line: 21,
+// DEFAULT-NEXT:                                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                                           system_header: Some(
 // DEFAULT-NEXT:                                               FileId(
 // DEFAULT-NEXT:                                                   9,
@@ -840,7 +840,7 @@ int main(void) {
 // DEFAULT-NEXT:                               11,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 21,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -856,7 +856,7 @@ int main(void) {
 // DEFAULT-NEXT:               11,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -888,7 +888,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 53,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -904,7 +904,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 53,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -936,7 +936,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 55,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -952,7 +952,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 55,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -984,7 +984,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 56,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1000,7 +1000,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 56,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1014,7 +1014,7 @@ int main(void) {
 // DEFAULT-NEXT:               specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:                   ty: Integer(
 // DEFAULT-NEXT:                       Ranked {
-// DEFAULT-NEXT:                           rank: LongLong,
+// DEFAULT-NEXT:                           rank: Long,
 // DEFAULT-NEXT:                           signed: false,
 // DEFAULT-NEXT:                       },
 // DEFAULT-NEXT:                   ),
@@ -1032,7 +1032,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 57,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1048,7 +1048,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 57,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1080,7 +1080,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 59,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1096,7 +1096,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 59,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1128,7 +1128,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 260,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1144,7 +1144,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 260,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1176,7 +1176,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 262,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1192,7 +1192,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 262,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1224,7 +1224,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 264,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1240,7 +1240,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 264,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1272,7 +1272,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 267,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1288,7 +1288,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 267,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1320,7 +1320,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 271,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1336,7 +1336,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 271,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1365,7 +1365,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 816,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1381,7 +1381,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 816,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1433,7 +1433,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   4,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: 170,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
 // DEFAULT-NEXT:                                                       4,
@@ -1451,7 +1451,7 @@ int main(void) {
 // DEFAULT-NEXT:                               4,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 170,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   4,
@@ -1467,7 +1467,7 @@ int main(void) {
 // DEFAULT-NEXT:               4,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 170,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   4,
@@ -1494,7 +1494,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 718,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1523,7 +1523,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 828,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1539,7 +1539,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 828,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1568,7 +1568,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 840,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1584,7 +1584,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 840,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1613,7 +1613,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 846,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1629,7 +1629,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 846,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1658,7 +1658,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 870,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1674,7 +1674,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 870,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1703,7 +1703,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 882,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1719,7 +1719,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 882,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1748,7 +1748,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 888,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1764,7 +1764,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 888,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1793,7 +1793,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 894,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1809,7 +1809,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 894,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1838,7 +1838,7 @@ int main(void) {
 // DEFAULT-NEXT:                               8,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 900,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1854,7 +1854,7 @@ int main(void) {
 // DEFAULT-NEXT:               8,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 900,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1881,7 +1881,7 @@ int main(void) {
 // DEFAULT-NEXT:               11,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 4,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
@@ -1933,7 +1933,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   9,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: 99,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
 // DEFAULT-NEXT:                                                       9,
@@ -1963,7 +1963,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                   9,
 // DEFAULT-NEXT:                                               ),
 // DEFAULT-NEXT:                                               kind: System,
-// DEFAULT-NEXT:                                               line: 99,
+// DEFAULT-NEXT:                                               line: {{[0-9]+}},
 // DEFAULT-NEXT:                                               system_header: Some(
 // DEFAULT-NEXT:                                                   FileId(
 // DEFAULT-NEXT:                                                       9,
@@ -1980,7 +1980,7 @@ int main(void) {
 // DEFAULT-NEXT:                               9,
 // DEFAULT-NEXT:                           ),
 // DEFAULT-NEXT:                           kind: System,
-// DEFAULT-NEXT:                           line: 99,
+// DEFAULT-NEXT:                           line: {{[0-9]+}},
 // DEFAULT-NEXT:                           system_header: Some(
 // DEFAULT-NEXT:                               FileId(
 // DEFAULT-NEXT:                                   9,
@@ -1996,7 +1996,7 @@ int main(void) {
 // DEFAULT-NEXT:               9,
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:           kind: System,
-// DEFAULT-NEXT:           line: 99,
+// DEFAULT-NEXT:           line: {{[0-9]+}},
 // DEFAULT-NEXT:           system_header: Some(
 // DEFAULT-NEXT:               FileId(
 // DEFAULT-NEXT:                   9,
