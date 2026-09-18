@@ -614,18 +614,17 @@ fn shim_header_ast_with_args(
         .map_err(|error| format!("parse Clang shim AST for {header}: {error}"))
 }
 
-fn record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, String> {
+fn record_layout_dump(
+    config: &ProbeConfig,
+    source: &Path,
+    language_args: &[&str],
+) -> Result<String, String> {
     let mut command = Command::new(&config.compiler);
     command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
-    command.args([
-        "-std=gnu23",
-        "-D_GNU_SOURCE",
-        "-Xclang",
-        "-fdump-record-layouts-complete",
-        "-fsyntax-only",
-    ]);
+    command.args(language_args);
+    command.args(["-Xclang", "-fdump-record-layouts-complete", "-fsyntax-only"]);
     command.args(&config.defines);
     command.arg(source);
     let output = command
@@ -642,20 +641,19 @@ fn record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, Str
     Ok(dump)
 }
 
-fn shim_record_layout_dump(config: &ProbeConfig, source: &Path) -> Result<String, String> {
+fn shim_record_layout_dump(
+    config: &ProbeConfig,
+    source: &Path,
+    language_args: &[&str],
+) -> Result<String, String> {
     let mut command = Command::new(&config.compiler);
     command.args(&config.compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg("-nostdlibinc");
     command.arg("-isystem").arg(libc_shim_dir());
     command.arg("-D__SLATE_LIBC_SHIM");
-    command.args([
-        "-std=gnu23",
-        "-D_GNU_SOURCE",
-        "-Xclang",
-        "-fdump-record-layouts-complete",
-        "-fsyntax-only",
-    ]);
+    command.args(language_args);
+    command.args(["-Xclang", "-fdump-record-layouts-complete", "-fsyntax-only"]);
     command.args(&config.defines);
     command.arg(source);
     let output = command
@@ -1458,9 +1456,28 @@ pub fn extract_oracle_type_surface(
     header: &str,
     output_dir: &Path,
 ) -> Result<OracleTypeSurface, String> {
+    extract_oracle_type_surface_with_args(
+        config,
+        header,
+        output_dir,
+        &["-std=gnu23", "-D_GNU_SOURCE"],
+    )
+}
+
+pub fn extract_oracle_type_surface_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+    language_args: &[&str],
+) -> Result<OracleTypeSurface, String> {
     std::fs::create_dir_all(output_dir)
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
-    let root = header_ast(config, header, &output_dir.join("oracle-header.c"))?;
+    let root = header_ast_with_args(
+        config,
+        header,
+        &output_dir.join("oracle-header.c"),
+        language_args,
+    )?;
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut surface = OracleTypeSurface {
@@ -1471,7 +1488,7 @@ pub fn extract_oracle_type_surface(
     collect_type_surface(&root, &aliases, &mut surface, &|node| {
         node_is_public_header_declaration(node, header)
     });
-    let dump = record_layout_dump(config, &output_dir.join("oracle-header.c"))?;
+    let dump = record_layout_dump(config, &output_dir.join("oracle-header.c"), language_args)?;
     std::fs::write(output_dir.join("oracle-record-layouts.txt"), &dump)
         .map_err(|error| format!("write record layouts: {error}"))?;
     merge_record_layouts(&mut surface, &dump);
@@ -1492,9 +1509,28 @@ pub fn extract_shim_type_surface(
     header: &str,
     output_dir: &Path,
 ) -> Result<OracleTypeSurface, String> {
+    extract_shim_type_surface_with_args(
+        config,
+        header,
+        output_dir,
+        &["-std=gnu23", "-D_GNU_SOURCE"],
+    )
+}
+
+pub fn extract_shim_type_surface_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+    language_args: &[&str],
+) -> Result<OracleTypeSurface, String> {
     std::fs::create_dir_all(output_dir)
         .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
-    let root = shim_header_ast(config, header, &output_dir.join("shim-header.c"))?;
+    let root = shim_header_ast_with_args(
+        config,
+        header,
+        &output_dir.join("shim-header.c"),
+        language_args,
+    )?;
     let mut aliases = BTreeMap::new();
     collect_type_aliases(&root, &mut aliases);
     let mut surface = OracleTypeSurface {
@@ -1505,7 +1541,7 @@ pub fn extract_shim_type_surface(
     collect_type_surface(&root, &aliases, &mut surface, &|node| {
         node_is_public_shim_declaration(node, header, config)
     });
-    let dump = shim_record_layout_dump(config, &output_dir.join("shim-header.c"))?;
+    let dump = shim_record_layout_dump(config, &output_dir.join("shim-header.c"), language_args)?;
     std::fs::write(output_dir.join("shim-record-layouts.txt"), &dump)
         .map_err(|error| format!("write record layouts: {error}"))?;
     merge_record_layouts(&mut surface, &dump);
@@ -1557,6 +1593,8 @@ pub fn render_type_surface_probe(
         if typedef.name != "va_list"
             && !typedef.name.starts_with('_')
             && simple_type(&typedef.underlying_type)
+            && !typedef.underlying_type.starts_with("struct ")
+            && !typedef.underlying_type.starts_with("union ")
         {
             let oracle_name = format!("slate_oracle_typedef_{}", identifier(&typedef.name));
             checks.push(format!(
@@ -1629,6 +1667,33 @@ pub fn write_type_surface_probe(
     let source = output_dir.join("shim-type-surface.c");
     std::fs::write(&source, render_type_surface_probe(header, surface)?)
         .map_err(|error| format!("write {}: {error}", source.display()))?;
+    Ok(GeneratedProbe {
+        object: output_dir.join("shim-type-surface.o"),
+        executable: output_dir.join("shim-type-surface"),
+        source,
+    })
+}
+
+pub fn write_type_surface_probe_with_args(
+    header: &str,
+    surface: &OracleTypeSurface,
+    language_args: &[&str],
+    output_dir: &Path,
+) -> Result<GeneratedProbe, String> {
+    let defines = language_args
+        .iter()
+        .filter_map(|arg| arg.strip_prefix("-D"))
+        .filter_map(|define| define.split_once('='))
+        .map(|(name, value)| format!("#define {name} {value}\n"))
+        .collect::<String>();
+    let source = output_dir.join("shim-type-surface.c");
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    std::fs::write(
+        &source,
+        format!("{defines}{}", render_type_surface_probe(header, surface)?),
+    )
+    .map_err(|error| format!("write {}: {error}", source.display()))?;
     Ok(GeneratedProbe {
         object: output_dir.join("shim-type-surface.o"),
         executable: output_dir.join("shim-type-surface"),

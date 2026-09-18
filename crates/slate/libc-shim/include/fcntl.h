@@ -55,7 +55,9 @@ struct open_how {
   uint64_t mode;
   uint64_t resolve;
 };
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int openat2(int, const char *, const struct open_how *, size_t);
+#endif
 #endif
 
 #ifndef S_IRUSR

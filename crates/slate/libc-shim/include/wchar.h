@@ -36,8 +36,9 @@
 #define __NEED_FILE
 #define __NEED_wctype_t
 #define __NEED_mbstate_t
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L) ||            \
     defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
     defined(__SLATE_LIBC_FREEBSD)
 #define __NEED_locale_t
@@ -218,8 +219,9 @@ int                wscanf(const wchar_t *, ...);
       default: (wmemchr)((s), (c), (n)))
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L) ||            \
     defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
     defined(__SLATE_LIBC_FREEBSD)
 size_t   mbsnrtowcs(wchar_t *, const char **, size_t, size_t, mbstate_t *);

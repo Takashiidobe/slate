@@ -49,8 +49,9 @@ int toupper(int c);
 int isctype(int, int);
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L)
 
 #define __NEED_locale_t
 #include <bits/types.h>

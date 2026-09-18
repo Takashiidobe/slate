@@ -7,12 +7,13 @@ use support::libc_declaration_probe::{
     diff_macro_names, extract_oracle_header_files, extract_oracle_header_functions,
     extract_oracle_header_macros, extract_oracle_header_macros_with_args,
     extract_oracle_header_objects, extract_oracle_header_symbol_names_with_args,
-    extract_oracle_type_surface, extract_shim_header_files, extract_shim_header_functions,
-    extract_shim_header_macros, extract_shim_header_macros_with_args,
-    extract_shim_header_symbol_names_with_args, extract_shim_type_surface,
-    select_cross_checkable_shim_macros, select_oracle_object_macro_value_probes,
-    select_shim_object_macro_value_probes, write_header_matrix_probe,
-    write_header_object_macro_value_probe, write_header_shim_probe, write_type_surface_probe,
+    extract_oracle_type_surface, extract_oracle_type_surface_with_args, extract_shim_header_files,
+    extract_shim_header_functions, extract_shim_header_macros,
+    extract_shim_header_macros_with_args, extract_shim_header_symbol_names_with_args,
+    extract_shim_type_surface, select_cross_checkable_shim_macros,
+    select_oracle_object_macro_value_probes, select_shim_object_macro_value_probes,
+    write_header_matrix_probe, write_header_object_macro_value_probe, write_header_shim_probe,
+    write_type_surface_probe, write_type_surface_probe_with_args,
 };
 use support::libc_probe::resolve;
 use support::libc_shim::{Architecture, LibcVariant};
@@ -610,6 +611,31 @@ fn feature_visibility_matrix() {
                 });
                 if let Err(error) = result {
                     failures.push(format!("{target} {mode} {header}: {error}"));
+                }
+                if (mode.starts_with("largefile") || mode.starts_with("file-"))
+                    && LARGE_FILE_HEADERS.contains(&header)
+                {
+                    let type_result = extract_oracle_type_surface_with_args(
+                        &config,
+                        header,
+                        &output.join("oracle-types"),
+                        args,
+                    )
+                    .and_then(
+                        |oracle| match write_type_surface_probe_with_args(
+                            header,
+                            &oracle,
+                            args,
+                            &output.join("type-probe"),
+                        ) {
+                            Ok(probe) => compile_and_link_shim_probe(&config, &probe),
+                            Err(error) if error.contains("no safe type-surface checks") => Ok(()),
+                            Err(error) => Err(error),
+                        },
+                    );
+                    if let Err(error) = type_result {
+                        failures.push(format!("{target} {mode} {header} types: {error}"));
+                    }
                 }
                 let macro_result = extract_oracle_header_macros_with_args(
                     &config,

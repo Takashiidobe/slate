@@ -32,6 +32,8 @@
 #define __NEED_pthread_key_t
 #define __NEED_pthread_spinlock_t
 #define __NEED_clockid_t
+#define __NEED_struct_timespec
+#define __NEED_size_t
 #include <bits/types.h>
 
 #include <sched.h>
@@ -200,13 +202,11 @@ int pthread_rwlock_trywrlock(pthread_rwlock_t *);
 int pthread_rwlock_timedwrlock(pthread_rwlock_t *__restrict,
                                const struct timespec *__restrict);
 int pthread_rwlock_unlock(pthread_rwlock_t *);
-
 int pthread_spin_init(pthread_spinlock_t *, int);
 int pthread_spin_destroy(pthread_spinlock_t *);
 int pthread_spin_lock(pthread_spinlock_t *);
 int pthread_spin_trylock(pthread_spinlock_t *);
 int pthread_spin_unlock(pthread_spinlock_t *);
-
 int pthread_barrier_init(pthread_barrier_t *__restrict,
                          const pthread_barrierattr_t *__restrict, unsigned);
 int pthread_barrier_destroy(pthread_barrier_t *);

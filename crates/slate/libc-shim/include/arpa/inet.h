@@ -9,9 +9,7 @@
 #include <inttypes.h>
 #endif
 #if defined(__SLATE_LIBC_GLIBC)
-#include <sys/time.h>
 #include <sys/types.h>
-#include <time.h>
 #endif
 
 #if defined(__SLATE_LIBC_GLIBC)
@@ -32,7 +30,9 @@ char       *inet_ntoa(struct in_addr);
 int         inet_pton(int, const char *__restrict, void *__restrict);
 const char *inet_ntop(int, const void *__restrict, char *__restrict, socklen_t);
 
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int            inet_aton(const char *, struct in_addr *);
+#endif
 struct in_addr inet_makeaddr(in_addr_t, in_addr_t);
 in_addr_t      inet_lnaof(struct in_addr);
 in_addr_t      inet_netof(struct in_addr);

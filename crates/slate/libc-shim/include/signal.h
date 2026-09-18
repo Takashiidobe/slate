@@ -48,13 +48,8 @@ struct sigevent {
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
-#if defined(__SLATE_LIBC_GLIBC)
-#if defined(_GNU_SOURCE) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
-#include <unistd.h>
-#endif
-#if defined(__SLATE_ARCH_AARCH64)
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_ARCH_AARCH64)
 #include <sys/types.h>
-#endif
 #endif
 
 #ifdef _GNU_SOURCE
@@ -150,7 +145,7 @@ typedef struct sigaltstack stack_t;
 #define CLD_STOPPED   5
 #define CLD_CONTINUED 6
 
-typedef struct {
+typedef struct siginfo_t {
 #ifdef __SI_SWAP_ERRNO_CODE
   int si_signo, si_code, si_errno;
 #else
@@ -266,7 +261,8 @@ int __libc_current_sigrtmax(void);
 #define SIGRTMAX (__libc_current_sigrtmax())
 
 int kill(pid_t, int);
-#if defined(_GNU_SOURCE) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#if defined(_GNU_SOURCE) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L && \
+    !defined(__SLATE_LIBC_MUSL)
 int tgkill(pid_t, pid_t, int);
 #endif
 
@@ -281,21 +277,36 @@ int sigsuspend(const sigset_t *);
 int sigaction(int, const struct sigaction *__restrict,
               struct sigaction *__restrict);
 int sigpending(sigset_t *);
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                          \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 199506L) ||           \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500)
 int sigwait(const sigset_t *__restrict, int *__restrict);
+#endif
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                          \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200112L) ||           \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 600)
 int sigwaitinfo(const sigset_t *__restrict, siginfo_t *__restrict);
 int sigtimedwait(const sigset_t *__restrict, siginfo_t *__restrict,
                  const struct timespec *__restrict);
 int sigqueue(pid_t, int, union sigval);
+#endif
 
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                          \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 199506L) ||           \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500)
 int pthread_sigmask(int, const sigset_t *__restrict, sigset_t *__restrict);
 int pthread_kill(pthread_t, int);
+#endif
 
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                          \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500)
 void psiginfo(const siginfo_t *, const char *);
 void psignal(int, const char *);
+#endif
 
 #endif
 
-#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                           \
     (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 int  killpg(pid_t, int);
 int  sigaltstack(const stack_t *__restrict, stack_t *__restrict);
@@ -306,7 +317,7 @@ int  sigpause(int);
 int  sigrelse(int);
 void (*sigset(int, void (*)(int)))(int);
 
-#if defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_LIBC_GLIBC) && (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
 #define sigmask(sig) ((int)(1u << ((sig) - 1)))
 int sigreturn(struct sigcontext *) __THROW;
 int sigstack(struct sigstack *, struct sigstack *) __THROW;

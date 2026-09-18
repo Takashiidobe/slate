@@ -4,12 +4,11 @@
 #include <features.h>
 
 #define __NEED_id_t
+#define __NEED_struct_timeval
 #ifdef _GNU_SOURCE
 #define __NEED_pid_t
 #endif
 #include <bits/types.h>
-
-#include <sys/time.h>
 
 #if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_32)
 typedef unsigned long rlim_t;

@@ -39,15 +39,23 @@
 #include <bits/types.h>
 
 int   pipe(int[2]);
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int   pipe2(int[2], int);
+#endif
 int   close(int);
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 202405L
 int   posix_close(int, int);
+#endif
 int   dup(int);
 int   dup2(int, int);
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int   dup3(int, int, int);
+#endif
 off_t lseek(int, off_t, int);
 int   fsync(int);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int   fdatasync(int);
+#endif
 
 #if (defined(__SLATE_LIBC_GLIBC) &&                                           \
      (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))) ||                       \
@@ -57,15 +65,20 @@ void closefrom(int);
 
 ssize_t read(int, void *, size_t);
 ssize_t write(int, const void *, size_t);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 ssize_t pread(int, void *, size_t, off_t);
 ssize_t pwrite(int, const void *, size_t, off_t);
+#endif
 
 int chown(const char *, uid_t, gid_t);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int fchown(int, uid_t, gid_t);
 int lchown(const char *, uid_t, gid_t);
 int fchownat(int, const char *, uid_t, gid_t, int);
+#endif
 
 int     link(const char *, const char *);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int     linkat(int, const char *, int, const char *, int);
 int     symlink(const char *, const char *);
 int     symlinkat(const char *, int, const char *);
@@ -76,6 +89,7 @@ int     unlinkat(int, const char *, int);
 int     rmdir(const char *);
 int     truncate(const char *, off_t);
 int     ftruncate(int, off_t);
+#endif
 
 #define F_OK 0
 #define W_OK 2
@@ -83,10 +97,14 @@ int     ftruncate(int, off_t);
 #define R_OK 4
 
 int access(const char *, int);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int faccessat(int, const char *, int, int);
+#endif
 
 int   chdir(const char *);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int   fchdir(int);
+#endif
 char *getcwd(char *, size_t);
 
 unsigned alarm(unsigned);
@@ -94,23 +112,29 @@ unsigned sleep(unsigned);
 int      pause(void);
 
 pid_t          fork(void);
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 202405L
 pid_t          _Fork(void);
+#endif
 int            execve(const char *, char *const[], char *const[]);
 int            execv(const char *, char *const[]);
 int            execle(const char *, const char *, ...);
 int            execl(const char *, const char *, ...);
 int            execvp(const char *, char *const[]);
 int            execlp(const char *, const char *, ...);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int            fexecve(int, char *const[], char *const[]);
+#endif
 _Noreturn void _exit(int);
 
 pid_t getpid(void);
 pid_t getppid(void);
 pid_t getpgrp(void);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 pid_t getpgid(pid_t);
 int   setpgid(pid_t, pid_t);
 pid_t setsid(void);
 pid_t getsid(pid_t);
+#endif
 char *ttyname(int);
 int   ttyname_r(int, char *, size_t);
 int   isatty(int);
@@ -123,15 +147,21 @@ gid_t getgid(void);
 gid_t getegid(void);
 int   getgroups(int, gid_t[]);
 int   setuid(uid_t);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int   seteuid(uid_t);
+#endif
 int   setgid(gid_t);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int   setegid(gid_t);
+#endif
 
 char *getlogin(void);
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int   getlogin_r(char *, size_t);
 int   gethostname(char *, size_t);
-char *ctermid(char *);
+#endif
 
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE + 0 >= 200112L
 int          getopt(int, char *const[], const char *);
 extern char *optarg;
 extern int   optind, opterr, optopt;
@@ -140,6 +170,7 @@ long   pathconf(const char *, int);
 long   fpathconf(int, int);
 long   sysconf(int);
 size_t confstr(int, char *, size_t);
+#endif
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define F_ULOCK 0
