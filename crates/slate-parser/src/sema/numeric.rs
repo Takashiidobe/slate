@@ -19,6 +19,8 @@ use thiserror::Error;
 pub enum ResolveError {
     #[error("unsupported in numeric IR lowering: {0}")]
     Unsupported(&'static str),
+    #[error("invalid in this context: {0}")]
+    Invalid(&'static str),
     #[error("integer literal `{0}` has no supported target type")]
     IntegerLiteral(String),
     #[error("invalid operands to binary expression: {left} {operator} {right}")]

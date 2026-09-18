@@ -433,7 +433,16 @@ impl Lowerer {
     fn unevaluated(&mut self, e: &Expr) -> Result<Type, ResolveError> {
         let next_id = self.next_id;
         let globals = self.module.globals.len();
-        let ty = self.expr(e).map(|value| value.ty);
+        // lvalue conversion keeps a bit-field's declared type; integer promotion does not apply here
+        let ty = match self.place(e) {
+            Ok(
+                place @ Place {
+                    kind: PlaceKind::Field { bits: Some(_), .. },
+                    ..
+                },
+            ) => Ok(place.ty),
+            _ => self.expr(e).map(|value| value.ty),
+        };
         self.next_id = next_id;
         self.module.globals.truncate(globals);
         ty
@@ -597,6 +606,12 @@ impl Lowerer {
         let globals = self.module.globals.len();
         let next_id = self.next_id;
         let result = match self.place(operand) {
+            Ok(Place {
+                kind: PlaceKind::Field { bits: Some(_), .. },
+                ..
+            }) => Err(ResolveError::Invalid(
+                "application of sizeof or alignof to a bit-field",
+            )),
             Ok(place) => Ok(place.ty),
             Err(_) => self.expr(operand).map(|value| value.ty),
         };
@@ -751,7 +766,7 @@ impl Lowerer {
             } => {
                 let place = self.place(operand)?;
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
-                    return Err(ResolveError::Unsupported("address of bit-field"));
+                    return Err(ResolveError::Invalid("address of a bit-field"));
                 }
                 let ty = self.pointer(place.ty.clone(), false);
                 Ok(self.value(e, ty, ValueKind::AddressOf(place)))

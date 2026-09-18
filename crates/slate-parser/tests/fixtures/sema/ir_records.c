@@ -45,6 +45,13 @@ unsigned long wide_bits(struct Flags *f) {
     return f->wide;
 }
 
+int bit_types(struct Flags *f) {
+    return _Generic(f->low, unsigned: 1, int: 2)
+         + _Generic(f->present, _Bool: 4, int: 8)
+         + (int)sizeof(f->plain)
+         + (int)_Alignof(f->plain);
+}
+
 void update_bits(struct Flags *f, unsigned v) {
     f->low = v;
     f->high += 1;
@@ -123,24 +130,27 @@ void update_bits(struct Flags *f, unsigned v) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %17 @wide_bits(%18 f: ptr<@type7>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%18))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
-// IR-NEXT:         let %22: ptr<@type7> [synthetic] = read<ptr<@type7>>(%18);
-// IR-NEXT:         let %23: u64 [synthetic] = read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%22))));
-// IR-NEXT:         let %24: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%23), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%22))), read<u64>(%24));
+// IR-NEXT:         let %24: ptr<@type7> [synthetic] = read<ptr<@type7>>(%18);
+// IR-NEXT:         let %25: u64 [synthetic] = read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%24))));
+// IR-NEXT:         let %26: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%25), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%24))), read<u64>(%26));
 // IR-NEXT:         return read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%18))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @update_bits(%20 f: ptr<@type7>, %21 v: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type7>>(%20))), read<u32>(%21));
-// IR-NEXT:         let %25: ptr<@type7> [synthetic] = read<ptr<@type7>>(%20);
-// IR-NEXT:         let %26: u32 [synthetic] = read<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%25))));
-// IR-NEXT:         let %27: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%26)), const<i32>(1)));
-// IR-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%25))), read<u32>(%27));
-// IR-NEXT:         let %28: ptr<@type7> [synthetic] = read<ptr<@type7>>(%20);
-// IR-NEXT:         let %29: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%28))));
-// IR-NEXT:         let %30: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%29), const<i32>(1));
-// IR-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%28))), read<i32>(%30));
-// IR-NEXT:         write<bool>(bitfield5<unit=1, bytes=8..14, bits=40..41>(deref(read<ptr<@type7>>(%20))), ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// IR-NEXT:         write<@type0>(bitfield6<unit=1, bytes=8..14, bits=41..43>(deref(read<ptr<@type7>>(%20))), int_to_enum<@type0, reason=assign>(const<i32>(1)));
+// IR-NEXT:     fn %19 @bit_types(%20 f: ptr<@type7>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(4)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4)))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))));
+// IR-NEXT:     }
+// IR-NEXT:     fn %21 @update_bits(%22 f: ptr<@type7>, %23 v: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type7>>(%22))), read<u32>(%23));
+// IR-NEXT:         let %27: ptr<@type7> [synthetic] = read<ptr<@type7>>(%22);
+// IR-NEXT:         let %28: u32 [synthetic] = read<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%27))));
+// IR-NEXT:         let %29: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%28)), const<i32>(1)));
+// IR-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%27))), read<u32>(%29));
+// IR-NEXT:         let %30: ptr<@type7> [synthetic] = read<ptr<@type7>>(%22);
+// IR-NEXT:         let %31: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%30))));
+// IR-NEXT:         let %32: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%31), const<i32>(1));
+// IR-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%30))), read<i32>(%32));
+// IR-NEXT:         write<bool>(bitfield5<unit=1, bytes=8..14, bits=40..41>(deref(read<ptr<@type7>>(%22))), ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// IR-NEXT:         write<@type0>(bitfield6<unit=1, bytes=8..14, bits=41..43>(deref(read<ptr<@type7>>(%22))), int_to_enum<@type0, reason=assign>(const<i32>(1)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

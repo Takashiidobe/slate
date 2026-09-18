@@ -258,9 +258,17 @@ is what the emitter masks and extends to. A bit-field rvalue promotes by its
 declared width rather than its storage type, so `unsigned low : 3` reads as
 `reinterpret<i32, reason=promotion>(read<u32>(bitfield0(..)))` and the
 compound-assignment old value promotes the same way before the operator runs.
-Zero-width bit-fields have no storage and are not addressable members;
-`&f->low` is rejected. Named zero-width bit-fields are already rejected at
-layout.
+Zero-width bit-fields have no storage and are not addressable members. A
+bit-field is not an object with its own address or layout, so `&f->low`,
+`sizeof(f->low)`, `_Alignof(f->low)`, and `offsetof` on one are rejected as
+`ResolveError::Invalid` — a distinct variant from `Unsupported`, because these
+are invalid C rather than unimplemented lowering. Named zero-width bit-fields
+are already rejected at layout.
+
+The width-based promotion is an rvalue rule, so unevaluated contexts do not
+see it: `_Generic`'s controlling operand undergoes lvalue conversion but not
+integer promotion, and therefore selects on the declared bit-field type
+(`_Generic(f->low, unsigned: .., int: ..)` picks `unsigned`).
 
 Flexible-array semantics remain future work, as do full qualifiers,
 callable types/ABI contracts, and structured aggregate initializers, in their
