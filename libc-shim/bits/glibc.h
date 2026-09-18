@@ -9,6 +9,8 @@
 
 #ifdef _GNU_SOURCE
 #define __USE_GNU 1
+#define __USE_ISOC95 1
+#define __USE_ISOC99 1
 #endif
 
 #if defined(_DEFAULT_SOURCE)
@@ -33,6 +35,8 @@
 
 #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L
 #define __USE_XOPEN2K 1
+#define __USE_ISOC95 1
+#define __USE_ISOC99 1
 #endif
 
 #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L
@@ -49,6 +53,8 @@
 #define __USE_XOPEN_EXTENDED 1
 #define __USE_UNIX98         1
 #if (_XOPEN_SOURCE - 0) >= 600
+#define __USE_ISOC95         1
+#define __USE_ISOC99         1
 #define __USE_XOPEN2K    1
 #define __USE_XOPEN2KXSI 1
 #if (_XOPEN_SOURCE - 0) >= 700

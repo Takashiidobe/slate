@@ -37,7 +37,9 @@
 
 int       iswalnum(wint_t);
 int       iswalpha(wint_t);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC99)
 int       iswblank(wint_t);
+#endif
 int       iswcntrl(wint_t);
 int       iswdigit(wint_t);
 int       iswgraph(wint_t);
