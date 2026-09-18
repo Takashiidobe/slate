@@ -121,8 +121,24 @@ pub struct Place {
 pub enum PlaceKind {
     Binding(BindingId),
     Deref(Box<Value>),
-    Field { base: Box<Place>, index: usize },
-    Index { base: Box<Value>, index: Box<Value> },
+    Field {
+        base: Box<Place>,
+        index: usize,
+        bits: Option<BitFieldAccess>,
+    },
+    Index {
+        base: Box<Value>,
+        index: Box<Value>,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub struct BitFieldAccess {
+    pub unit: usize,
+    pub unit_offset: u64,
+    pub unit_size: u64,
+    pub bit_offset: u64,
+    pub width: u32,
 }
 
 impl Place {
@@ -152,8 +168,19 @@ impl Place {
                 base.display_metadata(false, None).with_compact(compact),
                 index.display_metadata(false, None).with_compact(compact)
             ),
-            PlaceKind::Field { base, index } => {
-                write!(f, "field{index}(")?;
+            PlaceKind::Field { base, index, bits } => {
+                match bits {
+                    Some(bits) => write!(
+                        f,
+                        "bitfield{index}<unit={}, bytes={}..{}, bits={}..{}>(",
+                        bits.unit,
+                        bits.unit_offset,
+                        bits.unit_offset + bits.unit_size,
+                        bits.bit_offset,
+                        bits.bit_offset + u64::from(bits.width)
+                    )?,
+                    None => write!(f, "field{index}(")?,
+                }
                 base.format(f, compact)?;
                 f.write_str(")")
             }

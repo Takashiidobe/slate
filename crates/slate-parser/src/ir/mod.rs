@@ -5,8 +5,9 @@ mod names;
 mod numeric;
 
 pub use declarations::{
-    BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
-    RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
+    BitFieldAccess, BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place,
+    PlaceKind, RecordKind, RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind,
+    TypeId, Variable,
 };
 pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
 

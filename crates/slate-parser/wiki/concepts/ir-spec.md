@@ -240,11 +240,33 @@ runner and expectation generator derive the target triple from that directory.
 ARM targets let zero-width bit-fields raise record alignment, including in
 packed records; x86 targets do not.
 
-The bit-field units describe occupied bytes; access types and bit slices for
-Rust emission remain future work, as do flexible-array semantics. Full
-qualifiers, callable types/ABI contracts,
-projected places, and structured aggregate initializers remain in their
-respective lowering tasks. The name-resolution dump remains a separate
+**Decided:** member access is a projection path, not a `field_ptr` value.
+`PlaceKind::Field { base, index, bits }` names the field by its declaration
+index in the record's field list, so `o->inner.x` is
+`field0(field0(deref(..)))` and a union member is the same projection onto an
+overlapping `Type::Defined` — a union has no tag and no active-member node.
+Anonymous struct and union members keep their own field index, and a promoted
+member name expands during lowering into the chain through them, so nothing
+downstream repeats anonymous member lookup.
+
+A bit-field's place carries the resolved slice from the record layout:
+`bitfield1<unit=0, bytes=0..2, bits=3..8>(..)` is field 1, held in storage
+unit 0 (record bytes 0 through 2), occupying bits 3 through 8 counted from
+the least significant bit of that decoded unit. The place type stays the
+declared field type, which is what gives the read its signedness; the width
+is what the emitter masks and extends to. A bit-field rvalue promotes by its
+declared width rather than its storage type, so `unsigned low : 3` reads as
+`reinterpret<i32, reason=promotion>(read<u32>(bitfield0(..)))` and the
+compound-assignment old value promotes the same way before the operator runs.
+Zero-width bit-fields have no storage and are not addressable members;
+`&f->low` is rejected. Named zero-width bit-fields are already rejected at
+layout.
+
+Flexible-array semantics remain future work, as do full qualifiers,
+callable types/ABI contracts, and structured aggregate initializers, in their
+respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
+records, unions, anonymous members, and bit-field reads, writes, compound
+assignment, and increment. The name-resolution dump remains a separate
 diagnostic view, not the module declaration representation.
 
 ### Required constant evaluation, not optimization

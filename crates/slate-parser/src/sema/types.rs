@@ -801,6 +801,19 @@ impl TypeResolver {
                         continue;
                     };
                     if declaration.declarators.is_empty() {
+                        // a tagged struct/union body with no declarator declares the tag, not a member
+                        let anonymous = match &declaration.specifiers.ty {
+                            TypeSpecifier::Tag(TagSpecifier::Definition(id)) => self
+                                .tags
+                                .iter()
+                                .find(|tag| tag.value.id == *id)
+                                .is_some_and(|tag| tag.name.is_none() && tag.kind != TagKind::Enum),
+                            _ => false,
+                        };
+                        if !anonymous {
+                            self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
+                            continue;
+                        }
                         let resolved =
                             self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
                         let ty = resolved

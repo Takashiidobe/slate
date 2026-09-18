@@ -65,9 +65,10 @@ impl Hoister {
         let kind = match place.kind {
             PlaceKind::Binding(id) => PlaceKind::Binding(id),
             PlaceKind::Deref(value) => PlaceKind::Deref(Box::new(self.value(*value, out)?)),
-            PlaceKind::Field { base, index } => PlaceKind::Field {
+            PlaceKind::Field { base, index, bits } => PlaceKind::Field {
                 base: Box::new(self.place(*base, out)?),
                 index,
+                bits,
             },
             PlaceKind::Index { base, index } => PlaceKind::Index {
                 base: Box::new(self.value(*base, out)?),
@@ -88,9 +89,10 @@ impl Hoister {
                 let value = self.value(*value, out)?;
                 PlaceKind::Deref(Box::new(self.temporary(value, out)))
             }
-            PlaceKind::Field { base, index } => PlaceKind::Field {
+            PlaceKind::Field { base, index, bits } => PlaceKind::Field {
                 base: Box::new(self.stable_place(*base, out)?),
                 index,
+                bits,
             },
             PlaceKind::Index { base, index } => {
                 let base = self.value(*base, out)?;

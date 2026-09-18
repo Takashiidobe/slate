@@ -313,35 +313,104 @@ impl Lowerer {
                 } else {
                     self.place(base)?
                 };
-                let Some(TypeDefinitionKind::Record {
-                    fields: Some(fields),
-                    ..
-                }) = self.kind(&base.ty)
-                else {
-                    return Err(ResolveError::Unsupported(
-                        "member of incomplete or non-record",
-                    ));
-                };
-                let (index, field) = fields
-                    .iter()
-                    .enumerate()
-                    .find(|(_, f)| f.name.as_deref() == Some(field.value.as_str()))
-                    .ok_or(ResolveError::Unsupported("unknown or anonymous member"))?;
-                if field.bit_width.is_some() {
-                    return Err(ResolveError::Unsupported("bit-field access"));
-                }
-                Ok(Place {
-                    ty: field.ty.clone(),
-                    kind: PlaceKind::Field {
-                        base: Box::new(base),
-                        index,
-                    },
-                })
+                self.project(base, field.value.as_str())?
+                    .ok_or(ResolveError::Unsupported("unknown member"))
             }
             _ => Err(ResolveError::Unsupported(
                 "expression is not a supported place",
             )),
         }
+    }
+
+    fn record_body(&self, ty: &Type) -> Option<(Vec<Span<Field>>, Option<RecordLayout>)> {
+        match self.kind(ty)? {
+            TypeDefinitionKind::Record {
+                fields: Some(fields),
+                layout,
+                ..
+            } => Some((fields.clone(), layout.clone())),
+            TypeDefinitionKind::Alias(inner) => {
+                let inner = inner.clone();
+                self.record_body(&inner)
+            }
+            _ => None,
+        }
+    }
+
+    fn field_place(
+        &self,
+        base: Place,
+        index: usize,
+        field: &Field,
+        layout: Option<&RecordLayout>,
+    ) -> Result<Place, ResolveError> {
+        let bits = match field.bit_width {
+            Some(width) if width != 0 => {
+                let layout =
+                    layout.ok_or(ResolveError::Unsupported("bit-field in unlaid-out record"))?;
+                let unit = layout
+                    .field_units
+                    .get(index)
+                    .copied()
+                    .flatten()
+                    .ok_or(ResolveError::Unsupported("bit-field without storage unit"))?;
+                let position = layout
+                    .bit_offsets
+                    .get(index)
+                    .copied()
+                    .flatten()
+                    .ok_or(ResolveError::Unsupported("bit-field without bit offset"))?;
+                let unit = layout
+                    .bit_units
+                    .get(unit)
+                    .map(|storage| (unit, storage))
+                    .ok_or(ResolveError::Unsupported("bit-field without storage unit"))?;
+                Some(BitFieldAccess {
+                    unit: unit.0,
+                    unit_offset: unit.1.offset,
+                    unit_size: unit.1.size,
+                    bit_offset: position - unit.1.offset * 8,
+                    width,
+                })
+            }
+            Some(_) => return Err(ResolveError::Unsupported("zero-width bit-field access")),
+            None => None,
+        };
+        Ok(Place {
+            ty: field.ty.clone(),
+            kind: PlaceKind::Field {
+                base: Box::new(base),
+                index,
+                bits,
+            },
+        })
+    }
+
+    fn project(&self, base: Place, name: &str) -> Result<Option<Place>, ResolveError> {
+        let Some((fields, layout)) = self.record_body(&base.ty) else {
+            return Err(ResolveError::Unsupported(
+                "member of incomplete or non-record",
+            ));
+        };
+        if let Some((index, field)) = fields
+            .iter()
+            .enumerate()
+            .find(|(_, f)| f.name.as_deref() == Some(name))
+        {
+            return self
+                .field_place(base, index, field, layout.as_ref())
+                .map(Some);
+        }
+        for (index, field) in fields.iter().enumerate() {
+            if field.name.is_some() || self.record_body(&field.ty).is_none() {
+                continue;
+            }
+            let nested = self.field_place(base.clone(), index, field, layout.as_ref())?;
+            if let Some(found) = self.project(nested, name)? {
+                return Ok(Some(found));
+            }
+        }
+        Ok(None)
     }
 
     fn generic_selected<'e>(
@@ -404,7 +473,22 @@ impl Lowerer {
             let ty = self.pointer(place.ty.clone(), false);
             return Ok(self.value(e, ty, ValueKind::FunctionDecay { place }));
         }
-        Ok(self.value(e, place.ty.clone(), ValueKind::Read(place)))
+        let promote = self.promotes_by_width(&place);
+        let value = self.value(e, place.ty.clone(), ValueKind::Read(place));
+        Ok(if promote {
+            self.context
+                .convert(value, self.context.int_type(), ConversionReason::Promotion)
+        } else {
+            value
+        })
+    }
+
+    // a bit-field rvalue promotes by its declared width, not by its storage type
+    fn promotes_by_width(&self, place: &Place) -> bool {
+        matches!(
+            &place.kind,
+            PlaceKind::Field { bits: Some(bits), .. } if bits.width < self.context.target.int_width
+        )
     }
 
     fn binary(
@@ -480,6 +564,12 @@ impl Lowerer {
     ) -> Result<Value, ResolveError> {
         let place = self.place(target)?;
         let old = self.value(target, place.ty.clone(), ValueKind::OldValue);
+        let old = if self.promotes_by_width(&place) {
+            self.context
+                .convert(old, self.context.int_type(), ConversionReason::Promotion)
+        } else {
+            old
+        };
         let (ty, kind) = self.binary(op, old, rhs)?;
         let computation = self.convert(
             self.value(e, ty, kind),
@@ -660,6 +750,9 @@ impl Lowerer {
                 operand,
             } => {
                 let place = self.place(operand)?;
+                if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
+                    return Err(ResolveError::Unsupported("address of bit-field"));
+                }
                 let ty = self.pointer(place.ty.clone(), false);
                 Ok(self.value(e, ty, ValueKind::AddressOf(place)))
             }
