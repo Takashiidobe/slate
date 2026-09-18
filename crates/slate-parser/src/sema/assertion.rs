@@ -86,10 +86,12 @@ impl Checker<'_> {
                         Type::Array { element, .. } => Type::Pointer {
                             pointee: element,
                             is_const: false,
+                            access: crate::ir::Access::default(),
                         },
                         ty @ Type::Function { .. } => Type::Pointer {
                             pointee: Box::new(ty),
                             is_const: false,
+                            access: crate::ir::Access::default(),
                         },
                         ty => ty,
                     };

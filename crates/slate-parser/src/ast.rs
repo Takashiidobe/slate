@@ -1055,6 +1055,17 @@ impl Declarator {
         }
     }
 
+    pub fn array_qualifiers(&self) -> Option<Qualifiers> {
+        let mut layer = self;
+        for _ in 0..self.outermost_derivation()?.depth {
+            layer = layer.inner()?;
+        }
+        match layer {
+            Self::Array { qualifiers, .. } => Some(*qualifiers),
+            _ => None,
+        }
+    }
+
     pub fn function_parameters_mut(&mut self) -> Option<&mut ParameterList> {
         let depth = self.outermost_derivation()?.depth;
         let mut layer = self;

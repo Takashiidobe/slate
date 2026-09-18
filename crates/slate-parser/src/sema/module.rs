@@ -28,6 +28,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         context,
         names,
         bindings: HashMap::new(),
+        access: HashMap::new(),
         type_spans: HashMap::new(),
         next_id,
         break_targets: Vec::new(),
@@ -144,7 +145,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
             *length = Some(1);
         }
     }
-    super::effects_statements::normalize(&mut lower.module, lower.next_id)?;
+    super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.access)?;
     Ok(lower.module)
 }
 
@@ -161,11 +162,9 @@ fn check_specifiers(specifiers: &ast::DeclarationSpecifiers) -> Result<(), Resol
         || specifiers.is_inline
         || specifiers.is_noreturn
         || specifiers.is_constexpr
-        || specifiers.qualifiers.is_volatile
-        || specifiers.qualifiers.is_atomic
     {
         return Err(ResolveError::Unsupported(
-            "attributes, function specifiers, volatile or atomic access",
+            "attributes or function specifiers",
         ));
     }
     Ok(())
@@ -190,9 +189,20 @@ impl Lowerer {
                 .resolve(&parameter.specifiers, &parameter.declarator)?;
             let mut ty = resolved
                 .ty
+                .clone()
                 .ok_or(ResolveError::Unsupported("void parameter"))?;
+            let element_access = super::types::access(resolved.c.qualifiers);
+            let qualifiers = match ty {
+                Type::Array { .. } => parameter
+                    .declarator
+                    .array_qualifiers()
+                    .ok_or(ResolveError::Unsupported("array parameter declarator"))?,
+                _ => resolved.c.qualifiers,
+            };
             ty = match ty {
-                Type::Array { element, .. } => self.pointer(*element, false),
+                Type::Array { element, .. } => {
+                    self.qualified_pointer(*element, false, element_access)
+                }
                 function @ Type::Function { .. } => self.pointer(function, false),
                 other => other,
             };
@@ -206,6 +216,7 @@ impl Lowerer {
                 self.fresh()
             };
             self.bindings.insert(id, ty.clone());
+            self.access.insert(id, super::types::access(qualifiers));
             self.module
                 .metadata
                 .insert(parameter.id, resolved.c.entries());
@@ -219,6 +230,7 @@ impl Lowerer {
                 id,
                 name: name.map(str::to_owned),
                 ty,
+                restrict: qualifiers.is_restrict,
             }));
         }
         Ok(Parameters::Prototype {
@@ -286,11 +298,13 @@ impl Lowerer {
                     declarator.clone().with_value(definition.clone()),
                 );
             }
+            let qualifiers = resolved.c.qualifiers;
             let ty = resolved
                 .ty
                 .ok_or(ResolveError::Unsupported("void object"))?;
             let id = self.declaration_id(declarator.id, name)?;
             self.bindings.insert(id, ty.clone());
+            self.access.insert(id, super::types::access(qualifiers));
             if let Type::Function { return_type, .. } = &ty {
                 if !global || declarator.initializer.is_some() {
                     return Err(ResolveError::Unsupported(
@@ -351,6 +365,7 @@ impl Lowerer {
                 name: name.into(),
                 ty,
                 storage,
+                restrict: qualifiers.is_restrict,
                 initializer,
             };
             if global {

@@ -77,6 +77,9 @@ impl DisplayModule<'_> {
                 StorageDuration::Thread => "thread",
             }
         )?;
+        if variable.restrict {
+            f.write_str(" [restrict]")?;
+        }
         if let Some(value) = &variable.initializer {
             write!(
                 f,
@@ -151,8 +154,9 @@ impl DisplayModule<'_> {
                 }
                 Statement::Write { place, value } => write!(
                     f,
-                    "write<{}>({}, {})",
+                    "write<{}{}>({}, {})",
                     place.ty,
+                    place.access,
                     place.display_mode(self.compact),
                     value
                         .display_metadata(false, self.table())
@@ -405,8 +409,9 @@ impl fmt::Display for DisplayModule<'_> {
                         for (index, field) in fields.iter().enumerate() {
                             write!(
                                 f,
-                                "        field{index} {}: {}",
+                                "        field{index} {}: {}{}",
                                 field.name.as_deref().unwrap_or("<anonymous>"),
+                                field.access.prefix(),
                                 field.ty
                             )?;
                             if let Some(width) = field.bit_width {
@@ -515,6 +520,9 @@ impl fmt::Display for DisplayModule<'_> {
                             parameter.name.as_deref().unwrap_or("<unnamed>"),
                             parameter.ty
                         )?;
+                        if parameter.restrict {
+                            f.write_str(" [restrict]")?;
+                        }
                         metadata(f, self.table(), parameter.id)?;
                     }
                     if *variadic {

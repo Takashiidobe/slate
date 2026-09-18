@@ -2,9 +2,14 @@ use super::effects::Hoister;
 use super::numeric::ResolveError;
 use crate::ast::Span;
 use crate::ir::*;
+use std::collections::HashMap;
 
-pub(super) fn normalize(module: &mut Module, next_id: u32) -> Result<(), ResolveError> {
-    let mut hoister = Hoister::new(next_id, module.target.pointer_width);
+pub(super) fn normalize(
+    module: &mut Module,
+    next_id: u32,
+    access: HashMap<BindingId, Access>,
+) -> Result<(), ResolveError> {
+    let mut hoister = Hoister::new(next_id, module.target.pointer_width, access);
     for function in &mut module.functions {
         if let Some(body) = &mut function.value.body {
             *body = hoister.statements(std::mem::take(body))?;
@@ -55,6 +60,7 @@ impl Hoister {
                             let place = Place {
                                 ty: variable.ty.clone(),
                                 kind: PlaceKind::Binding(variable.id),
+                                access: self.access.get(&variable.id).copied().unwrap_or_default(),
                             };
                             out.push(span.clone().with_value(Statement::Let(variable)));
                             out.extend(effects);

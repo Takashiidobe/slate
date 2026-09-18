@@ -7,8 +7,8 @@ mod numeric;
 
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use declarations::{
-    AggregateMember, AggregateTarget, BitFieldAccess, BitFieldUnit, Enumerator, Field, Global,
-    Parameter, Parameters, Place, PlaceKind, RecordKind, RecordLayout, StorageDuration,
+    Access, AggregateMember, AggregateTarget, BitFieldAccess, BitFieldUnit, Enumerator, Field,
+    Global, Parameter, Parameters, Place, PlaceKind, RecordKind, RecordLayout, StorageDuration,
     TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
@@ -291,8 +291,9 @@ impl Value {
             }
             ValueKind::Store { place, value } => write!(
                 f,
-                "store<{}>({}, {})",
+                "store<{}{}>({}, {})",
                 self.ty,
+                place.access,
                 place.display_mode(compact),
                 value
                     .display_metadata(show_spans, metadata)
@@ -304,9 +305,10 @@ impl Value {
                 postfix,
             } => write!(
                 f,
-                "update<{}, result={}>({}, {})",
+                "update<{}, result={}{}>({}, {})",
                 self.ty,
                 if *postfix { "old" } else { "new" },
+                place.access,
                 place.display_mode(compact),
                 computation
                     .display_metadata(show_spans, metadata)
@@ -379,7 +381,13 @@ impl Value {
             ValueKind::Void => f.write_str("void"),
             ValueKind::Null => write!(f, "null<{}>", self.ty),
             ValueKind::Read(place) => {
-                write!(f, "read<{}>({})", place.ty, place.display_mode(compact))
+                write!(
+                    f,
+                    "read<{}{}>({})",
+                    place.ty,
+                    place.access,
+                    place.display_mode(compact)
+                )
             }
             ValueKind::VaArg { list } => {
                 write!(f, "va_arg<{}>({})", self.ty, list.display_mode(compact))

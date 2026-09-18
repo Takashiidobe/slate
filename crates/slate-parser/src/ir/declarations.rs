@@ -61,8 +61,50 @@ pub struct BitFieldUnit {
 pub struct Field {
     pub name: Option<String>,
     pub ty: Type,
+    #[debug(skip_if = Access::is_plain)]
+    pub access: Access,
     #[debug(skip_if = Option::is_none)]
     pub bit_width: Option<u32>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct Access {
+    pub volatile: bool,
+    pub atomic: bool,
+}
+
+impl Access {
+    pub fn is_plain(&self) -> bool {
+        *self == Self::default()
+    }
+
+    pub fn union(self, other: Self) -> Self {
+        Self {
+            volatile: self.volatile || other.volatile,
+            atomic: self.atomic || other.atomic,
+        }
+    }
+
+    pub fn prefix(self) -> &'static str {
+        match (self.volatile, self.atomic) {
+            (false, false) => "",
+            (true, false) => "volatile ",
+            (false, true) => "atomic ",
+            (true, true) => "volatile atomic ",
+        }
+    }
+}
+
+impl std::fmt::Display for Access {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.volatile {
+            f.write_str(", volatile")?;
+        }
+        if self.atomic {
+            f.write_str(", atomic=seq_cst")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -85,6 +127,7 @@ pub struct Variable {
     pub name: String,
     pub ty: Type,
     pub storage: StorageDuration,
+    pub restrict: bool,
     pub initializer: Option<Value>,
 }
 
@@ -123,6 +166,7 @@ pub struct Parameter {
     pub id: BindingId,
     pub name: Option<String>,
     pub ty: Type,
+    pub restrict: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -138,6 +182,7 @@ pub enum Parameters {
 pub struct Place {
     pub ty: Type,
     pub kind: PlaceKind,
+    pub access: Access,
 }
 
 #[derive(Debug, Clone)]

@@ -12,6 +12,7 @@ pub enum Type {
     Pointer {
         pointee: Box<Type>,
         is_const: bool,
+        access: super::Access,
     },
     Array {
         element: Box<Type>,
@@ -38,9 +39,16 @@ impl fmt::Display for Type {
             Self::VaList => f.write_str("va_list"),
             Self::Numeric(ty) => write!(f, "{ty}"),
             Self::Complex(ty) => write!(f, "complex<{ty}>"),
-            Self::Pointer { pointee, is_const } => {
-                write!(f, "ptr<{}{pointee}>", if *is_const { "const " } else { "" })
-            }
+            Self::Pointer {
+                pointee,
+                is_const,
+                access,
+            } => write!(
+                f,
+                "ptr<{}{}{pointee}>",
+                if *is_const { "const " } else { "" },
+                access.prefix()
+            ),
             Self::Array { element, length } => match length {
                 Some(length) => write!(f, "array<{element}, {length}>"),
                 None => write!(f, "array<{element}, incomplete>"),

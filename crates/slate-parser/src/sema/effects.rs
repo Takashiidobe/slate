@@ -1,17 +1,24 @@
 use super::numeric::ResolveError;
 use crate::ast::Span;
 use crate::ir::*;
+use std::collections::HashMap;
 
 pub(super) struct Hoister {
     next_id: u32,
     old: Vec<Value>,
+    pub(super) access: HashMap<BindingId, Access>,
 }
 
 impl Hoister {
-    pub(super) fn new(next_id: u32, _pointer_width: u32) -> Self {
+    pub(super) fn new(
+        next_id: u32,
+        _pointer_width: u32,
+        access: HashMap<BindingId, Access>,
+    ) -> Self {
         Self {
             next_id,
             old: Vec::new(),
+            access,
         }
     }
 
@@ -39,6 +46,7 @@ impl Hoister {
         Place {
             ty: source.ty.clone(),
             kind: PlaceKind::Binding(id),
+            access: Access::default(),
         }
     }
 
@@ -88,7 +96,11 @@ impl Hoister {
                 index: Box::new(self.value(*index, out)?),
             },
         };
-        Ok(Place { ty: place.ty, kind })
+        Ok(Place {
+            ty: place.ty,
+            kind,
+            access: place.access,
+        })
     }
 
     fn stable_place(
@@ -131,7 +143,11 @@ impl Hoister {
                 }
             }
         };
-        Ok(Place { ty: place.ty, kind })
+        Ok(Place {
+            ty: place.ty,
+            kind,
+            access: place.access,
+        })
     }
 
     fn branch(
@@ -197,6 +213,28 @@ impl Hoister {
                     value: value.clone(),
                 }));
                 return Ok(value);
+            }
+            ValueKind::Update {
+                place,
+                computation,
+                postfix,
+            } if place.access.atomic => {
+                let place = self.place(place, out)?;
+                self.old.push(Value {
+                    ty: place.ty.clone(),
+                    node: source.clone().with_value(ValueKind::OldValue),
+                });
+                let computation = self.value(*computation, out);
+                self.old.pop();
+                let update = Value {
+                    ty,
+                    node: source.with_value(ValueKind::Update {
+                        place,
+                        computation: Box::new(computation?),
+                        postfix,
+                    }),
+                };
+                return Ok(self.temporary(update, out));
             }
             ValueKind::Update {
                 place,

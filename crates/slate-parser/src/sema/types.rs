@@ -7,7 +7,7 @@ use crate::ast::{
 };
 use crate::const_expr::Encoding;
 use crate::ir::{
-    BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
+    Access, BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
     RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
 };
 use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
@@ -321,10 +321,12 @@ impl TypeResolver {
             Type::Array { element, .. } => Type::Pointer {
                 pointee: element,
                 is_const: false,
+                access: Access::default(),
             },
             ty @ Type::Function { .. } => Type::Pointer {
                 pointee: Box::new(ty),
                 is_const: false,
+                access: Access::default(),
             },
             ty => ty,
         };
@@ -513,17 +515,35 @@ impl TypeResolver {
     ) -> Result<ResolvedType, ResolveError> {
         let (base, spelling, canonical, chain) = self.base(&specifiers.ty)?;
         let prefix = qualifier_spelling(specifiers.qualifiers);
+        let qualifiers = merge_qualifiers(
+            self.specifier_qualifiers(&specifiers.ty),
+            specifiers.qualifiers,
+        );
         let mut resolved = ResolvedType {
             ty: base,
             c: CTypeMetadata {
                 spelling: format!("{prefix}{spelling}"),
                 canonical: format!("{prefix}{canonical}"),
                 typedef_chain: chain,
-                qualifiers: specifiers.qualifiers,
+                qualifiers,
             },
         };
         self.derive(declarator, &mut resolved)?;
         Ok(resolved)
+    }
+
+    fn specifier_qualifiers(&self, specifier: &TypeSpecifier) -> Qualifiers {
+        match specifier {
+            TypeSpecifier::Named(name) => match self.lookup(name) {
+                Some(Ordinary::Alias(alias)) => alias.c.qualifiers,
+                _ => Qualifiers::default(),
+            },
+            TypeSpecifier::Atomic(_) => Qualifiers {
+                is_atomic: true,
+                ..Qualifiers::default()
+            },
+            _ => Qualifiers::default(),
+        }
     }
 
     fn base(
@@ -532,6 +552,15 @@ impl TypeResolver {
     ) -> Result<(Option<Type>, String, String, Vec<String>), ResolveError> {
         let scalar = match specifier {
             TypeSpecifier::Void => return Ok((None, "void".into(), "void".into(), Vec::new())),
+            TypeSpecifier::Atomic(inner) => {
+                let inner = self.resolve(&inner.specifiers, &inner.declarator)?;
+                return Ok((
+                    inner.ty,
+                    format!("_Atomic({})", inner.c.spelling),
+                    format!("_Atomic({})", inner.c.canonical),
+                    Vec::new(),
+                ));
+            }
             TypeSpecifier::Named(name) => {
                 let Some(Ordinary::Alias(alias)) = self.lookup(name) else {
                     return Err(ResolveError::Unsupported("unknown typedef"));
@@ -779,10 +808,12 @@ impl TypeResolver {
                         Type::Array { element, .. } => Type::Pointer {
                             pointee: element,
                             is_const: false,
+                            access: access(parameter_type.c.qualifiers),
                         },
                         function @ Type::Function { .. } => Type::Pointer {
                             pointee: Box::new(function),
                             is_const: false,
+                            access: Access::default(),
                         },
                         other => other,
                     };
@@ -825,6 +856,7 @@ impl TypeResolver {
         resolved.ty = Some(Type::Pointer {
             pointee: Box::new(pointee),
             is_const: resolved.c.qualifiers.is_const,
+            access: access(resolved.c.qualifiers),
         });
         resolved.c.spelling = pointer_spelling(&resolved.c.spelling, qualifiers, grouped);
         resolved.c.canonical = pointer_spelling(&resolved.c.canonical, qualifiers, grouped);
@@ -887,10 +919,12 @@ impl TypeResolver {
                             self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
                         let ty = resolved
                             .ty
+                            .clone()
                             .ok_or(ResolveError::Unsupported("void record field"))?;
                         fields.push(item.clone().with_value(Field {
                             name: None,
                             ty,
+                            access: access(resolved.c.qualifiers),
                             bit_width: None,
                         }));
                         requests.push(field_request(
@@ -904,6 +938,7 @@ impl TypeResolver {
                             self.resolve(&declaration.specifiers, &declarator.declarator)?;
                         let ty = resolved
                             .ty
+                            .clone()
                             .ok_or(ResolveError::Unsupported("void record field"))?;
                         let bit_width = declarator
                             .bit_width
@@ -918,6 +953,7 @@ impl TypeResolver {
                         fields.push(declarator.clone().with_value(Field {
                             name: declarator.declarator.name().map(str::to_owned),
                             ty,
+                            access: access(resolved.c.qualifiers),
                             bit_width,
                         }));
                         requests.push(field_request(
@@ -1373,6 +1409,22 @@ fn substitute_enumerators(
     result
 }
 
+pub(super) fn access(qualifiers: Qualifiers) -> Access {
+    Access {
+        volatile: qualifiers.is_volatile,
+        atomic: qualifiers.is_atomic,
+    }
+}
+
+fn merge_qualifiers(a: Qualifiers, b: Qualifiers) -> Qualifiers {
+    Qualifiers {
+        is_const: a.is_const || b.is_const,
+        is_volatile: a.is_volatile || b.is_volatile,
+        is_restrict: a.is_restrict || b.is_restrict,
+        is_atomic: a.is_atomic || b.is_atomic,
+    }
+}
+
 fn qualifier_spelling(qualifiers: Qualifiers) -> String {
     let mut words = Vec::new();
     if qualifiers.is_const {
@@ -1581,6 +1633,7 @@ fn resolve_parameters(
     for parameter in signature.parameters() {
         let start = resolver.definitions.len();
         let resolved = resolver.resolve(&parameter.specifiers, &parameter.declarator)?;
+        let restrict = resolved.c.qualifiers.is_restrict;
         let ty = resolved
             .ty
             .ok_or(ResolveError::Unsupported("void parameter"))?;
@@ -1594,6 +1647,7 @@ fn resolve_parameters(
             id: BindingId(*next_binding),
             name: parameter.declarator.name().map(str::to_owned),
             ty,
+            restrict,
         }));
         *next_binding += 1;
     }

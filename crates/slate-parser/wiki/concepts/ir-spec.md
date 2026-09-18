@@ -291,7 +291,7 @@ see it: `_Generic`'s controlling operand undergoes lvalue conversion but not
 integer promotion, and therefore selects on the declared bit-field type
 (`_Generic(f->low, unsigned: .., int: ..)` picks `unsigned`).
 
-Flexible-array semantics remain future work (layout and initializers exist; the extent lives on the initializer value), as do full qualifiers,
+Flexible-array semantics remain future work (layout and initializers exist; the extent lives on the initializer value),
 and callable types/ABI contracts, in their respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
 records, unions, anonymous members, and bit-field reads, writes, compound
 assignment, and increment. The name-resolution dump remains a separate
@@ -982,6 +982,40 @@ of projections on places.
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
 is shown in the type (`*const T`) since Rust distinguishes it.
+
+### Qualified access
+
+Each qualifier lives where its meaning does, following CIR's
+`cir.load volatile` / `atomic(seq_cst)` flags on the memory op rather than
+on the type:
+
+- `volatile` and `_Atomic` are properties of an access. Every place
+  carries an `access` (volatile, atomic), printed on the node that touches
+  memory: `read<i32, volatile>(%g)`, `write<i32, atomic=seq_cst>(%c, v)`,
+  and likewise on `store` and `update`. Forming a place (`addr_of`,
+  `array_decay`) prints nothing because nothing is accessed.
+- A place's access comes from the binding's own qualifiers, from the
+  pointee qualifiers of the pointer it dereferences, and for fields from
+  the base's access plus the field's own (`field0 status: volatile i32` in
+  the record). Array element access is the array object's access, and
+  decay and `&` carry it back into the pointer type.
+- Pointer types keep pointee `volatile`/`_Atomic` next to `const`
+  (`ptr<volatile i32>`). The access through `*p` cannot be recovered any
+  other way. A volatile-qualified object type is not shown.
+- An atomic compound assignment or `++`/`--` is one read-modify-write, so
+  side-effect hoisting keeps `update<T, result=..., atomic=seq_cst>(place,
+  f(old))` whole in a synthetic temporary instead of splitting it into
+  read, compute, write. Volatile updates are split, and both the read and
+  the write stay volatile.
+- `restrict` is an aliasing promise about a pointer binding, so it is a
+  `[restrict]` flag on the parameter or variable. For an array parameter,
+  the qualifiers inside its first brackets (`int a[restrict 4]`) are the
+  adjusted pointer's own.
+- Qualifiers inherited through a typedef, and the `_Atomic(T)` specifier,
+  count the same as written qualifiers.
+
+`tests/fixtures/sema/ir_qualified_access.c` covers these. `_Atomic` size and
+alignment that differ from the unqualified type are not modeled yet.
 
 ## Things C leaves implicit that the IR materializes
 

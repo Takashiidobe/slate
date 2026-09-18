@@ -11,6 +11,7 @@ pub(super) struct Lowerer {
     pub module: Module,
     pub names: NameResolution,
     pub bindings: HashMap<BindingId, Type>,
+    pub access: HashMap<BindingId, Access>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
@@ -62,9 +63,14 @@ impl Lowerer {
     }
 
     pub fn pointer(&mut self, pointee: Type, is_const: bool) -> Type {
+        self.qualified_pointer(pointee, is_const, Access::default())
+    }
+
+    pub fn qualified_pointer(&mut self, pointee: Type, is_const: bool, access: Access) -> Type {
         Type::Pointer {
             pointee: Box::new(pointee),
             is_const,
+            access,
         }
     }
 
@@ -73,6 +79,20 @@ impl Lowerer {
             Type::Pointer { pointee, .. } => Ok((**pointee).clone()),
             _ => Err(ResolveError::Unsupported("expected pointer")),
         }
+    }
+
+    fn deref(&self, pointer: Value) -> Result<Place, ResolveError> {
+        let Type::Pointer {
+            pointee, access, ..
+        } = &pointer.ty
+        else {
+            return Err(ResolveError::Unsupported("expected pointer"));
+        };
+        Ok(Place {
+            ty: (**pointee).clone(),
+            access: *access,
+            kind: PlaceKind::Deref(Box::new(pointer)),
+        })
     }
 
     pub fn value<T: Clone>(&self, e: &Span<T>, ty: Type, kind: ValueKind) -> Value {
@@ -310,12 +330,13 @@ impl Lowerer {
                 Ok(Place {
                     ty,
                     kind: PlaceKind::Binding(id),
+                    access: self.access.get(&id).copied().unwrap_or_default(),
                 })
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
-                let declared = self
-                    .types
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                let resolved = self.types.resolve(&ty.specifiers, &ty.declarator)?;
+                let access = super::types::access(resolved.c.qualifiers);
+                let declared = resolved
                     .ty
                     .ok_or(ResolveError::Unsupported("void compound literal"))?;
                 let anchor = e.clone().with_value(());
@@ -339,6 +360,7 @@ impl Lowerer {
                         storage,
                         initializer: Box::new(value),
                     },
+                    access,
                 })
             }
             ExprKind::Unary {
@@ -346,10 +368,7 @@ impl Lowerer {
                 operand,
             } => {
                 let value = self.expr(operand)?;
-                Ok(Place {
-                    ty: self.pointee(&value.ty)?,
-                    kind: PlaceKind::Deref(Box::new(value)),
-                })
+                self.deref(value)
             }
             ExprKind::Unary {
                 op: UnaryOp::Real | UnaryOp::Imag,
@@ -363,6 +382,7 @@ impl Lowerer {
                 };
                 Ok(Place {
                     ty: Type::Numeric(component),
+                    access: base.access,
                     kind: PlaceKind::ComplexPart {
                         base: Box::new(base),
                         imaginary: matches!(
@@ -379,18 +399,12 @@ impl Lowerer {
                 let base = self.expr(base)?;
                 let index = self.expr(index)?;
                 let (pointer_ty, kind) = self.binary(BinaryOp::Add, base, index)?;
-                Ok(Place {
-                    ty: self.pointee(&pointer_ty)?,
-                    kind: PlaceKind::Deref(Box::new(self.value(e, pointer_ty, kind))),
-                })
+                self.deref(self.value(e, pointer_ty, kind))
             }
             ExprKind::Member { base, field, arrow } => {
                 let base = if *arrow {
                     let value = self.expr(base)?;
-                    Place {
-                        ty: self.pointee(&value.ty)?,
-                        kind: PlaceKind::Deref(Box::new(value)),
-                    }
+                    self.deref(value)?
                 } else {
                     self.place(base)?
                 };
@@ -459,6 +473,7 @@ impl Lowerer {
         };
         Ok(Place {
             ty: field.ty.clone(),
+            access: base.access.union(field.access),
             kind: PlaceKind::Field {
                 base: Box::new(base),
                 index,
@@ -551,12 +566,12 @@ impl Lowerer {
 
     fn read(&mut self, e: &Expr, place: Place) -> Result<Value, ResolveError> {
         if let Type::Array { element, length } = &place.ty {
-            let ty = self.pointer((**element).clone(), false);
+            let ty = self.qualified_pointer((**element).clone(), false, place.access);
             let length = *length;
             return Ok(self.value(e, ty, ValueKind::ArrayDecay { place, length }));
         }
         if let Type::VariableArray { element, .. } = &place.ty {
-            let ty = self.pointer((**element).clone(), false);
+            let ty = self.qualified_pointer((**element).clone(), false, place.access);
             return Ok(self.value(
                 e,
                 ty,
@@ -729,6 +744,7 @@ impl Lowerer {
         let place = Place {
             ty: size_type.clone(),
             kind: PlaceKind::Binding(*extent),
+            access: Access::default(),
         };
         let count = self.value(e, size_type, ValueKind::Read(place));
         let element = self.runtime_size(e, element)?;
@@ -830,6 +846,7 @@ impl Lowerer {
                         name: format!(".str{}", id.0),
                         ty: ty.clone(),
                         storage: StorageDuration::Static,
+                        restrict: false,
                         initializer: Some(initializer),
                     },
                     linkage: Linkage::Internal,
@@ -840,6 +857,7 @@ impl Lowerer {
                     Place {
                         ty,
                         kind: PlaceKind::Binding(id),
+                        access: Access::default(),
                     },
                 )
             }
@@ -868,7 +886,7 @@ impl Lowerer {
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
                     return Err(ResolveError::Invalid("address of a bit-field"));
                 }
-                let ty = self.pointer(place.ty.clone(), false);
+                let ty = self.qualified_pointer(place.ty.clone(), false, place.access);
                 Ok(self.value(e, ty, ValueKind::AddressOf(place)))
             }
             ExprKind::Unary {
