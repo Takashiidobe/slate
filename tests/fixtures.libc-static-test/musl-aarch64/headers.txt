@@ -131,3 +131,8 @@ sys/signal.h
 sys/signalfd.h
 sys/socket.h
 sys/stat.h
+sys/statfs.h
+sys/statvfs.h
+sys/swap.h
+sys/syscall.h
+sys/sysinfo.h

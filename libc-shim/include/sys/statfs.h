@@ -1,7 +1,13 @@
 #ifndef _SLATE_SYS_STATFS_H
 #define _SLATE_SYS_STATFS_H
 
+#define __NEED_fsblkcnt_t
+#define __NEED_fsfilcnt_t
+#include <bits/types.h>
+
+#if defined(__SLATE_LIBC_MUSL)
 #include <sys/statvfs.h>
+#endif
 
 typedef struct __fsid_t {
   int __val[2];

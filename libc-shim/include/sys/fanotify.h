@@ -8,6 +8,7 @@ typedef struct {
   int __val[2];
 } fsid_t;
 #else
+#include <sys/statvfs.h>
 #include <sys/statfs.h>
 #endif
 
