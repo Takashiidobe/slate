@@ -153,3 +153,8 @@ sys/utsname.h
 sys/vfs.h
 sys/wait.h
 sys/xattr.h
+syscall.h
+sysexits.h
+syslog.h
+tar.h
+termios.h

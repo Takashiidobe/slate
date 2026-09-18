@@ -59,7 +59,17 @@ void syslog(int, const char *, ...);
 #define _PATH_LOG "/dev/log"
 #define __NEED_va_list
 #include <bits/types.h>
+#if defined(__SLATE_LIBC_MUSL) && defined(__SLATE_ARCH_X86_64)
+struct __va_list_tag;
+void vsyslog(int, const char *, struct __va_list_tag *);
+#elif defined(__SLATE_LIBC_MUSL) && defined(__SLATE_ARCH_X86)
+void vsyslog(int, const char *, char *);
+#elif defined(__SLATE_LIBC_MUSL)
+struct __va_list;
+void vsyslog(int, const char *, struct __va_list);
+#else
 void vsyslog(int, const char *, va_list);
+#endif
 #endif
 
 #endif

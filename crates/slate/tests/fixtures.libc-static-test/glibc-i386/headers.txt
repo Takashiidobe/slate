@@ -217,3 +217,8 @@ sys/vm86.h
 sys/vt.h
 sys/wait.h
 sys/xattr.h
+syscall.h
+sysexits.h
+syslog.h
+tar.h
+termios.h

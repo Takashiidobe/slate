@@ -32,4 +32,17 @@ enum {
 #define TVERSION "00"
 #define TVERSLEN 2
 
+#define TSUID 04000
+#define TSGID 02000
+#define TSVTX 01000
+#define TUREAD 00400
+#define TUWRITE 00200
+#define TUEXEC 00100
+#define TGREAD 00040
+#define TGWRITE 00020
+#define TGEXEC 00010
+#define TOREAD 00004
+#define TOWRITE 00002
+#define TOEXEC 00001
+
 #endif

@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/syslog.h>
+#endif
+
 #define LOG_EMERG   0
 #define LOG_ALERT   1
 #define LOG_CRIT    2
@@ -62,7 +66,17 @@ void syslog(int, const char *, ...);
 #define __NEED_va_list
 #include <bits/types.h>
 
-void vsyslog(int, const char *, va_list);
+#if defined(__SLATE_LIBC_MUSL) && defined(__SLATE_ARCH_X86_64)
+struct __va_list_tag;
+void vsyslog(int, const char *, struct __va_list_tag *);
+#elif defined(__SLATE_LIBC_MUSL) && defined(__SLATE_ARCH_X86)
+void vsyslog(int, const char *, char *);
+#elif defined(__SLATE_LIBC_MUSL)
+struct __va_list;
+void vsyslog(int, const char *, struct __va_list);
+#else
+void vsyslog(int, const char *, __va_list);
+#endif
 #if defined(SYSLOG_NAMES)
 #define INTERNAL_NOPRI 0x10
 #define INTERNAL_MARK  (LOG_NFACILITIES << 3)
