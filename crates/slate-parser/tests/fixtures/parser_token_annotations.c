@@ -47,7 +47,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0:]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 43,
 // DEFAULT-NEXT:                               length: 19,
@@ -95,7 +95,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 99,
 // DEFAULT-NEXT:                               length: 24,
@@ -126,7 +126,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:               loc: Loc {
 // DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                       [[#FILE0]],
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   offset: 0,
 // DEFAULT-NEXT:                   length: 18,
@@ -209,7 +209,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 170,
 // DEFAULT-NEXT:                               length: 22,
@@ -227,7 +227,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:                                   ],
 // DEFAULT-NEXT:                                   loc: Loc {
 // DEFAULT-NEXT:                                       file: FileId(
-// DEFAULT-NEXT:                                           3,
+// DEFAULT-NEXT:                                           [[#FILE0]],
 // DEFAULT-NEXT:                                       ),
 // DEFAULT-NEXT:                                       offset: 201,
 // DEFAULT-NEXT:                                       length: 25,
@@ -297,7 +297,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 283,
 // DEFAULT-NEXT:                               length: 34,
@@ -335,7 +335,7 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:               ],
 // DEFAULT-NEXT:               loc: Loc {
 // DEFAULT-NEXT:                   file: FileId(
-// DEFAULT-NEXT:                       3,
+// DEFAULT-NEXT:                       [[#FILE0]],
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:                   offset: 435,
 // DEFAULT-NEXT:                   length: 22,

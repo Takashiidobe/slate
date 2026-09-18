@@ -36,8 +36,8 @@ pub enum LanguageStandard {
     Gnu11,
     C17,
     Gnu17,
-    #[default]
     C23,
+    #[default]
     Gnu23,
 }
 

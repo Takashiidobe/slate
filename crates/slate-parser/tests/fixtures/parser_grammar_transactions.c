@@ -236,7 +236,7 @@ T after_functions;
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0:]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 638,
 // DEFAULT-NEXT:                               length: 70,
@@ -422,7 +422,7 @@ T after_functions;
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 58,
 // DEFAULT-NEXT:                               length: 72,
@@ -504,7 +504,7 @@ T after_functions;
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 243,
 // DEFAULT-NEXT:                               length: 47,
@@ -577,7 +577,7 @@ T after_functions;
 // DEFAULT-NEXT:                           ],
 // DEFAULT-NEXT:                           loc: Loc {
 // DEFAULT-NEXT:                               file: FileId(
-// DEFAULT-NEXT:                                   3,
+// DEFAULT-NEXT:                                   [[#FILE0]],
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                               offset: 425,
 // DEFAULT-NEXT:                               length: 64,

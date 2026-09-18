@@ -116,83 +116,104 @@ impl<'a> Preprocessor<'a> {
         flavor: CompilerFlavor,
     ) -> Result<(), PPError> {
         use crate::target_info::{TargetEnvironment, TargetFamily, TargetOs};
-        let (name, source, defaults) = match (target.os, target.environment, target.family, flavor)
-        {
-            (
-                TargetOs::Windows,
-                TargetEnvironment::Msvc,
-                TargetFamily::X86_64,
-                CompilerFlavor::Msvc,
-            ) => (
-                "<msvc-x86_64-windows-predefines>",
-                include_str!("../predefines/msvc_19.51.36256_x86_64_windows.h"),
-                "",
-            ),
-            (
-                TargetOs::Windows,
-                TargetEnvironment::Msvc,
-                TargetFamily::AArch64,
-                CompilerFlavor::Msvc,
-            ) => (
-                "<msvc-aarch64-windows-predefines>",
-                include_str!("../predefines/msvc_19.51.36256_aarch64_windows.h"),
-                "",
-            ),
-            (
-                TargetOs::Windows,
-                TargetEnvironment::Msvc,
-                TargetFamily::X86_64,
-                CompilerFlavor::Clang,
-            ) => (
-                "<clang-x86_64-windows-msvc-predefines>",
-                include_str!("../predefines/clang-22.1.8_x86_64_windows_msvc.h"),
-                "",
-            ),
-            (
-                TargetOs::Windows,
-                TargetEnvironment::Msvc,
-                TargetFamily::AArch64,
-                CompilerFlavor::Clang,
-            ) => (
-                "<clang-aarch64-windows-msvc-predefines>",
-                include_str!("../predefines/clang-22.1.8_aarch64_windows_msvc.h"),
-                "",
-            ),
-            (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86_64, _) => (
-                "<clang-x86_64-linux-gnu-predefines>",
-                include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
-                include_str!("../predefines/slate_target_defaults.h"),
-            ),
-            (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86, _) => (
-                "<clang-i386-linux-gnu-predefines>",
-                include_str!("../predefines/clang-22.1.8_i686_linux_gnu.h"),
-                include_str!("../predefines/slate_x86_linux_defaults.h"),
-            ),
-            (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::AArch64, _) => (
-                "<clang-aarch64-linux-gnu-predefines>",
-                include_str!("../predefines/clang-22.1.8_aarch64_linux_gnu.h"),
-                include_str!("../predefines/slate_aarch64_linux_defaults.h"),
-            ),
-            (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
-                "<clang-armv7-linux-gnueabihf-predefines>",
-                include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
-                include_str!("../predefines/slate_arm32_linux_defaults.h"),
-            ),
-            (TargetOs::Linux, TargetEnvironment::GnuEabi, TargetFamily::Arm32, _) => (
-                "<clang-armv7-linux-gnueabi-predefines>",
-                include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
-                include_str!("../predefines/slate_arm32_linux_defaults.h"),
-            ),
-            _ => {
-                return Err(
-                    self.render_error(PPFailure::unlocated(PPErrorKind::Directive(format!(
-                        "no predefines for {flavor:?} on {}",
-                        target.triple
-                    )))),
-                );
-            }
+        let (name, source, defaults, gnu_namespace) =
+            match (target.os, target.environment, target.family, flavor) {
+                (
+                    TargetOs::Windows,
+                    TargetEnvironment::Msvc,
+                    TargetFamily::X86_64,
+                    CompilerFlavor::Msvc,
+                ) => (
+                    "<msvc-x86_64-windows-predefines>",
+                    include_str!("../predefines/msvc_19.51.36256_x86_64_windows.h"),
+                    "",
+                    "",
+                ),
+                (
+                    TargetOs::Windows,
+                    TargetEnvironment::Msvc,
+                    TargetFamily::AArch64,
+                    CompilerFlavor::Msvc,
+                ) => (
+                    "<msvc-aarch64-windows-predefines>",
+                    include_str!("../predefines/msvc_19.51.36256_aarch64_windows.h"),
+                    "",
+                    "",
+                ),
+                (
+                    TargetOs::Windows,
+                    TargetEnvironment::Msvc,
+                    TargetFamily::X86_64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-x86_64-windows-msvc-predefines>",
+                    include_str!("../predefines/clang-22.1.8_x86_64_windows_msvc.h"),
+                    "",
+                    "",
+                ),
+                (
+                    TargetOs::Windows,
+                    TargetEnvironment::Msvc,
+                    TargetFamily::AArch64,
+                    CompilerFlavor::Clang,
+                ) => (
+                    "<clang-aarch64-windows-msvc-predefines>",
+                    include_str!("../predefines/clang-22.1.8_aarch64_windows_msvc.h"),
+                    "",
+                    "",
+                ),
+                (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86_64, _) => (
+                    "<clang-x86_64-linux-gnu-predefines>",
+                    include_str!("../predefines/clang-22.1.8_x86_64_linux_gnu.h"),
+                    include_str!("../predefines/slate_target_defaults.h"),
+                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
+                ),
+                (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::X86, _) => (
+                    "<clang-i386-linux-gnu-predefines>",
+                    include_str!("../predefines/clang-22.1.8_i686_linux_gnu.h"),
+                    include_str!("../predefines/slate_x86_linux_defaults.h"),
+                    include_str!("../predefines/slate_gnu_namespace_i386_linux.h"),
+                ),
+                (TargetOs::Linux, TargetEnvironment::Gnu, TargetFamily::AArch64, _) => (
+                    "<clang-aarch64-linux-gnu-predefines>",
+                    include_str!("../predefines/clang-22.1.8_aarch64_linux_gnu.h"),
+                    include_str!("../predefines/slate_aarch64_linux_defaults.h"),
+                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
+                ),
+                (TargetOs::Linux, TargetEnvironment::GnuEabiHf, TargetFamily::Arm32, _) => (
+                    "<clang-armv7-linux-gnueabihf-predefines>",
+                    include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabihf.h"),
+                    include_str!("../predefines/slate_arm32_linux_defaults.h"),
+                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
+                ),
+                (TargetOs::Linux, TargetEnvironment::GnuEabi, TargetFamily::Arm32, _) => (
+                    "<clang-armv7-linux-gnueabi-predefines>",
+                    include_str!("../predefines/clang-22.1.8_armv7_linux_gnueabi.h"),
+                    include_str!("../predefines/slate_arm32_linux_defaults.h"),
+                    include_str!("../predefines/slate_gnu_namespace_linux.h"),
+                ),
+                _ => {
+                    return Err(
+                        self.render_error(PPFailure::unlocated(PPErrorKind::Directive(format!(
+                            "no predefines for {flavor:?} on {}",
+                            target.triple
+                        )))),
+                    );
+                }
+            };
+        let gnu_namespace = if self.standard.is_gnu() {
+            gnu_namespace
+        } else {
+            ""
         };
-        for (name, source) in [(name, source), ("<slate-target-defaults>", defaults)] {
+        for (name, source) in [
+            (name, source),
+            ("<slate-target-defaults>", defaults),
+            ("<slate-gnu-namespace-predefines>", gnu_namespace),
+        ]
+        .into_iter()
+        .filter(|(_, source)| !source.is_empty())
+        {
             let file = self.files.intern(PathBuf::from(name), HeaderKind::System);
             let Ok(nodes) = self.parse_source(source, file) else {
                 continue;
@@ -201,11 +222,10 @@ impl<'a> Preprocessor<'a> {
                 continue;
             }
         }
-        self.seed_standard_predefines();
-        Ok(())
+        self.seed_standard_predefines()
     }
 
-    fn seed_standard_predefines(&mut self) {
+    fn seed_standard_predefines(&mut self) -> Result<(), PPError> {
         match (
             self.standard.stdc_version(),
             self.macros.get_mut("__STDC_VERSION__"),
@@ -221,6 +241,113 @@ impl<'a> Preprocessor<'a> {
                 self.macros.remove("__STDC_VERSION__");
             }
             (Some(_), None) => {}
+        }
+
+        let mut defines = Vec::new();
+        if self.macros.contains_key("__GNUC__") {
+            if !self.standard.is_gnu() {
+                defines.push(("__STRICT_ANSI__".to_string(), "1".to_string()));
+            }
+            let inline_semantics = if self.standard.stdc_version().is_some() {
+                "__GNUC_STDC_INLINE__"
+            } else {
+                "__GNUC_GNU_INLINE__"
+            };
+            defines.push((inline_semantics.to_string(), "1".to_string()));
+        }
+        if self
+            .standard
+            .stdc_version()
+            .is_some_and(|version| version >= 202311)
+        {
+            defines.extend(self.c23_predefines());
+        }
+
+        for name in [
+            "__STRICT_ANSI__",
+            "__GNUC_STDC_INLINE__",
+            "__GNUC_GNU_INLINE__",
+            "__BOOL_DEFINED",
+            "__CHAR8_TYPE__",
+            "__CLANG_ATOMIC_CHAR8_T_LOCK_FREE",
+            "__GCC_ATOMIC_CHAR8_T_LOCK_FREE",
+        ] {
+            self.macros.remove(name);
+        }
+        for name in self
+            .macros
+            .keys()
+            .filter(|name| Self::is_binary_format_macro(name))
+            .cloned()
+            .collect::<Vec<_>>()
+        {
+            self.macros.remove(&name);
+        }
+
+        if defines.is_empty() {
+            return Ok(());
+        }
+        let source: String = defines
+            .iter()
+            .map(|(name, value)| format!("#define {name} {value}\n"))
+            .collect();
+        let file = self
+            .files
+            .intern(PathBuf::from("<standard predefines>"), HeaderKind::System);
+        self.parse_source(&source, file)
+            .map(drop)
+            .map_err(|failure| self.render_error(failure))
+    }
+
+    fn is_binary_format_macro(name: &str) -> bool {
+        name.ends_with("_FMTb__") || name.ends_with("_FMTB__")
+    }
+
+    fn c23_predefines(&self) -> Vec<(String, String)> {
+        let mut defines = vec![("__CHAR8_TYPE__".to_string(), "unsigned char".to_string())];
+        if self.macros.contains_key("_MSC_VER") {
+            defines.push(("__BOOL_DEFINED".to_string(), "1".to_string()));
+        }
+        for prefix in ["__CLANG_ATOMIC", "__GCC_ATOMIC"] {
+            if let Some(value) = self.scalar_macro_spelling(&format!("{prefix}_CHAR_LOCK_FREE")) {
+                defines.push((format!("{prefix}_CHAR8_T_LOCK_FREE"), value));
+            }
+        }
+        for (hex, binary) in [('x', 'b'), ('X', 'B')] {
+            let suffix = format!("_FMT{hex}__");
+            for name in self.macros.keys().filter(|name| name.ends_with(&suffix)) {
+                let Some(format) = self.string_macro_text(name) else {
+                    continue;
+                };
+                let Some(modifier) = format.strip_suffix(hex) else {
+                    continue;
+                };
+                defines.push((
+                    format!("{}_FMT{binary}__", &name[..name.len() - suffix.len()]),
+                    format!("\"{modifier}{binary}\""),
+                ));
+            }
+        }
+        defines
+    }
+
+    fn scalar_macro_spelling(&self, name: &str) -> Option<String> {
+        match self.macros.get(name)?.definition.replacement.as_slice() {
+            [only] => match &only.value {
+                Token::IntLit(text) => Some(text.clone()),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    fn string_macro_text(&self, name: &str) -> Option<String> {
+        match self.macros.get(name)?.definition.replacement.as_slice() {
+            [only] => match &only.value {
+                Token::StringLit(text) => Some(text.clone()),
+                _ => None,
+            },
+            _ => None,
         }
     }
 

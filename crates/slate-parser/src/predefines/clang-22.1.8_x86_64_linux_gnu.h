@@ -216,7 +216,6 @@
 #define __LDBL_NORM_MAX__ 1.18973149535723176502e+4932L
 #define __linux 1
 #define __linux__ 1
-#define linux 1
 #define __LITTLE_ENDIAN__ 1
 #define __LLONG_WIDTH__ 64
 #define __llvm__ 1
@@ -397,7 +396,6 @@
 #define __UINTPTR_WIDTH__ 64
 #define __unix 1
 #define __unix__ 1
-#define unix 1
 #define __USER_LABEL_PREFIX__ 
 #define __VERSION__ "Clang 22.1.8"
 #define __WCHAR_MAX__ 2147483647

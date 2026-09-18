@@ -220,36 +220,54 @@ def loosen_system_provenance(block: list[str]) -> list[str]:
 
 TAG_LABEL_RE = re.compile(r"^(// [^:]+: tag\[)[0-9]+(\].*)$")
 DECL_LABEL_RE = re.compile(r"^(// [^:]+: decl\[)[0-9]+(\].*)$")
-TAG_ID_OPEN_RE = re.compile(r"^// [^:]+:\s*(?:id: )?TagId\($")
-TAG_ID_VALUE_RE = re.compile(r"^(// [^:]+:\s*)([0-9]+)(,)$")
+ID_OPEN_RE = re.compile(r"^// [^:]+:\s*(?:[a-z_]+: )?(TagId|FileId)\($")
+ID_VALUE_RE = re.compile(r"^(// [^:]+:\s*)([0-9]+)(,)$")
+ID_VARIABLE_PREFIXES = {"TagId": "TAG", "FileId": "FILE", "NodeId": "NODE"}
+SPAN_FILE_RE = re.compile(r"(?<=\b)(spelling|expansion)=([0-9]+)(?=:)")
+NODE_ID_RE = re.compile(r"(?<![\w\[])#([0-9]+)\b")
 
 
 def loosen_ids(block: list[str]) -> list[str]:
-    """Match tag ids and decl indices by regex. Both count every declaration in
-    the translation unit, system headers included, so adding one declaration to
-    a header restamps every fixture that reads it. A tag id is also a
-    cross-reference, so each distinct id binds a FileCheck numeric variable on
-    first sight and reuses it afterwards: a declaration still has to name the
-    tag it named before, only the absolute number stops mattering. The tag[N]
-    and decl[N] labels are rendered from the same field the block already
-    checks, so they carry nothing a variable would preserve."""
-    variables: dict[str, str] = {}
+    """Match tag ids, file ids, and decl indices by regex. Tag ids and decl
+    indices count every declaration in the translation unit, system headers
+    included, so adding one declaration to a header restamps every fixture that
+    reads it; file ids are stamped in the order sources are interned, so adding
+    a predefine layer restamps every fixture that reports provenance. A tag id
+    or file id is also a cross-reference, so each distinct id binds a FileCheck
+    numeric variable on first sight and reuses it afterwards: a declaration
+    still has to name the tag it named before and come from the same header it
+    came from before, only the absolute number stops mattering. The tag[N] and
+    decl[N] labels are rendered from the same field the block already checks,
+    so they carry nothing a variable would preserve."""
+    variables: dict[tuple[str, str], tuple[str, int]] = {}
+    index = 0
+
+    def reference(kind: str, number: str) -> str:
+        key = (kind, number)
+        if key in variables:
+            name, defined_at = variables[key]
+            # FileCheck rejects a numeric variable used in the directive that defines it
+            return "{{[0-9]+}}" if defined_at == index else f"[[#{name}]]"
+        prefix = ID_VARIABLE_PREFIXES[kind]
+        name = f"{prefix}{sum(1 for other in variables if other[0] == kind)}"
+        variables[key] = (name, index)
+        return f"[[#{name}:]]"
+
     result: list[str] = []
-    for line in block:
+    for index, line in enumerate(block):
+        line = SPAN_FILE_RE.sub(
+            lambda span: f"{span.group(1)}={reference('FileId', span.group(2))}", line
+        )
+        line = NODE_ID_RE.sub(lambda node: f"#{reference('NodeId', node.group(1))}", line)
         label = TAG_LABEL_RE.match(line) or DECL_LABEL_RE.match(line)
         if label:
             result.append(f"{label.group(1)}{{{{[0-9]+}}}}{label.group(2)}")
             continue
-        if result and TAG_ID_OPEN_RE.match(result[-1]):
-            value = TAG_ID_VALUE_RE.match(line)
+        opener = ID_OPEN_RE.match(result[-1]) if result else None
+        if opener:
+            value = ID_VALUE_RE.match(line)
             if value:
-                number = value.group(2)
-                if number in variables:
-                    reference = f"[[#{variables[number]}]]"
-                else:
-                    variables[number] = f"TAG{len(variables)}"
-                    reference = f"[[#{variables[number]}:]]"
-                line = f"{value.group(1)}{reference}{value.group(3)}"
+                line = f"{value.group(1)}{reference(opener.group(1), value.group(2))}{value.group(3)}"
         result.append(line)
     return result
 

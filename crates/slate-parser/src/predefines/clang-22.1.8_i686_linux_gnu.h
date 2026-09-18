@@ -404,6 +404,3 @@
 #define __tune_pentium4__ 1
 #define __unix 1
 #define __unix__ 1
-#define i386 1
-#define linux 1
-#define unix 1

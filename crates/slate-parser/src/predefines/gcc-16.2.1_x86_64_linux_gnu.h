@@ -206,7 +206,6 @@
 #define __UINT_LEAST16_TYPE__ short unsigned int
 #define __DEC64X_MANT_DIG__ 34
 #define __DEC128_MAX_EXP__ 6145
-#define unix 1
 #define __UINT64_MAX__ 0xffffffffffffffffUL
 #define __FLT_IS_IEC_60559__ 1
 #define __GNUC_WIDE_EXECUTION_CHARSET_NAME "UTF-32LE"
@@ -278,7 +277,6 @@
 #define __INT_FAST8_MAX__ 0x7f
 #define __FLT128_MAX__ 1.18973149535723176508575932662800702e+4932F128
 #define __INTPTR_MAX__ 0x7fffffffffffffffL
-#define linux 1
 #define __FLT64_HAS_QUIET_NAN__ 1
 #define __FLT32_MIN_10_EXP__ (-37)
 #define __FLT32X_DIG__ 15

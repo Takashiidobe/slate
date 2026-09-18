@@ -254,7 +254,6 @@
 #define __BFLT16_IS_IEC_60559__ 0
 #define __FLT32_HAS_INFINITY__ 1
 #define __SIZEOF_LONG__ 8
-#define unix 1
 #define __FLT64_IS_IEC_60559__ 1
 #define __FLT16_IS_IEC_60559__ 1
 #define __DEC32_SUBNORMAL_MIN__ 0.000001E-95DF
@@ -295,7 +294,6 @@
 #define __FLT128_MAX__ 1.18973149535723176508575932662800702e+4932F128
 #define __INTPTR_MAX__ 0x7fffffffffffffffL
 #define __arm_inout(...) [[__extension__ arm::inout(__VA_ARGS__)]]
-#define linux 1
 #define __arm_streaming [[__extension__ arm::streaming]]
 #define __FLT64_HAS_QUIET_NAN__ 1
 #define __FLT64X_MIN_EXP__ (-16381)
