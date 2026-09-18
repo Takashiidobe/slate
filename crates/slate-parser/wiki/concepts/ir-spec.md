@@ -291,7 +291,7 @@ see it: `_Generic`'s controlling operand undergoes lvalue conversion but not
 integer promotion, and therefore selects on the declared bit-field type
 (`_Generic(f->low, unsigned: .., int: ..)` picks `unsigned`).
 
-Flexible-array semantics remain future work, as do full qualifiers,
+Flexible-array semantics remain future work (layout and omitted-member initialization exist; element initializers do not), as do full qualifiers,
 and callable types/ABI contracts, in their respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
 records, unions, anonymous members, and bit-field reads, writes, compound
 assignment, and increment. The name-resolution dump remains a separate
@@ -769,8 +769,14 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
 - `sizeof` of a brace-inferred array (or an unsized compound literal) in
   `static_assert` uses `TypeResolver::inferred_array_length`, which counts
   elements with the same designator and brace-elision rules.
-- Not yet: flexible-array-member initializers and brace elision after a
-  designator.
+- A designator whose target is an aggregate and whose value is a bare
+  expression continues brace elision with the following items
+  (`.a = 1, 2, 3` fills `a[0..3]`).
+- A trailing flexible array member has size 0 and the element's alignment in
+  the record layout, is skipped by positional initialization and `zero_fill`,
+  and stays out of the aggregate members. Initializing its elements is
+  `Unsupported`: the object's type would need an extent the record type
+  cannot carry.
 
 These facts support Rust storage and initialization choices; ownership,
 escape, and definite-initialization analysis can derive additional facts

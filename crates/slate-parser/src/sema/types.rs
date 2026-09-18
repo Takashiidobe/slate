@@ -1068,8 +1068,19 @@ impl TypeResolver {
         let mut aggregate_align = requested.unwrap_or(1);
         let mut offsets = Vec::new();
         let mut bit_offsets = Vec::new();
-        for (field, &(field_packed, field_aligned)) in fields.iter().zip(requests) {
-            let storage = self.storage(field.ty.clone())?;
+        for (position, (field, &(field_packed, field_aligned))) in
+            fields.iter().zip(requests).enumerate()
+        {
+            let storage = match &field.ty {
+                Type::Array {
+                    element,
+                    length: None,
+                } if kind == TagKind::Struct && position + 1 == fields.len() => StorageLayout {
+                    size_bytes: 0,
+                    alignment_bytes: self.storage((**element).clone())?.alignment_bytes,
+                },
+                ty => self.storage(ty.clone())?,
+            };
             let natural = u64::from(storage.alignment_bytes);
             let align =
                 (if packed || field_packed { 1 } else { natural }).max(field_aligned.unwrap_or(1));

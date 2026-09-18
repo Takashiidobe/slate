@@ -33,7 +33,8 @@ struct Cursor<'a> {
 type Step = (AggregateTarget, Type);
 
 fn initializable(field: &Field) -> bool {
-    field.name.is_some() || field.bit_width.is_none()
+    (field.name.is_some() || field.bit_width.is_none())
+        && !matches!(field.ty, Type::Array { length: None, .. })
 }
 
 fn bounds(target: AggregateTarget) -> (u64, u64) {
@@ -60,6 +61,19 @@ impl Builder {
             Shape::Union(fields) => !self.members.is_empty() || !fields.iter().any(initializable),
             Shape::Array { length, .. } => length.is_some_and(|length| self.next >= length),
             Shape::Scalar => true,
+        }
+    }
+
+    fn excess_message(&self) -> &'static str {
+        match &self.shape {
+            Shape::Struct(fields)
+                if fields
+                    .last()
+                    .is_some_and(|field| matches!(field.ty, Type::Array { length: None, .. })) =>
+            {
+                "flexible array member initializer"
+            }
+            _ => "excess elements in initializer",
         }
     }
 
@@ -405,17 +419,16 @@ impl Lowerer {
         let items = cursor.items;
         while cursor.index < items.len() {
             let item = &items[cursor.index];
-            if !item.designators.is_empty() {
+            if !item.designators.is_empty() && cursor.pending.is_none() {
                 if !braced {
                     break;
                 }
-                cursor.index += 1;
-                self.designated(&mut builder, &item.designators, &item.value)?;
+                self.designated(&mut builder, &item.designators, cursor)?;
                 continue;
             }
             if builder.full() {
                 if braced {
-                    return Err(ResolveError::Unsupported("excess elements in initializer"));
+                    return Err(ResolveError::Unsupported(builder.excess_message()));
                 }
                 break;
             }
@@ -485,13 +498,13 @@ impl Lowerer {
         &mut self,
         builder: &mut Builder,
         designators: &[Designator],
-        value: &Initializer,
+        cursor: &mut Cursor<'_>,
     ) -> Result<(), ResolveError> {
         let (first, rest) = designators
             .split_first()
             .ok_or(ResolveError::Unsupported("empty designator list"))?;
         let steps = self.resolve(builder, first)?;
-        self.apply(builder, &steps, rest, value)
+        self.apply(builder, &steps, rest, cursor)
     }
 
     fn apply(
@@ -499,13 +512,13 @@ impl Lowerer {
         builder: &mut Builder,
         steps: &[Step],
         rest: &[Designator],
-        value: &Initializer,
+        cursor: &mut Cursor<'_>,
     ) -> Result<(), ResolveError> {
         let Some(((target, ty), tail)) = steps.split_first() else {
             return Err(ResolveError::Unsupported("empty designator path"));
         };
         if tail.is_empty() && rest.is_empty() {
-            let entry = self.init_initializer(ty, value)?;
+            let entry = self.init_subobject(ty, cursor)?;
             builder.insert(*target, entry)?;
             builder.advance(*target);
             return Ok(());
@@ -513,9 +526,9 @@ impl Lowerer {
         let fresh = self.builder(ty)?;
         let sub = builder.sub(*target, fresh)?;
         if tail.is_empty() {
-            self.designated(sub, rest, value)?;
+            self.designated(sub, rest, cursor)?;
         } else {
-            self.apply(sub, tail, rest, value)?;
+            self.apply(sub, tail, rest, cursor)?;
         }
         builder.advance(*target);
         Ok(())
