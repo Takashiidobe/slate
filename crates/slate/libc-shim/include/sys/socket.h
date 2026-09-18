@@ -27,6 +27,10 @@
 
 #else
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
+
 struct msghdr {
   void         *msg_name;
   socklen_t     msg_namelen;
@@ -35,7 +39,9 @@ struct msghdr {
   size_t msg_iovlen;
 #else
   int msg_iovlen;
-#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+#if defined(__SLATE_LIBC_MUSL) && defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+  int __pad1;
+#elif defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
   int __slate_msg_iovlen_pad;
 #endif
 #endif
@@ -44,7 +50,9 @@ struct msghdr {
   size_t msg_controllen;
 #else
   socklen_t msg_controllen;
-#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+#if defined(__SLATE_LIBC_MUSL) && defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+  int __pad2;
+#elif defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
   int __slate_msg_controllen_pad;
 #endif
 #endif
@@ -56,7 +64,9 @@ struct cmsghdr {
   size_t cmsg_len;
 #else
   socklen_t cmsg_len;
-#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+#if defined(__SLATE_LIBC_MUSL) && defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
+  int __pad1;
+#elif defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ENDIAN_LITTLE)
   int __slate_cmsg_len_pad;
 #endif
 #endif
@@ -156,6 +166,18 @@ struct linger {
 #define PF_QIPCRTR    42
 #define PF_SMC        43
 #define PF_XDP        44
+#if defined(__SLATE_LIBC_GLIBC)
+#define PF_MCTP 45
+#define AF_MCTP PF_MCTP
+#define SOL_MPTCP 284
+#define SOL_MCTP 285
+#define SOL_SMC 286
+#define SOL_VSOCK 287
+#define MSG_TRYHARD MSG_DONTROUTE
+#define MSG_SOCK_DEVMEM MSG_SOCK_DEVMEM
+#define SCM_PIDFD SCM_PIDFD
+#define SCM_SECURITY SCM_SECURITY
+#endif
 #define PF_MAX        45
 
 #define AF_UNSPEC     PF_UNSPEC
