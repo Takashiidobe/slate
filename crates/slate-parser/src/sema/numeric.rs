@@ -7,9 +7,10 @@ use crate::const_expr::{
     resolve_float,
 };
 use crate::ir::{
-    ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
-    Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
-    ShiftFill, Type, UbPolicy, UnaryArithOp, Value, ValueKind,
+    AggregateMember, AggregateTarget, ArithOp, ArithSema, CompareOp, ConversionKind,
+    ConversionReason, ConversionSema, Exceptions, Fits, FloatType, FloatingSemantics, LogicalOp,
+    Number, NumericType, Overflow, Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, Value,
+    ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
@@ -101,8 +102,8 @@ impl Context {
                 if literal.suffix == FloatSuffix::F64x {
                     return Err(ResolveError::Unsupported("target-dependent f64x literals"));
                 }
-                if literal.imaginary {
-                    return Err(ResolveError::Unsupported("imaginary literals"));
+                if literal.imaginary && is_integer_spelling(&literal.spelling) {
+                    return Err(ResolveError::Unsupported("integer imaginary literals"));
                 }
                 let (format, number) = match resolve_float_literal(literal, &self.target)?.value {
                     FloatValue::Half(bits) => (FloatType::F16, Number::FloatBits(u128::from(bits))),
@@ -122,10 +123,28 @@ impl Context {
                         (FloatType::D128, Number::DecimalFloat(digits))
                     }
                 };
-                (
-                    Type::Numeric(NumericType::Float(format)),
-                    ValueKind::Constant(number),
-                )
+                if literal.imaginary {
+                    let component = Type::Numeric(NumericType::Float(format));
+                    let member = |index, number| AggregateMember {
+                        target: AggregateTarget::Index(index),
+                        value: Value {
+                            ty: component.clone(),
+                            node: expression.clone().with_value(ValueKind::Constant(number)),
+                        },
+                    };
+                    (
+                        Type::Complex(NumericType::Float(format)),
+                        ValueKind::Aggregate {
+                            members: vec![member(0, Number::float_zero(format)), member(1, number)],
+                            zero_fill: false,
+                        },
+                    )
+                } else {
+                    (
+                        Type::Numeric(NumericType::Float(format)),
+                        ValueKind::Constant(number),
+                    )
+                }
             }
             ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
             ExprKind::SizeOfType { ty } => {
@@ -219,6 +238,9 @@ impl Context {
             BinaryOp::BitXor => ArithOp::Xor,
             BinaryOp::ShiftLeft => ArithOp::Shl,
             BinaryOp::ShiftRight => ArithOp::Shr,
+            BinaryOp::Equal | BinaryOp::NotEqual if has_imaginary(&left, &right) => {
+                return self.imaginary_binary(op, left, right);
+            }
             BinaryOp::Equal | BinaryOp::NotEqual
                 if matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_)) =>
             {
@@ -235,6 +257,9 @@ impl Context {
         };
         let left = self.promote(left);
         let right = self.promote(right);
+        if has_imaginary(&left, &right) {
+            return self.imaginary_binary(op, left, right);
+        }
         if matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_)) {
             return self.complex_binary(op, left, right);
         }
@@ -317,6 +342,21 @@ impl Context {
             UnaryOp::Minus => UnaryArithOp::Neg,
             _ => UnaryArithOp::Not,
         };
+        if let Type::Imaginary(_) = operand.ty {
+            if arith != UnaryArithOp::Neg {
+                return Err(ResolveError::Invalid(
+                    "bitwise complement of imaginary operand",
+                ));
+            }
+            return Ok((
+                operand.ty.clone(),
+                ValueKind::Unary {
+                    op: arith,
+                    operand: Box::new(operand),
+                    semantics: ArithSema::Exact,
+                },
+            ));
+        }
         if let Type::Complex(component) = operand.ty {
             if arith != UnaryArithOp::Neg {
                 return Err(ResolveError::Unsupported("complex bitwise complement"));
@@ -369,6 +409,11 @@ impl Context {
     }
 
     fn compare(&self, op: CompareOp, left: Value, right: Value) -> Result<Resolved, ResolveError> {
+        if has_imaginary(&left, &right) {
+            return Err(ResolveError::Invalid(
+                "relational comparison requires real operands",
+            ));
+        }
         let left = self.promote(left);
         let right = self.promote(right);
         let operator = match op {
@@ -456,6 +501,97 @@ impl Context {
         ))
     }
 
+    fn imaginary_binary(
+        &self,
+        op: BinaryOp,
+        left: Value,
+        right: Value,
+    ) -> Result<Resolved, ResolveError> {
+        let component = |ty: &Type| match ty {
+            Type::Numeric(component) | Type::Complex(component) => Some(*component),
+            Type::Imaginary(format) => Some(NumericType::Float(*format)),
+            _ => None,
+        };
+        let (Some(a), Some(b)) = (component(&left.ty), component(&right.ty)) else {
+            return Err(ResolveError::Unsupported("imaginary arithmetic conversion"));
+        };
+        let NumericType::Float(format) = wider_component(a, b) else {
+            return Err(ResolveError::Unsupported("imaginary arithmetic conversion"));
+        };
+        if [a, b]
+            .iter()
+            .any(|ty| matches!(ty, NumericType::Float(format) if format.is_decimal()))
+        {
+            return Err(ResolveError::Invalid(
+                "decimal floating operand with imaginary operand",
+            ));
+        }
+        let domain = |value: Value| {
+            let to = match value.ty {
+                Type::Numeric(_) => Type::Numeric(NumericType::Float(format)),
+                Type::Imaginary(_) => Type::Imaginary(format),
+                _ => Type::Complex(NumericType::Float(format)),
+            };
+            self.convert(value, to, ConversionReason::UsualArith)
+        };
+        let left = domain(left);
+        let right = domain(right);
+        if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
+            return Ok((
+                Type::Bool,
+                ValueKind::Compare {
+                    op: if op == BinaryOp::Equal {
+                        CompareOp::Eq
+                    } else {
+                        CompareOp::Ne
+                    },
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    exceptions: Some(self.floating.exceptions),
+                    reason: None,
+                },
+            ));
+        }
+        let arith = match op {
+            BinaryOp::Add => ArithOp::Add,
+            BinaryOp::Sub => ArithOp::Sub,
+            BinaryOp::Mul => ArithOp::Mul,
+            BinaryOp::Div => ArithOp::Div,
+            _ => {
+                return Err(ResolveError::Invalid(
+                    "operator requires integer or real operands",
+                ));
+            }
+        };
+        let both_imaginary = matches!(
+            (&left.ty, &right.ty),
+            (Type::Imaginary(_), Type::Imaginary(_))
+        );
+        let any_complex =
+            matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_));
+        let result_ty = match arith {
+            _ if any_complex => Type::Complex(NumericType::Float(format)),
+            ArithOp::Add | ArithOp::Sub if both_imaginary => Type::Imaginary(format),
+            ArithOp::Add | ArithOp::Sub => Type::Complex(NumericType::Float(format)),
+            _ if both_imaginary => Type::Numeric(NumericType::Float(format)),
+            _ => Type::Imaginary(format),
+        };
+        let semantics = if matches!(result_ty, Type::Complex(_)) {
+            ArithSema::ComplexFloating(self.floating)
+        } else {
+            ArithSema::Floating(self.floating)
+        };
+        Ok((
+            result_ty,
+            ValueKind::Arith {
+                op: arith,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics,
+            },
+        ))
+    }
+
     fn comparison(&self, op: CompareOp, ty: NumericType, left: Value, right: Value) -> ValueKind {
         ValueKind::Compare {
             op,
@@ -494,6 +630,18 @@ impl Context {
                     return Err(ResolveError::Unsupported("complex cast component"));
                 };
                 return Ok(Type::Complex(component));
+            }
+            TypeSpecifier::Imaginary(inner) => {
+                let mut component = ty.clone();
+                component.specifiers.ty = (**inner).clone();
+                return match self.cast_type(&component)? {
+                    Type::Numeric(NumericType::Float(format)) if !format.is_decimal() => {
+                        Ok(Type::Imaginary(format))
+                    }
+                    _ => Err(ResolveError::Invalid(
+                        "imaginary component must be a real floating type",
+                    )),
+                };
             }
             TypeSpecifier::Integer(IntegerType::Char { signed }) => {
                 NumericType::integer(8, signed.unwrap_or(self.target.char_signed))
@@ -546,6 +694,11 @@ impl Context {
 
     pub(super) fn usual_arithmetic(&self, left: Value, right: Value) -> (Value, Value) {
         let ty = match (left.ty.clone(), right.ty.clone()) {
+            (Type::Imaginary(a), Type::Imaginary(b)) => Type::Imaginary(a.max(b)),
+            (Type::Imaginary(a), Type::Numeric(b) | Type::Complex(b))
+            | (Type::Numeric(b) | Type::Complex(b), Type::Imaginary(a)) => {
+                Type::Complex(wider_component(NumericType::Float(a), b))
+            }
             (Type::Complex(a), Type::Complex(b)) => Type::Complex(wider_component(a, b)),
             (Type::Complex(a), Type::Numeric(b)) | (Type::Numeric(b), Type::Complex(a)) => {
                 Type::Complex(wider_component(a, b))
@@ -622,6 +775,59 @@ impl Context {
             return self.convert(value, to, reason);
         }
         match (value.ty.clone(), to.clone()) {
+            (Type::Imaginary(from), Type::Imaginary(target)) => {
+                let semantics = if target.widens_from(from) {
+                    ConversionSema::Exact
+                } else {
+                    ConversionSema::Floating(self.floating)
+                };
+                conversion(
+                    value,
+                    to,
+                    ConversionKind::ImaginaryConvert,
+                    reason,
+                    semantics,
+                )
+            }
+            (Type::Numeric(_), Type::Imaginary(_)) => conversion(
+                value,
+                to,
+                ConversionKind::RealToImaginary,
+                reason,
+                ConversionSema::Exact,
+            ),
+            (Type::Imaginary(_), Type::Numeric(_)) => conversion(
+                value,
+                to,
+                ConversionKind::ImaginaryToReal,
+                reason,
+                ConversionSema::Exact,
+            ),
+            (Type::Imaginary(from), Type::Complex(_)) => {
+                let value = conversion(
+                    value,
+                    Type::Complex(NumericType::Float(from)),
+                    ConversionKind::ImaginaryToComplex,
+                    reason,
+                    ConversionSema::Exact,
+                );
+                self.convert(value, to, reason)
+            }
+            (Type::Complex(source), Type::Imaginary(target)) => {
+                let format = match source {
+                    NumericType::Float(format) => format,
+                    NumericType::Integer { .. } => target,
+                };
+                let value = self.convert(value, Type::Complex(NumericType::Float(format)), reason);
+                let value = conversion(
+                    value,
+                    Type::Imaginary(format),
+                    ConversionKind::ComplexToImaginary,
+                    reason,
+                    ConversionSema::Exact,
+                );
+                self.convert(value, to, reason)
+            }
             (Type::Numeric(_), Type::Complex(component)) => {
                 let value = self.convert(value, Type::Numeric(component), reason);
                 conversion(
@@ -786,8 +992,10 @@ impl Context {
     }
 
     pub(super) fn condition(&self, value: Value) -> Value {
-        let Type::Numeric(ty) = value.ty else {
-            return value;
+        let ty = match value.ty {
+            Type::Numeric(ty) => ty,
+            Type::Imaginary(format) => NumericType::Float(format),
+            _ => return value,
         };
         let zero = match ty {
             NumericType::Integer { .. } => Number::Integer(BigUint::default()),
@@ -814,6 +1022,7 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         Type::Bool => Err(ResolveError::Unsupported("unpromoted boolean operand")),
         Type::Defined(_)
         | Type::Complex(_)
+        | Type::Imaginary(_)
         | Type::Pointer { .. }
         | Type::VaList
         | Type::Array { .. }
@@ -821,6 +1030,16 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         | Type::Function { .. }
         | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
     }
+}
+
+fn has_imaginary(left: &Value, right: &Value) -> bool {
+    matches!(left.ty, Type::Imaginary(_)) || matches!(right.ty, Type::Imaginary(_))
+}
+
+fn is_integer_spelling(spelling: &str) -> bool {
+    let lowered = spelling.to_ascii_lowercase();
+    let exponent = if lowered.starts_with("0x") { 'p' } else { 'e' };
+    !lowered.contains('.') && !lowered.contains(exponent)
 }
 
 fn reject_mixed_decimal(

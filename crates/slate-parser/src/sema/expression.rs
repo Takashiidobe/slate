@@ -114,7 +114,7 @@ impl Lowerer {
         }
         let mut result = match &value.ty {
             Type::Bool => return Ok(value),
-            Type::Numeric(_) => self.context.condition(value),
+            Type::Numeric(_) | Type::Imaginary(_) => self.context.condition(value),
             Type::Complex(component) => {
                 let component = *component;
                 let zero = self.value(
@@ -235,8 +235,11 @@ impl Lowerer {
         if to == Type::Bool {
             return self.condition(value, Some(reason));
         }
-        if matches!(to, Type::Numeric(_) | Type::Complex(_))
-            && matches!(value.ty, Type::Numeric(_) | Type::Complex(_) | Type::Bool)
+        if matches!(to, Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_))
+            && matches!(
+                value.ty,
+                Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_) | Type::Bool
+            )
         {
             return Ok(self.context.convert(value, to, reason));
         }
@@ -972,7 +975,10 @@ impl Lowerer {
                 let value = self.enum_integer(value);
                 match op {
                     UnaryOp::Plus => {
-                        if !matches!(value.ty, Type::Bool | Type::Numeric(_) | Type::Complex(_)) {
+                        if !matches!(
+                            value.ty,
+                            Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
+                        ) {
                             return Err(ResolveError::Unsupported("non-numeric unary plus"));
                         }
                         Ok(self.context.promote(value))
@@ -1138,9 +1144,13 @@ impl Lowerer {
                 let condition = self.condition(condition, None)?;
                 let mut left = self.expr(then_value)?;
                 let mut right = self.expr(else_value)?;
-                if matches!(left.ty, Type::Bool | Type::Numeric(_) | Type::Complex(_))
-                    && matches!(right.ty, Type::Bool | Type::Numeric(_) | Type::Complex(_))
-                {
+                if matches!(
+                    left.ty,
+                    Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
+                ) && matches!(
+                    right.ty,
+                    Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
+                ) {
                     (left, right) = self
                         .context
                         .usual_arithmetic(self.context.promote(left), self.context.promote(right));

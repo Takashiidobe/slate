@@ -474,25 +474,21 @@ impl Value {
                 write!(f, "const<{}>({digits})", self.ty)
             }
             ValueKind::Constant(Number::FloatBits(bits)) => match self.ty {
-                Type::Numeric(NumericType::Float(FloatType::F32))
-                    if !f32::from_bits(*bits as u32).is_nan() =>
+                Type::Numeric(NumericType::Float(format)) | Type::Imaginary(format) => match format
                 {
-                    write!(f, "const<{}>({:?})", self.ty, f32::from_bits(*bits as u32))
-                }
-                Type::Numeric(NumericType::Float(FloatType::F64))
-                    if !f64::from_bits(*bits as u64).is_nan() =>
-                {
-                    write!(f, "const<{}>({:?})", self.ty, f64::from_bits(*bits as u64))
-                }
-                Type::Numeric(NumericType::Float(FloatType::F16)) => {
-                    format_apfloat::<Half>(f, self.ty.clone(), *bits)
-                }
-                Type::Numeric(NumericType::Float(FloatType::F80)) => {
-                    format_apfloat::<X87DoubleExtended>(f, self.ty.clone(), *bits)
-                }
-                Type::Numeric(NumericType::Float(FloatType::F128)) => {
-                    format_apfloat::<Quad>(f, self.ty.clone(), *bits)
-                }
+                    FloatType::F32 if !f32::from_bits(*bits as u32).is_nan() => {
+                        write!(f, "const<{}>({:?})", self.ty, f32::from_bits(*bits as u32))
+                    }
+                    FloatType::F64 if !f64::from_bits(*bits as u64).is_nan() => {
+                        write!(f, "const<{}>({:?})", self.ty, f64::from_bits(*bits as u64))
+                    }
+                    FloatType::F16 => format_apfloat::<Half>(f, self.ty.clone(), *bits),
+                    FloatType::F80 => {
+                        format_apfloat::<X87DoubleExtended>(f, self.ty.clone(), *bits)
+                    }
+                    FloatType::F128 => format_apfloat::<Quad>(f, self.ty.clone(), *bits),
+                    _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
+                },
                 _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
             },
             ValueKind::Convert {

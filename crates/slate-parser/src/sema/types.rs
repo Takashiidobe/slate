@@ -653,6 +653,25 @@ impl TypeResolver {
                     chain,
                 ));
             }
+            TypeSpecifier::Imaginary(inner) => {
+                let (component, spelling, canonical, chain) = self.base(inner)?;
+                let Some(Type::Numeric(NumericType::Float(format))) = component else {
+                    return Err(ResolveError::Invalid(
+                        "imaginary component must be a real floating type",
+                    ));
+                };
+                if format.is_decimal() {
+                    return Err(ResolveError::Invalid(
+                        "imaginary component must be a real floating type",
+                    ));
+                }
+                return Ok((
+                    Some(Type::Imaginary(format)),
+                    format!("_Imaginary {spelling}"),
+                    format!("_Imaginary {canonical}"),
+                    chain,
+                ));
+            }
             TypeSpecifier::Integer(IntegerType::Char { signed }) => {
                 let spelling = match signed {
                     None => "char",

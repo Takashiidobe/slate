@@ -444,8 +444,8 @@ Builtin scalar casts and mixed-type arithmetic insert conversion nodes with
 changes. Float narrowing and integer-to-float conversions carry rounding
 and exception settings; float-to-int truncates toward zero and records
 `out_of_range=ub` plus exception settings. Widening floats is exact.
-Imaginary literals and target-dependent `f64x` suffixes return explicit
-unsupported errors.
+Target-dependent `f64x` suffixes and integer-spelled imaginary literals
+(`3i`) return explicit unsupported errors.
 Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
 `-f[no-]strict-overflow`, `-f[no-]rounding-math`, and
 `-f[no-]trapping-math`, plus the long-double options above. Scoped pragma
@@ -658,21 +658,58 @@ Windows AArch64 variadic aggregate arguments use integer pieces. The
 these cases against Clang IR signatures. More elaborate records use
 `native_c` until their ABI coercion is modeled explicitly.
 
-**Out of scope for current IR lowering:** imaginary, vector, and fixed-point
-types remain unrepresented. Their separate implementation work is tracked by
+**Implemented for imaginary (C23 Annex G):** `Type::Imaginary(FloatType)`
+prints as `imaginary<f64>`. Only binary real floating components are
+accepted; the parser already rejects `int _Imaginary` and decimal
+components. Storage, alignment, and ABI passing are those of the component
+(G.2), so signatures pass it as `scalar`. Neither clang nor gcc accepts
+`_Imaginary`, so no oracle exists for these contracts; they follow the
+standard text.
+
+Conversions (G.4) are explicit kinds: `real_to_imaginary` and
+`imaginary_to_real` produce positive zero and discard the operand's value;
+`imaginary_to_complex` sets a positive-zero real part; `complex_to_imaginary`
+keeps the imaginary part with the same component; `imaginary_convert`
+changes the component with floating narrowing rules. Truth tests compare
+against `const<imaginary<fN>>(0.0)`.
+
+Binary operators (G.5) apply only the common real type: each operand keeps
+its own domain (real, imaginary, complex), so the operand types plus the
+result type select the Annex G formula. Result families:
+
+| Operator   | real/imaginary | imaginary/imaginary | any complex operand |
+| ---------- | -------------- | ------------------- | ------------------- |
+| `*` `/`    | imaginary      | real                | complex             |
+| `+` `-`    | complex        | imaginary           | complex             |
+| `==` `!=`  | bool           | bool                | bool                |
+
+Operations with a complex result carry `complex=true`. Relational
+operators, `%`, bitwise operators, shifts, and `~` reject imaginary
+operands; unary `-` is exact negation. The conditional operator and other
+usual-arithmetic sites use imaginary for two imaginary operands and complex
+for mixed domains.
+
+Imaginary literals (`2.0i`, `3.0fj`) are a GNU extension that the standard
+does not define; GNU types them as complex, so they lower to
+`aggregate<complex<fN>>(index0 = +0, index1 = value)`, the same shape as a
+braced complex initializer. `3i` currently lexes as a floating literal and
+is rejected until integer imaginary literals are lexed as integers.
+`tests/fixtures/sema/ir_imaginary.c` and `ir_imaginary_invalid.c` pin these
+forms.
+
+**Out of scope for current IR lowering:** vector and fixed-point types remain
+unrepresented. Their separate implementation work is tracked by
 the corresponding children of `slate-parser-lh7.2.17`:
 
 | Family      | Reason lowering remains out of scope                                                                                                                                              |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Imaginary   | Imaginary literals are explicitly rejected today; mixed real/imaginary operations can change the result family and cannot use scalar usual-arithmetic conversion unchanged.       |
 | Vector      | Byte-sized and lane-sized AST forms need validated target-dependent lane counts and alignment; vector arithmetic and comparisons require per-lane result and operation contracts. |
 | Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled.                                                        |
 
 `ArithSema` needs a distinct saturating fixed-point case rather than treating
 saturation as integer overflow. Vector operations need an explicit per-lane
-contract; complex and imaginary operations need their own result-family and
-floating-exception rules. No numeric operation should silently accept one of
-these types until its contract and conversions are pinned by FileCheck
+contract; complex and imaginary operations carry their own result-family
+rules. No numeric operation should silently accept one of these types until its contract and conversions are pinned by FileCheck
 fixtures. Declaration-only support also requires target storage and ABI
 rules, so adding bare `Type` variants alone would not make headers lower.
 

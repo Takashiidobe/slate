@@ -68,6 +68,7 @@ A `storage` line is printed only for types the target supports.
 ```ebnf
 type          = "void" | "bool" | "va_list" | numeric
               | "complex<" numeric ">"
+              | "imaginary<" float_type ">"
               | "ptr<" [ "const " ] [ access_prefix ] type ">"
               | "array<" type ", " ( int | "incomplete" ) ">"
               | "vla<" type ", " binding ">"
@@ -324,7 +325,9 @@ conversion = "widen" | "truncate" | "reinterpret" | "from_bool"
            | "float_to_int" | "pointer_cast" | "ptr_to_int" | "int_to_ptr"
            | "enum_to_int" | "int_to_enum"
            | "real_to_complex" | "complex_to_real" | "complex_to_imag"
-           | "complex_convert" ;
+           | "complex_convert"
+           | "real_to_imaginary" | "imaginary_to_real" | "imaginary_to_complex"
+           | "complex_to_imaginary" | "imaginary_convert" ;
 arith_op   = "add" | "sub" | "mul" | "div" | "rem"
            | "and" | "or" | "xor" | "shl" | "shr" ;
 unary_op   = "neg" | "not" ;

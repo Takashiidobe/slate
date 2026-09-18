@@ -405,7 +405,9 @@ impl TargetInfo {
                 }
                 ScalarKey::Integer { width, signed }
             }
-            Type::Numeric(NumericType::Float(format)) => ScalarKey::Float(format),
+            Type::Numeric(NumericType::Float(format)) | Type::Imaginary(format) => {
+                ScalarKey::Float(format)
+            }
             Type::Pointer { .. } => return Ok(self.pointer),
             Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
