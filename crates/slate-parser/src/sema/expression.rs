@@ -88,6 +88,9 @@ impl Lowerer {
         value: Value,
         reason: Option<ConversionReason>,
     ) -> Result<Value, ResolveError> {
+        if self.enum_underlying(&value.ty).is_some() {
+            return self.condition(self.enum_integer(value), reason);
+        }
         let mut result = match &value.ty {
             Type::Bool => return Ok(value),
             Type::Numeric(_) => self.context.condition(value),
@@ -114,16 +117,20 @@ impl Lowerer {
         Ok(result)
     }
 
+    fn enum_underlying(&self, ty: &Type) -> Option<Type> {
+        match self.kind(ty) {
+            Some(TypeDefinitionKind::Enum { underlying, .. }) => underlying.clone(),
+            Some(TypeDefinitionKind::Alias(inner)) => self.enum_underlying(inner),
+            _ => None,
+        }
+    }
+
     pub fn enum_integer(&self, value: Value) -> Value {
-        if let Some(TypeDefinitionKind::Enum {
-            underlying: Some(ty),
-            ..
-        }) = self.kind(&value.ty)
-        {
+        if let Some(ty) = self.enum_underlying(&value.ty) {
             let node = value.node.clone();
             return self.value(
                 &node,
-                ty.clone(),
+                ty,
                 ValueKind::Convert {
                     kind: ConversionKind::EnumToInt,
                     operand: Box::new(value),
@@ -159,6 +166,23 @@ impl Lowerer {
                 ));
             }
             return Ok(value);
+        }
+        if self.enum_underlying(&value.ty).is_some() {
+            return self.convert(self.enum_integer(value), to, reason);
+        }
+        if let Some(underlying) = self.enum_underlying(&to) {
+            let value = self.convert(value, underlying, reason)?;
+            let node = value.node.clone();
+            return Ok(self.value(
+                &node,
+                to,
+                ValueKind::Convert {
+                    kind: ConversionKind::IntToEnum,
+                    operand: Box::new(value),
+                    reason,
+                    semantics: ConversionSema::Exact,
+                },
+            ));
         }
         if to == Type::Bool {
             return self.condition(value, Some(reason));
@@ -673,6 +697,7 @@ impl Lowerer {
             }
             ExprKind::Unary { op, operand } => {
                 let value = self.expr(operand)?;
+                let value = self.enum_integer(value);
                 match op {
                     UnaryOp::Plus => {
                         if !matches!(value.ty, Type::Bool | Type::Numeric(_)) {
@@ -703,7 +728,9 @@ impl Lowerer {
                 let left_expr = left;
                 let right_expr = right;
                 let left = self.expr(left)?;
+                let left = self.enum_integer(left);
                 let right = self.expr(right)?;
+                let right = self.enum_integer(right);
                 if matches!(op, BinaryOp::And | BinaryOp::Or) {
                     return Ok(self.value(
                         e,

@@ -159,9 +159,20 @@ absence of a break preserve fallthrough. `[[fallthrough]];` is a null statement
 with source metadata. Case endpoints are folded to the promoted switch type;
 ordinary conditions and arithmetic are not folded. Conditions explicitly become
 boolean values. Missing for conditions remain omitted, meaning unconditional.
-Enum switch operands use an explicit `enum_to_int` conversion to the resolved
-underlying integer type before promotion. Enumerator references in case
-expressions resolve by binding and AST identity to typed constants.
+Enum operands use an explicit `enum_to_int` conversion to the resolved
+underlying integer type before promotion, in switch discriminants and equally in
+arithmetic, conditions, and comparisons; storing an integer into enum-typed
+storage is an explicit `int_to_enum`. Enumerators stay typed as the underlying
+integer in the type table, so the enum type appears only on storage and these two
+conversions carry every crossing (`tests/fixtures/sema/ir_tag_locals.c`).
+Both conversions follow typedef chains, so an alias to an enum behaves the same.
+Enumerator references in case expressions resolve by binding and AST identity to
+typed constants.
+
+A block-scoped declaration may reference a file-scope `struct`, `union`, or
+`enum` tag. Defining a tag inside a block is still rejected, because the
+lowering type table keys tags by name without block scoping and two blocks
+defining the same tag name would collapse onto one `TypeId` (slate-parser-rsm).
 
 Named labels, gotos, and `label_addr<ptr<void>>` use resolved label binding IDs,
 including distinct GNU local labels. Name resolution records each label

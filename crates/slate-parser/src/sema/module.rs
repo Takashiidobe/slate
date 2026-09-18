@@ -225,10 +225,13 @@ impl Lowerer {
         check_specifiers(&item.specifiers)?;
         if !global
             && (item.specifiers.storage == StorageClass::Typedef
-                || matches!(item.specifiers.ty, ast::TypeSpecifier::Tag(_)))
+                || matches!(
+                    item.specifiers.ty,
+                    ast::TypeSpecifier::Tag(ast::TagSpecifier::Definition(_))
+                ))
         {
             return Err(ResolveError::Unsupported(
-                "block scoped typedef or tag declaration",
+                "block scoped typedef or tag definition",
             ));
         }
         if item.declarators.is_empty() {
