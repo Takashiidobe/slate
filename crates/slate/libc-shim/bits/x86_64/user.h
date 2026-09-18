@@ -7,8 +7,13 @@ typedef struct user_fpregs_struct {
   unsigned short int swd;
   unsigned short int ftw;
   unsigned short int fop;
-  unsigned long int  rip;
-  unsigned long int  rdp;
+#if defined(__SLATE_LIBC_GLIBC)
+  unsigned long long int rip;
+  unsigned long long int rdp;
+#else
+  unsigned long rip;
+  unsigned long rdp;
+#endif
   unsigned int       mxcsr;
   unsigned int       mxcr_mask;
   unsigned int       st_space[32];
