@@ -221,8 +221,8 @@ assignment, getc loop, f(i++), short-circuit member increment) plus ternary and
 comma sequencing.
 
 Other unsupported statements and attributes are diagnosed instead of omitted.
-Aggregate initialization and general attributed-statement lowering remain
-separate work.
+General attributed-statement lowering remains separate work; aggregate
+initialization is described under "Objects, lifetime, and initialization".
 
 Target selection separates CPU family (`TargetFamily`), OS (`TargetOs`), and
 ABI environment (`TargetEnvironment`) from compiler flavor. Existing Linux
@@ -292,8 +292,7 @@ integer promotion, and therefore selects on the declared bit-field type
 (`_Generic(f->low, unsigned: .., int: ..)` picks `unsigned`).
 
 Flexible-array semantics remain future work, as do full qualifiers,
-callable types/ABI contracts, and structured aggregate initializers, in their
-respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
+and callable types/ABI contracts, in their respective lowering tasks. `tests/fixtures/sema/ir_records.c` covers nested
 records, unions, anonymous members, and bit-field reads, writes, compound
 assignment, and increment. The name-resolution dump remains a separate
 diagnostic view, not the module declaration representation.
@@ -743,6 +742,27 @@ they are not merely interchangeable aggregate values.
   and their object lifetime. Subsequent size computations and indexing use
   the captured extents; do not re-evaluate the original bound expression.
   Runtime `sizeof` is represented as a computation rather than folded.
+
+**Implemented (`lh7.2.8`):** braced and string initializers lower to
+`ValueKind::Aggregate { members, zero_fill }` (`sema/initializer.rs`),
+printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
+
+- `members` are sorted by target, and each `AggregateTarget` is a resolved
+  `Field(index)`, `Index(i)`, or `Range { start, end }` (inclusive, GNU
+  `[a ... b]`). Designators, brace elision, anonymous-member paths, and
+  `.a.x = 1, .a.y = 2` merging are all resolved away; nested subobjects are
+  nested `Aggregate` values.
+- `zero_fill` is true when any initializable member (named fields and
+  anonymous records; unnamed bit-fields are skipped) or array element was
+  omitted. Unions carry only the selected member and never `zero_fill`.
+- A later initializer for the same target replaces the earlier one. A
+  partially overlapping range is `Unsupported`.
+- `T a[] = ...` completes the array length from the last initialized
+  element. `char`-like arrays from string literals (also `{"..."}`) stay
+  `CodeUnits` on the declared array type, zero-padded or truncated to length.
+- Not yet: compound literals, flexible-array-member initializers, brace
+  elision after a designator, and `sizeof` of a brace-inferred array inside
+  `static_assert` (assertion.rs infers only string-initialized lengths).
 
 These facts support Rust storage and initialization choices; ownership,
 escape, and definite-initialization analysis can derive additional facts

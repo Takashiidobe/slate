@@ -696,19 +696,35 @@ impl TypeResolver {
                 resolved.c.qualifiers = *qualifiers;
                 self.derive(inner, resolved)
             }
-            Declarator::Array { inner, size, .. } => {
-                let length = match size {
-                    ArraySize::Unspecified => None,
-                    ArraySize::Star => {
-                        return Err(ResolveError::Unsupported("variable length array"));
-                    }
-                    ArraySize::Expression(expr) => Some(
-                        u64::try_from(self.constant_integer(expr)?)
-                            .map_err(|_| ResolveError::Unsupported("invalid array length"))?,
-                    ),
+            Declarator::Array { .. } => {
+                let mut lengths = Vec::new();
+                let mut core = declarator;
+                while let Declarator::Array { inner, size, .. } = core {
+                    lengths.push(match size {
+                        ArraySize::Unspecified => None,
+                        ArraySize::Star => {
+                            return Err(ResolveError::Unsupported("variable length array"));
+                        }
+                        ArraySize::Expression(expr) => Some(
+                            u64::try_from(self.constant_integer(expr)?)
+                                .map_err(|_| ResolveError::Unsupported("invalid array length"))?,
+                        ),
+                    });
+                    core = inner;
+                }
+                let suffix: String = lengths
+                    .iter()
+                    .rev()
+                    .map(|length| length.map_or("[]".to_owned(), |length| format!("[{length}]")))
+                    .collect();
+                let grouped = match core {
+                    Declarator::Grouped(grouped) => Some(grouped),
+                    _ => None,
                 };
-                let suffix = length.map_or("[]".to_owned(), |length| format!("[{length}]"));
-                if let Declarator::Grouped(core) = inner.as_ref() {
+                if grouped.is_none() {
+                    self.derive(core, resolved)?;
+                }
+                for length in lengths {
                     let element = resolved
                         .ty
                         .take()
@@ -717,22 +733,12 @@ impl TypeResolver {
                         element: Box::new(element),
                         length,
                     });
-                    resolved.c.spelling.push_str(&suffix);
-                    resolved.c.canonical.push_str(&suffix);
-                    self.derive(core, resolved)
-                } else {
-                    self.derive(inner, resolved)?;
-                    let element = resolved
-                        .ty
-                        .take()
-                        .ok_or(ResolveError::Unsupported("void array element"))?;
-                    resolved.ty = Some(Type::Array {
-                        element: Box::new(element),
-                        length,
-                    });
-                    resolved.c.spelling.push_str(&suffix);
-                    resolved.c.canonical.push_str(&suffix);
-                    Ok(())
+                }
+                resolved.c.spelling.push_str(&suffix);
+                resolved.c.canonical.push_str(&suffix);
+                match grouped {
+                    Some(grouped) => self.derive(grouped, resolved),
+                    None => Ok(()),
                 }
             }
             Declarator::Function { inner, parameters } => {

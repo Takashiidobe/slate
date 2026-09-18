@@ -1,0 +1,546 @@
+use super::expression::Lowerer;
+use super::numeric::ResolveError;
+use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, Span};
+use crate::const_expr::{Encoding, Parser};
+use crate::ir::*;
+
+enum Shape {
+    Scalar,
+    Struct(Vec<Field>),
+    Union(Vec<Field>),
+    Array { element: Type, length: Option<u64> },
+}
+
+enum Entry {
+    Leaf(Value),
+    Sub(Builder),
+}
+
+struct Builder {
+    ty: Type,
+    shape: Shape,
+    members: Vec<(AggregateTarget, Entry)>,
+    next: u64,
+}
+
+struct Cursor<'a> {
+    items: &'a [InitializerItem],
+    index: usize,
+    pending: Option<Value>,
+}
+
+type Step = (AggregateTarget, Type);
+
+fn initializable(field: &Field) -> bool {
+    field.name.is_some() || field.bit_width.is_none()
+}
+
+fn bounds(target: AggregateTarget) -> (u64, u64) {
+    match target {
+        AggregateTarget::Field(index) => (index as u64, index as u64),
+        AggregateTarget::Index(index) => (index, index),
+        AggregateTarget::Range { start, end } => (start, end),
+    }
+}
+
+fn sized(ty: &Type) -> Result<Type, ResolveError> {
+    match ty {
+        Type::Array { length: None, .. } => Err(ResolveError::Unsupported(
+            "flexible array member initializer",
+        )),
+        _ => Ok(ty.clone()),
+    }
+}
+
+impl Builder {
+    fn full(&self) -> bool {
+        match &self.shape {
+            Shape::Struct(fields) => !fields.iter().skip(self.next as usize).any(initializable),
+            Shape::Union(fields) => !self.members.is_empty() || !fields.iter().any(initializable),
+            Shape::Array { length, .. } => length.is_some_and(|length| self.next >= length),
+            Shape::Scalar => true,
+        }
+    }
+
+    fn next_target(&self) -> Result<Step, ResolveError> {
+        match &self.shape {
+            Shape::Struct(fields) | Shape::Union(fields) => fields
+                .iter()
+                .enumerate()
+                .skip(self.next as usize)
+                .find(|(_, field)| initializable(field))
+                .map(|(index, field)| (AggregateTarget::Field(index), field.ty.clone()))
+                .ok_or(ResolveError::Unsupported("excess elements in initializer"))
+                .and_then(|(target, ty)| Ok((target, sized(&ty)?))),
+            Shape::Array { element, .. } => {
+                Ok((AggregateTarget::Index(self.next), sized(element)?))
+            }
+            Shape::Scalar => Err(ResolveError::Unsupported("initializer list for scalar")),
+        }
+    }
+
+    fn advance(&mut self, target: AggregateTarget) {
+        self.next = bounds(target).1 + 1;
+    }
+
+    fn make_room(&mut self, target: AggregateTarget) -> Result<(), ResolveError> {
+        if matches!(self.shape, Shape::Union(_)) {
+            if self
+                .members
+                .first()
+                .is_some_and(|(existing, _)| *existing != target)
+            {
+                self.members.clear();
+            }
+            return Ok(());
+        }
+        let (start, end) = bounds(target);
+        let overlapping = self.members.iter().any(|(existing, _)| {
+            let (existing_start, existing_end) = bounds(*existing);
+            *existing != target && existing_start <= end && start <= existing_end
+        });
+        if overlapping {
+            return Err(ResolveError::Unsupported("overlapping designated range"));
+        }
+        Ok(())
+    }
+
+    fn insert(&mut self, target: AggregateTarget, entry: Entry) -> Result<(), ResolveError> {
+        self.make_room(target)?;
+        self.members.retain(|(existing, _)| *existing != target);
+        self.members.push((target, entry));
+        Ok(())
+    }
+
+    fn sub(
+        &mut self,
+        target: AggregateTarget,
+        fresh: Builder,
+    ) -> Result<&mut Builder, ResolveError> {
+        self.make_room(target)?;
+        let position = match self
+            .members
+            .iter()
+            .position(|(existing, _)| *existing == target)
+        {
+            Some(position) => position,
+            None => {
+                self.members.push((target, Entry::Sub(fresh)));
+                self.members.len() - 1
+            }
+        };
+        match &mut self.members[position].1 {
+            Entry::Sub(builder) => Ok(builder),
+            Entry::Leaf(_) => Err(ResolveError::Unsupported(
+                "designator into initialized scalar or copied aggregate",
+            )),
+        }
+    }
+
+    fn finish(mut self, anchor: &Span<()>) -> Result<Value, ResolveError> {
+        self.members.sort_by_key(|(target, _)| bounds(*target).0);
+        let covered: u64 = self
+            .members
+            .iter()
+            .map(|(target, _)| {
+                let (start, end) = bounds(*target);
+                end - start + 1
+            })
+            .sum();
+        let (ty, zero_fill) = match &self.shape {
+            Shape::Struct(fields) => (
+                self.ty.clone(),
+                covered < fields.iter().filter(|field| initializable(field)).count() as u64,
+            ),
+            Shape::Union(_) => (self.ty.clone(), false),
+            Shape::Array { element, length } => {
+                let length = match length {
+                    Some(length) => *length,
+                    None => self
+                        .members
+                        .last()
+                        .map(|(target, _)| bounds(*target).1 + 1)
+                        .ok_or(ResolveError::Unsupported(
+                            "empty initializer for array of unknown length",
+                        ))?,
+                };
+                (
+                    Type::Array {
+                        element: Box::new(element.clone()),
+                        length: Some(length),
+                    },
+                    covered < length,
+                )
+            }
+            Shape::Scalar => return Err(ResolveError::Unsupported("initializer list for scalar")),
+        };
+        let mut members = Vec::new();
+        for (target, entry) in self.members {
+            let value = match entry {
+                Entry::Leaf(value) => value,
+                Entry::Sub(builder) => builder.finish(anchor)?,
+            };
+            members.push(AggregateMember { target, value });
+        }
+        Ok(Value {
+            ty,
+            node: anchor
+                .clone()
+                .with_value(ValueKind::Aggregate { members, zero_fill }),
+        })
+    }
+}
+
+impl<'a> Cursor<'a> {
+    fn new(items: &'a [InitializerItem]) -> Self {
+        Self {
+            items,
+            index: 0,
+            pending: None,
+        }
+    }
+}
+
+fn consume(cursor: &mut Option<&mut Cursor<'_>>) {
+    if let Some(cursor) = cursor {
+        cursor.index += 1;
+    }
+}
+
+impl Lowerer {
+    pub(super) fn initializer_value(
+        &mut self,
+        ty: &Type,
+        initializer: &Initializer,
+        anchor: &Span<()>,
+    ) -> Result<Value, ResolveError> {
+        match self.init_initializer(ty, initializer)? {
+            Entry::Leaf(value) => Ok(value),
+            Entry::Sub(builder) => builder.finish(anchor),
+        }
+    }
+
+    fn unaliased(&self, ty: &Type) -> Type {
+        let mut ty = ty.clone();
+        while let Some(TypeDefinitionKind::Alias(inner)) = self.kind(&ty) {
+            ty = inner.clone();
+        }
+        ty
+    }
+
+    fn shape(&self, ty: &Type) -> Result<Shape, ResolveError> {
+        let ty = self.unaliased(ty);
+        if let Type::Array { element, length } = &ty {
+            return Ok(Shape::Array {
+                element: (**element).clone(),
+                length: *length,
+            });
+        }
+        match self.kind(&ty) {
+            Some(TypeDefinitionKind::Record { kind, fields, .. }) => {
+                let fields = fields
+                    .as_ref()
+                    .ok_or(ResolveError::Unsupported(
+                        "initializer for incomplete record",
+                    ))?
+                    .iter()
+                    .map(|field| field.value.clone())
+                    .collect();
+                Ok(match kind {
+                    RecordKind::Struct => Shape::Struct(fields),
+                    RecordKind::Union => Shape::Union(fields),
+                })
+            }
+            _ => Ok(Shape::Scalar),
+        }
+    }
+
+    fn builder(&self, ty: &Type) -> Result<Builder, ResolveError> {
+        match self.shape(ty)? {
+            Shape::Scalar => Err(ResolveError::Unsupported(
+                "braced initializer or designator for scalar",
+            )),
+            shape => Ok(Builder {
+                ty: ty.clone(),
+                shape,
+                members: Vec::new(),
+                next: 0,
+            }),
+        }
+    }
+
+    fn init_initializer(&mut self, ty: &Type, value: &Initializer) -> Result<Entry, ResolveError> {
+        match value {
+            Initializer::Expr(expr) => self.init_expr(ty, expr, None),
+            Initializer::List(items) => self.braced(ty, items),
+        }
+    }
+
+    fn braced(&mut self, ty: &Type, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
+        let shape = self.shape(ty)?;
+        if matches!(shape, Shape::Scalar) {
+            return match items {
+                [item] if item.designators.is_empty() => self.init_initializer(ty, &item.value),
+                _ => Err(ResolveError::Unsupported(
+                    "scalar initializer list must hold exactly one element",
+                )),
+            };
+        }
+        if let (
+            Shape::Array { .. },
+            [
+                InitializerItem {
+                    designators,
+                    value: Initializer::Expr(expr),
+                },
+            ],
+        ) = (&shape, items)
+            && designators.is_empty()
+            && let Some((_, value)) = self.string_array_initializer(expr, ty)?
+        {
+            return Ok(Entry::Leaf(value));
+        }
+        let mut cursor = Cursor::new(items);
+        Ok(Entry::Sub(self.fill(ty, &mut cursor, true)?))
+    }
+
+    fn fill(
+        &mut self,
+        ty: &Type,
+        cursor: &mut Cursor<'_>,
+        braced: bool,
+    ) -> Result<Builder, ResolveError> {
+        let mut builder = self.builder(ty)?;
+        let items = cursor.items;
+        while cursor.index < items.len() {
+            let item = &items[cursor.index];
+            if !item.designators.is_empty() {
+                if !braced {
+                    break;
+                }
+                cursor.index += 1;
+                self.designated(&mut builder, &item.designators, &item.value)?;
+                continue;
+            }
+            if builder.full() {
+                if braced {
+                    return Err(ResolveError::Unsupported("excess elements in initializer"));
+                }
+                break;
+            }
+            let (target, element) = builder.next_target()?;
+            let entry = self.init_subobject(&element, cursor)?;
+            builder.insert(target, entry)?;
+            builder.advance(target);
+        }
+        Ok(builder)
+    }
+
+    fn init_subobject(
+        &mut self,
+        ty: &Type,
+        cursor: &mut Cursor<'_>,
+    ) -> Result<Entry, ResolveError> {
+        let items = cursor.items;
+        match &items[cursor.index].value {
+            Initializer::List(inner) => {
+                cursor.index += 1;
+                self.braced(ty, inner)
+            }
+            Initializer::Expr(expr) => self.init_expr(ty, expr, Some(cursor)),
+        }
+    }
+
+    fn init_expr(
+        &mut self,
+        ty: &Type,
+        expr: &Expr,
+        mut cursor: Option<&mut Cursor<'_>>,
+    ) -> Result<Entry, ResolveError> {
+        let shape = self.shape(ty)?;
+        if matches!(shape, Shape::Array { .. })
+            && let Some((_, value)) = self.string_array_initializer(expr, ty)?
+        {
+            consume(&mut cursor);
+            return Ok(Entry::Leaf(value));
+        }
+        let value = match cursor
+            .as_deref_mut()
+            .and_then(|cursor| cursor.pending.take())
+        {
+            Some(value) => value,
+            None => self.expr(expr)?,
+        };
+        let whole = match shape {
+            Shape::Scalar => true,
+            Shape::Struct(_) | Shape::Union(_) => self.unaliased(&value.ty) == self.unaliased(ty),
+            Shape::Array { .. } => false,
+        };
+        if whole {
+            consume(&mut cursor);
+            let value = self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?;
+            return Ok(Entry::Leaf(value));
+        }
+        let cursor = cursor.ok_or(ResolveError::Unsupported(
+            "aggregate initialized without braces",
+        ))?;
+        cursor.pending = Some(value);
+        Ok(Entry::Sub(self.fill(ty, cursor, false)?))
+    }
+
+    fn designated(
+        &mut self,
+        builder: &mut Builder,
+        designators: &[Designator],
+        value: &Initializer,
+    ) -> Result<(), ResolveError> {
+        let (first, rest) = designators
+            .split_first()
+            .ok_or(ResolveError::Unsupported("empty designator list"))?;
+        let steps = self.resolve(builder, first)?;
+        self.apply(builder, &steps, rest, value)
+    }
+
+    fn apply(
+        &mut self,
+        builder: &mut Builder,
+        steps: &[Step],
+        rest: &[Designator],
+        value: &Initializer,
+    ) -> Result<(), ResolveError> {
+        let Some(((target, ty), tail)) = steps.split_first() else {
+            return Err(ResolveError::Unsupported("empty designator path"));
+        };
+        if tail.is_empty() && rest.is_empty() {
+            let entry = self.init_initializer(ty, value)?;
+            builder.insert(*target, entry)?;
+            builder.advance(*target);
+            return Ok(());
+        }
+        let fresh = self.builder(ty)?;
+        let sub = builder.sub(*target, fresh)?;
+        if tail.is_empty() {
+            self.designated(sub, rest, value)?;
+        } else {
+            self.apply(sub, tail, rest, value)?;
+        }
+        builder.advance(*target);
+        Ok(())
+    }
+
+    fn resolve(
+        &self,
+        builder: &Builder,
+        designator: &Designator,
+    ) -> Result<Vec<Step>, ResolveError> {
+        match (&builder.shape, designator) {
+            (Shape::Struct(fields) | Shape::Union(fields), Designator::Field(name)) => self
+                .field_path(fields, &name.value)
+                .ok_or(ResolveError::Unsupported("unknown field designator")),
+            (Shape::Array { element, length }, Designator::Array(index)) => {
+                let index = array_index(index, *length)?;
+                Ok(vec![(AggregateTarget::Index(index), sized(element)?)])
+            }
+            (Shape::Array { element, length }, Designator::ArrayRange { start, end }) => {
+                let start = array_index(start, *length)?;
+                let end = array_index(end, *length)?;
+                if end < start {
+                    return Err(ResolveError::Unsupported("empty designated range"));
+                }
+                let target = if start == end {
+                    AggregateTarget::Index(start)
+                } else {
+                    AggregateTarget::Range { start, end }
+                };
+                Ok(vec![(target, sized(element)?)])
+            }
+            _ => Err(ResolveError::Unsupported(
+                "designator does not match aggregate type",
+            )),
+        }
+    }
+
+    fn field_path(&self, fields: &[Field], name: &str) -> Option<Vec<Step>> {
+        for (index, field) in fields.iter().enumerate() {
+            let step = (AggregateTarget::Field(index), field.ty.clone());
+            if field.name.as_deref() == Some(name) {
+                return Some(vec![step]);
+            }
+            if field.name.is_none()
+                && field.bit_width.is_none()
+                && let Ok(Shape::Struct(inner) | Shape::Union(inner)) = self.shape(&field.ty)
+                && let Some(path) = self.field_path(&inner, name)
+            {
+                return Some([vec![step], path].concat());
+            }
+        }
+        None
+    }
+
+    pub(super) fn string_array_initializer(
+        &mut self,
+        e: &Expr,
+        ty: &Type,
+    ) -> Result<Option<(Type, Value)>, ResolveError> {
+        let ExprKind::StringLiteral(literal) = &e.value else {
+            return Ok(None);
+        };
+        let Type::Array { element, length } = ty else {
+            return Ok(None);
+        };
+        let Type::Numeric(NumericType::Integer {
+            width,
+            signed,
+            bit_precise: false,
+        }) = element.as_ref()
+        else {
+            return Ok(None);
+        };
+        let literal_ty =
+            super::types::string_literal_type(literal, &self.context.target, self.types.features);
+        let Type::Array {
+            element: literal_element,
+            ..
+        } = &literal_ty
+        else {
+            return Err(ResolveError::Unsupported("string literal type"));
+        };
+        let any_signedness = matches!(literal.encoding, Encoding::Plain | Encoding::Utf8);
+        let compatible = matches!(
+            literal_element.as_ref(),
+            Type::Numeric(NumericType::Integer {
+                width: literal_width,
+                signed: literal_signed,
+                ..
+            }) if width == literal_width && (any_signedness || signed == literal_signed)
+        );
+        if !compatible {
+            return Err(ResolveError::Unsupported(
+                "string literal initializer for incompatible array element",
+            ));
+        }
+        let mut units = literal.execution_units(self.context.target.wchar_width);
+        units.push(0);
+        let length = length.unwrap_or(units.len() as u64);
+        units.resize(length as usize, 0);
+        let ty = Type::Array {
+            element: element.clone(),
+            length: Some(length),
+        };
+        let value = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
+        Ok(Some((ty, value)))
+    }
+}
+
+fn array_index(expr: &Expr, length: Option<u64>) -> Result<u64, ResolveError> {
+    let index = Parser::evaluate_ast(expr)
+        .ok()
+        .and_then(|index| u64::try_from(index).ok())
+        .ok_or(ResolveError::Unsupported(
+            "non-constant or negative array designator",
+        ))?;
+    if length.is_some_and(|length| index >= length) {
+        return Err(ResolveError::Unsupported("array designator out of range"));
+    }
+    Ok(index)
+}

@@ -4,6 +4,7 @@ mod effects;
 mod effects_statements;
 mod expression;
 mod fold;
+mod initializer;
 mod module;
 pub mod names;
 pub mod numeric;

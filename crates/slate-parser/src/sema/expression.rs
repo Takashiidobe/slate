@@ -1,7 +1,7 @@
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, NodeId, Span};
-use crate::const_expr::{AssignOp, BinaryOp, Encoding, PostfixOp, UnaryOp};
+use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::*;
 use std::collections::HashMap;
 
@@ -1257,61 +1257,6 @@ impl Lowerer {
             _ => return Err(ResolveError::Unsupported("va builtin argument count")),
         };
         Ok(self.value(e, Type::Void, kind))
-    }
-}
-
-impl Lowerer {
-    pub(super) fn string_array_initializer(
-        &mut self,
-        e: &Expr,
-        ty: &Type,
-    ) -> Result<Option<(Type, Value)>, ResolveError> {
-        let ExprKind::StringLiteral(literal) = &e.value else {
-            return Ok(None);
-        };
-        let Type::Array { element, length } = ty else {
-            return Ok(None);
-        };
-        let literal_ty =
-            super::types::string_literal_type(literal, &self.context.target, self.types.features);
-        let Type::Array {
-            element: literal_element,
-            ..
-        } = &literal_ty
-        else {
-            return Err(ResolveError::Unsupported("string literal type"));
-        };
-        let any_signedness = matches!(literal.encoding, Encoding::Plain | Encoding::Utf8);
-        let compatible = match (element.as_ref(), literal_element.as_ref()) {
-            (
-                Type::Numeric(NumericType::Integer {
-                    width,
-                    signed,
-                    bit_precise: false,
-                }),
-                Type::Numeric(NumericType::Integer {
-                    width: literal_width,
-                    signed: literal_signed,
-                    ..
-                }),
-            ) => width == literal_width && (any_signedness || signed == literal_signed),
-            _ => false,
-        };
-        if !compatible {
-            return Err(ResolveError::Unsupported(
-                "string literal initializer for incompatible array element",
-            ));
-        }
-        let mut units = literal.execution_units(self.context.target.wchar_width);
-        units.push(0);
-        let length = length.unwrap_or(units.len() as u64);
-        units.resize(length as usize, 0);
-        let ty = Type::Array {
-            element: element.clone(),
-            length: Some(length),
-        };
-        let value = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
-        Ok(Some((ty, value)))
     }
 }
 

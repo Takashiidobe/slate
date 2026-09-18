@@ -355,6 +355,19 @@ impl Hoister {
                 operand: Box::new(self.value(*operand, out)?),
                 reason,
             },
+            ValueKind::Aggregate { members, zero_fill } => {
+                let mut lowered = Vec::new();
+                for member in members {
+                    lowered.push(AggregateMember {
+                        target: member.target,
+                        value: self.value(member.value, out)?,
+                    });
+                }
+                ValueKind::Aggregate {
+                    members: lowered,
+                    zero_fill,
+                }
+            }
             ValueKind::Read(place) => ValueKind::Read(self.place(place, out)?),
             ValueKind::AddressOf(place) => ValueKind::AddressOf(self.place(place, out)?),
             ValueKind::VaArg { list } => ValueKind::VaArg {
@@ -425,6 +438,7 @@ fn effects(value: &Value) -> bool {
             then_value,
             else_value,
         } => effects(condition) || effects(then_value) || effects(else_value),
+        ValueKind::Aggregate { members, .. } => members.iter().any(|member| effects(&member.value)),
         ValueKind::Copy { operand, .. }
         | ValueKind::Unary { operand, .. }
         | ValueKind::Convert { operand, .. } => effects(operand),

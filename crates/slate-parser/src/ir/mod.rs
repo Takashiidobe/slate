@@ -7,9 +7,9 @@ mod numeric;
 
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use declarations::{
-    BitFieldAccess, BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place,
-    PlaceKind, RecordKind, RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind,
-    TypeId, Variable,
+    AggregateMember, AggregateTarget, BitFieldAccess, BitFieldUnit, Enumerator, Field, Global,
+    Parameter, Parameters, Place, PlaceKind, RecordKind, RecordLayout, StorageDuration,
+    TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
 
@@ -50,6 +50,10 @@ pub enum ValueKind {
     LabelAddress(BindingId),
     Void,
     CodeUnits(Vec<u32>),
+    Aggregate {
+        members: Vec<AggregateMember>,
+        zero_fill: bool,
+    },
     ArrayDecay {
         place: Place,
         length: Option<u64>,
@@ -208,6 +212,24 @@ impl Value {
                     .with_compact(compact)
             ),
             ValueKind::CodeUnits(units) => write!(f, "code_units<{}>({units:?})", self.ty),
+            ValueKind::Aggregate { members, zero_fill } => {
+                write!(f, "aggregate<{}, zero_fill={zero_fill}>(", self.ty)?;
+                for (position, member) in members.iter().enumerate() {
+                    if position > 0 {
+                        f.write_str(", ")?;
+                    }
+                    write!(
+                        f,
+                        "{} = {}",
+                        member.target,
+                        member
+                            .value
+                            .display_metadata(show_spans, metadata)
+                            .with_compact(compact)
+                    )?;
+                }
+                f.write_str(")")
+            }
             ValueKind::ArrayDecay { place, length } => {
                 write!(
                     f,

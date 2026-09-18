@@ -2,8 +2,7 @@ use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use crate::ast::{
-    self, DeclKind, Declarator, Initializer, ParameterList, Span, Stmt, StmtKind, StorageClass,
-    TranslationUnit,
+    self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
@@ -321,19 +320,16 @@ impl Lowerer {
             };
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),
-                Some(Initializer::Expr(expr)) => match self.string_array_initializer(expr, &ty)? {
-                    Some((ty, value)) => {
-                        self.bindings.insert(id, ty.clone());
-                        (ty, Some(value))
-                    }
-                    None => {
-                        let value = self.expr(expr)?;
-                        let value =
-                            self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?;
-                        (ty, Some(value))
-                    }
-                },
-                _ => return Err(ResolveError::Unsupported("aggregate initializer")),
+                Some(initializer) => {
+                    let anchor = declarator.clone().with_value(());
+                    let value = self.initializer_value(&ty, initializer, &anchor)?;
+                    let ty = match ty {
+                        Type::Array { length: None, .. } => value.ty.clone(),
+                        ty => ty,
+                    };
+                    self.bindings.insert(id, ty.clone());
+                    (ty, Some(value))
+                }
             };
             let variable = Variable {
                 id,

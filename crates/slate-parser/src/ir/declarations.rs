@@ -88,6 +88,29 @@ pub struct Variable {
     pub initializer: Option<Value>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AggregateTarget {
+    Field(usize),
+    Index(u64),
+    Range { start: u64, end: u64 },
+}
+
+#[derive(Debug, Clone)]
+pub struct AggregateMember {
+    pub target: AggregateTarget,
+    pub value: super::Value,
+}
+
+impl std::fmt::Display for AggregateTarget {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Field(index) => write!(f, "field{index}"),
+            Self::Index(index) => write!(f, "index{index}"),
+            Self::Range { start, end } => write!(f, "index{start}..={end}"),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Global {
     pub variable: Variable,
