@@ -186,9 +186,8 @@ def render_error(
 
 FILECHECK_LITERAL_RE = re.compile(r"\{\{|\}\}|\[\[")
 TEMP_FILECHECK_PATH_RE = re.compile(r'(["])[^"]*\.filecheck\.[^"]*(["])')
-# provenance line numbers track whatever the include path resolves to, so an
-# edit to a system header would otherwise restamp every fixture that reads it
-PROVENANCE_LINE_RE = re.compile(r"^(\s*line: )[0-9]+(,)$")
+SYSTEM_KIND_RE = re.compile(r"^// [^:]+:(\s*)kind: System,$")
+PROVENANCE_LINE_RE = re.compile(r"^(// [^:]+:(\s*)line: )[0-9]+(,)$")
 FILECHECK_LITERAL_ESCAPES = {
     "{{": "{{\\{\\{}}",
     "}}": "{{[}][}]}}",
@@ -200,8 +199,23 @@ def escape_filecheck_literal(line: str) -> str:
     line = FILECHECK_LITERAL_RE.sub(
         lambda match: FILECHECK_LITERAL_ESCAPES[match.group(0)], line
     )
-    line = TEMP_FILECHECK_PATH_RE.sub(r"\1{{.*}}\2", line)
-    return PROVENANCE_LINE_RE.sub(r"\1{{[0-9]+}}\2", line)
+    return TEMP_FILECHECK_PATH_RE.sub(r"\1{{.*}}\2", line)
+
+
+def loosen_system_provenance(block: list[str]) -> list[str]:
+    """Match a system header's provenance line number by regex. Editing such a
+    header shifts every line below it, which would otherwise restamp every
+    fixture that reads it. User-file provenance stays exact: those line numbers
+    live in the fixture itself and a wrong one is a real defect."""
+    result: list[str] = []
+    for line in block:
+        system = SYSTEM_KIND_RE.match(result[-1]) if result else None
+        if system:
+            loosened = PROVENANCE_LINE_RE.match(line)
+            if loosened and loosened.group(2) == system.group(1):
+                line = f"{loosened.group(1)}{{{{[0-9]+}}}}{loosened.group(3)}"
+        result.append(line)
+    return result
 
 
 CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")
@@ -284,6 +298,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             directive = prefix if force == "plain" or index == 0 else f"{prefix}-NEXT"
             text = escape_filecheck_literal(line) if escape else line
             block.append(f"// {directive}: {text}")
+        block = loosen_system_provenance(block)
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
     return "\n".join(blocks)
