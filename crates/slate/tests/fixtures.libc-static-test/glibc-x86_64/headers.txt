@@ -189,3 +189,8 @@ sys/socket.h
 sys/socketvar.h
 sys/soundcard.h
 sys/stat.h
+sys/statfs.h
+sys/statvfs.h
+sys/swap.h
+sys/syscall.h
+sys/sysinfo.h

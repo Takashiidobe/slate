@@ -18,6 +18,19 @@ struct statvfs {
   unsigned long f_flag, f_namemax;
   unsigned int  __f_reserved[6];
 };
+#elif defined(__SLATE_LIBC_GLIBC)
+struct statvfs {
+  unsigned long f_bsize, f_frsize;
+  fsblkcnt_t    f_blocks, f_bfree, f_bavail;
+  fsfilcnt_t    f_files, f_ffree, f_favail;
+  unsigned long f_fsid;
+#if defined(__SLATE_WORDSIZE_32)
+  int           __f_unused;
+#endif
+  unsigned long f_flag, f_namemax;
+  unsigned int  f_type;
+  int           __f_spare[5];
+};
 #else
 struct statvfs {
   unsigned long f_bsize, f_frsize;
@@ -55,6 +68,9 @@ int fstatvfs(int, struct statvfs *);
 #define ST_NOATIME     1024
 #define ST_NODIRATIME  2048
 #define ST_RELATIME    4096
+#if defined(__SLATE_LIBC_GLIBC)
+#define ST_NOSYMFOLLOW ST_NOSYMFOLLOW
+#endif
 #endif
 
 #if defined(_LARGEFILE64_SOURCE) || defined(__SLATE_LIBC_BIONIC)
