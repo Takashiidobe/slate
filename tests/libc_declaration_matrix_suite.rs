@@ -5,9 +5,10 @@ use std::path::{Path, PathBuf};
 use support::libc_declaration_probe::{
     GeneratedProbe, compile_and_link_oracle_probe, compile_and_link_shim_probe, diff_header_files,
     diff_macro_names, extract_oracle_header_files, extract_oracle_header_functions,
-    extract_oracle_header_macros, extract_oracle_header_objects,
-    extract_oracle_header_symbol_names_with_args, extract_oracle_type_surface,
-    extract_shim_header_files, extract_shim_header_functions, extract_shim_header_macros,
+    extract_oracle_header_macros, extract_oracle_header_macros_with_args,
+    extract_oracle_header_objects, extract_oracle_header_symbol_names_with_args,
+    extract_oracle_type_surface, extract_shim_header_files, extract_shim_header_functions,
+    extract_shim_header_macros, extract_shim_header_macros_with_args,
     extract_shim_header_symbol_names_with_args, extract_shim_type_surface,
     select_cross_checkable_shim_macros, select_oracle_object_macro_value_probes,
     select_shim_object_macro_value_probes, write_header_matrix_probe,
@@ -552,6 +553,7 @@ fn feature_visibility_matrix() {
     );
     let mut failures = Vec::new();
     let mut extras = Vec::new();
+    let mut macro_extras = Vec::new();
     for (arch, libc, target) in targets {
         let config = resolve(arch, libc)
             .unwrap_or_else(|error| panic!("resolve {target} feature visibility: {error}"));
@@ -609,6 +611,32 @@ fn feature_visibility_matrix() {
                 if let Err(error) = result {
                     failures.push(format!("{target} {mode} {header}: {error}"));
                 }
+                let macro_result = extract_oracle_header_macros_with_args(
+                    &config,
+                    header,
+                    &output.join("oracle-macros"),
+                    args,
+                )
+                .and_then(|oracle| {
+                    let shim = extract_shim_header_macros_with_args(
+                        &config,
+                        header,
+                        &output.join("shim-macros"),
+                        args,
+                    )?;
+                    let diff = diff_macro_names(&oracle, &shim);
+                    if diff.extra_in_shim.is_empty() {
+                        Ok(())
+                    } else {
+                        for macro_name in &diff.extra_in_shim {
+                            macro_extras.push(format!("{target}\t{mode}\t{header}\t{macro_name}"));
+                        }
+                        Err(format!("{} extra macro(s)", diff.extra_in_shim.len()))
+                    }
+                });
+                if let Err(error) = macro_result {
+                    failures.push(format!("{target} {mode} {header} macros: {error}"));
+                }
             }
         }
     }
@@ -616,11 +644,17 @@ fn feature_visibility_matrix() {
         .join("target/libc-feature-visibility/extra-symbols.tsv");
     std::fs::write(&report, extras.join("\n") + "\n")
         .unwrap_or_else(|error| panic!("write {}: {error}", report.display()));
+    let macro_report = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/libc-feature-visibility/extra-macros.tsv");
+    std::fs::write(&macro_report, macro_extras.join("\n") + "\n")
+        .unwrap_or_else(|error| panic!("write {}: {error}", macro_report.display()));
     assert!(
         failures.is_empty(),
-        "libc feature visibility mismatches ({} extra symbols; full report at {}):\n{}",
+        "libc feature visibility mismatches ({} extra symbols, {} extra macros; reports at {} and {}):\n{}",
         extras.len(),
+        macro_extras.len(),
         report.display(),
+        macro_report.display(),
         failures.join("\n")
     );
 }

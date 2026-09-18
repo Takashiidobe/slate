@@ -120,7 +120,7 @@ void   explicit_bzero(void *, size_t);
 #endif
 
 #ifdef _GNU_SOURCE
-#if !defined(__SLATE_LIBC_MUSL)
+#if !defined(__SLATE_LIBC_GLIBC) && !defined(__SLATE_LIBC_MUSL)
 #include <alloca.h>
 #endif
 
@@ -144,10 +144,16 @@ char       *strchrnul(const char *, int);
 char       *strcasestr(const char *, const char *);
 void       *memrchr(const void *, int, size_t);
 void       *mempcpy(void *, const void *, size_t);
+#if !defined(__SLATE_LIBC_MUSL)
 void       *rawmemchr(const void *, int);
+#endif
+#if !defined(__SLATE_LIBC_MUSL)
 void       *memfrob(void *, size_t);
+#endif
+#if !defined(__SLATE_LIBC_MUSL)
 const char *strerrordesc_np(int);
 const char *strerrorname_np(int);
+#endif
 #endif
 
 #if defined(__SLATE_LIBC_MSVC)

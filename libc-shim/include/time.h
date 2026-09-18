@@ -91,8 +91,14 @@ struct tm *localtime(const time_t *);
 char *asctime(const struct tm *);
 char *ctime(const time_t *);
 #endif
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC11)
 int timespec_get(struct timespec *, int);
+#endif
+#if !defined(__SLATE_LIBC_MUSL) &&                                          \
+    (!defined(__SLATE_LIBC_GLIBC) ||                                        \
+     (defined(__GLIBC_USE_ISOC23) && __GLIBC_USE_ISOC23))
 int timespec_getres(struct timespec *, int);
+#endif
 
 #define CLOCKS_PER_SEC 1000000L
 
@@ -155,7 +161,11 @@ extern char *tzname[2];
 
 #endif
 
-#if defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE) || defined(_GNU_SOURCE)
+#if (defined(__SLATE_LIBC_GLIBC) &&                                          \
+     (defined(_GNU_SOURCE) ||                                                \
+      (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__)))) ||              \
+    (!defined(__SLATE_LIBC_GLIBC) &&                                        \
+     (defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE)))
 char       *strptime(const char *__restrict, const char *__restrict,
                      struct tm *__restrict);
 extern int  daylight;
@@ -164,8 +174,12 @@ extern int  getdate_err;
 struct tm  *getdate(const char *);
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if !defined(__SLATE_LIBC_GLIBC) &&                                          \
+    (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
 int    stime(const time_t *);
+#endif
+#if !defined(__SLATE_LIBC_MUSL) &&                                           \
+    (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
 time_t timelocal(struct tm *);
 #endif
 

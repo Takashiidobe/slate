@@ -14,8 +14,10 @@ double      cimag(double complex z);
 float       cimagf(float complex z);
 long double cimagl(long double complex z);
 
-#if defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
 double complex clog10(double complex z);
+float complex clog10f(float complex z);
+long double complex clog10l(long double complex z);
 #endif
 
 #ifdef __GNUC__

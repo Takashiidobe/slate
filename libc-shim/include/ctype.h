@@ -15,7 +15,9 @@
 
 int isalnum(int c);
 int isalpha(int c);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC99)
 int isblank(int c);
+#endif
 int iscntrl(int c);
 int isdigit(int c);
 int isgraph(int c);
@@ -43,7 +45,7 @@ int toupper(int c);
 #define tolower(c) (tolower)(c)
 #define toupper(c) (toupper)(c)
 
-#if defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
 int isctype(int, int);
 #endif
 
@@ -70,8 +72,10 @@ int toupper_l(int, locale_t);
 
 int isascii(int);
 int toascii(int);
+#if !defined(__SLATE_LIBC_MUSL)
 int _tolower(int);
 int _toupper(int);
+#endif
 
 #define isalnum_l(c, l) (isalnum_l)(c, l)
 #define isalpha_l(c, l) (isalpha_l)(c, l)
