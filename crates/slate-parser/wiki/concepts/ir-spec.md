@@ -743,6 +743,20 @@ they are not merely interchangeable aggregate values.
   the captured extents; do not re-evaluate the original bound expression.
   Runtime `sizeof` is represented as a computation rather than folded.
 
+**Implemented for variable-length arrays (`er8`):** a block-scope declarator
+whose array bound is not a constant emits a synthetic size_t
+`Statement::Temporary` capturing the bound at the declaration, and the
+declared type is `Type::VariableArray { element, extent }` (printed
+`vla<T, %extent>`) referencing that binding. Each non-constant dimension gets
+its own extent, evaluated left to right; `int (*p)[m]` is
+`ptr<vla<i32, %m>>`. The object decays like an array
+(`array_decay<..., length=None>`). `sizeof` of a VLA-typed operand is a
+runtime `mul` of the captured extent and the element size, never a
+re-evaluation of the bound. Not yet: VLA initializers (only C23 `{}` is
+valid), VLA function parameters, `sizeof(int[n])` and casts to VLA types,
+indexing through a pointer to a VLA (runtime stride), `[*]`, and
+`typedef` of VLA types.
+
 **Implemented (`lh7.2.8`):** braced and string initializers lower to
 `ValueKind::Aggregate { members, zero_fill }` (`sema/initializer.rs`),
 printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.

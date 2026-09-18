@@ -817,6 +817,7 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         | Type::Pointer { .. }
         | Type::VaList
         | Type::Array { .. }
+        | Type::VariableArray { .. }
         | Type::Function { .. }
         | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
     }

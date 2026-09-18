@@ -64,6 +64,7 @@ pub struct TypeResolver {
     tag_names: Vec<HashMap<(TagKind, String), TypeId>>,
     pub definitions: Vec<TypeDefinition>,
     pub(super) assertion_scope: bool,
+    pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
 }
 
 pub(super) enum Ordinary {
@@ -84,6 +85,7 @@ impl TypeResolver {
             tag_names: vec![HashMap::new()],
             definitions: Vec::new(),
             assertion_scope: false,
+            extents: HashMap::new(),
         }
     }
 
@@ -707,35 +709,57 @@ impl TypeResolver {
                 self.derive(inner, resolved)
             }
             Declarator::Array { .. } => {
+                enum Extent {
+                    Unspecified,
+                    Fixed(u64),
+                    Variable(BindingId),
+                }
                 let mut lengths = Vec::new();
                 let mut core = declarator;
                 while let Declarator::Array { inner, size, .. } = core {
                     lengths.push(match size {
-                        ArraySize::Unspecified => None,
+                        ArraySize::Unspecified => Extent::Unspecified,
                         ArraySize::Star => {
                             return Err(ResolveError::Unsupported("variable length array"));
                         }
-                        ArraySize::Expression(expr) => Some(
-                            u64::try_from(self.constant_integer(expr)?)
-                                .map_err(|_| ResolveError::Unsupported("invalid array length"))?,
-                        ),
+                        ArraySize::Expression(expr) => match self.extents.get(&expr.id) {
+                            Some(extent) => Extent::Variable(*extent),
+                            None => {
+                                Extent::Fixed(u64::try_from(self.constant_integer(expr)?).map_err(
+                                    |_| ResolveError::Unsupported("invalid array length"),
+                                )?)
+                            }
+                        },
                     });
                     core = inner;
                 }
                 let suffix: String = lengths
                     .iter()
                     .rev()
-                    .map(|length| length.map_or("[]".to_owned(), |length| format!("[{length}]")))
+                    .map(|length| match length {
+                        Extent::Unspecified => "[]".to_owned(),
+                        Extent::Fixed(length) => format!("[{length}]"),
+                        Extent::Variable(_) => "[*]".to_owned(),
+                    })
                     .collect();
                 let core = Self::apply_pointers(core, resolved);
                 for length in lengths {
-                    let element = resolved
-                        .ty
-                        .take()
-                        .ok_or(ResolveError::Unsupported("void array element"))?;
-                    resolved.ty = Some(Type::Array {
-                        element: Box::new(element),
-                        length,
+                    let element = Box::new(
+                        resolved
+                            .ty
+                            .take()
+                            .ok_or(ResolveError::Unsupported("void array element"))?,
+                    );
+                    resolved.ty = Some(match length {
+                        Extent::Unspecified => Type::Array {
+                            element,
+                            length: None,
+                        },
+                        Extent::Fixed(length) => Type::Array {
+                            element,
+                            length: Some(length),
+                        },
+                        Extent::Variable(extent) => Type::VariableArray { element, extent },
                     });
                 }
                 resolved.c.spelling.push_str(&suffix);
@@ -794,7 +818,10 @@ impl TypeResolver {
 
     fn apply_pointer(qualifiers: Qualifiers, resolved: &mut ResolvedType) {
         let pointee = resolved.ty.take().unwrap_or(Type::Void);
-        let grouped = matches!(pointee, Type::Function { .. } | Type::Array { .. });
+        let grouped = matches!(
+            pointee,
+            Type::Function { .. } | Type::Array { .. } | Type::VariableArray { .. }
+        );
         resolved.ty = Some(Type::Pointer {
             pointee: Box::new(pointee),
             is_const: resolved.c.qualifiers.is_const,

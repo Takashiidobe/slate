@@ -258,6 +258,10 @@ impl Lowerer {
                 .declarator
                 .name()
                 .ok_or(ResolveError::Unsupported("unnamed declaration"))?;
+            if !global {
+                let anchor = declarator.clone().with_value(());
+                self.capture_extents(&declarator.declarator, &anchor, &mut statements)?;
+            }
             let start = self.types.definitions.len();
             let resolved = self
                 .types
@@ -322,6 +326,11 @@ impl Lowerer {
                     _ => return Err(ResolveError::Unsupported("nonautomatic local")),
                 }
             };
+            if matches!(ty, Type::VariableArray { .. }) && declarator.initializer.is_some() {
+                return Err(ResolveError::Unsupported(
+                    "variable length array initializer",
+                ));
+            }
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),
                 Some(initializer) => {
@@ -405,6 +414,42 @@ impl Lowerer {
             }
         }
         Ok(statements)
+    }
+
+    fn capture_extents(
+        &mut self,
+        declarator: &Declarator,
+        anchor: &Span<()>,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<(), ResolveError> {
+        match declarator {
+            Declarator::Abstract | Declarator::Name(_) => Ok(()),
+            Declarator::Grouped(inner)
+            | Declarator::Attributed { inner, .. }
+            | Declarator::Pointer { inner, .. }
+            | Declarator::Function { inner, .. } => self.capture_extents(inner, anchor, out),
+            Declarator::Array { inner, size, .. } => {
+                self.capture_extents(inner, anchor, out)?;
+                let ast::ArraySize::Expression(expr) = size else {
+                    return Ok(());
+                };
+                if self.types.constant_integer(expr).is_ok() {
+                    return Ok(());
+                }
+                let extent_type = Type::integer(self.context.target.pointer_width, false);
+                let count = self.expr(expr)?;
+                let count = self.convert(count, extent_type.clone(), ConversionReason::Assign)?;
+                let id = self.fresh();
+                self.bindings.insert(id, extent_type.clone());
+                self.types.extents.insert(expr.id, id);
+                out.push(anchor.clone().with_value(Statement::Temporary {
+                    id,
+                    ty: extent_type,
+                    initializer: Some(count),
+                }));
+                Ok(())
+            }
+        }
     }
 
     fn case_value(&mut self, expr: &ast::Expr, ty: Type) -> Result<Value, ResolveError> {

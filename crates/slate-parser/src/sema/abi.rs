@@ -169,7 +169,7 @@ impl<'a> AbiClassifier<'a> {
                 }
                 _ => Err(ResolveError::Unsupported("incomplete ABI type")),
             },
-            Type::Array { .. } | Type::Function { .. } => {
+            Type::Array { .. } | Type::VariableArray { .. } | Type::Function { .. } => {
                 Err(ResolveError::Unsupported("unadjusted ABI parameter type"))
             }
         }

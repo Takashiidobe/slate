@@ -554,6 +554,17 @@ impl Lowerer {
             let length = *length;
             return Ok(self.value(e, ty, ValueKind::ArrayDecay { place, length }));
         }
+        if let Type::VariableArray { element, .. } = &place.ty {
+            let ty = self.pointer((**element).clone(), false);
+            return Ok(self.value(
+                e,
+                ty,
+                ValueKind::ArrayDecay {
+                    place,
+                    length: None,
+                },
+            ));
+        }
         if matches!(place.ty, Type::Function { .. }) {
             // C makes *f on a function designator the same designator, so both spell one value.
             if let PlaceKind::Deref(pointer) = place.kind {
@@ -702,6 +713,26 @@ impl Lowerer {
         self.module.globals.truncate(globals);
         self.next_id = next_id;
         result
+    }
+
+    fn runtime_size(&mut self, e: &Expr, ty: &Type) -> Result<Value, ResolveError> {
+        let size_type = Type::integer(self.context.target.pointer_width, false);
+        let Type::VariableArray { element, extent } = ty else {
+            let size = self.types.storage(ty.clone())?.size_bytes;
+            return Ok(self.value(
+                e,
+                size_type,
+                ValueKind::Constant(Number::Integer(size.into())),
+            ));
+        };
+        let place = Place {
+            ty: size_type.clone(),
+            kind: PlaceKind::Binding(*extent),
+        };
+        let count = self.value(e, size_type, ValueKind::Read(place));
+        let element = self.runtime_size(e, element)?;
+        let (ty, kind) = self.binary(BinaryOp::Mul, count, element)?;
+        Ok(self.value(e, ty, kind))
     }
 
     fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Value {
@@ -1182,6 +1213,11 @@ impl Lowerer {
                     .resolve(&ty.specifiers, &ty.declarator)?
                     .ty
                     .ok_or(ResolveError::Unsupported("void layout"))?;
+                if matches!(e.value, ExprKind::SizeOfType { .. })
+                    && matches!(ty, Type::VariableArray { .. })
+                {
+                    return self.runtime_size(e, &ty);
+                }
                 let layout = self.types.storage(ty.clone())?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
@@ -1197,6 +1233,11 @@ impl Lowerer {
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
                 let ty = self.unevaluated_type(operand)?;
+                if matches!(e.value, ExprKind::SizeOfExpr(_))
+                    && matches!(ty, Type::VariableArray { .. })
+                {
+                    return self.runtime_size(e, &ty);
+                }
                 let layout = self.types.storage(ty.clone())?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes

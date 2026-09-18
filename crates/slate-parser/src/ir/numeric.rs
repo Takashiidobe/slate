@@ -17,6 +17,10 @@ pub enum Type {
         element: Box<Type>,
         length: Option<u64>,
     },
+    VariableArray {
+        element: Box<Type>,
+        extent: super::BindingId,
+    },
     Function {
         return_type: Option<Box<Type>>,
         parameters: Vec<Type>,
@@ -41,6 +45,9 @@ impl fmt::Display for Type {
                 Some(length) => write!(f, "array<{element}, {length}>"),
                 None => write!(f, "array<{element}, incomplete>"),
             },
+            Self::VariableArray { element, extent } => {
+                write!(f, "vla<{element}, %{}>", extent.0)
+            }
             Self::Function {
                 return_type,
                 parameters,

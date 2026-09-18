@@ -411,6 +411,7 @@ impl TargetInfo {
             Type::Complex(_)
             | Type::Defined(_)
             | Type::Array { .. }
+            | Type::VariableArray { .. }
             | Type::Function { .. }
             | Type::Void => {
                 return Err(LayoutError::UnsupportedScalar(ty));
