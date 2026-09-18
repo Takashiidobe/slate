@@ -76,14 +76,14 @@ impl Lowerer {
         }
     }
 
-    fn pointee(&self, ty: &Type) -> Result<Type, ResolveError> {
+    pub(super) fn pointee(&self, ty: &Type) -> Result<Type, ResolveError> {
         match ty {
             Type::Pointer { pointee, .. } => Ok((**pointee).clone()),
             _ => Err(ResolveError::Unsupported("expected pointer")),
         }
     }
 
-    fn deref(&self, pointer: Value) -> Result<Place, ResolveError> {
+    pub(super) fn deref(&self, pointer: Value) -> Result<Place, ResolveError> {
         let Type::Pointer {
             pointee, access, ..
         } = &pointer.ty
@@ -592,7 +592,8 @@ impl Lowerer {
             return Ok(self.value(e, ty, ValueKind::FunctionDecay { place }));
         }
         let promote = self.promotes_by_width(&place);
-        let value = self.value(e, place.ty.clone(), ValueKind::Read(place));
+        let ordering = place.implicit_ordering();
+        let value = self.value(e, place.ty.clone(), ValueKind::Read { place, ordering });
         Ok(if promote {
             self.context
                 .convert(value, self.context.int_type(), ConversionReason::Promotion)
@@ -698,6 +699,7 @@ impl Lowerer {
             e,
             place.ty.clone(),
             ValueKind::Update {
+                ordering: place.implicit_ordering(),
                 place,
                 computation: Box::new(computation),
                 postfix,
@@ -748,7 +750,14 @@ impl Lowerer {
             kind: PlaceKind::Binding(*extent),
             access: Access::default(),
         };
-        let count = self.value(e, size_type, ValueKind::Read(place));
+        let count = self.value(
+            e,
+            size_type,
+            ValueKind::Read {
+                place,
+                ordering: None,
+            },
+        );
         let element = self.runtime_size(e, element)?;
         let (ty, kind) = self.binary(BinaryOp::Mul, count, element)?;
         Ok(self.value(e, ty, kind))
@@ -1097,6 +1106,7 @@ impl Lowerer {
                         e,
                         place.ty.clone(),
                         ValueKind::Store {
+                            ordering: place.implicit_ordering(),
                             place,
                             value: Box::new(value),
                         },
@@ -1170,6 +1180,14 @@ impl Lowerer {
             } => {
                 let selected = self.generic_selected(controlling, associations)?;
                 self.expr(selected)
+            }
+            ExprKind::Call {
+                callee: builtin,
+                arguments,
+            } if super::atomic::atomic_builtin(builtin).is_some() => {
+                let atomic = super::atomic::atomic_builtin(builtin)
+                    .ok_or(ResolveError::Unsupported("atomic builtin"))?;
+                self.atomic_builtin(e, builtin, atomic, arguments)
             }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
                 let builtin = va_builtin(callee).ok_or(ResolveError::Unsupported("va builtin"))?;

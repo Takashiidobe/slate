@@ -26,7 +26,10 @@ impl Hoister {
         let place = self.declare(&value, Some(value.clone()), out);
         Value {
             ty: value.ty,
-            node: value.node.with_value(ValueKind::Read(place)),
+            node: value.node.with_value(ValueKind::Read {
+                place,
+                ordering: None,
+            }),
         }
     }
 
@@ -150,6 +153,27 @@ impl Hoister {
         })
     }
 
+    fn order(
+        &mut self,
+        ordering: MemoryOrder,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<MemoryOrder, ResolveError> {
+        Ok(match ordering {
+            MemoryOrder::Dynamic(value) => MemoryOrder::Dynamic(Box::new(self.value(*value, out)?)),
+            fixed => fixed,
+        })
+    }
+
+    fn ordering(
+        &mut self,
+        ordering: Option<MemoryOrder>,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<Option<MemoryOrder>, ResolveError> {
+        ordering
+            .map(|ordering| self.order(ordering, out))
+            .transpose()
+    }
+
     fn branch(
         &mut self,
         source: &Value,
@@ -171,6 +195,7 @@ impl Hoister {
                 body.push(value.node.clone().with_value(Statement::Write {
                     place: place.clone(),
                     value,
+                    ordering: None,
                 }));
             } else {
                 self.discard(value, None, &mut body)?;
@@ -187,7 +212,10 @@ impl Hoister {
         Ok(Value {
             ty: source.ty.clone(),
             node: source.node.clone().with_value(match result {
-                Some(place) => ValueKind::Read(place),
+                Some(place) => ValueKind::Read {
+                    place,
+                    ordering: None,
+                },
                 None => ValueKind::Void,
             }),
         })
@@ -205,12 +233,18 @@ impl Hoister {
             node: source.clone().with_value(ValueKind::Void),
         };
         let kind = match value.node.value {
-            ValueKind::Store { place, value } => {
+            ValueKind::Store {
+                place,
+                value,
+                ordering,
+            } => {
                 let value = self.value(*value, out)?;
                 let place = self.place(place, out)?;
+                let ordering = self.ordering(ordering, out)?;
                 out.push(source.with_value(Statement::Write {
                     place,
                     value: value.clone(),
+                    ordering,
                 }));
                 return Ok(value);
             }
@@ -218,7 +252,8 @@ impl Hoister {
                 place,
                 computation,
                 postfix,
-            } if place.access.atomic => {
+                ordering: Some(ordering),
+            } => {
                 let place = self.place(place, out)?;
                 self.old.push(Value {
                     ty: place.ty.clone(),
@@ -226,25 +261,69 @@ impl Hoister {
                 });
                 let computation = self.value(*computation, out);
                 self.old.pop();
+                let ordering = self.order(ordering, out)?;
                 let update = Value {
                     ty,
                     node: source.with_value(ValueKind::Update {
                         place,
                         computation: Box::new(computation?),
                         postfix,
+                        ordering: Some(ordering),
                     }),
                 };
                 return Ok(self.temporary(update, out));
+            }
+            ValueKind::CompareExchange {
+                place,
+                expected,
+                desired,
+                success,
+                failure,
+                weak,
+            } => {
+                let place = self.place(place, out)?;
+                let expected = self.value(*expected, out)?;
+                let desired = self.value(*desired, out)?;
+                let success = self.order(success, out)?;
+                let failure = self.order(failure, out)?;
+                let exchange = Value {
+                    ty,
+                    node: source.with_value(ValueKind::CompareExchange {
+                        place,
+                        expected: Box::new(expected),
+                        desired: Box::new(desired),
+                        success,
+                        failure,
+                        weak,
+                    }),
+                };
+                return Ok(self.temporary(exchange, out));
+            }
+            ValueKind::Fence { ordering, scope } => {
+                let ordering = self.order(ordering, out)?;
+                out.push(
+                    source
+                        .clone()
+                        .with_value(Statement::Fence { ordering, scope }),
+                );
+                return Ok(Value {
+                    ty,
+                    node: source.with_value(ValueKind::Void),
+                });
             }
             ValueKind::Update {
                 place,
                 computation,
                 postfix,
+                ordering: None,
             } => {
                 let place = self.stable_place(place, out)?;
                 let old = Value {
                     ty: place.ty.clone(),
-                    node: source.clone().with_value(ValueKind::Read(place.clone())),
+                    node: source.clone().with_value(ValueKind::Read {
+                        place: place.clone(),
+                        ordering: None,
+                    }),
                 };
                 let old = self.temporary(old, out);
                 self.old.push(old.clone());
@@ -254,6 +333,7 @@ impl Hoister {
                 out.push(source.with_value(Statement::Write {
                     place,
                     value: result.clone(),
+                    ordering: None,
                 }));
                 return Ok(if postfix { old } else { result });
             }
@@ -424,7 +504,10 @@ impl Hoister {
                     zero_fill,
                 }
             }
-            ValueKind::Read(place) => ValueKind::Read(self.place(place, out)?),
+            ValueKind::Read { place, ordering } => ValueKind::Read {
+                place: self.place(place, out)?,
+                ordering: self.ordering(ordering, out)?,
+            },
             ValueKind::AddressOf(place) => ValueKind::AddressOf(self.place(place, out)?),
             ValueKind::VaArg { list } => ValueKind::VaArg {
                 list: self.place(list, out)?,
@@ -477,6 +560,8 @@ fn effects(value: &Value) -> bool {
     match &value.node.value {
         ValueKind::Store { .. }
         | ValueKind::Update { .. }
+        | ValueKind::CompareExchange { .. }
+        | ValueKind::Fence { .. }
         | ValueKind::Call { .. }
         | ValueKind::VaArg { .. }
         | ValueKind::VaStart { .. }
@@ -499,7 +584,11 @@ fn effects(value: &Value) -> bool {
         ValueKind::Copy { operand, .. }
         | ValueKind::Unary { operand, .. }
         | ValueKind::Convert { operand, .. } => effects(operand),
-        ValueKind::Read(place)
+        ValueKind::Read {
+            place,
+            ordering: Some(MemoryOrder::Dynamic(ordering)),
+        } => place_effects(place) || effects(ordering),
+        ValueKind::Read { place, .. }
         | ValueKind::AddressOf(place)
         | ValueKind::ArrayDecay { place, .. }
         | ValueKind::FunctionDecay { place } => place_effects(place),

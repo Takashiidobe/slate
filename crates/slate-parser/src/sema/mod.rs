@@ -1,5 +1,6 @@
 mod abi;
 mod assertion;
+mod atomic;
 mod effects;
 mod effects_statements;
 mod expression;

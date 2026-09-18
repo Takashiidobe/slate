@@ -100,9 +100,6 @@ impl std::fmt::Display for Access {
         if self.volatile {
             f.write_str(", volatile")?;
         }
-        if self.atomic {
-            f.write_str(", atomic=seq_cst")?;
-        }
         Ok(())
     }
 }
@@ -220,6 +217,10 @@ pub struct BitFieldAccess {
 }
 
 impl Place {
+    pub fn implicit_ordering(&self) -> Option<super::MemoryOrder> {
+        self.access.atomic.then_some(super::MemoryOrder::SeqCst)
+    }
+
     pub(super) fn display_mode(&self, compact: bool) -> impl std::fmt::Display + '_ {
         struct DisplayPlace<'a>(&'a Place, bool);
 

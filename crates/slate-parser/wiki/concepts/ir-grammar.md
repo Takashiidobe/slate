@@ -194,7 +194,8 @@ statement  = simple { metadata } ";"
            | "{" { metadata } body "}" ;
 simple     = "let" binding ":" type "[synthetic]" [ "=" value ]
            | "let" variable
-           | "write<" type access ">(" place ", " value ")"
+           | "write<" type access [ ordering ] ">(" place ", " value ")"
+           | "fence<scope=" ( "thread" | "signal" ) ", order=" order ">"
            | value
            | "return" [ value ]
            | "break" binding | "continue" binding
@@ -227,11 +228,18 @@ place  = binding
          ", bits=" int ".." int ">(" place ")"
        | ( "real(" | "imag(" ) place ")"
        | "compound_literal" binding "[storage=" storage "]" "=" value ;
-access = [ ", volatile" ] [ ", atomic=seq_cst" ] ;
+access   = [ ", volatile" ] ;
+ordering = ", atomic=" order ;
+order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
+         | "seq_cst" | "dynamic(" value ")" ;
 ```
 
 - A place is a storage location, not a read. Only `read`, `write`, `store`,
-  `update`, `addr_of`, the decays and the `va_*` values use one.
+  `update`, `compare_exchange`, `addr_of`, the decays and the `va_*` values
+  use one.
+- `ordering` belongs to the operation, not the place: it is absent on a
+  non-atomic access and follows `access` when present (`read<i32, volatile,
+  atomic=acquire>`). `dynamic(v)` is a runtime ordering value.
 - `bitfieldN<unit=U, bytes=A..B, bits=C..D>` is field `N`, stored in storage
   unit `U` (record bytes `A..B`), occupying bits `C..D` from the least
   significant bit of that unit. Bit-fields are not addressable.
@@ -250,9 +258,12 @@ core       = "const<" type ">(" constant ")"
            | "code_units<" type ">(" int_list ")"
            | "aggregate<" type ", zero_fill=" bool ">(" [ member { ", " member } ] ")"
            | "copy<" type ", reason=" reason ">(" value ")"
-           | "read<" type access ">(" place ")"
-           | "store<" type access ">(" place ", " value ")"
-           | "update<" type ", result=" ( "old" | "new" ) access ">(" place ", " value ")"
+           | "read<" type access [ ordering ] ">(" place ")"
+           | "store<" type access [ ordering ] ">(" place ", " value ")"
+           | "update<" type ", result=" ( "old" | "new" ) access [ ordering ]
+             ">(" place ", " value ")"
+           | "compare_exchange<" type access ", weak=" bool ", success=" order
+             ", failure=" order ">(" place ", " value ", " value ")"
            | "old<" type ">"
            | "addr_of<" type ">(" place ")"
            | "array_decay<" type ", length=" opt_int ">(" place ")"
@@ -282,8 +293,8 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
            | "usual_arith" | "explicit" ;
 ```
 
-- The type after `<` is the result type, except in `read`/`write`, where it
-  is the place type, and in `compare_op`, where it is the operand type (the
+- The type after `<` is the result type, except in `read`/`write` and
+  `compare_exchange` (result `bool`), where it is the place type, and in `compare_op`, where it is the operand type (the
   result is always `bool`).
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
   prints as `bits=0x...` to keep its payload. Decimal floats keep their digit
@@ -296,7 +307,11 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   from the function's final declaration.
 - Side-effect hoisting turns `store` and non-atomic `update` into `write`
   statements, so the module dump contains only atomic `update`s (one
-  read-modify-write). `old<T>` is the place's old value inside an `update`
+  read-modify-write). Atomic `update` and `compare_exchange` are each kept
+  whole in a synthetic temporary. A fence value becomes a `fence` statement.
+- `compare_exchange(place, expected, desired)`: `expected` is a pointer that
+  receives the current value on failure; the result is whether the exchange
+  happened. `old<T>` is the place's old value inside an `update`
   computation.
 - `array_decay`'s `length` is the source array's length (`None` for a VLA or
   an incomplete array).

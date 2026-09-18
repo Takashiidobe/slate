@@ -64,7 +64,12 @@ impl Hoister {
                             };
                             out.push(span.clone().with_value(Statement::Let(variable)));
                             out.extend(effects);
-                            out.push(span.with_value(Statement::Write { place, value }));
+                            let ordering = place.implicit_ordering();
+                            out.push(span.with_value(Statement::Write {
+                                place,
+                                value,
+                                ordering,
+                            }));
                             continue;
                         }
                     }
@@ -79,12 +84,17 @@ impl Hoister {
                     ty,
                     initializer: initializer.map(|v| self.value(v, &mut out)).transpose()?,
                 },
-                Statement::Write { place, value } => {
+                Statement::Write {
+                    place,
+                    value,
+                    ordering,
+                } => {
                     let store = Value {
                         ty: place.ty.clone(),
                         node: span.with_value(ValueKind::Store {
                             place,
                             value: Box::new(value),
+                            ordering,
                         }),
                     };
                     self.discard(store, None, &mut out)?;
@@ -167,6 +177,7 @@ impl Hoister {
                     body: self.statements(body)?,
                 },
                 other @ (Statement::Null
+                | Statement::Fence { .. }
                 | Statement::Break(_)
                 | Statement::Continue(_)
                 | Statement::Goto(_)) => other,

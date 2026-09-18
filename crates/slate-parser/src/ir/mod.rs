@@ -1,4 +1,5 @@
 mod abi;
+mod atomic;
 mod declarations;
 mod module;
 mod module_print;
@@ -6,6 +7,7 @@ mod names;
 mod numeric;
 
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
+pub use atomic::{FenceScope, MemoryOrder};
 pub use declarations::{
     Access, AggregateMember, AggregateTarget, BitFieldAccess, BitFieldUnit, Enumerator, Field,
     Global, Parameter, Parameters, Place, PlaceKind, RecordKind, RecordLayout, StorageDuration,
@@ -67,11 +69,25 @@ pub enum ValueKind {
     Store {
         place: Place,
         value: Box<Value>,
+        ordering: Option<MemoryOrder>,
     },
     Update {
         place: Place,
         computation: Box<Value>,
         postfix: bool,
+        ordering: Option<MemoryOrder>,
+    },
+    CompareExchange {
+        place: Place,
+        expected: Box<Value>,
+        desired: Box<Value>,
+        success: MemoryOrder,
+        failure: MemoryOrder,
+        weak: bool,
+    },
+    Fence {
+        ordering: MemoryOrder,
+        scope: FenceScope,
     },
     OldValue,
     PointerOffset {
@@ -101,7 +117,10 @@ pub enum ValueKind {
         abi: AbiSignature,
         arguments: Vec<Value>,
     },
-    Read(Place),
+    Read {
+        place: Place,
+        ordering: Option<MemoryOrder>,
+    },
     AddressOf(Place),
     VaArg {
         list: Place,
@@ -292,30 +311,71 @@ impl Value {
                         .with_compact(compact)
                 )
             }
-            ValueKind::Store { place, value } => write!(
-                f,
-                "store<{}{}>({}, {})",
-                self.ty,
-                place.access,
-                place.display_mode(compact),
-                value
-                    .display_metadata(show_spans, metadata)
-                    .with_compact(compact)
-            ),
+            ValueKind::Store {
+                place,
+                value,
+                ordering,
+            } => {
+                write!(f, "store<{}{}", self.ty, place.access)?;
+                atomic::format_ordering(f, ordering.as_ref(), compact)?;
+                write!(
+                    f,
+                    ">({}, {})",
+                    place.display_mode(compact),
+                    value
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )
+            }
             ValueKind::Update {
                 place,
                 computation,
                 postfix,
+                ordering,
+            } => {
+                write!(
+                    f,
+                    "update<{}, result={}{}",
+                    self.ty,
+                    if *postfix { "old" } else { "new" },
+                    place.access
+                )?;
+                atomic::format_ordering(f, ordering.as_ref(), compact)?;
+                write!(
+                    f,
+                    ">({}, {})",
+                    place.display_mode(compact),
+                    computation
+                        .display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )
+            }
+            ValueKind::CompareExchange {
+                place,
+                expected,
+                desired,
+                success,
+                failure,
+                weak,
             } => write!(
                 f,
-                "update<{}, result={}{}>({}, {})",
-                self.ty,
-                if *postfix { "old" } else { "new" },
+                "compare_exchange<{}{}, weak={weak}, success={}, failure={}>({}, {}, {})",
+                place.ty,
                 place.access,
+                success.display_mode(compact),
+                failure.display_mode(compact),
                 place.display_mode(compact),
-                computation
+                expected
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                desired
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
+            ),
+            ValueKind::Fence { ordering, scope } => write!(
+                f,
+                "fence<scope={scope}, order={}>",
+                ordering.display_mode(compact)
             ),
             ValueKind::Conditional {
                 condition,
@@ -383,14 +443,10 @@ impl Value {
             ValueKind::LabelAddress(id) => write!(f, "label_addr<{}>(%{})", self.ty, id.0),
             ValueKind::Void => f.write_str("void"),
             ValueKind::Null => write!(f, "null<{}>", self.ty),
-            ValueKind::Read(place) => {
-                write!(
-                    f,
-                    "read<{}{}>({})",
-                    place.ty,
-                    place.access,
-                    place.display_mode(compact)
-                )
+            ValueKind::Read { place, ordering } => {
+                write!(f, "read<{}{}", place.ty, place.access)?;
+                atomic::format_ordering(f, ordering.as_ref(), compact)?;
+                write!(f, ">({})", place.display_mode(compact))
             }
             ValueKind::VaArg { list } => {
                 write!(f, "va_arg<{}>({})", self.ty, list.display_mode(compact))

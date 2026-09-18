@@ -209,15 +209,26 @@ impl DisplayModule<'_> {
                     f.write_str("let ")?;
                     self.variable(f, variable)?;
                 }
-                Statement::Write { place, value } => write!(
+                Statement::Write {
+                    place,
+                    value,
+                    ordering,
+                } => {
+                    write!(f, "write<{}{}", place.ty, place.access)?;
+                    super::atomic::format_ordering(f, ordering.as_ref(), self.compact)?;
+                    write!(
+                        f,
+                        ">({}, {})",
+                        place.display_mode(self.compact),
+                        value
+                            .display_metadata(false, self.table())
+                            .with_compact(self.compact)
+                    )?
+                }
+                Statement::Fence { ordering, scope } => write!(
                     f,
-                    "write<{}{}>({}, {})",
-                    place.ty,
-                    place.access,
-                    place.display_mode(self.compact),
-                    value
-                        .display_metadata(false, self.table())
-                        .with_compact(self.compact)
+                    "fence<scope={scope}, order={}>",
+                    ordering.display_mode(self.compact)
                 )?,
                 Statement::Expression(value) => write!(
                     f,

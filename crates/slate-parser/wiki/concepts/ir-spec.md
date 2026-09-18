@@ -972,11 +972,16 @@ Each qualifier lives where its meaning does, following CIR's
 `cir.load volatile` / `atomic(seq_cst)` flags on the memory op rather than
 on the type:
 
-- `volatile` and `_Atomic` are properties of an access. Every place
-  carries an `access` (volatile, atomic), printed on the node that touches
-  memory: `read<i32, volatile>(%g)`, `write<i32, atomic=seq_cst>(%c, v)`,
-  and likewise on `store` and `update`. Forming a place (`addr_of`,
-  `array_decay`) prints nothing because nothing is accessed.
+- `volatile` is a property of the place. Every place carries an `access`
+  (volatile, plus whether the object is `_Atomic`), and volatile prints on
+  the node that touches memory: `read<i32, volatile>(%g)`. Forming a place
+  (`addr_of`, `array_decay`) prints nothing because nothing is accessed.
+- Atomicity is a property of the operation, because GCC `__atomic_*`
+  builtins work on plain objects. `read`, `write`, `store` and `update`
+  carry an optional memory ordering (`atomic=acquire`); none means a
+  non-atomic access. A plain access to an `_Atomic` object gets
+  `atomic=seq_cst`, derived from the place's `_Atomic` qualifier, since C
+  gives it no other ordering.
 - A place's access comes from the binding's own qualifiers, from the
   pointee qualifiers of the pointer it dereferences, and for fields from
   the base's access plus the field's own (`field0 status: volatile i32` in
@@ -985,11 +990,12 @@ on the type:
 - Pointer types keep pointee `volatile`/`_Atomic` next to `const`
   (`ptr<volatile i32>`). The access through `*p` cannot be recovered any
   other way. A volatile-qualified object type is not shown.
-- An atomic compound assignment or `++`/`--` is one read-modify-write, so
-  side-effect hoisting keeps `update<T, result=..., atomic=seq_cst>(place,
-f(old))` whole in a synthetic temporary instead of splitting it into
-  read, compute, write. Volatile updates are split, and both the read and
-  the write stay volatile.
+- An atomic update (compound assignment or `++`/`--` on an `_Atomic`
+  object, or a fetch/exchange builtin) is one read-modify-write, so
+  side-effect hoisting keeps `update<T, result=..., atomic=...>(place,
+  f(old))` whole in a synthetic temporary instead of splitting it into
+  read, compute, write. Volatile non-atomic updates are split, and both the
+  read and the write stay volatile.
 - `restrict` is an aliasing promise about a pointer binding, so it is a
   `[restrict]` flag on the parameter or variable. For an array parameter,
   the qualifiers inside its first brackets (`int a[restrict 4]`) are the
@@ -999,6 +1005,45 @@ f(old))` whole in a synthetic temporary instead of splitting it into
 
 `tests/fixtures/sema/ir_qualified_access.c` covers these. `_Atomic` size and
 alignment that differ from the unqualified type are not modeled yet.
+
+### Explicit atomic operations
+
+The `__c11_atomic_*` builtins (what clang's `<stdatomic.h>` expands to) and
+the GCC `__atomic_*` builtins resolve in sema without declarations. They
+are type-generic and resolve from the pointer argument's pointee. They
+lower onto the existing access nodes; only compare-exchange and fences get
+their own:
+
+| Source | IR |
+|---|---|
+| `load(p, o)` | `read<T, atomic=o>(deref(p))` |
+| `store(p, v, o)` | `write<T, atomic=o>(deref(p), v)` |
+| `fetch_OP(p, v, o)` | `update<T, result=old, atomic=o>(deref(p), OP(old, v))` |
+| `__atomic_OP_fetch(p, v, o)` | `update<T, result=new, atomic=o>(deref(p), OP(old, v))` |
+| `exchange(p, v, o)` | `update<T, result=old, atomic=o>(deref(p), v)` |
+| nand / min / max | `not(and(old, v))` / `conditional(lt\|gt(old, v), old, v)` |
+| `__atomic_test_and_set` / `__atomic_clear` | `update` to 1 / `write` of 0 (a `void *` pointee is `u8`) |
+| generic `__atomic_load/store/exchange` | the same nodes, reading/writing through the pointer arguments |
+| `__c11_atomic_init(p, v)` | non-atomic `write` |
+| compare-exchange | `compare_exchange<T, weak=, success=, failure=>(place, expected, desired)` |
+| `*_thread_fence` / `*_signal_fence` | `fence<scope=thread\|signal, order=o>` statement |
+
+- Orderings are recorded exactly as written, including ones that are UB
+  for the operation (an acquire store, a failure ordering stronger than
+  success). `consume` stays distinct from `acquire`.
+- A constant ordering folds to its name (a required fold). A non-constant
+  one prints as `atomic=dynamic(v)`.
+- Fetch arithmetic is in `T` itself with `overflow=wrap`; C11 7.17.7.5
+  gives atomic fetch operations no undefined results. On a pointer, C11
+  `__c11_atomic_fetch_add` offsets in elements (`ptr_offset<..., element=T>`)
+  and GCC `__atomic_fetch_add` in bytes (`element=u8`).
+- The builtin's name is kept as `c_builtin` metadata on the call's node,
+  since an exchange or fetch no longer names itself once it is an `update`.
+- A GCC compare-exchange `weak` argument must be constant.
+
+`tests/fixtures/sema/ir_atomic_builtins.c` and `ir_atomic_stdatomic.c`
+cover these. The legacy `__sync_*` builtins and `__atomic_*_lock_free`
+queries do not resolve yet.
 
 ## Things C leaves implicit that the IR materializes
 
