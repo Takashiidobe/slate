@@ -85,12 +85,41 @@
 typedef long double long_double_t;
 #endif
 
-double      acos(double);
-float       acosf(float);
-long double acosl(long double);
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) ||             \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#define __SLATE_MATH_EXT 1
+#endif
 
+double acos(double);
+double asin(double);
+double atan(double);
+double atan2(double, double);
+double ceil(double);
+double cos(double);
+double exp(double);
+double fabs(double);
+double floor(double);
+double fmod(double, double);
+double frexp(double, int *);
+double ldexp(double, int);
+double log(double);
+double log10(double);
+double modf(double, double *);
+double pow(double, double);
+double sin(double);
+double sqrt(double);
+double tan(double);
+
+#if defined(__SLATE_MATH_EXT)
+
+#if defined(__SLATE_LIBC_GLIBC) &&                                       \
+    (defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
 int (isinf)(double);
 int (isnan)(double);
+#endif
+
+float acosf(float);
+long double acosl(long double);
 
 double      acosh(double);
 float       acoshf(float);
@@ -115,10 +144,6 @@ long double atan2l(long double, long double);
 double      atanh(double);
 float       atanhf(float);
 long double atanhl(long double);
-
-int canonicalize(double *, const double *);
-int canonicalizef(float *, const float *);
-int canonicalizel(long double *, const long double *);
 
 double      cbrt(double);
 float       cbrtf(float);
@@ -320,6 +345,8 @@ double      trunc(double);
 float       truncf(float);
 long double truncl(long double);
 
+#endif
+
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #undef MAXFLOAT
 #define MAXFLOAT 3.40282346638528859812e+38F
@@ -507,7 +534,11 @@ long double pow10l(long double);
 #endif
 #endif
 
-#if defined(__SLATE_LIBC_GLIBC)
+#if defined(__SLATE_LIBC_GLIBC) && __GLIBC_USE_ISOC23
+int canonicalize(double *, const double *);
+int canonicalizef(float *, const float *);
+int canonicalizel(long double *, const long double *);
+
 double acospi(double);
 double asinpi(double);
 double atan2pi(double, double);
@@ -520,12 +551,10 @@ double fmaximum(double, double);
 double fmaximum_mag(double, double);
 double fmaximum_mag_num(double, double);
 double fmaximum_num(double, double);
-double fmaxmag(double, double);
 double fminimum(double, double);
 double fminimum_mag(double, double);
 double fminimum_mag_num(double, double);
 double fminimum_num(double, double);
-double fminmag(double, double);
 #if defined(__SLATE_ARCH_ARM)
 long long fromfp(double, int, unsigned int);
 long long fromfpx(double, int, unsigned int);
@@ -537,8 +566,6 @@ double fromfpx(double, int, unsigned int);
 double ufromfp(double, int, unsigned int);
 double ufromfpx(double, int, unsigned int);
 #endif
-double gamma(double);
-double getpayload(const double *);
 long llogb(double);
 double log10p1(double);
 double log2p1(double);
@@ -550,12 +577,8 @@ double powr(double, double);
 double rootn(double, long long);
 double roundeven(double);
 double rsqrt(double);
-int setpayload(double *, double);
-int setpayloadsig(double *, double);
 double sinpi(double);
 double tanpi(double);
-int totalorder(const double *, const double *);
-int totalordermag(const double *, const double *);
 #endif
 
 #endif

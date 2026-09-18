@@ -443,6 +443,46 @@ const C11_HEADERS: &[&str] = &[
     "uchar.h",
 ];
 
+const C23_HEADERS: &[&str] = &["stdbit.h", "stdckdint.h"];
+
+const FEATURE_HEADERS: &[&str] = &[
+    "aio.h",
+    "arpa/inet.h",
+    "dirent.h",
+    "fcntl.h",
+    "netdb.h",
+    "poll.h",
+    "pthread.h",
+    "pwd.h",
+    "sched.h",
+    "strings.h",
+    "sys/mman.h",
+    "sys/resource.h",
+    "sys/select.h",
+    "sys/socket.h",
+    "sys/stat.h",
+    "sys/time.h",
+    "sys/types.h",
+    "sys/uio.h",
+    "sys/wait.h",
+    "termios.h",
+    "unistd.h",
+    "wait.h",
+];
+
+const LARGE_FILE_HEADERS: &[&str] = &[
+    "dirent.h",
+    "fcntl.h",
+    "pthread.h",
+    "stdio.h",
+    "stdlib.h",
+    "sys/stat.h",
+    "sys/time.h",
+    "sys/types.h",
+    "time.h",
+    "unistd.h",
+];
+
 const FEATURE_MODES: &[(&str, &[&str])] = &[
     ("c89", &["-std=c89"]),
     ("iso9899-1990", &["-std=iso9899:1990"]),
@@ -460,6 +500,40 @@ const FEATURE_MODES: &[(&str, &[&str])] = &[
     ("gnu11", &["-std=gnu11"]),
     ("gnu11-default", &["-std=gnu11", "-D_DEFAULT_SOURCE"]),
     ("gnu11-gnu", &["-std=gnu11", "-D_GNU_SOURCE"]),
+    ("c17", &["-std=c17"]),
+    ("iso9899-2017", &["-std=iso9899:2017"]),
+    ("gnu17", &["-std=gnu17"]),
+    ("gnu17-default", &["-std=gnu17", "-D_DEFAULT_SOURCE"]),
+    ("gnu17-gnu", &["-std=gnu17", "-D_GNU_SOURCE"]),
+    ("c23", &["-std=c23"]),
+    ("c23-isoc23", &["-std=c23", "-D_ISOC23_SOURCE"]),
+    ("c23-isoc2x", &["-std=c23", "-D_ISOC2X_SOURCE"]),
+    ("gnu23", &["-std=gnu23"]),
+    ("gnu23-default", &["-std=gnu23", "-D_DEFAULT_SOURCE"]),
+    ("gnu23-gnu", &["-std=gnu23", "-D_GNU_SOURCE"]),
+    ("posix-source", &["-std=c17", "-D_POSIX_SOURCE"]),
+    ("posix-1", &["-std=c17", "-D_POSIX_C_SOURCE=1"]),
+    ("posix-2", &["-std=c17", "-D_POSIX_C_SOURCE=2"]),
+    ("posix-199309", &["-std=c17", "-D_POSIX_C_SOURCE=199309L"]),
+    ("posix-199506", &["-std=c17", "-D_POSIX_C_SOURCE=199506L"]),
+    ("posix-200112", &["-std=c17", "-D_POSIX_C_SOURCE=200112L"]),
+    ("posix-200809", &["-std=c17", "-D_POSIX_C_SOURCE=200809L"]),
+    ("posix-202405", &["-std=c17", "-D_POSIX_C_SOURCE=202405L"]),
+    ("xopen-500", &["-std=c17", "-D_XOPEN_SOURCE=500"]),
+    ("xopen-600", &["-std=c17", "-D_XOPEN_SOURCE=600"]),
+    ("xopen-700", &["-std=c17", "-D_XOPEN_SOURCE=700"]),
+    ("xopen-800", &["-std=c17", "-D_XOPEN_SOURCE=800"]),
+    ("c17-default-source", &["-std=c17", "-D_DEFAULT_SOURCE"]),
+    ("c17-gnu-source", &["-std=c17", "-D_GNU_SOURCE"]),
+    ("c23-default-source", &["-std=c23", "-D_DEFAULT_SOURCE"]),
+    ("c23-gnu-source", &["-std=c23", "-D_GNU_SOURCE"]),
+    ("largefile-source", &["-std=c17", "-D_LARGEFILE_SOURCE"]),
+    ("largefile64-source", &["-std=c17", "-D_LARGEFILE64_SOURCE"]),
+    ("file-offset-64", &["-std=c17", "-D_FILE_OFFSET_BITS=64"]),
+    (
+        "file-time-64",
+        &["-std=c17", "-D_FILE_OFFSET_BITS=64", "-D_TIME_BITS=64"],
+    ),
 ];
 
 #[test]
@@ -492,7 +566,22 @@ fn feature_visibility_matrix() {
                 .join("target/libc-feature-visibility")
                 .join(target)
                 .join(mode);
-            for header in C11_HEADERS {
+            let mut headers = C11_HEADERS.to_vec();
+            if mode.contains("23") && libc == LibcVariant::Glibc {
+                headers.extend_from_slice(C23_HEADERS);
+            }
+            if mode.starts_with("largefile") || mode.starts_with("file-") {
+                headers.extend_from_slice(LARGE_FILE_HEADERS);
+            } else if mode.starts_with("posix-")
+                || mode.starts_with("xopen-")
+                || mode.ends_with("default-source")
+                || mode.ends_with("gnu-source")
+            {
+                headers.extend_from_slice(FEATURE_HEADERS);
+            }
+            headers.sort_unstable();
+            headers.dedup();
+            for header in headers {
                 let output = root.join(header_directory(header));
                 let result = extract_oracle_header_symbol_names_with_args(
                     &config,

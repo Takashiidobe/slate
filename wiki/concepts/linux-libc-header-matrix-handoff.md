@@ -165,12 +165,13 @@ shim probe compiles.
 
 The `feature_visibility_matrix` test in `tests/libc_declaration_matrix_suite.rs`
 compares visible function and object names from the oracle and shim Clang ASTs
-for C89/C99/C11, ISO 9899:1990/199409/1999/2011, GNU89/GNU99/GNU11, and GNU
-modes with explicit `_DEFAULT_SOURCE` or `_GNU_SOURCE`. It checks the
-C90/C95/C99/C11 header set for both x86-64 glibc and musl. Because existing shim
-gates leak names, the test is ignored in the default profile until the linked
-`slate-khfh` issues are fixed. Run it to regenerate the complete tab-separated
-report at
+for C89/C99/C11/C17/C23, ISO 9899:1990/199409/1999/2011/2017, GNU89/GNU99/
+GNU11/GNU17/GNU23, and GNU modes with explicit `_DEFAULT_SOURCE` or
+`_GNU_SOURCE`; it also has explicit `_ISOC23_SOURCE` and `_ISOC2X_SOURCE`
+selectors. It checks the C90/C95/C99/C11/C23 header set for both x86-64 glibc
+and musl. Because existing shim gates leak names, the test is ignored in the
+default profile until the linked `slate-khfh` issues are fixed. Run it to
+regenerate the complete tab-separated report at
 `target/libc-feature-visibility/extra-symbols.tsv`:
 
 ```bash
@@ -178,10 +179,24 @@ cargo nextest r --release --profile libc --test libc_declaration_matrix_suite \
   -E 'test(feature_visibility_matrix)' --run-ignored ignored-only --nocapture
 ```
 
-Set `SLATE_LIBC_FEATURE_PROFILE=c89`, `c99`, or `c11` (and the corresponding GNU
-mode) to inspect one mode. The report lists
+Set `SLATE_LIBC_FEATURE_PROFILE=c89`, `c99`, `c11`, `c17`, or `c23` (and the
+corresponding GNU or explicit feature macro mode) to inspect one mode. The
+report lists
 target, mode, header, and each extra declaration; the test fails when the
 report contains extras. The AST path does not cover macros.
+
+The same selector covers the POSIX/XOPEN ladder (`posix-source`, `posix-1`,
+`posix-2`, `posix-199309`, `posix-199506`, `posix-200112`, `posix-200809`,
+`posix-202405`, `xopen-500`, `xopen-600`, `xopen-700`, `xopen-800`), explicit
+`c17-default-source`/`c17-gnu-source` and `c23-default-source`/`c23-gnu-source`,
+and the large-file/time selectors `largefile-source`, `largefile64-source`,
+`file-offset-64`, and `file-time-64`. POSIX/XOPEN and source modes include the
+common extension headers; large-file/time modes include only headers that own
+the relevant ABI types and remaps. The installed musl oracle's `aio.h` is
+incomplete under `_TIME_BITS=64`, so it is intentionally outside the
+large-file/time header set. Name visibility does not establish `off_t` or
+`time_t` width or `__REDIR` foreign identities; those require type and symbol
+probes.
 
 Use the macro family established by `features.h`; do not infer libc from an
 architecture or a feature-test macro.
