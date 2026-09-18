@@ -5,6 +5,7 @@ use crate::ast::{
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
 use crate::standard_features::StandardFeatures;
+use crate::target_info::TargetInfo;
 use miette::Diagnostic;
 use num_bigint::{BigInt, BigUint};
 use std::cell::Cell;
@@ -301,6 +302,8 @@ pub enum ConstExprError {
     UnsupportedCall(String),
     #[error("{0} is not a constant expression")]
     NotConstant(&'static str),
+    #[error("{0}")]
+    CharacterConstant(&'static str),
     #[error("{0} requires semantic type evaluation")]
     RequiresSemanticEvaluation(&'static str),
     #[error("invalid floating literal `{0}`")]
@@ -530,6 +533,58 @@ impl CharLiteral {
     pub fn execution_units(&self, wchar_width: u32) -> Vec<u32> {
         execution_units(&self.spelling, self.encoding.unit_width(wchar_width))
     }
+
+    // signedness of the character type behind the constant, not of its C type:
+    // a plain constant is int in C but follows char in preprocessor arithmetic
+    pub fn char_type_is_signed(&self, target: &TargetInfo) -> bool {
+        match self.encoding {
+            Encoding::Plain => target.char_signed,
+            Encoding::Wide => target.wchar_signed,
+            Encoding::Utf8 | Encoding::Utf16 | Encoding::Utf32 => false,
+        }
+    }
+
+    pub fn value(&self, target: &TargetInfo) -> Result<i64, ConstExprError> {
+        let units = self.execution_units(target.wchar_width);
+        if self.encoding == Encoding::Plain {
+            return match units.as_slice() {
+                [] => Err(ConstExprError::CharacterConstant(
+                    "empty character constant",
+                )),
+                [single] => Ok(wrap_to_width(u64::from(*single), 8, target.char_signed)),
+                multiple => {
+                    let packed = multiple
+                        .iter()
+                        .fold(0u64, |acc, &byte| (acc << 8) | u64::from(byte & 0xFF));
+                    Ok(wrap_to_width(packed, target.int_width, true))
+                }
+            };
+        }
+        let [single] = units.as_slice() else {
+            return Err(ConstExprError::CharacterConstant(match self.encoding {
+                Encoding::Wide => "wide character literals may not contain multiple characters",
+                _ => "Unicode character literals may not contain multiple characters",
+            }));
+        };
+        let width = self.encoding.unit_width(target.wchar_width);
+        let signed = self.encoding == Encoding::Wide && target.wchar_signed;
+        Ok(wrap_to_width(u64::from(*single), width, signed))
+    }
+}
+
+pub(crate) fn wrap_to_width(value: u64, width: u32, signed: bool) -> i64 {
+    let value = value & (u64::MAX >> (u64::BITS - width));
+    if signed && value >> (width - 1) != 0 {
+        value as i64 - (1i64 << width)
+    } else {
+        value as i64
+    }
+}
+
+#[derive(Clone, Copy, Default)]
+pub struct EvalContext<'a> {
+    is_defined: Option<&'a dyn Fn(&str) -> bool>,
+    target: Option<&'a TargetInfo>,
 }
 
 impl StringLiteral {
@@ -787,15 +842,16 @@ impl<'a> Parser<'a> {
     }
 
     pub fn evaluate(tokens: &'a [Span<Token>]) -> Result<i64, ConstExprError> {
-        Self::evaluate_expr(&Self::parse(tokens)?, None)
+        Self::evaluate_expr(&Self::parse(tokens)?, EvalContext::default())
     }
 
     pub fn evaluate_ast(expression: &Expr) -> Result<i64, ConstExprError> {
-        Self::evaluate_expr(expression, None)
+        Self::evaluate_expr(expression, EvalContext::default())
     }
 
     pub fn evaluate_with_defined(
         tokens: &'a [Span<Token>],
+        target: &TargetInfo,
         is_defined: &dyn Fn(&str) -> bool,
     ) -> Result<i64, LocatedConstExprError> {
         let mut parser = Self::new(tokens, None);
@@ -809,29 +865,33 @@ impl<'a> Parser<'a> {
         if parser.peek().is_some() {
             return Err(at_position(&parser, ConstExprError::UnexpectedTokens));
         }
-        Self::evaluate_wide(&expression, Some(is_defined))
+        let ctx = EvalContext {
+            is_defined: Some(is_defined),
+            target: Some(target),
+        };
+        Self::evaluate_wide(&expression, ctx)
             .map(|value| i64::from(!value.is_zero()))
             .map_err(|error| LocatedConstExprError { error, token: None })
     }
 
-    fn evaluate_expr(
-        expression: &Expr,
-        is_defined: Option<&dyn Fn(&str) -> bool>,
-    ) -> Result<i64, ConstExprError> {
+    fn evaluate_expr(expression: &Expr, ctx: EvalContext<'_>) -> Result<i64, ConstExprError> {
         match &expression.value {
             ExprKind::IntegerLiteral(literal) => Ok(integer_literal_i64(literal)),
-            ExprKind::CharLiteral(literal) => Ok(fold_char_code_units(&literal.code_units)),
+            ExprKind::CharLiteral(literal) => match ctx.target {
+                Some(target) => literal.value(target),
+                None => Ok(fold_char_code_units(&literal.code_units)),
+            },
             ExprKind::StringLiteral(_) => Err(ConstExprError::NotConstant("string literal")),
             ExprKind::Generic { .. } => Err(ConstExprError::RequiresSemanticEvaluation(
                 "generic selection",
             )),
             ExprKind::FloatLiteral(_) => Err(ConstExprError::NotConstant("floating literal")),
-            ExprKind::Identifier(name) => match is_defined {
+            ExprKind::Identifier(name) => match ctx.is_defined {
                 Some(_) if name == "true" => Ok(1),
                 Some(_) => Ok(0),
                 None => Err(ConstExprError::UnsupportedIdentifier(name.clone())),
             },
-            ExprKind::Paren(inner) => Self::evaluate_expr(inner, is_defined),
+            ExprKind::Paren(inner) => Self::evaluate_expr(inner, ctx),
             ExprKind::SizeOfExpr(_) => Err(ConstExprError::UnsupportedSizeOf),
             ExprKind::SizeOfType { .. } => Err(ConstExprError::UnsupportedSizeOf),
             ExprKind::AlignOf { .. } => Err(ConstExprError::UnsupportedAlignOf),
@@ -845,7 +905,7 @@ impl<'a> Parser<'a> {
                     [argument] => identifier(argument),
                     _ => None,
                 };
-                match (is_defined, identifier(callee), argument) {
+                match (ctx.is_defined, identifier(callee), argument) {
                     (Some(is_defined), Some("defined"), Some(macro_name)) => {
                         Ok(is_defined(macro_name) as i64)
                     }
@@ -858,9 +918,9 @@ impl<'a> Parser<'a> {
                 }
             }
             ExprKind::Cast { ty, .. } if bit_int_width(ty).is_some() => {
-                Self::evaluate_wide(expression, is_defined).map(|wide| wide.truncate_to_i64())
+                Self::evaluate_wide(expression, ctx).map(|wide| wide.truncate_to_i64())
             }
-            ExprKind::Cast { value, .. } => Self::evaluate_expr(value, is_defined),
+            ExprKind::Cast { value, .. } => Self::evaluate_expr(value, ctx),
             ExprKind::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
             ExprKind::VaArg { .. } => Err(ConstExprError::NotConstant("va_arg")),
             ExprKind::Unary {
@@ -888,10 +948,9 @@ impl<'a> Parser<'a> {
             } => Err(ConstExprError::NotConstant("decrement")),
             ExprKind::Unary { op, operand } => {
                 if contains_wide(operand) {
-                    return Self::evaluate_wide(expression, is_defined)
-                        .map(|wide| wide.truncate_to_i64());
+                    return Self::evaluate_wide(expression, ctx).map(|wide| wide.truncate_to_i64());
                 }
-                let value = Self::evaluate_expr(operand, is_defined)?;
+                let value = Self::evaluate_expr(operand, ctx)?;
                 match op {
                     UnaryOp::Plus | UnaryOp::Real => Ok(value),
                     UnaryOp::Minus => value.checked_neg().ok_or(ConstExprError::IntegerOverflow),
@@ -906,14 +965,13 @@ impl<'a> Parser<'a> {
             }
             ExprKind::Binary { op, left, right } => {
                 if contains_wide(left) || contains_wide(right) {
-                    return Self::evaluate_wide(expression, is_defined)
-                        .map(|wide| wide.truncate_to_i64());
+                    return Self::evaluate_wide(expression, ctx).map(|wide| wide.truncate_to_i64());
                 }
-                let left = Self::evaluate_expr(left, is_defined)?;
+                let left = Self::evaluate_expr(left, ctx)?;
                 if *op == BinaryOp::And && left == 0 || *op == BinaryOp::Or && left != 0 {
                     return Ok((*op == BinaryOp::Or) as i64);
                 }
-                let right = Self::evaluate_expr(right, is_defined)?;
+                let right = Self::evaluate_expr(right, ctx)?;
                 match op {
                     BinaryOp::Add => Ok((left as i128 + right as i128) as i64),
                     BinaryOp::Sub => Ok((left as i128 - right as i128) as i64),
@@ -948,16 +1006,16 @@ impl<'a> Parser<'a> {
                 then_value,
                 else_value,
             } => {
-                let value = Self::evaluate_expr(condition, is_defined)?;
+                let value = Self::evaluate_expr(condition, ctx)?;
                 match (value != 0, then_value) {
-                    (true, Some(then_value)) => Self::evaluate_expr(then_value, is_defined),
+                    (true, Some(then_value)) => Self::evaluate_expr(then_value, ctx),
                     (true, None) => Ok(value),
-                    (false, _) => Self::evaluate_expr(else_value, is_defined),
+                    (false, _) => Self::evaluate_expr(else_value, ctx),
                 }
             }
             ExprKind::Comma { left, right } => {
-                Self::evaluate_expr(left, is_defined)?;
-                Self::evaluate_expr(right, is_defined)
+                Self::evaluate_expr(left, ctx)?;
+                Self::evaluate_expr(right, ctx)
             }
             ExprKind::Assign { .. } => Err(ConstExprError::NotConstant("assignment")),
             ExprKind::Member { .. } => Err(ConstExprError::NotConstant("member access")),
@@ -974,12 +1032,9 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn evaluate_wide(
-        expression: &Expr,
-        is_defined: Option<&dyn Fn(&str) -> bool>,
-    ) -> Result<WideInt, ConstExprError> {
+    fn evaluate_wide(expression: &Expr, ctx: EvalContext<'_>) -> Result<WideInt, ConstExprError> {
         match &expression.value {
-            ExprKind::IntegerLiteral(literal) if is_defined.is_some() => {
+            ExprKind::IntegerLiteral(literal) if ctx.is_defined.is_some() => {
                 if literal.value.bits() > 64 {
                     return Err(ConstExprError::IntegerOverflow);
                 }
@@ -990,7 +1045,17 @@ impl<'a> Parser<'a> {
                 ))
             }
             ExprKind::IntegerLiteral(literal) => Ok(integer_literal_wide(literal)),
-            ExprKind::Paren(inner) => Self::evaluate_wide(inner, is_defined),
+            ExprKind::CharLiteral(literal) => {
+                let Some(target) = ctx.target else {
+                    return Ok(WideInt::from_i64(fold_char_code_units(&literal.code_units)));
+                };
+                Ok(WideInt::wrap(
+                    BigInt::from(literal.value(target)?),
+                    64,
+                    literal.char_type_is_signed(target),
+                ))
+            }
+            ExprKind::Paren(inner) => Self::evaluate_wide(inner, ctx),
             ExprKind::Unary {
                 op:
                     op @ (UnaryOp::Plus
@@ -1001,7 +1066,7 @@ impl<'a> Parser<'a> {
                     | UnaryOp::Imag),
                 operand,
             } => {
-                let value = Self::evaluate_wide(operand, is_defined)?;
+                let value = Self::evaluate_wide(operand, ctx)?;
                 Ok(match op {
                     UnaryOp::Plus | UnaryOp::Real => value,
                     UnaryOp::Minus => {
@@ -1015,12 +1080,12 @@ impl<'a> Parser<'a> {
                 })
             }
             ExprKind::Binary { op, left, right } => {
-                let left = Self::evaluate_wide(left, is_defined)?;
+                let left = Self::evaluate_wide(left, ctx)?;
                 if *op == BinaryOp::And && left.is_zero() || *op == BinaryOp::Or && !left.is_zero()
                 {
                     return Ok(WideInt::from_i64((*op == BinaryOp::Or) as i64));
                 }
-                let right = Self::evaluate_wide(right, is_defined)?;
+                let right = Self::evaluate_wide(right, ctx)?;
                 match op {
                     BinaryOp::Add => Ok(left.wrapping_add(&right)),
                     BinaryOp::Sub => Ok(left.wrapping_sub(&right)),
@@ -1064,7 +1129,7 @@ impl<'a> Parser<'a> {
                 }
             }
             ExprKind::Cast { ty, value, .. } => {
-                let value = Self::evaluate_wide(value, is_defined)?;
+                let value = Self::evaluate_wide(value, ctx)?;
                 match bit_int_width(ty) {
                     Some((width, signed)) => Ok(WideInt::wrap(value.value, width, signed)),
                     None => Ok(value),
@@ -1075,13 +1140,13 @@ impl<'a> Parser<'a> {
                 then_value,
                 else_value,
             } => {
-                let value = Self::evaluate_wide(condition, is_defined)?;
+                let value = Self::evaluate_wide(condition, ctx)?;
                 let result = match (value.is_zero(), then_value) {
-                    (false, Some(then_value)) => Self::evaluate_wide(then_value, is_defined),
+                    (false, Some(then_value)) => Self::evaluate_wide(then_value, ctx),
                     (false, None) => Ok(value),
-                    (true, _) => Self::evaluate_wide(else_value, is_defined),
+                    (true, _) => Self::evaluate_wide(else_value, ctx),
                 }?;
-                if is_defined.is_some() {
+                if ctx.is_defined.is_some() {
                     let unsigned = Self::pp_unsigned(then_value.as_ref().unwrap_or(condition))?
                         || Self::pp_unsigned(else_value)?;
                     Ok(WideInt::wrap(result.value, 64, !unsigned))
@@ -1090,10 +1155,10 @@ impl<'a> Parser<'a> {
                 }
             }
             ExprKind::Comma { left, right } => {
-                Self::evaluate_wide(left, is_defined)?;
-                Self::evaluate_wide(right, is_defined)
+                Self::evaluate_wide(left, ctx)?;
+                Self::evaluate_wide(right, ctx)
             }
-            _ => Self::evaluate_expr(expression, is_defined).map(WideInt::from_i64),
+            _ => Self::evaluate_expr(expression, ctx).map(WideInt::from_i64),
         }
     }
 
@@ -1890,7 +1955,7 @@ fn bit_int_width(ty: &TypeName) -> Option<(u32, bool)> {
     let TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) = &ty.specifiers.ty else {
         return None;
     };
-    let width = Parser::evaluate_expr(width, None).ok()?;
+    let width = Parser::evaluate_expr(width, EvalContext::default()).ok()?;
     let width = u32::try_from(width).ok()?;
     (width > 0).then_some((width, *signed))
 }

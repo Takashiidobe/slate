@@ -80,6 +80,7 @@ pub struct Preprocessor<'a> {
     build_time: SystemTime,
     standard: LanguageStandard,
     features: StandardFeatures,
+    target: crate::target_info::TargetInfo,
 }
 
 impl<'a> Preprocessor<'a> {
@@ -107,6 +108,7 @@ impl<'a> Preprocessor<'a> {
             build_time: SystemTime::now(),
             standard,
             features,
+            target: crate::target_info::TargetInfo::default(),
         }
     }
 
@@ -376,6 +378,7 @@ impl<'a> Preprocessor<'a> {
         options: &crate::compiler_options::CompilerOptions,
         flavor: CompilerFlavor,
     ) -> Result<(), PPError> {
+        self.target = target.clone();
         self.seed_builtin_macros(&target, flavor)?;
         let mut defines = if target.os == crate::target_info::TargetOs::Windows
             && flavor == CompilerFlavor::Msvc
@@ -882,7 +885,7 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded);
-        const_expr::Parser::evaluate_with_defined(&expanded, &|macro_name| {
+        const_expr::Parser::evaluate_with_defined(&expanded, &self.target, &|macro_name| {
             self.macros.contains_key(macro_name)
         })
         .map(|value| value != 0)
