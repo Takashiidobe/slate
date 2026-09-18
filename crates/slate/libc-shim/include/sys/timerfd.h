@@ -1,11 +1,15 @@
 #ifndef _SLATE_SYS_TIMERFD_H
 #define _SLATE_SYS_TIMERFD_H
 
+#if defined(__SLATE_LIBC_GLIBC)
+#define TFD_NONBLOCK 00004000
+#define TFD_CLOEXEC  02000000
+#else
 #include <fcntl.h>
-#include <time.h>
-
 #define TFD_NONBLOCK O_NONBLOCK
 #define TFD_CLOEXEC  O_CLOEXEC
+#endif
+#include <time.h>
 
 #define TFD_TIMER_ABSTIME       1
 #define TFD_TIMER_CANCEL_ON_SET (1 << 1)
