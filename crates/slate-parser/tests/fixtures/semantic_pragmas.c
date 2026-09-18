@@ -23,9 +23,9 @@ int hidden_function(void) {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[0]: TagDefinition {
+// DEFAULT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           0,
+// DEFAULT-NEXT:           [[#TAG0:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -73,7 +73,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Pack {
 // DEFAULT-NEXT:               action: Push,
@@ -93,20 +93,20 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                           [[#TAG0]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Pack {
 // DEFAULT-NEXT:               action: Show,
@@ -114,7 +114,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Pack {
 // DEFAULT-NEXT:               action: Pop,
@@ -122,7 +122,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Pack {
 // DEFAULT-NEXT:               action: Set,
@@ -142,7 +142,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -184,7 +184,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Weak {
 // DEFAULT-NEXT:               name: "weak_name",
@@ -192,7 +192,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Weak {
 // DEFAULT-NEXT:               name: "weak_alias",
@@ -202,7 +202,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[8]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Visibility {
 // DEFAULT-NEXT:               action: Push,
@@ -212,7 +212,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[9]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -253,7 +253,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[10]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Visibility {
 // DEFAULT-NEXT:               action: Pop,
@@ -261,7 +261,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[11]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Stdc {
 // DEFAULT-NEXT:               option: FenvAccess,
@@ -269,7 +269,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[12]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Stdc {
 // DEFAULT-NEXT:               option: FpContract,
@@ -277,7 +277,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[13]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Stdc {
 // DEFAULT-NEXT:               option: CxLimitedRange,
@@ -285,7 +285,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[14]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: FloatControl {
 // DEFAULT-NEXT:               option: Precise,
@@ -293,14 +293,14 @@ int hidden_function(void) {
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[15]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: MsStruct {
 // DEFAULT-NEXT:               action: Push,
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[16]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: MsStruct {
 // DEFAULT-NEXT:               action: Pop,

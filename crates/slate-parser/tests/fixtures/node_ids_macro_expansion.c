@@ -6,7 +6,7 @@ int f(int x) { return SQUARE(x); }
 // SLATE-FILECHECK-SHOW-IDS DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0] #2675: #2675 Function(
+// DEFAULT: decl[{{[0-9]+}}] #2675: #2675 Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(

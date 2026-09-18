@@ -136,9 +136,9 @@ int main() {
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[0]: TagDefinition {
+// DEFAULT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           0,
+// DEFAULT-NEXT:           [[#TAG0:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: Some(
@@ -148,9 +148,9 @@ int main() {
 // DEFAULT-NEXT:           [],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[1]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           1,
+// DEFAULT-NEXT:           [[#TAG1:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -347,9 +347,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[2]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           2,
+// DEFAULT-NEXT:           [[#TAG2:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: Some(
@@ -411,9 +411,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[3]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           3,
+// DEFAULT-NEXT:           [[#TAG3:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: Some(
@@ -456,9 +456,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[4]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           4,
+// DEFAULT-NEXT:           [[#TAG4:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -472,7 +472,7 @@ int main() {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       1,
+// DEFAULT-NEXT:                                       [[#TAG1]],
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -639,7 +639,7 @@ int main() {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       2,
+// DEFAULT-NEXT:                                       [[#TAG2]],
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -681,7 +681,7 @@ int main() {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       3,
+// DEFAULT-NEXT:                                       [[#TAG3]],
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -698,9 +698,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[5]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           5,
+// DEFAULT-NEXT:           [[#TAG5:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: Some(
@@ -710,9 +710,9 @@ int main() {
 // DEFAULT-NEXT:           [],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[6]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           6,
+// DEFAULT-NEXT:           [[#TAG6:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -758,9 +758,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[7]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           7,
+// DEFAULT-NEXT:           [[#TAG7:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -774,7 +774,7 @@ int main() {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       6,
+// DEFAULT-NEXT:                                       [[#TAG6]],
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -905,9 +905,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[8]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           8,
+// DEFAULT-NEXT:           [[#TAG8:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: Some(
@@ -975,9 +975,9 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[9]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           9,
+// DEFAULT-NEXT:           [[#TAG9:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -1004,7 +1004,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -1022,13 +1022,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                           [[#TAG0]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -1048,13 +1048,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           4,
+// DEFAULT-NEXT:                           [[#TAG4]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -1346,7 +1346,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Floating(
@@ -1374,7 +1374,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -1409,7 +1409,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -1444,7 +1444,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -2116,7 +2116,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -2178,7 +2178,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[8]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -2212,7 +2212,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[9]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Floating(
@@ -2240,7 +2240,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[10]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Floating(
@@ -2268,13 +2268,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[11]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           5,
+// DEFAULT-NEXT:                           [[#TAG5]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -2294,13 +2294,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[12]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           7,
+// DEFAULT-NEXT:                           [[#TAG7]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -2418,13 +2418,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[13]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           8,
+// DEFAULT-NEXT:                           [[#TAG8]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -2457,7 +2457,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[14]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -2492,13 +2492,13 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[15]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           9,
+// DEFAULT-NEXT:                           [[#TAG9]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -2531,7 +2531,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[16]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -2588,7 +2588,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[17]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -2623,7 +2623,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[18]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -3190,7 +3190,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[19]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -3293,7 +3293,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[20]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(

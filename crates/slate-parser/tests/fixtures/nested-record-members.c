@@ -15,9 +15,9 @@ struct outer {
 // SLATE-FILECHECK-DEFINES EXTRA WITH_EXTRA
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[0]: TagDefinition {
+// DEFAULT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           0,
+// DEFAULT-NEXT:           [[#TAG0:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Union,
 // DEFAULT-NEXT:       name: None,
@@ -63,9 +63,9 @@ struct outer {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: tag[1]: TagDefinition {
+// DEFAULT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           1,
+// DEFAULT-NEXT:           [[#TAG1:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -129,7 +129,7 @@ struct outer {
 // DEFAULT-NEXT:                           ty: Tag(
 // DEFAULT-NEXT:                               Definition(
 // DEFAULT-NEXT:                                   TagId(
-// DEFAULT-NEXT:                                       0,
+// DEFAULT-NEXT:                                       [[#TAG0]],
 // DEFAULT-NEXT:                                   ),
 // DEFAULT-NEXT:                               ),
 // DEFAULT-NEXT:                           ),
@@ -165,13 +165,13 @@ struct outer {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           1,
+// DEFAULT-NEXT:                           [[#TAG1]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
@@ -180,9 +180,9 @@ struct outer {
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN EXTRA
-// EXTRA: tag[0]: TagDefinition {
+// EXTRA: tag[{{[0-9]+}}]: TagDefinition {
 // EXTRA-NEXT:       id: TagId(
-// EXTRA-NEXT:           0,
+// EXTRA-NEXT:           [[#TAG0:]],
 // EXTRA-NEXT:       ),
 // EXTRA-NEXT:       kind: Union,
 // EXTRA-NEXT:       name: None,
@@ -228,9 +228,9 @@ struct outer {
 // EXTRA-NEXT:           ],
 // EXTRA-NEXT:       ),
 // EXTRA-NEXT:   }
-// EXTRA-NEXT: tag[1]: TagDefinition {
+// EXTRA-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // EXTRA-NEXT:       id: TagId(
-// EXTRA-NEXT:           1,
+// EXTRA-NEXT:           [[#TAG1:]],
 // EXTRA-NEXT:       ),
 // EXTRA-NEXT:       kind: Struct,
 // EXTRA-NEXT:       name: Some(
@@ -294,7 +294,7 @@ struct outer {
 // EXTRA-NEXT:                           ty: Tag(
 // EXTRA-NEXT:                               Definition(
 // EXTRA-NEXT:                                   TagId(
-// EXTRA-NEXT:                                       0,
+// EXTRA-NEXT:                                       [[#TAG0]],
 // EXTRA-NEXT:                                   ),
 // EXTRA-NEXT:                               ),
 // EXTRA-NEXT:                           ),
@@ -330,13 +330,13 @@ struct outer {
 // EXTRA-NEXT:           ],
 // EXTRA-NEXT:       ),
 // EXTRA-NEXT:   }
-// EXTRA-NEXT: decl[0]: Declaration(
+// EXTRA-NEXT: decl[{{[0-9]+}}]: Declaration(
 // EXTRA-NEXT:       Declaration {
 // EXTRA-NEXT:           specifiers: DeclarationSpecifiers {
 // EXTRA-NEXT:               ty: Tag(
 // EXTRA-NEXT:                   Definition(
 // EXTRA-NEXT:                       TagId(
-// EXTRA-NEXT:                           1,
+// EXTRA-NEXT:                           [[#TAG1]],
 // EXTRA-NEXT:                       ),
 // EXTRA-NEXT:                   ),
 // EXTRA-NEXT:               ),

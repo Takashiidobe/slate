@@ -30,14 +30,14 @@ int second_pop[Y];
 // SLATE-FILECHECK-DEFINES A A
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Pragma(
+// DEFAULT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Opaque(
 // DEFAULT-NEXT:               "push_macro ( \"X\" )",
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -71,14 +71,14 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Opaque(
 // DEFAULT-NEXT:               "pop_macro ( \"Y\" )",
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -112,14 +112,14 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Opaque(
 // DEFAULT-NEXT:               "pop_macro ( \"Y\" )",
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -153,14 +153,14 @@ int second_pop[Y];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Pragma(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Pragma(
 // DEFAULT-NEXT:       Pragma {
 // DEFAULT-NEXT:           kind: Opaque(
 // DEFAULT-NEXT:               "pop_macro ( \"Y\" )",
 // DEFAULT-NEXT:           ),
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -196,21 +196,21 @@ int second_pop[Y];
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Pragma(
+// A: decl[{{[0-9]+}}]: Pragma(
 // A-NEXT:       Pragma {
 // A-NEXT:           kind: Opaque(
 // A-NEXT:               "push_macro ( \"X\" )",
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[1]: Pragma(
+// A-NEXT: decl[{{[0-9]+}}]: Pragma(
 // A-NEXT:       Pragma {
 // A-NEXT:           kind: Opaque(
 // A-NEXT:               "pop_macro ( \"X\" )",
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[2]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -244,14 +244,14 @@ int second_pop[Y];
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[3]: Pragma(
+// A-NEXT: decl[{{[0-9]+}}]: Pragma(
 // A-NEXT:       Pragma {
 // A-NEXT:           kind: Opaque(
 // A-NEXT:               "push_macro ( \"Y\" )",
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[4]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -285,21 +285,21 @@ int second_pop[Y];
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[5]: Pragma(
+// A-NEXT: decl[{{[0-9]+}}]: Pragma(
 // A-NEXT:       Pragma {
 // A-NEXT:           kind: Opaque(
 // A-NEXT:               "push_macro ( \"Y\" )",
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[6]: Pragma(
+// A-NEXT: decl[{{[0-9]+}}]: Pragma(
 // A-NEXT:       Pragma {
 // A-NEXT:           kind: Opaque(
 // A-NEXT:               "pop_macro ( \"Y\" )",
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[7]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -333,14 +333,14 @@ int second_pop[Y];
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[8]: Pragma(
+// A-NEXT: decl[{{[0-9]+}}]: Pragma(
 // A-NEXT:       Pragma {
 // A-NEXT:           kind: Opaque(
 // A-NEXT:               "pop_macro ( \"Y\" )",
 // A-NEXT:           ),
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[9]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(

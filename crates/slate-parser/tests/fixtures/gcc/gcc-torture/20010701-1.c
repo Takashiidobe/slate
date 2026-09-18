@@ -7,7 +7,7 @@
 void __attribute__((__noreturn__)) foo (const char *, ...) __attribute__((__format__(__printf__, 1, 2))), bar (void);
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,

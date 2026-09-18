@@ -25,7 +25,7 @@ int vla_sum(int n, int arr[n]) {
 // SLATE-FILECHECK-DEFINES DOUBLED DOUBLE_LOCAL
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Function(
+// DEFAULT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -150,7 +150,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -271,7 +271,7 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN COMPUTED
-// COMPUTED: decl[0]: Function(
+// COMPUTED: decl[{{[0-9]+}}]: Function(
 // COMPUTED-NEXT:       FunctionDefinition {
 // COMPUTED-NEXT:           specifiers: DeclarationSpecifiers {
 // COMPUTED-NEXT:               ty: Integer(
@@ -403,7 +403,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:           ],
 // COMPUTED-NEXT:       },
 // COMPUTED-NEXT:   )
-// COMPUTED-NEXT: decl[1]: Function(
+// COMPUTED-NEXT: decl[{{[0-9]+}}]: Function(
 // COMPUTED-NEXT:       FunctionDefinition {
 // COMPUTED-NEXT:           specifiers: DeclarationSpecifiers {
 // COMPUTED-NEXT:               ty: Integer(
@@ -524,7 +524,7 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:   )
 // SLATE-FILECHECK-END COMPUTED
 // SLATE-FILECHECK-BEGIN DOUBLED
-// DOUBLED: decl[0]: Function(
+// DOUBLED: decl[{{[0-9]+}}]: Function(
 // DOUBLED-NEXT:       FunctionDefinition {
 // DOUBLED-NEXT:           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:               ty: Integer(
@@ -649,7 +649,7 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:           ],
 // DOUBLED-NEXT:       },
 // DOUBLED-NEXT:   )
-// DOUBLED-NEXT: decl[1]: Function(
+// DOUBLED-NEXT: decl[{{[0-9]+}}]: Function(
 // DOUBLED-NEXT:       FunctionDefinition {
 // DOUBLED-NEXT:           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:               ty: Integer(

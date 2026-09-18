@@ -55,9 +55,9 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SLATE-FILECHECK-DEFINES MACRO STYLE=2
 
 // SLATE-FILECHECK-BEGIN COMPACT
-// COMPACT: tag[0]: TagDefinition {
+// COMPACT: tag[{{[0-9]+}}]: TagDefinition {
 // COMPACT-NEXT:       id: TagId(
-// COMPACT-NEXT:           0,
+// COMPACT-NEXT:           [[#TAG0:]],
 // COMPACT-NEXT:       ),
 // COMPACT-NEXT:       kind: Struct,
 // COMPACT-NEXT:       name: Some(
@@ -128,9 +128,9 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:           ],
 // COMPACT-NEXT:       ),
 // COMPACT-NEXT:   }
-// COMPACT-NEXT: tag[1]: TagDefinition {
+// COMPACT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // COMPACT-NEXT:       id: TagId(
-// COMPACT-NEXT:           1,
+// COMPACT-NEXT:           [[#TAG1:]],
 // COMPACT-NEXT:       ),
 // COMPACT-NEXT:       kind: Enum,
 // COMPACT-NEXT:       name: Some(
@@ -196,13 +196,13 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:           ],
 // COMPACT-NEXT:       },
 // COMPACT-NEXT:   }
-// COMPACT-NEXT: decl[0]: Declaration(
+// COMPACT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // COMPACT-NEXT:       Declaration {
 // COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
 // COMPACT-NEXT:               ty: Tag(
 // COMPACT-NEXT:                   Definition(
 // COMPACT-NEXT:                       TagId(
-// COMPACT-NEXT:                           0,
+// COMPACT-NEXT:                           [[#TAG0]],
 // COMPACT-NEXT:                       ),
 // COMPACT-NEXT:                   ),
 // COMPACT-NEXT:               ),
@@ -217,20 +217,20 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:           ],
 // COMPACT-NEXT:       },
 // COMPACT-NEXT:   )
-// COMPACT-NEXT: decl[1]: Declaration(
+// COMPACT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // COMPACT-NEXT:       Declaration {
 // COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
 // COMPACT-NEXT:               ty: Tag(
 // COMPACT-NEXT:                   Definition(
 // COMPACT-NEXT:                       TagId(
-// COMPACT-NEXT:                           1,
+// COMPACT-NEXT:                           [[#TAG1]],
 // COMPACT-NEXT:                       ),
 // COMPACT-NEXT:                   ),
 // COMPACT-NEXT:               ),
 // COMPACT-NEXT:           },
 // COMPACT-NEXT:       },
 // COMPACT-NEXT:   )
-// COMPACT-NEXT: decl[2]: Function(
+// COMPACT-NEXT: decl[{{[0-9]+}}]: Function(
 // COMPACT-NEXT:       FunctionDefinition {
 // COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
 // COMPACT-NEXT:               ty: Integer(
@@ -301,7 +301,7 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:           ],
 // COMPACT-NEXT:       },
 // COMPACT-NEXT:   )
-// COMPACT-NEXT: decl[3]: Declaration(
+// COMPACT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // COMPACT-NEXT:       Declaration {
 // COMPACT-NEXT:           specifiers: DeclarationSpecifiers {
 // COMPACT-NEXT:               ty: Integer(
@@ -322,9 +322,9 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:   )
 // SLATE-FILECHECK-END COMPACT
 // SLATE-FILECHECK-BEGIN SPLIT
-// SPLIT: tag[0]: TagDefinition {
+// SPLIT: tag[{{[0-9]+}}]: TagDefinition {
 // SPLIT-NEXT:       id: TagId(
-// SPLIT-NEXT:           0,
+// SPLIT-NEXT:           [[#TAG0:]],
 // SPLIT-NEXT:       ),
 // SPLIT-NEXT:       kind: Struct,
 // SPLIT-NEXT:       name: Some(
@@ -395,9 +395,9 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:           ],
 // SPLIT-NEXT:       ),
 // SPLIT-NEXT:   }
-// SPLIT-NEXT: tag[1]: TagDefinition {
+// SPLIT-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // SPLIT-NEXT:       id: TagId(
-// SPLIT-NEXT:           1,
+// SPLIT-NEXT:           [[#TAG1:]],
 // SPLIT-NEXT:       ),
 // SPLIT-NEXT:       kind: Enum,
 // SPLIT-NEXT:       name: Some(
@@ -463,13 +463,13 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:           ],
 // SPLIT-NEXT:       },
 // SPLIT-NEXT:   }
-// SPLIT-NEXT: decl[0]: Declaration(
+// SPLIT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SPLIT-NEXT:       Declaration {
 // SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
 // SPLIT-NEXT:               ty: Tag(
 // SPLIT-NEXT:                   Definition(
 // SPLIT-NEXT:                       TagId(
-// SPLIT-NEXT:                           0,
+// SPLIT-NEXT:                           [[#TAG0]],
 // SPLIT-NEXT:                       ),
 // SPLIT-NEXT:                   ),
 // SPLIT-NEXT:               ),
@@ -484,20 +484,20 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:           ],
 // SPLIT-NEXT:       },
 // SPLIT-NEXT:   )
-// SPLIT-NEXT: decl[1]: Declaration(
+// SPLIT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SPLIT-NEXT:       Declaration {
 // SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
 // SPLIT-NEXT:               ty: Tag(
 // SPLIT-NEXT:                   Definition(
 // SPLIT-NEXT:                       TagId(
-// SPLIT-NEXT:                           1,
+// SPLIT-NEXT:                           [[#TAG1]],
 // SPLIT-NEXT:                       ),
 // SPLIT-NEXT:                   ),
 // SPLIT-NEXT:               ),
 // SPLIT-NEXT:           },
 // SPLIT-NEXT:       },
 // SPLIT-NEXT:   )
-// SPLIT-NEXT: decl[2]: Function(
+// SPLIT-NEXT: decl[{{[0-9]+}}]: Function(
 // SPLIT-NEXT:       FunctionDefinition {
 // SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
 // SPLIT-NEXT:               ty: Integer(
@@ -568,7 +568,7 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:           ],
 // SPLIT-NEXT:       },
 // SPLIT-NEXT:   )
-// SPLIT-NEXT: decl[3]: Declaration(
+// SPLIT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SPLIT-NEXT:       Declaration {
 // SPLIT-NEXT:           specifiers: DeclarationSpecifiers {
 // SPLIT-NEXT:               ty: Integer(
@@ -589,9 +589,9 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:   )
 // SLATE-FILECHECK-END SPLIT
 // SLATE-FILECHECK-BEGIN MACRO
-// MACRO: tag[0]: TagDefinition {
+// MACRO: tag[{{[0-9]+}}]: TagDefinition {
 // MACRO-NEXT:       id: TagId(
-// MACRO-NEXT:           0,
+// MACRO-NEXT:           [[#TAG0:]],
 // MACRO-NEXT:       ),
 // MACRO-NEXT:       kind: Struct,
 // MACRO-NEXT:       name: Some(
@@ -662,9 +662,9 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // MACRO-NEXT:           ],
 // MACRO-NEXT:       ),
 // MACRO-NEXT:   }
-// MACRO-NEXT: tag[1]: TagDefinition {
+// MACRO-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // MACRO-NEXT:       id: TagId(
-// MACRO-NEXT:           1,
+// MACRO-NEXT:           [[#TAG1:]],
 // MACRO-NEXT:       ),
 // MACRO-NEXT:       kind: Enum,
 // MACRO-NEXT:       name: Some(
@@ -730,13 +730,13 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // MACRO-NEXT:           ],
 // MACRO-NEXT:       },
 // MACRO-NEXT:   }
-// MACRO-NEXT: decl[0]: Declaration(
+// MACRO-NEXT: decl[{{[0-9]+}}]: Declaration(
 // MACRO-NEXT:       Declaration {
 // MACRO-NEXT:           specifiers: DeclarationSpecifiers {
 // MACRO-NEXT:               ty: Tag(
 // MACRO-NEXT:                   Definition(
 // MACRO-NEXT:                       TagId(
-// MACRO-NEXT:                           0,
+// MACRO-NEXT:                           [[#TAG0]],
 // MACRO-NEXT:                       ),
 // MACRO-NEXT:                   ),
 // MACRO-NEXT:               ),
@@ -751,20 +751,20 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // MACRO-NEXT:           ],
 // MACRO-NEXT:       },
 // MACRO-NEXT:   )
-// MACRO-NEXT: decl[1]: Declaration(
+// MACRO-NEXT: decl[{{[0-9]+}}]: Declaration(
 // MACRO-NEXT:       Declaration {
 // MACRO-NEXT:           specifiers: DeclarationSpecifiers {
 // MACRO-NEXT:               ty: Tag(
 // MACRO-NEXT:                   Definition(
 // MACRO-NEXT:                       TagId(
-// MACRO-NEXT:                           1,
+// MACRO-NEXT:                           [[#TAG1]],
 // MACRO-NEXT:                       ),
 // MACRO-NEXT:                   ),
 // MACRO-NEXT:               ),
 // MACRO-NEXT:           },
 // MACRO-NEXT:       },
 // MACRO-NEXT:   )
-// MACRO-NEXT: decl[2]: Function(
+// MACRO-NEXT: decl[{{[0-9]+}}]: Function(
 // MACRO-NEXT:       FunctionDefinition {
 // MACRO-NEXT:           specifiers: DeclarationSpecifiers {
 // MACRO-NEXT:               ty: Integer(
@@ -835,7 +835,7 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // MACRO-NEXT:           ],
 // MACRO-NEXT:       },
 // MACRO-NEXT:   )
-// MACRO-NEXT: decl[3]: Declaration(
+// MACRO-NEXT: decl[{{[0-9]+}}]: Declaration(
 // MACRO-NEXT:       Declaration {
 // MACRO-NEXT:           specifiers: DeclarationSpecifiers {
 // MACRO-NEXT:               ty: Integer(

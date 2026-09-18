@@ -20,7 +20,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SLATE-FILECHECK-DEFINES SELECT SELECT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -54,7 +54,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -81,7 +81,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -110,7 +110,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN SELECT
-// SELECT: decl[0]: Declaration(
+// SELECT: decl[{{[0-9]+}}]: Declaration(
 // SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
@@ -144,7 +144,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
 // SELECT-NEXT:   )
-// SELECT-NEXT: decl[1]: Declaration(
+// SELECT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(
@@ -171,7 +171,7 @@ int selected __attribute__((slate_literal(CHOICE)));
 // SELECT-NEXT:           ],
 // SELECT-NEXT:       },
 // SELECT-NEXT:   )
-// SELECT-NEXT: decl[2]: Declaration(
+// SELECT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SELECT-NEXT:       Declaration {
 // SELECT-NEXT:           specifiers: DeclarationSpecifiers {
 // SELECT-NEXT:               ty: Integer(

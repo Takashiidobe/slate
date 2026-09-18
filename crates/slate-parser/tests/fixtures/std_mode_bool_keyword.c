@@ -10,7 +10,7 @@ int bool = 1;
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C17
-// C17: decl[0]: Declaration(
+// C17: decl[{{[0-9]+}}]: Declaration(
 // C17-NEXT:       Declaration {
 // C17-NEXT:           specifiers: DeclarationSpecifiers {
 // C17-NEXT:               ty: Integer(
@@ -46,7 +46,7 @@ int bool = 1;
 // C17-NEXT:   )
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[0]: Declaration(
+// C23: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Bool,

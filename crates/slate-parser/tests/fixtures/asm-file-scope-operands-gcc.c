@@ -5,7 +5,7 @@ asm("%0" : : "r"(x));
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -24,7 +24,7 @@ asm("%0" : : "r"(x));
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Asm(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Asm(
 // DEFAULT-NEXT:       GnuAsm {
 // DEFAULT-NEXT:           template: "%0",
 // DEFAULT-NEXT:           operands: Some(

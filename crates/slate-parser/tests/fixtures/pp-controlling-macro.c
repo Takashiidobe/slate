@@ -12,7 +12,7 @@ trailing_t trailing;
 // SLATE-FILECHECK-DEFINES SKIP PARTIALLY_GUARDED_H
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -32,7 +32,7 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -52,7 +52,7 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -68,7 +68,7 @@ trailing_t trailing;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -86,7 +86,7 @@ trailing_t trailing;
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration(
+// A: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -106,7 +106,7 @@ trailing_t trailing;
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[1]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -126,7 +126,7 @@ trailing_t trailing;
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[2]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Named(
@@ -142,7 +142,7 @@ trailing_t trailing;
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[3]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Named(
@@ -160,7 +160,7 @@ trailing_t trailing;
 // A-NEXT:   )
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN SKIP
-// SKIP: decl[0]: Declaration(
+// SKIP: decl[{{[0-9]+}}]: Declaration(
 // SKIP-NEXT:       Declaration {
 // SKIP-NEXT:           specifiers: DeclarationSpecifiers {
 // SKIP-NEXT:               ty: Integer(
@@ -180,7 +180,7 @@ trailing_t trailing;
 // SKIP-NEXT:           ],
 // SKIP-NEXT:       },
 // SKIP-NEXT:   )
-// SKIP-NEXT: decl[1]: Declaration(
+// SKIP-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SKIP-NEXT:       Declaration {
 // SKIP-NEXT:           specifiers: DeclarationSpecifiers {
 // SKIP-NEXT:               ty: Integer(
@@ -200,7 +200,7 @@ trailing_t trailing;
 // SKIP-NEXT:           ],
 // SKIP-NEXT:       },
 // SKIP-NEXT:   )
-// SKIP-NEXT: decl[2]: Declaration(
+// SKIP-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SKIP-NEXT:       Declaration {
 // SKIP-NEXT:           specifiers: DeclarationSpecifiers {
 // SKIP-NEXT:               ty: Named(
@@ -216,7 +216,7 @@ trailing_t trailing;
 // SKIP-NEXT:           ],
 // SKIP-NEXT:       },
 // SKIP-NEXT:   )
-// SKIP-NEXT: decl[3]: Declaration(
+// SKIP-NEXT: decl[{{[0-9]+}}]: Declaration(
 // SKIP-NEXT:       Declaration {
 // SKIP-NEXT:           specifiers: DeclarationSpecifiers {
 // SKIP-NEXT:               ty: Named(

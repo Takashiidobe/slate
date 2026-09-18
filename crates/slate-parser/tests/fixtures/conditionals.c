@@ -18,7 +18,7 @@ typedef int Socket;
 // SLATE-FILECHECK-DEFINES WIN32 _WIN32
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Function(
+// DEFAULT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -51,7 +51,7 @@ typedef int Socket;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -71,7 +71,7 @@ typedef int Socket;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -93,7 +93,7 @@ typedef int Socket;
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIN32
-// WIN32: decl[0]: Function(
+// WIN32: decl[{{[0-9]+}}]: Function(
 // WIN32-NEXT:       FunctionDefinition {
 // WIN32-NEXT:           specifiers: DeclarationSpecifiers {
 // WIN32-NEXT:               ty: Integer(
@@ -126,7 +126,7 @@ typedef int Socket;
 // WIN32-NEXT:           ],
 // WIN32-NEXT:       },
 // WIN32-NEXT:   )
-// WIN32-NEXT: decl[1]: Declaration(
+// WIN32-NEXT: decl[{{[0-9]+}}]: Declaration(
 // WIN32-NEXT:       Declaration {
 // WIN32-NEXT:           specifiers: DeclarationSpecifiers {
 // WIN32-NEXT:               ty: Integer(
@@ -146,7 +146,7 @@ typedef int Socket;
 // WIN32-NEXT:           ],
 // WIN32-NEXT:       },
 // WIN32-NEXT:   )
-// WIN32-NEXT: decl[2]: Declaration(
+// WIN32-NEXT: decl[{{[0-9]+}}]: Declaration(
 // WIN32-NEXT:       Declaration {
 // WIN32-NEXT:           specifiers: DeclarationSpecifiers {
 // WIN32-NEXT:               ty: Named(

@@ -16,7 +16,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // SLATE-FILECHECK-FLAVOR msvc
 
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[0]: Declaration(
+// C23: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -36,7 +36,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[1]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -57,7 +57,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[2]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
@@ -79,7 +79,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[3]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
@@ -116,7 +116,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[4]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
@@ -158,7 +158,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[5]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -195,7 +195,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[6]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -215,7 +215,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[7]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
@@ -239,7 +239,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[8]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -261,7 +261,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[9]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
@@ -283,7 +283,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[10]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -303,7 +303,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[11]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(
@@ -337,7 +337,7 @@ void local(void) { [[msvc::noinline]] void nested(void); }
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[12]: Function(
+// C23-NEXT: decl[{{[0-9]+}}]: Function(
 // C23-NEXT:       FunctionDefinition {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,

@@ -34,7 +34,7 @@ int triple = TRIPLE_NESTED;
 // SLATE-FILECHECK-DEFINES FEATURE SOME_FEATURE
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -68,7 +68,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -102,7 +102,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -138,7 +138,7 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FEATURE
-// FEATURE: decl[0]: Declaration(
+// FEATURE: decl[{{[0-9]+}}]: Declaration(
 // FEATURE-NEXT:       Declaration {
 // FEATURE-NEXT:           specifiers: DeclarationSpecifiers {
 // FEATURE-NEXT:               ty: Integer(
@@ -172,7 +172,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:   )
-// FEATURE-NEXT: decl[1]: Declaration(
+// FEATURE-NEXT: decl[{{[0-9]+}}]: Declaration(
 // FEATURE-NEXT:       Declaration {
 // FEATURE-NEXT:           specifiers: DeclarationSpecifiers {
 // FEATURE-NEXT:               ty: Integer(
@@ -206,7 +206,7 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:           ],
 // FEATURE-NEXT:       },
 // FEATURE-NEXT:   )
-// FEATURE-NEXT: decl[2]: Declaration(
+// FEATURE-NEXT: decl[{{[0-9]+}}]: Declaration(
 // FEATURE-NEXT:       Declaration {
 // FEATURE-NEXT:           specifiers: DeclarationSpecifiers {
 // FEATURE-NEXT:               ty: Integer(

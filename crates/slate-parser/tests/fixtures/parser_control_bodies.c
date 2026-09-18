@@ -38,9 +38,9 @@ int nested_typedef(void) {
 // SLATE-FILECHECK-STD C99 c99
 
 // SLATE-FILECHECK-BEGIN C89
-// C89: tag[0]: TagDefinition {
+// C89: tag[{{[0-9]+}}]: TagDefinition {
 // C89-NEXT:       id: TagId(
-// C89-NEXT:           0,
+// C89-NEXT:           [[#TAG0:]],
 // C89-NEXT:       ),
 // C89-NEXT:       kind: Enum,
 // C89-NEXT:       name: None,
@@ -67,9 +67,9 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   }
-// C89-NEXT: tag[1]: TagDefinition {
+// C89-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // C89-NEXT:       id: TagId(
-// C89-NEXT:           1,
+// C89-NEXT:           [[#TAG1:]],
 // C89-NEXT:       ),
 // C89-NEXT:       kind: Enum,
 // C89-NEXT:       name: None,
@@ -96,9 +96,9 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   }
-// C89-NEXT: tag[2]: TagDefinition {
+// C89-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // C89-NEXT:       id: TagId(
-// C89-NEXT:           2,
+// C89-NEXT:           [[#TAG2:]],
 // C89-NEXT:       ),
 // C89-NEXT:       kind: Enum,
 // C89-NEXT:       name: None,
@@ -125,9 +125,9 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   }
-// C89-NEXT: tag[3]: TagDefinition {
+// C89-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // C89-NEXT:       id: TagId(
-// C89-NEXT:           3,
+// C89-NEXT:           [[#TAG3:]],
 // C89-NEXT:       ),
 // C89-NEXT:       kind: Enum,
 // C89-NEXT:       name: None,
@@ -154,7 +154,7 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   }
-// C89-NEXT: decl[0]: Function(
+// C89-NEXT: decl[{{[0-9]+}}]: Function(
 // C89-NEXT:       FunctionDefinition {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Void,
@@ -411,7 +411,7 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   )
-// C89-NEXT: decl[1]: Declaration(
+// C89-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C89-NEXT:       Declaration {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
@@ -431,7 +431,7 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   )
-// C89-NEXT: decl[2]: Function(
+// C89-NEXT: decl[{{[0-9]+}}]: Function(
 // C89-NEXT:       FunctionDefinition {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
@@ -455,7 +455,7 @@ int nested_typedef(void) {
 // C89-NEXT:                               ty: Tag(
 // C89-NEXT:                                   Definition(
 // C89-NEXT:                                       TagId(
-// C89-NEXT:                                           0,
+// C89-NEXT:                                           [[#TAG0]],
 // C89-NEXT:                                       ),
 // C89-NEXT:                                   ),
 // C89-NEXT:                               ),
@@ -494,7 +494,7 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   )
-// C89-NEXT: decl[3]: Function(
+// C89-NEXT: decl[{{[0-9]+}}]: Function(
 // C89-NEXT:       FunctionDefinition {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
@@ -537,7 +537,7 @@ int nested_typedef(void) {
 // C89-NEXT:                                       ty: Tag(
 // C89-NEXT:                                           Definition(
 // C89-NEXT:                                               TagId(
-// C89-NEXT:                                                   1,
+// C89-NEXT:                                                   [[#TAG1]],
 // C89-NEXT:                                               ),
 // C89-NEXT:                                           ),
 // C89-NEXT:                                       ),
@@ -561,7 +561,7 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   )
-// C89-NEXT: decl[4]: Function(
+// C89-NEXT: decl[{{[0-9]+}}]: Function(
 // C89-NEXT:       FunctionDefinition {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
@@ -593,7 +593,7 @@ int nested_typedef(void) {
 // C89-NEXT:                                       ty: Tag(
 // C89-NEXT:                                           Definition(
 // C89-NEXT:                                               TagId(
-// C89-NEXT:                                                   2,
+// C89-NEXT:                                                   [[#TAG2]],
 // C89-NEXT:                                               ),
 // C89-NEXT:                                           ),
 // C89-NEXT:                                       ),
@@ -623,7 +623,7 @@ int nested_typedef(void) {
 // C89-NEXT:           ],
 // C89-NEXT:       },
 // C89-NEXT:   )
-// C89-NEXT: decl[5]: Function(
+// C89-NEXT: decl[{{[0-9]+}}]: Function(
 // C89-NEXT:       FunctionDefinition {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
@@ -647,7 +647,7 @@ int nested_typedef(void) {
 // C89-NEXT:                               ty: Tag(
 // C89-NEXT:                                   Definition(
 // C89-NEXT:                                       TagId(
-// C89-NEXT:                                           3,
+// C89-NEXT:                                           [[#TAG3]],
 // C89-NEXT:                                       ),
 // C89-NEXT:                                   ),
 // C89-NEXT:                               ),
@@ -711,9 +711,9 @@ int nested_typedef(void) {
 // C89-NEXT:   )
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN C99
-// C99: tag[0]: TagDefinition {
+// C99: tag[{{[0-9]+}}]: TagDefinition {
 // C99-NEXT:       id: TagId(
-// C99-NEXT:           0,
+// C99-NEXT:           [[#TAG0:]],
 // C99-NEXT:       ),
 // C99-NEXT:       kind: Enum,
 // C99-NEXT:       name: None,
@@ -740,9 +740,9 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   }
-// C99-NEXT: tag[1]: TagDefinition {
+// C99-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // C99-NEXT:       id: TagId(
-// C99-NEXT:           1,
+// C99-NEXT:           [[#TAG1:]],
 // C99-NEXT:       ),
 // C99-NEXT:       kind: Enum,
 // C99-NEXT:       name: None,
@@ -769,9 +769,9 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   }
-// C99-NEXT: tag[2]: TagDefinition {
+// C99-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // C99-NEXT:       id: TagId(
-// C99-NEXT:           2,
+// C99-NEXT:           [[#TAG2:]],
 // C99-NEXT:       ),
 // C99-NEXT:       kind: Enum,
 // C99-NEXT:       name: None,
@@ -798,9 +798,9 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   }
-// C99-NEXT: tag[3]: TagDefinition {
+// C99-NEXT: tag[{{[0-9]+}}]: TagDefinition {
 // C99-NEXT:       id: TagId(
-// C99-NEXT:           3,
+// C99-NEXT:           [[#TAG3:]],
 // C99-NEXT:       ),
 // C99-NEXT:       kind: Enum,
 // C99-NEXT:       name: None,
@@ -827,7 +827,7 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   }
-// C99-NEXT: decl[0]: Function(
+// C99-NEXT: decl[{{[0-9]+}}]: Function(
 // C99-NEXT:       FunctionDefinition {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Void,
@@ -1084,7 +1084,7 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   )
-// C99-NEXT: decl[1]: Declaration(
+// C99-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C99-NEXT:       Declaration {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
@@ -1104,7 +1104,7 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   )
-// C99-NEXT: decl[2]: Function(
+// C99-NEXT: decl[{{[0-9]+}}]: Function(
 // C99-NEXT:       FunctionDefinition {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
@@ -1128,7 +1128,7 @@ int nested_typedef(void) {
 // C99-NEXT:                               ty: Tag(
 // C99-NEXT:                                   Definition(
 // C99-NEXT:                                       TagId(
-// C99-NEXT:                                           0,
+// C99-NEXT:                                           [[#TAG0]],
 // C99-NEXT:                                       ),
 // C99-NEXT:                                   ),
 // C99-NEXT:                               ),
@@ -1170,7 +1170,7 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   )
-// C99-NEXT: decl[3]: Function(
+// C99-NEXT: decl[{{[0-9]+}}]: Function(
 // C99-NEXT:       FunctionDefinition {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
@@ -1213,7 +1213,7 @@ int nested_typedef(void) {
 // C99-NEXT:                                       ty: Tag(
 // C99-NEXT:                                           Definition(
 // C99-NEXT:                                               TagId(
-// C99-NEXT:                                                   1,
+// C99-NEXT:                                                   [[#TAG1]],
 // C99-NEXT:                                               ),
 // C99-NEXT:                                           ),
 // C99-NEXT:                                       ),
@@ -1240,7 +1240,7 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   )
-// C99-NEXT: decl[4]: Function(
+// C99-NEXT: decl[{{[0-9]+}}]: Function(
 // C99-NEXT:       FunctionDefinition {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
@@ -1272,7 +1272,7 @@ int nested_typedef(void) {
 // C99-NEXT:                                       ty: Tag(
 // C99-NEXT:                                           Definition(
 // C99-NEXT:                                               TagId(
-// C99-NEXT:                                                   2,
+// C99-NEXT:                                                   [[#TAG2]],
 // C99-NEXT:                                               ),
 // C99-NEXT:                                           ),
 // C99-NEXT:                                       ),
@@ -1308,7 +1308,7 @@ int nested_typedef(void) {
 // C99-NEXT:           ],
 // C99-NEXT:       },
 // C99-NEXT:   )
-// C99-NEXT: decl[5]: Function(
+// C99-NEXT: decl[{{[0-9]+}}]: Function(
 // C99-NEXT:       FunctionDefinition {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
@@ -1332,7 +1332,7 @@ int nested_typedef(void) {
 // C99-NEXT:                               ty: Tag(
 // C99-NEXT:                                   Definition(
 // C99-NEXT:                                       TagId(
-// C99-NEXT:                                           3,
+// C99-NEXT:                                           [[#TAG3]],
 // C99-NEXT:                                       ),
 // C99-NEXT:                                   ),
 // C99-NEXT:                               ),

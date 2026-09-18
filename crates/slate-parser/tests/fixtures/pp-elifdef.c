@@ -19,7 +19,7 @@ int fallback;
 // SLATE-FILECHECK-DEFINES THIRD THIRD
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -40,7 +40,7 @@ int fallback;
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FIRST
-// FIRST: decl[0]: Declaration(
+// FIRST: decl[{{[0-9]+}}]: Declaration(
 // FIRST-NEXT:       Declaration {
 // FIRST-NEXT:           specifiers: DeclarationSpecifiers {
 // FIRST-NEXT:               ty: Integer(
@@ -61,7 +61,7 @@ int fallback;
 // FIRST-NEXT:   )
 // SLATE-FILECHECK-END FIRST
 // SLATE-FILECHECK-BEGIN SECOND
-// SECOND: decl[0]: Declaration(
+// SECOND: decl[{{[0-9]+}}]: Declaration(
 // SECOND-NEXT:       Declaration {
 // SECOND-NEXT:           specifiers: DeclarationSpecifiers {
 // SECOND-NEXT:               ty: Integer(
@@ -82,7 +82,7 @@ int fallback;
 // SECOND-NEXT:   )
 // SLATE-FILECHECK-END SECOND
 // SLATE-FILECHECK-BEGIN THIRD
-// THIRD: decl[0]: Declaration(
+// THIRD: decl[{{[0-9]+}}]: Declaration(
 // THIRD-NEXT:       Declaration {
 // THIRD-NEXT:           specifiers: DeclarationSpecifiers {
 // THIRD-NEXT:               ty: Integer(

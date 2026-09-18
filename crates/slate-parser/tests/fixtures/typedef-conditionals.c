@@ -19,7 +19,7 @@ RightOnly right_value;
 // SLATE-FILECHECK-DEFINES LEFT ONLY_LEFT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -38,7 +38,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -54,7 +54,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -74,7 +74,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Named(
@@ -92,7 +92,7 @@ RightOnly right_value;
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INT
-// INT: decl[0]: Declaration(
+// INT: decl[{{[0-9]+}}]: Declaration(
 // INT-NEXT:       Declaration {
 // INT-NEXT:           specifiers: DeclarationSpecifiers {
 // INT-NEXT:               ty: Integer(
@@ -112,7 +112,7 @@ RightOnly right_value;
 // INT-NEXT:           ],
 // INT-NEXT:       },
 // INT-NEXT:   )
-// INT-NEXT: decl[1]: Declaration(
+// INT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // INT-NEXT:       Declaration {
 // INT-NEXT:           specifiers: DeclarationSpecifiers {
 // INT-NEXT:               ty: Named(
@@ -128,7 +128,7 @@ RightOnly right_value;
 // INT-NEXT:           ],
 // INT-NEXT:       },
 // INT-NEXT:   )
-// INT-NEXT: decl[2]: Declaration(
+// INT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // INT-NEXT:       Declaration {
 // INT-NEXT:           specifiers: DeclarationSpecifiers {
 // INT-NEXT:               ty: Integer(
@@ -148,7 +148,7 @@ RightOnly right_value;
 // INT-NEXT:           ],
 // INT-NEXT:       },
 // INT-NEXT:   )
-// INT-NEXT: decl[3]: Declaration(
+// INT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // INT-NEXT:       Declaration {
 // INT-NEXT:           specifiers: DeclarationSpecifiers {
 // INT-NEXT:               ty: Named(
@@ -166,7 +166,7 @@ RightOnly right_value;
 // INT-NEXT:   )
 // SLATE-FILECHECK-END INT
 // SLATE-FILECHECK-BEGIN LEFT
-// LEFT: decl[0]: Declaration(
+// LEFT: decl[{{[0-9]+}}]: Declaration(
 // LEFT-NEXT:       Declaration {
 // LEFT-NEXT:           specifiers: DeclarationSpecifiers {
 // LEFT-NEXT:               ty: Integer(
@@ -185,7 +185,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ],
 // LEFT-NEXT:       },
 // LEFT-NEXT:   )
-// LEFT-NEXT: decl[1]: Declaration(
+// LEFT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // LEFT-NEXT:       Declaration {
 // LEFT-NEXT:           specifiers: DeclarationSpecifiers {
 // LEFT-NEXT:               ty: Named(
@@ -201,7 +201,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ],
 // LEFT-NEXT:       },
 // LEFT-NEXT:   )
-// LEFT-NEXT: decl[2]: Declaration(
+// LEFT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // LEFT-NEXT:       Declaration {
 // LEFT-NEXT:           specifiers: DeclarationSpecifiers {
 // LEFT-NEXT:               ty: Integer(
@@ -221,7 +221,7 @@ RightOnly right_value;
 // LEFT-NEXT:           ],
 // LEFT-NEXT:       },
 // LEFT-NEXT:   )
-// LEFT-NEXT: decl[3]: Declaration(
+// LEFT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // LEFT-NEXT:       Declaration {
 // LEFT-NEXT:           specifiers: DeclarationSpecifiers {
 // LEFT-NEXT:               ty: Named(

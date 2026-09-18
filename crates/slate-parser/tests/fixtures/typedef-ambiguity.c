@@ -17,7 +17,7 @@ int call_main() {
 // SLATE-FILECHECK-DEFINES CAST AS_CAST
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -36,7 +36,7 @@ int call_main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -74,7 +74,7 @@ int call_main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -123,7 +123,7 @@ int call_main() {
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN CAST
-// CAST: decl[0]: Declaration(
+// CAST: decl[{{[0-9]+}}]: Declaration(
 // CAST-NEXT:       Declaration {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
 // CAST-NEXT:               ty: Integer(
@@ -142,7 +142,7 @@ int call_main() {
 // CAST-NEXT:           ],
 // CAST-NEXT:       },
 // CAST-NEXT:   )
-// CAST-NEXT: decl[1]: Declaration(
+// CAST-NEXT: decl[{{[0-9]+}}]: Declaration(
 // CAST-NEXT:       Declaration {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
 // CAST-NEXT:               ty: Integer(
@@ -162,7 +162,7 @@ int call_main() {
 // CAST-NEXT:           ],
 // CAST-NEXT:       },
 // CAST-NEXT:   )
-// CAST-NEXT: decl[2]: Function(
+// CAST-NEXT: decl[{{[0-9]+}}]: Function(
 // CAST-NEXT:       FunctionDefinition {
 // CAST-NEXT:           specifiers: DeclarationSpecifiers {
 // CAST-NEXT:               ty: Integer(

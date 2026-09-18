@@ -16,7 +16,7 @@ int no_stdc_version;
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C89
-// C89: decl[0]: Declaration(
+// C89: decl[{{[0-9]+}}]: Declaration(
 // C89-NEXT:       Declaration {
 // C89-NEXT:           specifiers: DeclarationSpecifiers {
 // C89-NEXT:               ty: Integer(
@@ -37,7 +37,7 @@ int no_stdc_version;
 // C89-NEXT:   )
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN C99
-// C99: decl[0]: Declaration(
+// C99: decl[{{[0-9]+}}]: Declaration(
 // C99-NEXT:       Declaration {
 // C99-NEXT:           specifiers: DeclarationSpecifiers {
 // C99-NEXT:               ty: Integer(
@@ -73,7 +73,7 @@ int no_stdc_version;
 // C99-NEXT:   )
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C11
-// C11: decl[0]: Declaration(
+// C11: decl[{{[0-9]+}}]: Declaration(
 // C11-NEXT:       Declaration {
 // C11-NEXT:           specifiers: DeclarationSpecifiers {
 // C11-NEXT:               ty: Integer(
@@ -109,7 +109,7 @@ int no_stdc_version;
 // C11-NEXT:   )
 // SLATE-FILECHECK-END C11
 // SLATE-FILECHECK-BEGIN C17
-// C17: decl[0]: Declaration(
+// C17: decl[{{[0-9]+}}]: Declaration(
 // C17-NEXT:       Declaration {
 // C17-NEXT:           specifiers: DeclarationSpecifiers {
 // C17-NEXT:               ty: Integer(
@@ -145,7 +145,7 @@ int no_stdc_version;
 // C17-NEXT:   )
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[0]: Declaration(
+// C23: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Integer(

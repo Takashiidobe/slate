@@ -12,7 +12,7 @@
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[0]: Declaration(
+// C23: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -34,7 +34,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[1]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -56,7 +56,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[2]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -78,7 +78,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[3]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -100,7 +100,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[4]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -134,7 +134,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[5]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -156,7 +156,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[6]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -178,7 +178,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[7]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -251,7 +251,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[8]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,
@@ -275,7 +275,7 @@
 // C23-NEXT:           ],
 // C23-NEXT:       },
 // C23-NEXT:   )
-// C23-NEXT: decl[9]: Declaration(
+// C23-NEXT: decl[{{[0-9]+}}]: Declaration(
 // C23-NEXT:       Declaration {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,

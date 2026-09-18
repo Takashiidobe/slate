@@ -17,7 +17,7 @@ int attributed(int x) {
 }
 
 // SLATE-FILECHECK-BEGIN AST
-// AST: decl[0]: Function(
+// AST: decl[{{[0-9]+}}]: Function(
 // AST-NEXT:       FunctionDefinition {
 // AST-NEXT:           specifiers: DeclarationSpecifiers {
 // AST-NEXT:               ty: Integer(

@@ -5,17 +5,17 @@ int asm_value = 1;
 // SLATE-FILECHECK-DEFINES DEFAULT
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Asm(
+// DEFAULT: decl[{{[0-9]+}}]: Asm(
 // DEFAULT-NEXT:       GnuAsm {
 // DEFAULT-NEXT:           template: "top_basic",
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Asm(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Asm(
 // DEFAULT-NEXT:       GnuAsm {
 // DEFAULT-NEXT:           template: "concat",
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(

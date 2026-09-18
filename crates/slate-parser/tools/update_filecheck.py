@@ -218,6 +218,42 @@ def loosen_system_provenance(block: list[str]) -> list[str]:
     return result
 
 
+TAG_LABEL_RE = re.compile(r"^(// [^:]+: tag\[)[0-9]+(\].*)$")
+DECL_LABEL_RE = re.compile(r"^(// [^:]+: decl\[)[0-9]+(\].*)$")
+TAG_ID_OPEN_RE = re.compile(r"^// [^:]+:\s*(?:id: )?TagId\($")
+TAG_ID_VALUE_RE = re.compile(r"^(// [^:]+:\s*)([0-9]+)(,)$")
+
+
+def loosen_ids(block: list[str]) -> list[str]:
+    """Match tag ids and decl indices by regex. Both count every declaration in
+    the translation unit, system headers included, so adding one declaration to
+    a header restamps every fixture that reads it. A tag id is also a
+    cross-reference, so each distinct id binds a FileCheck numeric variable on
+    first sight and reuses it afterwards: a declaration still has to name the
+    tag it named before, only the absolute number stops mattering. The tag[N]
+    and decl[N] labels are rendered from the same field the block already
+    checks, so they carry nothing a variable would preserve."""
+    variables: dict[str, str] = {}
+    result: list[str] = []
+    for line in block:
+        label = TAG_LABEL_RE.match(line) or DECL_LABEL_RE.match(line)
+        if label:
+            result.append(f"{label.group(1)}{{{{[0-9]+}}}}{label.group(2)}")
+            continue
+        if result and TAG_ID_OPEN_RE.match(result[-1]):
+            value = TAG_ID_VALUE_RE.match(line)
+            if value:
+                number = value.group(2)
+                if number in variables:
+                    reference = f"[[#{variables[number]}]]"
+                else:
+                    variables[number] = f"TAG{len(variables)}"
+                    reference = f"[[#{variables[number]}:]]"
+                line = f"{value.group(1)}{reference}{value.group(3)}"
+        result.append(line)
+    return result
+
+
 CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")
 PIECES_OPEN_RE = re.compile(r"^(\s*)pieces: \[$")
 QUOTED_LINE_RE = re.compile(r'^\s*"((?:[^"\\]|\\.)*)",?$')
@@ -298,7 +334,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             directive = prefix if force == "plain" or index == 0 else f"{prefix}-NEXT"
             text = escape_filecheck_literal(line) if escape else line
             block.append(f"// {directive}: {text}")
-        block = loosen_system_provenance(block)
+        block = loosen_ids(loosen_system_provenance(block))
         block.append(f"// SLATE-FILECHECK-END {prefix}")
         blocks.extend(block)
     return "\n".join(blocks)

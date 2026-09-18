@@ -15,7 +15,7 @@ void f(void) {
 // SLATE-FILECHECK-STD C23 c23
 
 // SLATE-FILECHECK-BEGIN C17
-// C17: decl[0]: Function(
+// C17: decl[{{[0-9]+}}]: Function(
 // C17-NEXT:       FunctionDefinition {
 // C17-NEXT:           specifiers: DeclarationSpecifiers {
 // C17-NEXT:               ty: Void,
@@ -138,7 +138,7 @@ void f(void) {
 // C17-NEXT:   )
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
-// C23: decl[0]: Function(
+// C23: decl[{{[0-9]+}}]: Function(
 // C23-NEXT:       FunctionDefinition {
 // C23-NEXT:           specifiers: DeclarationSpecifiers {
 // C23-NEXT:               ty: Void,

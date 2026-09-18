@@ -15,7 +15,7 @@ void nested_outer(int n) {
 // SLATE-FILECHECK-DEFINES DOUBLED DOUBLE_INNER
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Function(
+// DEFAULT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Void,
@@ -115,7 +115,7 @@ void nested_outer(int n) {
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN DOUBLED
-// DOUBLED: decl[0]: Function(
+// DOUBLED: decl[{{[0-9]+}}]: Function(
 // DOUBLED-NEXT:       FunctionDefinition {
 // DOUBLED-NEXT:           specifiers: DeclarationSpecifiers {
 // DOUBLED-NEXT:               ty: Void,

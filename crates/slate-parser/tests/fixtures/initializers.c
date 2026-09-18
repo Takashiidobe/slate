@@ -22,9 +22,9 @@ int main() {
 // SLATE-FILECHECK-DEFINES ENABLED ENABLED
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: tag[0]: TagDefinition {
+// DEFAULT: tag[{{[0-9]+}}]: TagDefinition {
 // DEFAULT-NEXT:       id: TagId(
-// DEFAULT-NEXT:           0,
+// DEFAULT-NEXT:           [[#TAG0:]],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:       kind: Struct,
 // DEFAULT-NEXT:       name: Some(
@@ -73,7 +73,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       ),
 // DEFAULT-NEXT:   }
-// DEFAULT-NEXT: decl[0]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -107,7 +107,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -159,7 +159,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[2]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -292,20 +292,20 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[3]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
 // DEFAULT-NEXT:                   Definition(
 // DEFAULT-NEXT:                       TagId(
-// DEFAULT-NEXT:                           0,
+// DEFAULT-NEXT:                           [[#TAG0]],
 // DEFAULT-NEXT:                       ),
 // DEFAULT-NEXT:                   ),
 // DEFAULT-NEXT:               ),
 // DEFAULT-NEXT:           },
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[4]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Tag(
@@ -370,7 +370,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[5]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -470,7 +470,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[6]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -504,7 +504,7 @@ int main() {
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[7]: Function(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Function(
 // DEFAULT-NEXT:       FunctionDefinition {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -539,9 +539,9 @@ int main() {
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN ENABLED
-// ENABLED: tag[0]: TagDefinition {
+// ENABLED: tag[{{[0-9]+}}]: TagDefinition {
 // ENABLED-NEXT:       id: TagId(
-// ENABLED-NEXT:           0,
+// ENABLED-NEXT:           [[#TAG0:]],
 // ENABLED-NEXT:       ),
 // ENABLED-NEXT:       kind: Struct,
 // ENABLED-NEXT:       name: Some(
@@ -590,7 +590,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       ),
 // ENABLED-NEXT:   }
-// ENABLED-NEXT: decl[0]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(
@@ -624,7 +624,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[1]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(
@@ -676,7 +676,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[2]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(
@@ -809,20 +809,20 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[3]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Tag(
 // ENABLED-NEXT:                   Definition(
 // ENABLED-NEXT:                       TagId(
-// ENABLED-NEXT:                           0,
+// ENABLED-NEXT:                           [[#TAG0]],
 // ENABLED-NEXT:                       ),
 // ENABLED-NEXT:                   ),
 // ENABLED-NEXT:               ),
 // ENABLED-NEXT:           },
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[4]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Tag(
@@ -887,7 +887,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[5]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(
@@ -987,7 +987,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[6]: Declaration(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Declaration(
 // ENABLED-NEXT:       Declaration {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(
@@ -1021,7 +1021,7 @@ int main() {
 // ENABLED-NEXT:           ],
 // ENABLED-NEXT:       },
 // ENABLED-NEXT:   )
-// ENABLED-NEXT: decl[7]: Function(
+// ENABLED-NEXT: decl[{{[0-9]+}}]: Function(
 // ENABLED-NEXT:       FunctionDefinition {
 // ENABLED-NEXT:           specifiers: DeclarationSpecifiers {
 // ENABLED-NEXT:               ty: Integer(

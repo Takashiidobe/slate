@@ -19,7 +19,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // SLATE-FILECHECK-FLAVOR clang
 
 // SLATE-FILECHECK-BEGIN GNU
-// GNU: decl[0]: Declaration(
+// GNU: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Void,
@@ -41,7 +41,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[1]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Void,
@@ -63,7 +63,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[2]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Void,
@@ -85,7 +85,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[3]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -136,7 +136,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[4]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -175,7 +175,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[5]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -211,7 +211,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[6]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -250,7 +250,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[7]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -274,7 +274,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[8]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -304,7 +304,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[9]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -334,7 +334,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[10]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -363,7 +363,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[11]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Vector(
@@ -415,7 +415,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[12]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Integer(
@@ -437,7 +437,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[13]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Void,
@@ -457,7 +457,7 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:           ],
 // GNU-NEXT:       },
 // GNU-NEXT:   )
-// GNU-NEXT: decl[14]: Declaration(
+// GNU-NEXT: decl[{{[0-9]+}}]: Declaration(
 // GNU-NEXT:       Declaration {
 // GNU-NEXT:           specifiers: DeclarationSpecifiers {
 // GNU-NEXT:               ty: Void,

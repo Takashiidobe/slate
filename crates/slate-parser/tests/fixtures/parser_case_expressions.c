@@ -11,9 +11,9 @@ int cases(int x) {
 }
 
 // SLATE-FILECHECK-BEGIN AST
-// AST: tag[0]: TagDefinition {
+// AST: tag[{{[0-9]+}}]: TagDefinition {
 // AST-NEXT:       id: TagId(
-// AST-NEXT:           0,
+// AST-NEXT:           [[#TAG0:]],
 // AST-NEXT:       ),
 // AST-NEXT:       kind: Struct,
 // AST-NEXT:       name: None,
@@ -54,7 +54,7 @@ int cases(int x) {
 // AST-NEXT:           ],
 // AST-NEXT:       ),
 // AST-NEXT:   }
-// AST-NEXT: decl[0]: Function(
+// AST-NEXT: decl[{{[0-9]+}}]: Function(
 // AST-NEXT:       FunctionDefinition {
 // AST-NEXT:           specifiers: DeclarationSpecifiers {
 // AST-NEXT:               ty: Integer(
@@ -248,7 +248,7 @@ int cases(int x) {
 // AST-NEXT:                                               ty: Tag(
 // AST-NEXT:                                                   Definition(
 // AST-NEXT:                                                       TagId(
-// AST-NEXT:                                                           0,
+// AST-NEXT:                                                           [[#TAG0]],
 // AST-NEXT:                                                       ),
 // AST-NEXT:                                                   ),
 // AST-NEXT:                                               ),

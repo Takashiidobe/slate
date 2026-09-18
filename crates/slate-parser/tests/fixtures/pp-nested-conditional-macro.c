@@ -12,7 +12,7 @@ int wrapped[WRAP(1)];
 // SLATE-FILECHECK-DEFINES A A
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -46,7 +46,7 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -98,7 +98,7 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration(
+// A: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -132,7 +132,7 @@ int wrapped[WRAP(1)];
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[1]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(

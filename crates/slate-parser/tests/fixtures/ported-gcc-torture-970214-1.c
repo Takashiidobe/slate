@@ -6,7 +6,7 @@ int main(void) { exit(L'1' != L'1'); }
 // SLATE-FILECHECK-DEFINES GCC
 
 // SLATE-FILECHECK-BEGIN GCC
-// GCC: decl[0]: Declaration(
+// GCC: decl[{{[0-9]+}}]: Declaration(
 // GCC-NEXT:       Declaration {
 // GCC-NEXT:           specifiers: DeclarationSpecifiers {
 // GCC-NEXT:               ty: Void,
@@ -37,7 +37,7 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:           ],
 // GCC-NEXT:       },
 // GCC-NEXT:   )
-// GCC-NEXT: decl[1]: Function(
+// GCC-NEXT: decl[{{[0-9]+}}]: Function(
 // GCC-NEXT:       FunctionDefinition {
 // GCC-NEXT:           specifiers: DeclarationSpecifiers {
 // GCC-NEXT:               ty: Integer(

@@ -18,7 +18,7 @@ int nested[X];
 // SLATE-FILECHECK-DEFINES AB A B
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -52,7 +52,7 @@ int nested[X];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -88,7 +88,7 @@ int nested[X];
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration(
+// A: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -122,7 +122,7 @@ int nested[X];
 // A-NEXT:           ],
 // A-NEXT:       },
 // A-NEXT:   )
-// A-NEXT: decl[1]: Declaration(
+// A-NEXT: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -158,7 +158,7 @@ int nested[X];
 // A-NEXT:   )
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN B
-// B: decl[0]: Declaration(
+// B: decl[{{[0-9]+}}]: Declaration(
 // B-NEXT:       Declaration {
 // B-NEXT:           specifiers: DeclarationSpecifiers {
 // B-NEXT:               ty: Integer(
@@ -192,7 +192,7 @@ int nested[X];
 // B-NEXT:           ],
 // B-NEXT:       },
 // B-NEXT:   )
-// B-NEXT: decl[1]: Declaration(
+// B-NEXT: decl[{{[0-9]+}}]: Declaration(
 // B-NEXT:       Declaration {
 // B-NEXT:           specifiers: DeclarationSpecifiers {
 // B-NEXT:               ty: Integer(
@@ -228,7 +228,7 @@ int nested[X];
 // B-NEXT:   )
 // SLATE-FILECHECK-END B
 // SLATE-FILECHECK-BEGIN AB
-// AB: decl[0]: Declaration(
+// AB: decl[{{[0-9]+}}]: Declaration(
 // AB-NEXT:       Declaration {
 // AB-NEXT:           specifiers: DeclarationSpecifiers {
 // AB-NEXT:               ty: Integer(
@@ -262,7 +262,7 @@ int nested[X];
 // AB-NEXT:           ],
 // AB-NEXT:       },
 // AB-NEXT:   )
-// AB-NEXT: decl[1]: Declaration(
+// AB-NEXT: decl[{{[0-9]+}}]: Declaration(
 // AB-NEXT:       Declaration {
 // AB-NEXT:           specifiers: DeclarationSpecifiers {
 // AB-NEXT:               ty: Integer(

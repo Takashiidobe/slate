@@ -19,7 +19,7 @@ int x_missing[4];
 // SLATE-FILECHECK-DEFINES X X
 
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: decl[0]: Declaration(
+// DEFAULT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -53,7 +53,7 @@ int x_missing[4];
 // DEFAULT-NEXT:           ],
 // DEFAULT-NEXT:       },
 // DEFAULT-NEXT:   )
-// DEFAULT-NEXT: decl[1]: Declaration(
+// DEFAULT-NEXT: decl[{{[0-9]+}}]: Declaration(
 // DEFAULT-NEXT:       Declaration {
 // DEFAULT-NEXT:           specifiers: DeclarationSpecifiers {
 // DEFAULT-NEXT:               ty: Integer(
@@ -89,7 +89,7 @@ int x_missing[4];
 // DEFAULT-NEXT:   )
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
-// A: decl[0]: Declaration(
+// A: decl[{{[0-9]+}}]: Declaration(
 // A-NEXT:       Declaration {
 // A-NEXT:           specifiers: DeclarationSpecifiers {
 // A-NEXT:               ty: Integer(
@@ -125,7 +125,7 @@ int x_missing[4];
 // A-NEXT:   )
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN FLAG
-// FLAG: decl[0]: Declaration(
+// FLAG: decl[{{[0-9]+}}]: Declaration(
 // FLAG-NEXT:       Declaration {
 // FLAG-NEXT:           specifiers: DeclarationSpecifiers {
 // FLAG-NEXT:               ty: Integer(
@@ -159,7 +159,7 @@ int x_missing[4];
 // FLAG-NEXT:           ],
 // FLAG-NEXT:       },
 // FLAG-NEXT:   )
-// FLAG-NEXT: decl[1]: Declaration(
+// FLAG-NEXT: decl[{{[0-9]+}}]: Declaration(
 // FLAG-NEXT:       Declaration {
 // FLAG-NEXT:           specifiers: DeclarationSpecifiers {
 // FLAG-NEXT:               ty: Integer(
@@ -193,7 +193,7 @@ int x_missing[4];
 // FLAG-NEXT:           ],
 // FLAG-NEXT:       },
 // FLAG-NEXT:   )
-// FLAG-NEXT: decl[2]: Declaration(
+// FLAG-NEXT: decl[{{[0-9]+}}]: Declaration(
 // FLAG-NEXT:       Declaration {
 // FLAG-NEXT:           specifiers: DeclarationSpecifiers {
 // FLAG-NEXT:               ty: Integer(
@@ -229,7 +229,7 @@ int x_missing[4];
 // FLAG-NEXT:   )
 // SLATE-FILECHECK-END FLAG
 // SLATE-FILECHECK-BEGIN X
-// X: decl[0]: Declaration(
+// X: decl[{{[0-9]+}}]: Declaration(
 // X-NEXT:       Declaration {
 // X-NEXT:           specifiers: DeclarationSpecifiers {
 // X-NEXT:               ty: Integer(
