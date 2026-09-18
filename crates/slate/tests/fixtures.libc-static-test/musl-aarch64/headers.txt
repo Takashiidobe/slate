@@ -158,3 +158,5 @@ sysexits.h
 syslog.h
 tar.h
 termios.h
+tgmath.h
+threads.h
