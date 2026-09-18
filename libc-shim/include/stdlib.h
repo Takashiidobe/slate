@@ -65,20 +65,33 @@ typedef struct {
 } lldiv_t;
 
 _Noreturn void exit(int status);
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 _Noreturn void _Exit(int status);
-_Noreturn void quick_exit(int status);
-_Noreturn void abort(void);
-#if !defined(__SLATE_LIBC_MSVC)
-_Noreturn void abort_with_reason(const char *__restrict reason);
 #endif
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L)
+_Noreturn void quick_exit(int status);
+#endif
+_Noreturn void abort(void);
 int            atexit(void (*func)(void));
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L)
 int            at_quick_exit(void (*func)(void));
+#endif
 
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
-#if !defined(__SLATE_LIBC_MSVC)
+#if defined(__SLATE_LIBC_FREEBSD) ||                                          \
+    (defined(__SLATE_LIBC_MUSL)) ||                                          \
+    (defined(__SLATE_LIBC_GLIBC) && defined(__STDC_VERSION__) &&              \
+     __STDC_VERSION__ >= 201112L)
 void *aligned_alloc(size_t alignment, size_t size);
+#endif
+#if defined(__SLATE_LIBC_FREEBSD) ||                                          \
+    (defined(__SLATE_LIBC_GLIBC) && defined(__STDC_VERSION__) &&              \
+     __STDC_VERSION__ >= 202311L)
 void  free_sized(void *ptr, size_t size);
 void  free_aligned_sized(void *ptr, size_t alignment, size_t size);
 
@@ -96,19 +109,33 @@ void  free(void *ptr);
 
 int       abs(int j);
 long      labs(long j);
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 long long llabs(long long j);
+#endif
 div_t     div(int numer, int denom);
 ldiv_t    ldiv(long numer, long denom);
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 lldiv_t   lldiv(long long numer, long long denom);
+#endif
 
 int         atoi(const char *nptr);
 long        atol(const char *nptr);
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 long long   atoll(const char *nptr);
+#endif
 double      atof(const char *nptr);
 double      strtod(const char *__restrict nptr, char **__restrict endptr);
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 float       strtof(const char *__restrict nptr, char **__restrict endptr);
 long double strtold(const char *__restrict nptr, char **__restrict endptr);
-#if !defined(__SLATE_LIBC_MSVC)
+#endif
+#if defined(__SLATE_LIBC_FREEBSD) ||                                          \
+    (defined(__SLATE_LIBC_GLIBC) && defined(__STDC_VERSION__) &&              \
+     __STDC_VERSION__ >= 202311L)
 int         strfromd(char *__restrict s, size_t n, const char *__restrict format,
                      double fp);
 int strfromf(char *__restrict s, size_t n, const char *__restrict format, float fp);
@@ -118,9 +145,12 @@ int strfroml(char *__restrict s, size_t n, const char *__restrict format,
 long strtol(const char *__restrict nptr, char **__restrict endptr, int base);
 unsigned long strtoul(const char *__restrict nptr, char **__restrict endptr,
                       int base);
+#if defined(__SLATE_LIBC_MUSL) ||                                             \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 long long strtoll(const char *__restrict nptr, char **__restrict endptr, int base);
 unsigned long long strtoull(const char *__restrict nptr, char **__restrict endptr,
                             int base);
+#endif
 
 #if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
 long strtol_l(const char *__restrict, char **__restrict, int, locale_t);
@@ -147,7 +177,8 @@ void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
   (bsearch)((key), (base), (nmemb), (size), (compar))
 #endif
 
-#if defined(__SLATE_LIBC_GLIBC) && __SLATE_GLIBC_MINOR__ >= 43
+#if defined(__SLATE_LIBC_GLIBC) && __SLATE_GLIBC_MINOR__ >= 43 &&              \
+    defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 void call_once(once_flag *, void (*)(void));
 #endif
 
@@ -168,7 +199,10 @@ int   posix_memalign(void **memptr, size_t alignment, size_t size);
 int   setenv(const char *name, const char *value, int overwrite);
 int   unsetenv(const char *name);
 int   mkstemp(char *template);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 int   mkostemp(char *template, int flags);
+#endif
 char *mkdtemp(char *template);
 int   getsubopt(char **optionp, char *const *tokens, char **valuep);
 int   rand_r(unsigned int *seed);
@@ -181,13 +215,19 @@ void   srandom(unsigned int seed);
 char  *initstate(unsigned int seed, char *state, size_t size);
 char  *setstate(char *state);
 int    putenv(char *string);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 int    posix_openpt(int flags);
 int    grantpt(int fd);
 int    unlockpt(int fd);
 char  *ptsname(int fd);
+#endif
 char  *l64a(long value);
 long   a64l(const char *s);
+#if !defined(__SLATE_LIBC_GLIBC) ||                                           \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 void   setkey(const char *key);
+#endif
 double drand48(void);
 double erand48(unsigned short xsubi[3]);
 long   lrand48(void);
@@ -204,15 +244,26 @@ void            lcong48(unsigned short param[7]);
 #include <alloca.h>
 char *mktemp(char *template);
 int   mkstemps(char *template, int suffixlen);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 int   mkostemps(char *template, int suffixlen, int flags);
+#endif
 void *valloc(size_t size);
+#if !defined(__SLATE_LIBC_GLIBC) ||                                           \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 void *memalign(size_t alignment, size_t size);
+#endif
 int   getloadavg(double loadavg[], int nelem);
 int   clearenv(void);
+#if defined(__SLATE_LIBC_GLIBC) || defined(__SLATE_LIBC_FREEBSD)
 int   on_exit(void (*function)(int, void *), void *arg);
+#endif
 void *reallocarray(void *ptr, size_t nmemb, size_t size);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                    \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 void  qsort_r(void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *, void *), void *arg);
+#endif
 #if defined(__SLATE_LIBC_FREEBSD)
 void __qsort_r_compat(void *base, size_t nmemb, size_t size, void *arg,
                       int (*compar)(void *, const void *, const void *));
@@ -226,7 +277,7 @@ __sym_compat(qsort_r, __qsort_r_compat, FBSD_1.0);
 #endif
 #endif
 
-#ifdef _GNU_SOURCE
+#if defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
 int   ptsname_r(int fd, char *buf, size_t buflen);
 char *ecvt(double number, int ndigits, int *decpt, int *sign);
 char *fcvt(double number, int ndigits, int *decpt, int *sign);
@@ -251,10 +302,13 @@ long double strtold_l(const char *__restrict nptr, char **__restrict endptr,
 #endif
 #endif
 
-#if !defined(__SLATE_LIBC_MSVC) &&                                            \
-    (!defined(__SLATE_LIBC_FREEBSD) || __BSD_VISIBLE)
+#if defined(__SLATE_LIBC_FREEBSD) && __BSD_VISIBLE
 void         arc4random_stir(void);
 void         arc4random_addrandom(unsigned char *data, int length);
+unsigned int arc4random(void);
+void         arc4random_buf(void *buffer, size_t size);
+unsigned int arc4random_uniform(unsigned int upper_bound);
+#elif defined(__SLATE_LIBC_GLIBC) && defined(_GNU_SOURCE)
 unsigned int arc4random(void);
 void         arc4random_buf(void *buffer, size_t size);
 unsigned int arc4random_uniform(unsigned int upper_bound);
