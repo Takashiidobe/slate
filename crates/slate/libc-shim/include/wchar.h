@@ -68,8 +68,15 @@ struct tm;
 #endif
 
 wint_t        btowc(int);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC95) || defined(__USE_UNIX98)
 int           fwprintf(FILE *, const wchar_t *, ...);
 int           fwscanf(FILE *, const wchar_t *, ...);
+#endif
+#if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
+     defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
+    (!defined(__SLATE_LIBC_GLIBC) ||                                          \
+    (defined(__USE_XOPEN) && !defined(__USE_GNU) &&                          \
+     (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI))))
 int           iswalnum(wint_t);
 int           iswalpha(wint_t);
 int           iswcntrl(wint_t);
@@ -82,11 +89,14 @@ int           iswspace(wint_t);
 int           iswupper(wint_t);
 int           iswxdigit(wint_t);
 int           iswctype(wint_t, wctype_t);
+#endif
 wint_t        fgetwc(FILE *);
 wchar_t      *fgetws(wchar_t *, int, FILE *);
 wint_t        fputwc(wchar_t, FILE *);
 int           fputws(const wchar_t *, FILE *);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC95) || defined(__USE_UNIX98)
 int           fwide(FILE *, int);
+#endif
 wint_t        getwc(FILE *);
 wint_t        getwchar(void);
 int           mbsinit(const __mbstate_t *);
@@ -95,17 +105,27 @@ size_t        mbrtowc(wchar_t *, const char *, size_t, __mbstate_t *);
 size_t        mbsrtowcs(wchar_t *, const char **, size_t, __mbstate_t *);
 wint_t        putwc(wchar_t, FILE *);
 wint_t        putwchar(wchar_t);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC95) || defined(__USE_UNIX98)
 int           swprintf(wchar_t *, size_t, const wchar_t *, ...);
 int           swscanf(const wchar_t *, const wchar_t *, ...);
+#endif
+#if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
+     defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
+    (!defined(__SLATE_LIBC_GLIBC) ||                                          \
+     (defined(__USE_XOPEN) && !defined(__USE_GNU) &&                         \
+      (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI))))
 wint_t        towlower(wint_t);
 wint_t        towupper(wint_t);
+#endif
 wint_t        ungetwc(wint_t, FILE *);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC95) || defined(__USE_UNIX98)
 int           vfwprintf(FILE *, const wchar_t *, va_list);
 int           vwprintf(const wchar_t *, va_list);
 int           vswprintf(wchar_t *, size_t, const wchar_t *, va_list);
 int           vfwscanf(FILE *, const wchar_t *, va_list);
 int           vswscanf(const wchar_t *, const wchar_t *, va_list);
 int           vwscanf(const wchar_t *, va_list);
+#endif
 size_t        wcrtomb(char *, wchar_t, __mbstate_t *);
 wchar_t      *wcscat(wchar_t *, const wchar_t *);
 wchar_t      *wcschr(const wchar_t *, wchar_t);
@@ -127,26 +147,48 @@ size_t        wcsrtombs(char *, const wchar_t **, size_t, __mbstate_t *);
 size_t        wcsspn(const wchar_t *, const wchar_t *);
 wchar_t      *wcsstr(const wchar_t *, const wchar_t *);
 double        wcstod(const wchar_t *, wchar_t **);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC99)
 float         wcstof(const wchar_t *, wchar_t **);
+#endif
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC99)
 long double   wcstold(const wchar_t *, wchar_t **);
+#endif
 wchar_t      *wcstok(wchar_t *, const wchar_t *, wchar_t **);
 long int      wcstol(const wchar_t *, wchar_t **, int);
 unsigned long wcstoul(const wchar_t *, wchar_t **, int);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC99)
 long long     wcstoll(const wchar_t *, wchar_t **, int);
 unsigned long long wcstoull(const wchar_t *, wchar_t **, int);
+#endif
+#if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
+     defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
+    (!defined(__SLATE_LIBC_GLIBC) || defined(__USE_XOPEN))
 wchar_t           *wcswcs(const wchar_t *, const wchar_t *);
 int                wcswidth(const wchar_t *, size_t);
+#endif
 size_t             wcsxfrm(wchar_t *, const wchar_t *, size_t);
 int                wctob(wint_t);
+#if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
+     defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
+    (!defined(__SLATE_LIBC_GLIBC) ||                                          \
+     (defined(__USE_XOPEN) && !defined(__USE_GNU) &&                         \
+      (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI))))
 wctype_t           wctype(const char *);
+#endif
+#if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
+     defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
+    (!defined(__SLATE_LIBC_GLIBC) || defined(__USE_XOPEN))
 int                wcwidth(wchar_t);
+#endif
 wchar_t           *wmemchr(const wchar_t *, wchar_t, size_t);
 int                wmemcmp(const wchar_t *, const wchar_t *, size_t);
 wchar_t           *wmemcpy(wchar_t *, const wchar_t *, size_t);
 wchar_t           *wmemmove(wchar_t *, const wchar_t *, size_t);
 wchar_t           *wmemset(wchar_t *, wchar_t, size_t);
+#if !defined(__SLATE_LIBC_GLIBC) || defined(__USE_ISOC95) || defined(__USE_UNIX98)
 int                wprintf(const wchar_t *, ...);
 int                wscanf(const wchar_t *, ...);
+#endif
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define wcschr(s, c)                                                          \
