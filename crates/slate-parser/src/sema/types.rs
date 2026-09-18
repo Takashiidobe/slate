@@ -263,6 +263,13 @@ impl TypeResolver {
                     },
                 )
             }
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                let selected = self.generic_selection(controlling, associations)?;
+                return self.constant_value(selected);
+            }
             ExprKind::Cast { ty, value } => {
                 let ty = self
                     .resolve(&ty.specifiers, &ty.declarator)?
@@ -283,6 +290,43 @@ impl TypeResolver {
         })
     }
 
+    pub(super) fn generic_selection<'e>(
+        &mut self,
+        controlling: &'e crate::ast::GenericControl,
+        associations: &'e [crate::ast::GenericAssociation],
+    ) -> Result<&'e crate::ast::Expr, ResolveError> {
+        use crate::ast::{GenericAssociation, GenericControl};
+        let controlling = match controlling {
+            GenericControl::Type { ty } => self
+                .resolve(&ty.specifiers, &ty.declarator)?
+                .ty
+                .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
+            GenericControl::Expr(expr) => self.assertion_operand_type(expr)?,
+        };
+        let mut selected = None;
+        let mut fallback = None;
+        for association in associations {
+            match association {
+                GenericAssociation::Default(value) => fallback = Some(value),
+                GenericAssociation::Type { ty, value } => {
+                    let ty = self
+                        .resolve(&ty.specifiers, &ty.declarator)?
+                        .ty
+                        .ok_or(ResolveError::Unsupported("void generic association type"))?;
+                    if ty == controlling {
+                        if selected.is_some() {
+                            return Err(ResolveError::Unsupported("ambiguous generic selection"));
+                        }
+                        selected = Some(value);
+                    }
+                }
+            }
+        }
+        selected
+            .or(fallback)
+            .ok_or(ResolveError::Unsupported("unselected generic association"))
+    }
+
     pub(super) fn assertion_operand_type(
         &mut self,
         e: &crate::ast::Expr,
@@ -290,6 +334,18 @@ impl TypeResolver {
         use crate::ast::ExprKind;
         match &e.value {
             ExprKind::Paren(inner) => self.assertion_operand_type(inner),
+            ExprKind::Generic {
+                controlling,
+                associations,
+            } => {
+                let selected = self.generic_selection(controlling, associations)?;
+                self.assertion_operand_type(selected)
+            }
+            ExprKind::Call { callee, .. } => match &callee.value {
+                ExprKind::Identifier(name) => builtin_result_type(name),
+                _ => None,
+            }
+            .ok_or(ResolveError::Unsupported("nonconstant call expression")),
             ExprKind::Identifier(name) => match self.lookup(name) {
                 Some(Ordinary::Object(ty)) => Ok(ty.clone()),
                 Some(Ordinary::Constant(value)) => Ok(value.ty.clone()),
@@ -1400,4 +1456,12 @@ pub(super) fn string_literal_type(
         element: Box::new(Type::integer(width, signed)),
         length: Some(literal.execution_units(target.wchar_width).len() as u64 + 1),
     }
+}
+
+fn builtin_result_type(name: &str) -> Option<Type> {
+    matches!(
+        name,
+        "__builtin_add_overflow" | "__builtin_sub_overflow" | "__builtin_mul_overflow"
+    )
+    .then_some(Type::Bool)
 }

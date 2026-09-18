@@ -34,7 +34,7 @@ struct Checker<'a> {
 impl Checker<'_> {
     fn assertion(&mut self, assertion: &StaticAssert) {
         let condition = &assertion.condition;
-        if !ice_shape(condition) {
+        if !ice_shape(&mut self.types, condition) {
             return;
         }
         let result = self
@@ -158,7 +158,9 @@ impl Checker<'_> {
                     continue;
                 };
                 let value = match &enumerator.value {
-                    Some(expr) if ice_shape(expr) => self.types.constant_integer(expr).ok(),
+                    Some(expr) if ice_shape(&mut self.types, expr) => {
+                        self.types.constant_integer(expr).ok()
+                    }
                     Some(_) => None,
                     None => previous.as_ref().map(|value| value + 1),
                 };
@@ -348,7 +350,7 @@ impl Checker<'_> {
 }
 
 // Fold evaluates executed IR only, so enforce the supported ICE syntax separately.
-fn ice_shape(expr: &Expr) -> bool {
+fn ice_shape(types: &mut TypeResolver, expr: &Expr) -> bool {
     match &expr.value {
         ExprKind::IntegerLiteral(_)
         | ExprKind::FloatLiteral(_)
@@ -360,24 +362,32 @@ fn ice_shape(expr: &Expr) -> bool {
         | ExprKind::SizeOfExpr(_)
         | ExprKind::AlignOfExpr(_)
         | ExprKind::OffsetOf { .. } => true,
-        ExprKind::Paren(expr) => ice_shape(expr),
+        ExprKind::Paren(expr) => ice_shape(types, expr),
         ExprKind::Unary { op, operand } => {
             matches!(
                 op,
                 UnaryOp::Plus | UnaryOp::Minus | UnaryOp::Not | UnaryOp::BitNot
-            ) && ice_shape(operand)
+            ) && ice_shape(types, operand)
         }
-        ExprKind::Binary { left, right, .. } => ice_shape(left) && ice_shape(right),
+        ExprKind::Binary { left, right, .. } => ice_shape(types, left) && ice_shape(types, right),
         ExprKind::Conditional {
             condition,
             then_value,
             else_value,
         } => {
-            ice_shape(condition)
-                && then_value.as_ref().is_none_or(ice_shape)
-                && ice_shape(else_value)
+            ice_shape(types, condition)
+                && then_value
+                    .as_ref()
+                    .is_none_or(|value| ice_shape(types, value))
+                && ice_shape(types, else_value)
         }
-        ExprKind::Cast { value, .. } => ice_shape(value),
+        ExprKind::Cast { value, .. } => ice_shape(types, value),
+        ExprKind::Generic {
+            controlling,
+            associations,
+        } => types
+            .generic_selection(controlling, associations)
+            .is_ok_and(|selected| ice_shape(types, selected)),
         _ => false,
     }
 }
