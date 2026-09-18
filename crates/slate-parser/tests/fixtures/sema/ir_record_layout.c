@@ -101,7 +101,7 @@ struct OpaqueHolder { enum Opaque value; };
 // DEFAULT-NEXT:     type @type12 = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:     } [size=2, align=2, offsets=[0]];
-// DEFAULT-NEXT:     type @type13 Color = enum : i32 {
+// DEFAULT-NEXT:     type @type13 Color = enum : u32 {
 // DEFAULT-NEXT:         %0 Red = const<i32>(0);
 // DEFAULT-NEXT:         %1 Green = const<i32>(4);
 // DEFAULT-NEXT:         %2 Blue = const<i32>(5);
@@ -111,13 +111,13 @@ struct OpaqueHolder { enum Opaque value; };
 // DEFAULT-NEXT:         %1 Positive = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type15 Wide = enum : u32 {
-// DEFAULT-NEXT:         %0 Big = const<u32>(4294967295);
+// DEFAULT-NEXT:         %0 Big = const<@type15>(4294967295);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT:     type @type16 Small = enum : u16 {
-// DEFAULT-NEXT:         %0 First = const<u16>(1);
-// DEFAULT-NEXT:         %1 Second = const<u16>(2);
+// DEFAULT-NEXT:         %0 First = const<@type16>(1);
+// DEFAULT-NEXT:         %1 Second = const<@type16>(2);
 // DEFAULT-NEXT:     } [size=2, align=2];
-// DEFAULT-NEXT:     type @type17 AlignedEnum = enum : i32 {
+// DEFAULT-NEXT:     type @type17 AlignedEnum = enum : u32 {
 // DEFAULT-NEXT:         %0 Single = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=8];
 // DEFAULT-NEXT:     type @type18 EnumHolder = struct {

@@ -926,20 +926,35 @@ impl TypeResolver {
                     prior.insert(enumerator.name.clone(), value);
                     values.push((item, enumerator, value));
                 }
-                let underlying = if fixed_underlying != Type::Void {
-                    fixed_underlying
-                } else if values
+                let is_fixed = fixed_underlying != Type::Void;
+                let fits_int = values
                     .iter()
-                    .all(|(_, _, value)| i32::try_from(*value).is_ok())
-                {
-                    Type::integer(self.target.int_width, true)
+                    .all(|(_, _, value)| i32::try_from(*value).is_ok());
+                let underlying = if is_fixed {
+                    fixed_underlying
+                } else if values.iter().any(|(_, _, value)| *value < 0) {
+                    Type::integer(
+                        if fits_int {
+                            self.target.int_width
+                        } else {
+                            self.target.long_width
+                        },
+                        true,
+                    )
                 } else if values
                     .iter()
                     .all(|(_, _, value)| u32::try_from(*value).is_ok())
                 {
                     Type::integer(self.target.int_width, false)
                 } else {
-                    Type::integer(self.target.long_width, true)
+                    Type::integer(self.target.long_width, false)
+                };
+                let enumerator_type = if !is_fixed && fits_int {
+                    Type::integer(self.target.int_width, true)
+                } else if self.features.enumerators_have_enum_type {
+                    Type::Defined(id)
+                } else {
+                    underlying.clone()
                 };
                 let mut entries = Vec::new();
                 for (item, enumerator, value) in values {
@@ -947,7 +962,7 @@ impl TypeResolver {
                         id: BindingId(entries.len() as u32),
                         name: enumerator.name.clone(),
                         value: Value {
-                            ty: underlying.clone(),
+                            ty: enumerator_type.clone(),
                             node: item.clone().with_value(ValueKind::Constant(if value < 0 {
                                 Number::SignedInteger(BigInt::from(value))
                             } else {

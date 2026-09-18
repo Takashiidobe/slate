@@ -48,13 +48,13 @@ int nested_block(struct S *p) { { struct S s = *p; return s.a; } }
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type2 E = enum : i32 {
+// IR-NEXT:     type @type2 E = enum : u32 {
 // IR-NEXT:         %0 A = const<i32>(0);
 // IR-NEXT:         %1 B = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     type @type3 Alias = @type0;
 // IR-NEXT:     type @type4 EnumAlias = @type2;
-// IR-NEXT:     global %7 global_enum: @type2 [storage=static] = int_to_enum<@type2, reason=assign>(const<i32>(1)) [linkage=external];
+// IR-NEXT:     global %7 global_enum: @type2 [storage=static] = int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
 // IR-NEXT:     fn %8 @record_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %9 s: @type0 [storage=automatic];
 // IR-NEXT:         write<i32>(field0(%9), const<i32>(1));
@@ -75,33 +75,33 @@ int nested_block(struct S *p) { { struct S s = *p; return s.a; } }
 // IR-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(%16))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %17 @enum_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %18 e: @type2 [storage=automatic] = int_to_enum<@type2, reason=assign>(const<i32>(1));
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<i32>(enum_to_int<i32, reason=promotion>(read<@type2>(%18)), const<i32>(1)));
+// IR-NEXT:         let %18 e: @type2 [storage=automatic] = int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%18)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %19 @enum_alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %20 e: @type2 [storage=automatic] = int_to_enum<@type2, reason=assign>(const<i32>(0));
-// IR-NEXT:         return from_bool<i32, reason=return>(ne<i32>(enum_to_int<i32, reason=promotion>(read<@type2>(%20)), const<i32>(1)));
+// IR-NEXT:         let %20 e: @type2 [storage=automatic] = int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// IR-NEXT:         return from_bool<i32, reason=return>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%20)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %21 @enum_parameter(%22 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<i32>(enum_to_int<i32, reason=promotion>(read<@type2>(%22)), const<i32>(1)));
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%22)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %23 @enum_assigned() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %24 e: @type2 [storage=automatic];
-// IR-NEXT:         write<@type2>(%24, int_to_enum<@type2, reason=assign>(const<i32>(1)));
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<i32>(enum_to_int<i32, reason=promotion>(read<@type2>(%24)), const<i32>(0)));
+// IR-NEXT:         write<@type2>(%24, int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %25 @enum_arithmetic(%26 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(neg<i32, overflow=ub>(enum_to_int<i32, reason=promotion>(read<@type2>(%26))), const<i32>(1)), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(enum_to_int<i32, reason=promotion>(read<@type2>(%26)), const<i32>(0)))));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(neg<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type2>(%26))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(not<bool>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%26)), const<u32>(0)))))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %27 @enum_condition(%28 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         if ne<i32>(enum_to_int<i32, reason=promotion>(read<@type2>(%28)), const<i32>(0))
+// IR-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%28)), const<u32>(0))
 // IR-NEXT:             return const<i32>(1);
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT:     fn %29 @enum_switch(%30 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %34 enum_to_int<i32, reason=promotion>(read<@type2>(%30))
+// IR-NEXT:         switch %34 enum_to_int<u32, reason=promotion>(read<@type2>(%30))
 // IR-NEXT:             {
-// IR-NEXT:                 case %34 const<i32>(0):
+// IR-NEXT:                 case %34 const<u32>(0):
 // IR-NEXT:                     return const<i32>(1);
 // IR-NEXT:                 default %34:
 // IR-NEXT:                     return const<i32>(0);

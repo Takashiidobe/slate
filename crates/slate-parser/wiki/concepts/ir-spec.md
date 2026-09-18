@@ -162,9 +162,14 @@ boolean values. Missing for conditions remain omitted, meaning unconditional.
 Enum operands use an explicit `enum_to_int` conversion to the resolved
 underlying integer type before promotion, in switch discriminants and equally in
 arithmetic, conditions, and comparisons; storing an integer into enum-typed
-storage is an explicit `int_to_enum`. Enumerators stay typed as the underlying
-integer in the type table, so the enum type appears only on storage and these two
-conversions carry every crossing (`tests/fixtures/sema/ir_tag_locals.c`).
+storage is an explicit `int_to_enum`. Enumerator types follow clang: with no
+fixed type and every value in `int`, enumerators are `int`; otherwise they are
+the underlying integer before C23 and the enum type itself from C23
+(`StandardFeatures::enumerators_have_enum_type`), so a C23 enumerator reference
+crosses through `enum_to_int` like any other enum value
+(`tests/fixtures/sema/ir_enum_typing_c89.c`, `..._c23.c`). Known gap: clang
+keeps a C23 enumerator at its own type when that equals the underlying type
+(`enum P { P0 = 0x80000000 }` stays `unsigned int`); we use the enum type.
 Both conversions follow typedef chains, so an alias to an enum behaves the same.
 Enumerator references in case expressions resolve by binding and AST identity to
 typed constants.
@@ -232,7 +237,10 @@ aligned, and `_Alignas` requests, including local field alignment. Unnamed
 members and zero-width bit-fields remain in the field list. Enum values are
 evaluated in declaration order, including references to prior enumerators;
 the underlying integer type is selected from the represented range unless
-the source fixes it. Enum storage retains size and alignment separately so
+the source fixes it: with a negative value `int`, else `long`; with none,
+`unsigned int` (so `enum { A, B }` is `u32`), else `unsigned long`. Values
+outside `int`, a fixed underlying type and a trailing comma are only
+extension warnings in clang before C23, so no mode rejects them. Enum storage retains size and alignment separately so
 alignment attributes need not change the underlying integer type.
 `tools/check_record_layout.py` compares each target directory's generated
 layout fixture with clang's target-specific record layout dump. The fixture

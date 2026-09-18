@@ -34,14 +34,14 @@ int enumerator(int x) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 State = enum : i32 {
+// IR-NEXT:     type @type0 State = enum : u32 {
 // IR-NEXT:         %0 A = const<i32>(1);
 // IR-NEXT:         %1 B = const<i32>(2);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     fn %3 @enum_discriminant(%4 value: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %7 enum_to_int<i32, reason=promotion>(read<@type0>(%4))
+// IR-NEXT:         switch %7 enum_to_int<u32, reason=promotion>(read<@type0>(%4))
 // IR-NEXT:             {
-// IR-NEXT:                 case %7 const<i32>(2):
+// IR-NEXT:                 case %7 const<u32>(2):
 // IR-NEXT:                     return const<i32>(1);
 // IR-NEXT:                 default %7:
 // IR-NEXT:                     return const<i32>(0);

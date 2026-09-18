@@ -79,7 +79,7 @@ void update_bits(struct Flags *f, unsigned v) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Mode = enum : i32 {
+// IR-NEXT:     type @type0 Mode = enum : u32 {
 // IR-NEXT:         %0 Idle = const<i32>(0);
 // IR-NEXT:         %1 Busy = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
@@ -150,7 +150,7 @@ void update_bits(struct Flags *f, unsigned v) {
 // IR-NEXT:         let %32: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%31), const<i32>(1));
 // IR-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%30))), read<i32>(%32));
 // IR-NEXT:         write<bool>(bitfield5<unit=1, bytes=8..14, bits=40..41>(deref(read<ptr<@type7>>(%22))), ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// IR-NEXT:         write<@type0>(bitfield6<unit=1, bytes=8..14, bits=41..43>(deref(read<ptr<@type7>>(%22))), int_to_enum<@type0, reason=assign>(const<i32>(1)));
+// IR-NEXT:         write<@type0>(bitfield6<unit=1, bytes=8..14, bits=41..43>(deref(read<ptr<@type7>>(%22))), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

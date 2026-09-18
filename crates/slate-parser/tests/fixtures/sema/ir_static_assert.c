@@ -31,7 +31,7 @@ int checked(int n) {
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     type @type0 byte = u8;
-// IR-NEXT:     type @type1 = enum : i32 {
+// IR-NEXT:     type @type1 = enum : u32 {
 // IR-NEXT:         %0 THREE = const<i32>(3);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT:     fn %3 @checked(%4 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
