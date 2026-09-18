@@ -12,5 +12,6 @@ pub mod reachability;
 pub mod render;
 pub mod rules;
 pub mod sema;
+pub mod standard_features;
 pub mod target;
 pub mod target_info;

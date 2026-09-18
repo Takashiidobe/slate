@@ -184,8 +184,9 @@ impl Parser {
     }
 
     pub(super) fn parse_body(&self, cursor: &mut TokenCursor) -> Result<Box<Stmt>, ParseError> {
-        let _scope = (self.standard.has_control_scopes() && cursor.peek() != Some(&Token::LBrace))
-            .then(|| self.enter_scope());
+        let _scope = (self.features.control_statement_scopes
+            && cursor.peek() != Some(&Token::LBrace))
+        .then(|| self.enter_scope());
         let start = cursor.pos;
         let stmt = self.parse_one_stmt(cursor)?;
         Ok(Box::new(span_tokens(
@@ -422,8 +423,8 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::If)) => {
                 let _scope = self
-                    .standard
-                    .has_control_scopes()
+                    .features
+                    .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
@@ -452,8 +453,8 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::While)) => {
                 let _scope = self
-                    .standard
-                    .has_control_scopes()
+                    .features
+                    .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
@@ -472,8 +473,8 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Do)) => {
                 let _scope = self
-                    .standard
-                    .has_control_scopes()
+                    .features
+                    .control_statement_scopes
                     .then(|| self.enter_scope());
                 cursor.pos += 1;
                 let body = self.parse_body(cursor)?;
@@ -507,8 +508,8 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::For)) => {
                 let _scope = self
-                    .standard
-                    .has_control_scopes()
+                    .features
+                    .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {
@@ -566,8 +567,8 @@ impl Parser {
             }
             Some(Token::Keyword(Keyword::Switch)) => {
                 let _scope = self
-                    .standard
-                    .has_control_scopes()
+                    .features
+                    .control_statement_scopes
                     .then(|| self.enter_scope());
                 let open = cursor.pos + 1;
                 if tokens.value_at(open) != Some(&Token::LParen) {

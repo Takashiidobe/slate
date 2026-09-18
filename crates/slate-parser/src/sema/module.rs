@@ -6,6 +6,7 @@ use crate::ast::{
     TranslationUnit,
 };
 use crate::ir::*;
+use crate::standard_features::StandardFeatures;
 use std::collections::HashMap;
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
@@ -13,6 +14,7 @@ use std::collections::HashMap;
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     let context = Context::new(unit.target.clone()).with_options(&unit.options);
     let names = super::names::resolve(unit)?;
+    let features = StandardFeatures::new(unit.standard);
     let next_id = names
         .bindings
         .iter()
@@ -83,11 +85,11 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
-                let parameters = lower.parameters(params, true, unit.standard.is_c23_or_later())?;
+                let parameters = lower.parameters(params, true)?;
                 let body = lower.statements(&function.body, return_type.clone())?;
                 let fallthrough = if name == "main"
                     && return_type == Some(lower.context.int_type())
-                    && unit.standard.stdc_version().is_some()
+                    && features.main_implicit_return_zero
                 {
                     Fallthrough::ReturnZero
                 } else if return_type.is_none() {
@@ -166,9 +168,8 @@ impl Lowerer {
         &mut self,
         params: &ParameterList,
         definition: bool,
-        c23: bool,
     ) -> Result<Parameters, ResolveError> {
-        if matches!(params, ParameterList::Empty) && !c23 {
+        if matches!(params, ParameterList::Empty) && !self.types.empty_parens_are_prototype {
             return Ok(Parameters::Unprototyped);
         }
         let mut fixed = Vec::new();
@@ -287,7 +288,7 @@ impl Lowerer {
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing prototype"))?;
-                let parameters = self.parameters(params, false, self.types.c23)?;
+                let parameters = self.parameters(params, false)?;
                 self.module
                     .functions
                     .push(declarator.clone().with_value(Function {

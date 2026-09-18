@@ -51,18 +51,6 @@ impl LanguageStandard {
             Self::C23 | Self::Gnu23 => Some(202311),
         }
     }
-
-    pub fn has_control_scopes(self) -> bool {
-        !matches!(self, Self::C89 | Self::Gnu89)
-    }
-
-    pub fn is_c23_or_later(self) -> bool {
-        matches!(self, Self::C23 | Self::Gnu23)
-    }
-
-    pub fn allows_implicit_int(self) -> bool {
-        matches!(self, Self::C89 | Self::Gnu89)
-    }
 }
 
 impl FromStr for LanguageStandard {

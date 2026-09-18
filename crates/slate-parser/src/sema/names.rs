@@ -4,6 +4,7 @@ use crate::ast::{
     TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
+use crate::standard_features::StandardFeatures;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, thiserror::Error)]
@@ -51,7 +52,7 @@ struct Resolver {
 impl Resolver {
     fn new(unit: &TranslationUnit) -> Self {
         Self {
-            control_scopes: unit.standard.has_control_scopes(),
+            control_scopes: StandardFeatures::new(unit.standard).control_statement_scopes,
             resolution: NameResolution::default(),
             ordinary: vec![HashMap::new()],
             tags: vec![HashMap::new()],

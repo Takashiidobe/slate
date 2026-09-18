@@ -1,6 +1,6 @@
 use crate::ast::{FileId, Loc, Span};
-use crate::compiler_args::LanguageStandard;
 use crate::files::raw_byte_for_char;
+use crate::standard_features::StandardFeatures;
 
 // a numeric escape or a raw source byte names a code unit directly; anything
 // else names a character that the execution encoding still has to encode
@@ -462,7 +462,7 @@ pub struct Lexer {
     mark: usize,
     emit_newlines: bool,
     tokens: Vec<Span<Token>>,
-    standard: LanguageStandard,
+    features: StandardFeatures,
 }
 
 impl Lexer {
@@ -498,7 +498,7 @@ impl Lexer {
             mark: 0,
             emit_newlines: false,
             tokens: Vec::new(),
-            standard: LanguageStandard::default(),
+            features: StandardFeatures::default(),
         }
     }
 
@@ -507,8 +507,8 @@ impl Lexer {
         self
     }
 
-    pub fn with_standard(mut self, standard: LanguageStandard) -> Self {
-        self.standard = standard;
+    pub fn with_features(mut self, features: StandardFeatures) -> Self {
+        self.features = features;
         self
     }
 
@@ -684,7 +684,9 @@ impl Lexer {
                 "sizeof" => Token::Sizeof,
                 "_Alignof" | "__alignof" | "__alignof__" => Token::Alignof,
                 "_Bool" => Token::Keyword(Keyword::Bool),
-                "bool" if self.standard.is_c23_or_later() => Token::Keyword(Keyword::Bool),
+                "bool" if self.features.keyword_bool_true_false.is_accepted() => {
+                    Token::Keyword(Keyword::Bool)
+                }
                 "__bf16" => Token::Keyword(Keyword::BFloat16),
                 "char" => Token::Keyword(Keyword::Char),
                 "double" => Token::Keyword(Keyword::Double),
@@ -721,7 +723,7 @@ impl Lexer {
                 "__int128" => Token::Keyword(Keyword::Int128),
                 "_Noreturn" => Token::Keyword(Keyword::Noreturn),
                 "_Thread_local" | "__thread" => Token::Keyword(Keyword::ThreadLocal),
-                "thread_local" if self.standard.is_c23_or_later() => {
+                "thread_local" if self.features.keyword_thread_local.is_accepted() => {
                     Token::Keyword(Keyword::ThreadLocal)
                 }
                 "__restrict" | "__restrict__" => Token::Keyword(Keyword::Restrict),
@@ -747,7 +749,7 @@ impl Lexer {
                 "continue" => Token::Keyword(Keyword::Continue),
                 "goto" => Token::Keyword(Keyword::Goto),
                 "_Static_assert" => Token::Keyword(Keyword::StaticAssert),
-                "static_assert" if self.standard.is_c23_or_later() => {
+                "static_assert" if self.features.keyword_static_assert.is_accepted() => {
                     Token::Keyword(Keyword::StaticAssert)
                 }
                 _ => Token::Ident(word),

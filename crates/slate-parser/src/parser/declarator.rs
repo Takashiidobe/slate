@@ -813,7 +813,7 @@ impl<'a> DeclaratorParser<'a> {
         self.parse_specifier_keywords(&mut specifiers)?;
         let c23_auto_inference = self
             .context
-            .is_some_and(|parser| parser.standard().is_c23_or_later())
+            .is_some_and(|parser| parser.features().auto_type_inference)
             && specifiers.storage == StorageClass::Auto
             && matches!(self.peek(), Some(Token::Ident(_)));
         if c23_auto_inference {
@@ -822,7 +822,7 @@ impl<'a> DeclaratorParser<'a> {
         let implicit_int = implicit_int_function
             && self
                 .context
-                .is_some_and(|parser| parser.standard().allows_implicit_int())
+                .is_some_and(|parser| parser.features().implicit_int.is_accepted())
             && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_some_and(|parser| parser.is_typedef(name)))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
@@ -836,7 +836,7 @@ impl<'a> DeclaratorParser<'a> {
             )
             && self
                 .context
-                .is_some_and(|parser| !parser.standard().allows_implicit_int())
+                .is_some_and(|parser| !parser.features().implicit_int.is_accepted())
         {
             return Err(DeclaratorError::Other(
                 "a type specifier is required for all declarations".into(),

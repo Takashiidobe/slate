@@ -2,9 +2,9 @@ use crate::ast::{
     Designator, Expr, ExprKind, GenericAssociation, GenericControl, Initializer, InitializerItem,
     IntegerType, Span, TypeName, TypeSpecifier,
 };
-use crate::compiler_args::LanguageStandard;
 use crate::lexer::{Keyword, Lexer, Token, TokenSpanExt};
 use crate::parser::DeclaratorParser;
+use crate::standard_features::StandardFeatures;
 use miette::Diagnostic;
 use num_bigint::{BigInt, BigUint};
 use std::cell::Cell;
@@ -721,9 +721,9 @@ pub struct Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
-    fn standard(&self) -> LanguageStandard {
+    fn features(&self) -> StandardFeatures {
         self.context
-            .map_or_else(LanguageStandard::default, |parser| parser.standard())
+            .map_or_else(StandardFeatures::default, |parser| parser.features())
     }
 
     pub fn parse(tokens: &'a [Span<Token>]) -> Result<Expr, ConstExprError> {
@@ -1658,14 +1658,18 @@ impl<'a> Parser<'a> {
                 return self.parse_types_compatible(start);
             }
             Some(Token::Ident(value)) if value == "_Generic" => return self.parse_generic(start),
-            Some(Token::Ident(value)) if value == "true" && self.standard().is_c23_or_later() => {
+            Some(Token::Ident(value))
+                if value == "true" && self.features().keyword_bool_true_false.is_accepted() =>
+            {
                 ExprKind::BoolLiteral(true)
             }
-            Some(Token::Ident(value)) if value == "false" && self.standard().is_c23_or_later() => {
+            Some(Token::Ident(value))
+                if value == "false" && self.features().keyword_bool_true_false.is_accepted() =>
+            {
                 ExprKind::BoolLiteral(false)
             }
             Some(Token::Ident(value))
-                if value == "nullptr" && self.standard().is_c23_or_later() =>
+                if value == "nullptr" && self.features().keyword_nullptr.is_accepted() =>
             {
                 ExprKind::NullPtrLiteral
             }

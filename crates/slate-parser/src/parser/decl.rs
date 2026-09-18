@@ -21,8 +21,10 @@ impl Parser {
         tokens: &[Span<Token>],
     ) -> Result<Declaration, ParseError> {
         let mut parser = self.declarator_parser(tokens, 0);
-        let mut specifiers =
-            self.parse_declaration_specifiers(&mut parser, self.standard().allows_implicit_int())?;
+        let mut specifiers = self.parse_declaration_specifiers(
+            &mut parser,
+            self.features().implicit_int.is_accepted(),
+        )?;
         let declarators =
             self.parse_declarator_list(&mut parser, &mut specifiers, DeclarationContext::Ordinary)?;
         Ok(Declaration {
@@ -397,8 +399,10 @@ impl Parser {
         }
         let mut parser = self.declarator_parser(tokens, start);
         parser.identifier_list = IdentifierList::Accepted;
-        let mut specifiers =
-            self.parse_declaration_specifiers(&mut parser, self.standard().allows_implicit_int())?;
+        let mut specifiers = self.parse_declaration_specifiers(
+            &mut parser,
+            self.features().implicit_int.is_accepted(),
+        )?;
         let mut declarators = Vec::new();
         if parser.peek() != Some(&Token::Semi) {
             let mut first =

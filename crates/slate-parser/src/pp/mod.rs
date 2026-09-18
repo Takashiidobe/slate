@@ -10,6 +10,7 @@ use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::const_expr;
 use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt};
+use crate::standard_features::StandardFeatures;
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
@@ -78,10 +79,15 @@ pub struct Preprocessor<'a> {
     counter: Cell<i64>,
     build_time: SystemTime,
     standard: LanguageStandard,
+    features: StandardFeatures,
 }
 
 impl<'a> Preprocessor<'a> {
-    pub fn new(search: &'a SearchPaths, standard: LanguageStandard) -> Self {
+    pub fn new(
+        search: &'a SearchPaths,
+        standard: LanguageStandard,
+        features: StandardFeatures,
+    ) -> Self {
         Preprocessor {
             files: Files::new(),
             macros: HashMap::new(),
@@ -100,6 +106,7 @@ impl<'a> Preprocessor<'a> {
             counter: Cell::new(0),
             build_time: SystemTime::now(),
             standard,
+            features,
         }
     }
 
@@ -323,7 +330,7 @@ impl<'a> Preprocessor<'a> {
         );
         let tokens = Lexer::new(file, src)
             .with_newlines()
-            .with_standard(self.standard)
+            .with_features(self.features)
             .tokenize();
         let items = syntax::parse(src, tokens)?;
         if let Some(guard) = include_guard(src, &items) {

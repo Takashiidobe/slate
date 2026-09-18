@@ -12,6 +12,7 @@ use crate::error::{FrontendError, ParseError};
 use crate::files::{Files, SearchPaths, decode_source_bytes, display_path};
 use crate::lexer::Token;
 use crate::pp::{DirectiveDiagnostic, MacroEntry, Preprocessor};
+use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
 pub(crate) use decl::matching_brace;
 pub(crate) use declarator::{DeclaratorParser, is_target_builtin_name};
@@ -112,6 +113,7 @@ pub struct Parser {
     biggest_alignment: i64,
     flavor: CompilerFlavor,
     standard: LanguageStandard,
+    features: StandardFeatures,
     target: TargetInfo,
     options: Option<crate::compiler_options::CompilerOptions>,
     tags: Rc<RefCell<Vec<Span<TagDefinition>>>>,
@@ -245,6 +247,7 @@ impl Parser {
             biggest_alignment: FALLBACK_BIGGEST_ALIGNMENT,
             flavor: CompilerFlavor::default(),
             standard: LanguageStandard::default(),
+            features: StandardFeatures::default(),
             target: TargetInfo::default(),
             options: None,
             tags: Rc::default(),
@@ -269,11 +272,16 @@ impl Parser {
 
     pub fn with_standard(mut self, standard: LanguageStandard) -> Self {
         self.standard = standard;
+        self.features = StandardFeatures::new(standard);
         self
     }
 
     pub fn standard(&self) -> LanguageStandard {
         self.standard
+    }
+
+    pub fn features(&self) -> StandardFeatures {
+        self.features
     }
 
     pub fn with_target(mut self, target: TargetInfo) -> Self {
@@ -300,7 +308,7 @@ impl Parser {
         self.source_name = "<main>".into();
         self.source = src.into();
         let search = self.search.clone();
-        let mut pp = Preprocessor::new(&search, self.standard);
+        let mut pp = Preprocessor::new(&search, self.standard, self.features);
         let options = self.effective_options();
         pp.configure(
             options.effective_target(self.target.clone()),
@@ -341,7 +349,7 @@ impl Parser {
             })
             .map_err(FrontendError::Parse)?;
         let search = self.search.clone();
-        let mut pp = Preprocessor::new(&search, self.standard);
+        let mut pp = Preprocessor::new(&search, self.standard, self.features);
         let options = self.effective_options();
         pp.configure(
             options.effective_target(self.target.clone()),
