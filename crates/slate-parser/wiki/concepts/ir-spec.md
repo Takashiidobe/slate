@@ -70,8 +70,11 @@ signature; it has no duplicate type-table entry. `Type::Defined(TypeId)`
 references named or recursive definitions, preserving incomplete type identity.
 Variables and parameters have binding IDs; root places use those IDs and concrete types.
 Statements support declarations and writes as well as the numeric seed.
-Pointer nulls, address-of values, byte-array constants, array decay, and
-direct calls through function binding IDs are represented explicitly.
+Pointer nulls, address-of values, byte-array constants, array decay,
+function decay, and calls are represented explicitly. A call names its callee
+either as a binding ID (`call<T>(%3, ...)`) when the designator resolves to a
+known function, or as a pointer value (`call<T>(read<ptr<fn(..)>>(%7), ...)`)
+for an indirect call, so a direct call stays distinguishable after lowering.
 Each call value carries the signature sema resolved at its own call site,
 printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
 and unprototyped distinction even when a later redeclaration of the same
@@ -86,8 +89,13 @@ wrap it, matching C's precedence. Pointer↔integer casts lower as explicit
 `ptr_to_int`/`int_to_ptr` conversions, and pointer relational comparisons
 reuse `CompareOp::{lt, le, gt, ge}` on pointer operands
 (`tests/fixtures/sema/ir_pointers.c`: buffer fill cursor, string walk,
-out-parameter write, pointer round-trip). Function decay to a pointer value
-and indirect calls remain separate work.
+out-parameter write, pointer round-trip). A function designator used as a
+value decays to `function_decay<ptr<fn(..)>>(place)`, and since C makes `*f`
+on a function designator that same designator, `(*fp)(x)` lowers identically
+to `fp(x)` and `(*f)(x)` stays a direct call
+(`tests/fixtures/sema/ir_indirect_calls.c`: parameter, local, struct field,
+pointer table, conditional callee, variadic, higher-order argument, and a
+callee whose subexpression has side effects).
 
 `Module::display(false)` prints required semantics, including the available
 target properties, record layout, linkage, storage duration, and operation
@@ -715,7 +723,7 @@ of projections on places.
 | `p < q`                  | `ptr_lt(p, q)`                              |                                    |
 | `&x`                     | `addr_of(x)`                                |                                    |
 | `arr` in pointer context | address of its first element, typed `*T`    | `decay[len=N]`                     |
-| `f` as value             | `f` typed `*fn(..)`                         | `decay=function`                   |
+| `f` as value             | `function_decay<*fn(..)>(f)`                |                                    |
 | `0`, `NULL`, `(void*)0`  | `null<*T>`                                  | `macro=NULL` if applicable         |
 | `if (p)`, `!p`           | `is_non_null(p)` / `is_null(p)`             |                                    |
 | `char* → const char*`    | (no node)                                   | `add_const`                        |

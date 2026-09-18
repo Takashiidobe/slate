@@ -313,6 +313,26 @@ impl Lowerer {
         }
     }
 
+    // A function designator decays to a pointer, so both call forms arrive here as one.
+    fn callee(&mut self, e: &Expr) -> Result<(Callee, Type), ResolveError> {
+        let value = self.expr(e)?;
+        let signature = self.pointee(&value.ty)?;
+        if !matches!(signature, Type::Function { .. }) {
+            return Err(ResolveError::Unsupported("non-function callee"));
+        }
+        if let ValueKind::FunctionDecay {
+            place:
+                Place {
+                    kind: PlaceKind::Binding(id),
+                    ..
+                },
+        } = &value.node.value
+        {
+            return Ok((Callee::Direct(*id), signature));
+        }
+        Ok((Callee::Indirect(Box::new(value)), signature))
+    }
+
     fn read(&mut self, e: &Expr, place: Place) -> Result<Value, ResolveError> {
         if let Type::Array { element, length } = &place.ty {
             let ty = self.pointer((**element).clone(), false);
@@ -320,7 +340,12 @@ impl Lowerer {
             return Ok(self.value(e, ty, ValueKind::ArrayDecay { place, length }));
         }
         if matches!(place.ty, Type::Function { .. }) {
-            return Err(ResolveError::Unsupported("function value or indirect call"));
+            // C makes *f on a function designator the same designator, so both spell one value.
+            if let PlaceKind::Deref(pointer) = place.kind {
+                return Ok(self.value(e, pointer.ty.clone(), pointer.node.value));
+            }
+            let ty = self.pointer(place.ty.clone(), false);
+            return Ok(self.value(e, ty, ValueKind::FunctionDecay { place }));
         }
         Ok(self.value(e, place.ty.clone(), ValueKind::Read(place)))
     }
@@ -817,19 +842,7 @@ impl Lowerer {
                 ))
             }
             ExprKind::Call { callee, arguments } => {
-                let mut callee = callee;
-                while let ExprKind::Paren(inner) = &callee.value {
-                    callee = inner;
-                }
-                if !matches!(callee.value, ExprKind::Identifier(_)) {
-                    return Err(ResolveError::Unsupported("indirect call"));
-                }
-                let function = self.reference(callee)?;
-                let ty = self
-                    .bindings
-                    .get(&function)
-                    .ok_or(ResolveError::Unsupported("untyped callee"))?
-                    .clone();
+                let (callee, ty) = self.callee(callee)?;
                 let Type::Function {
                     return_type,
                     parameters,
@@ -871,7 +884,7 @@ impl Lowerer {
                     e,
                     return_type.as_ref().map_or(Type::Void, |ty| (**ty).clone()),
                     ValueKind::Call {
-                        function,
+                        callee,
                         signature: ty,
                         arguments: lowered,
                     },

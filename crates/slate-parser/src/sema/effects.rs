@@ -239,16 +239,20 @@ impl Hoister {
                 }
             }
             ValueKind::Call {
-                function,
+                callee,
                 signature,
                 arguments,
             } => {
+                let callee = match callee {
+                    Callee::Direct(id) => Callee::Direct(id),
+                    Callee::Indirect(value) => Callee::Indirect(Box::new(self.value(*value, out)?)),
+                };
                 let mut lowered = Vec::new();
                 for argument in arguments {
                     lowered.push(self.value(argument, out)?);
                 }
                 ValueKind::Call {
-                    function,
+                    callee,
                     signature,
                     arguments: lowered,
                 }
@@ -345,6 +349,9 @@ impl Hoister {
                 place: self.place(place, out)?,
                 length,
             },
+            ValueKind::FunctionDecay { place } => ValueKind::FunctionDecay {
+                place: self.place(place, out)?,
+            },
             leaf @ (ValueKind::Constant(_)
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
@@ -390,7 +397,8 @@ fn effects(value: &Value) -> bool {
         | ValueKind::Convert { operand, .. } => effects(operand),
         ValueKind::Read(place)
         | ValueKind::AddressOf(place)
-        | ValueKind::ArrayDecay { place, .. } => place_effects(place),
+        | ValueKind::ArrayDecay { place, .. }
+        | ValueKind::FunctionDecay { place } => place_effects(place),
         ValueKind::OldValue
         | ValueKind::Constant(_)
         | ValueKind::Null

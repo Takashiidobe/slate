@@ -31,6 +31,12 @@ pub struct Value {
 }
 
 #[derive(Debug, Clone)]
+pub enum Callee {
+    Direct(BindingId),
+    Indirect(Box<Value>),
+}
+
+#[derive(Debug, Clone)]
 pub enum ValueKind {
     Constant(Number),
     Copy {
@@ -44,6 +50,9 @@ pub enum ValueKind {
     ArrayDecay {
         place: Place,
         length: Option<u64>,
+    },
+    FunctionDecay {
+        place: Place,
     },
     Store {
         place: Place,
@@ -77,7 +86,7 @@ pub enum ValueKind {
         right: Box<Value>,
     },
     Call {
-        function: BindingId,
+        callee: Callee,
         signature: Type,
         arguments: Vec<Value>,
     },
@@ -190,6 +199,14 @@ impl Value {
                     place.display_mode(compact)
                 )
             }
+            ValueKind::FunctionDecay { place } => {
+                write!(
+                    f,
+                    "function_decay<{}>({})",
+                    self.ty,
+                    place.display_mode(compact)
+                )
+            }
             ValueKind::OldValue => write!(f, "old<{}>", self.ty),
             ValueKind::PointerOffset {
                 pointer,
@@ -285,7 +302,7 @@ impl Value {
                     .with_compact(compact)
             ),
             ValueKind::Call {
-                function,
+                callee,
                 signature,
                 arguments,
             } => {
@@ -293,7 +310,17 @@ impl Value {
                 if !compact {
                     write!(f, ", signature={signature}")?;
                 }
-                write!(f, ">(%{}", function.0)?;
+                f.write_str(">(")?;
+                match callee {
+                    Callee::Direct(id) => write!(f, "%{}", id.0)?,
+                    Callee::Indirect(value) => write!(
+                        f,
+                        "{}",
+                        value
+                            .display_metadata(show_spans, metadata)
+                            .with_compact(compact)
+                    )?,
+                }
                 for argument in arguments {
                     write!(
                         f,
