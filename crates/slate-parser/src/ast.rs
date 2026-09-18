@@ -403,6 +403,7 @@ pub struct Span<T> {
     pub expansion: Loc,
     pub provenance: Provenance,
     pub macro_origin: Option<Rc<MacroOrigin>>,
+    pub leading_space: bool,
 }
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Span<T> {
@@ -431,7 +432,13 @@ impl<T> Span<T> {
             expansion,
             provenance: Provenance::default(),
             macro_origin: None,
+            leading_space: false,
         }
+    }
+
+    pub fn with_leading_space(mut self, leading_space: bool) -> Self {
+        self.leading_space = leading_space;
+        self
     }
 
     pub fn with_macro_origin(mut self, macro_origin: Option<Rc<MacroOrigin>>) -> Self {
@@ -468,6 +475,7 @@ impl<T> Span<T> {
             expansion: self.expansion,
             provenance: self.provenance,
             macro_origin: self.macro_origin,
+            leading_space: self.leading_space,
         }
     }
 
@@ -479,6 +487,7 @@ impl<T> Span<T> {
             expansion: self.expansion,
             provenance: self.provenance,
             macro_origin: self.macro_origin,
+            leading_space: self.leading_space,
         }
     }
 

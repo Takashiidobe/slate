@@ -1,5 +1,5 @@
 use super::{MacroDef, Preprocessor, lex, stringized_source};
-use crate::ast::{FileId, Loc, MacroOrigin, Span};
+use crate::ast::{MacroOrigin, Span};
 use crate::lexer::{Token, TokenSpanExt};
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -22,6 +22,7 @@ fn origin_for_expansion(
 
 struct Invocation {
     arguments: Vec<Vec<Span<Token>>>,
+    commas: Vec<Span<Token>>,
     end: usize,
     from_tail: usize,
 }
@@ -180,13 +181,14 @@ impl Preprocessor<'_> {
                 disabled.insert(name.clone());
                 let (produced, used) = self.rescan(&replacement, rest, tail, disabled);
                 disabled.remove(name);
-                expanded.extend(produced);
+                expanded.extend(inherit_leading_space(produced, token));
                 i += 1 + used.min(rest.len());
                 taken += used.saturating_sub(rest.len());
                 continue;
             };
             let Some(Invocation {
                 mut arguments,
+                commas,
                 end,
                 from_tail,
             }) = self.invocation(rest, tail)
@@ -217,8 +219,15 @@ impl Preprocessor<'_> {
             }
             let name = name.clone();
             disabled.insert(name.clone());
-            let replacement =
-                substitute_function_macro(&macro_def, &parameters, &arguments, &expanded_arguments);
+            let replacement = substitute_function_macro(
+                &macro_def,
+                &parameters,
+                &Arguments {
+                    raw: &arguments,
+                    expanded: &expanded_arguments,
+                    commas: &commas,
+                },
+            );
             let consumed = i + 1 + end - from_tail;
             let (produced, used) = self.rescan(
                 &replacement,
@@ -227,7 +236,7 @@ impl Preprocessor<'_> {
                 disabled,
             );
             disabled.remove(&name);
-            expanded.extend(produced);
+            expanded.extend(inherit_leading_space(produced, token));
             i = consumed + used.min(tokens.len() - consumed);
             taken += from_tail + used.saturating_sub(tokens.len() - consumed);
         }
@@ -274,9 +283,10 @@ impl Preprocessor<'_> {
 
     // an invocation may open in `rest` and close in the caller's `tail`
     fn invocation(&self, rest: &[Span<Token>], tail: &[Span<Token>]) -> Option<Invocation> {
-        if let Some((arguments, end)) = invocation_arguments(rest, 0) {
+        if let Some((arguments, commas, end)) = invocation_arguments(rest, 0) {
             return Some(Invocation {
                 arguments,
+                commas,
                 end,
                 from_tail: 0,
             });
@@ -285,9 +295,10 @@ impl Preprocessor<'_> {
             return None;
         }
         let spliced = rest.iter().chain(tail).cloned().collect::<Vec<_>>();
-        let (arguments, end) = invocation_arguments(&spliced, 0)?;
+        let (arguments, commas, end) = invocation_arguments(&spliced, 0)?;
         Some(Invocation {
             arguments,
+            commas,
             end,
             from_tail: end.saturating_sub(rest.len()),
         })
@@ -345,7 +356,7 @@ fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {
                 })
             }
             Some(Token::Ident(name)) if name.starts_with("__has_") => {
-                invocation_arguments(tokens, i + 1).map(|(_, end)| end)
+                invocation_arguments(tokens, i + 1).map(|(_, _, end)| end)
             }
             _ => None,
         };
@@ -361,14 +372,14 @@ fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {
     operands
 }
 
-fn invocation_arguments(
-    tokens: &[Span<Token>],
-    start: usize,
-) -> Option<(Vec<Vec<Span<Token>>>, usize)> {
+type SplitArguments = (Vec<Vec<Span<Token>>>, Vec<Span<Token>>, usize);
+
+fn invocation_arguments(tokens: &[Span<Token>], start: usize) -> Option<SplitArguments> {
     if tokens.value_at(start) != Some(&Token::LParen) {
         return None;
     }
     let mut arguments = Vec::new();
+    let mut commas = Vec::new();
     let mut current = Vec::new();
     let mut depth = 0;
     let mut i = start + 1;
@@ -382,7 +393,7 @@ fn invocation_arguments(
                 if !current.is_empty() || !arguments.is_empty() {
                     arguments.push(current);
                 }
-                return Some((arguments, i + 1));
+                return Some((arguments, commas, i + 1));
             }
             Token::RParen => {
                 depth -= 1;
@@ -390,6 +401,7 @@ fn invocation_arguments(
             }
             Token::Comma if depth == 0 => {
                 arguments.push(std::mem::take(&mut current));
+                commas.push(tokens[i].clone());
             }
             _ => current.push(tokens[i].clone()),
         }
@@ -398,20 +410,33 @@ fn invocation_arguments(
     None
 }
 
+struct Arguments<'a> {
+    raw: &'a [Vec<Span<Token>>],
+    expanded: &'a [Vec<Span<Token>>],
+    commas: &'a [Span<Token>],
+}
+
+fn inherit_leading_space(mut tokens: Vec<Span<Token>>, name: &Span<Token>) -> Vec<Span<Token>> {
+    if let Some(first) = tokens.first_mut() {
+        first.leading_space = name.leading_space;
+    }
+    tokens
+}
+
 fn substitute_function_macro(
     definition: &MacroDef,
     parameters: &[String],
-    arguments: &[Vec<Span<Token>>],
-    expanded_arguments: &[Vec<Span<Token>>],
+    arguments: &Arguments,
 ) -> Vec<Span<Token>> {
     let mut output = Vec::new();
     let mut i = 0;
     while i < definition.replacement.len() {
         let token = &definition.replacement[i];
         if token.value == Token::Ident("__VA_OPT__".to_string())
-            && let Some((optional, end)) = invocation_arguments(&definition.replacement, i + 1)
+            && let Some((optional, _, end)) = invocation_arguments(&definition.replacement, i + 1)
         {
             if arguments
+                .raw
                 .iter()
                 .skip(parameters.len())
                 .any(|argument| !argument.is_empty())
@@ -421,7 +446,6 @@ fn substitute_function_macro(
                         &optional_token,
                         parameters,
                         arguments,
-                        expanded_arguments,
                         true,
                     ));
                 }
@@ -434,9 +458,13 @@ fn substitute_function_macro(
             && let Token::Ident(name) = &definition.replacement[i + 1].value
         {
             let argument = if name == "__VA_ARGS__" {
-                Some(variadic_tokens(arguments, parameters.len()))
+                Some(variadic_tokens(
+                    arguments.raw,
+                    arguments.commas,
+                    parameters.len(),
+                ))
             } else {
-                macro_argument(name, parameters, arguments).map(<[Span<Token>]>::to_vec)
+                macro_argument(name, parameters, arguments.raw).map(<[Span<Token>]>::to_vec)
             };
             if let Some(argument) = argument {
                 output.push(
@@ -453,13 +481,8 @@ fn substitute_function_macro(
                 i += 1;
                 continue;
             };
-            let right_tokens = replacement_tokens(
-                &definition.replacement[i + 1],
-                parameters,
-                arguments,
-                expanded_arguments,
-                false,
-            );
+            let right_tokens =
+                replacement_tokens(&definition.replacement[i + 1], parameters, arguments, false);
             if let Some(right) = right_tokens.first() {
                 let pasted = lex(&format!(
                     "{}{}",
@@ -467,11 +490,14 @@ fn substitute_function_macro(
                     String::from(&right.value)
                 ));
                 if pasted.len() == 1 {
-                    output.push(Span::new(
-                        pasted[0].clone(),
-                        left.spelling.through(right.spelling),
-                        left.expansion.through(right.expansion),
-                    ));
+                    output.push(
+                        Span::new(
+                            pasted[0].clone(),
+                            left.spelling.through(right.spelling),
+                            left.expansion.through(right.expansion),
+                        )
+                        .with_leading_space(left.leading_space),
+                    );
                     output.extend(right_tokens.into_iter().skip(1));
                 } else {
                     output.push(left);
@@ -487,7 +513,6 @@ fn substitute_function_macro(
             token,
             parameters,
             arguments,
-            expanded_arguments,
             i + 1 >= definition.replacement.len()
                 || definition.replacement[i + 1].value != Token::HashHash,
         ));
@@ -513,64 +538,42 @@ fn macro_argument<'a>(
 fn replacement_tokens(
     token: &Span<Token>,
     parameters: &[String],
-    arguments: &[Vec<Span<Token>>],
-    expanded_arguments: &[Vec<Span<Token>>],
+    arguments: &Arguments,
     prescan: bool,
 ) -> Vec<Span<Token>> {
     let Token::Ident(name) = &token.value else {
         return vec![token.clone()];
     };
+    let selected = if prescan {
+        arguments.expanded
+    } else {
+        arguments.raw
+    };
     if name == "__VA_ARGS__" {
-        return variadic_tokens(
-            if prescan {
-                expanded_arguments
-            } else {
-                arguments
-            },
-            parameters.len(),
+        return inherit_leading_space(
+            variadic_tokens(selected, arguments.commas, parameters.len()),
+            token,
         );
     }
     parameters
         .iter()
         .position(|parameter| parameter == name)
-        .and_then(|index| {
-            if prescan {
-                expanded_arguments.get(index).cloned()
-            } else {
-                arguments.get(index).cloned()
-            }
-        })
+        .and_then(|index| selected.get(index).cloned())
+        .map(|tokens| inherit_leading_space(tokens, token))
         .unwrap_or_else(|| vec![token.clone()])
 }
 
-fn variadic_tokens(arguments: &[Vec<Span<Token>>], fixed: usize) -> Vec<Span<Token>> {
+fn variadic_tokens(
+    arguments: &[Vec<Span<Token>>],
+    commas: &[Span<Token>],
+    fixed: usize,
+) -> Vec<Span<Token>> {
     let mut output: Vec<Span<Token>> = Vec::new();
-    for (index, argument) in arguments.iter().skip(fixed).enumerate() {
-        if index != 0 {
-            output.push(argument_separator(output.last(), argument.first()));
+    for (index, argument) in arguments.iter().enumerate().skip(fixed) {
+        if index != fixed {
+            output.extend(commas.get(index - 1).cloned());
         }
         output.extend(argument.iter().cloned());
     }
     output
-}
-
-fn argument_separator(previous: Option<&Span<Token>>, next: Option<&Span<Token>>) -> Span<Token> {
-    let Some(next) = next else {
-        let loc = Loc::new(FileId(0), 0, 0);
-        return Span::new(Token::Comma, loc, loc);
-    };
-    let mut comma = next.clone().with_value(Token::Comma);
-    if let Some(previous) = previous
-        && previous.spelling.file == next.spelling.file
-        && let Some(gap) = next
-            .spelling
-            .offset
-            .checked_sub(previous.spelling.offset + previous.spelling.length)
-        && gap >= 1
-    {
-        // the original comma is not kept, so infer `a,b`, `a, b` or `a , b` from the gap
-        let offset = previous.spelling.offset + previous.spelling.length + usize::from(gap >= 3);
-        comma.spelling = Loc::new(next.spelling.file, offset, 1);
-    }
-    comma
 }

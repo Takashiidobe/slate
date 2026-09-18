@@ -196,6 +196,7 @@ impl Context {
                 expansion: expression.expansion,
                 provenance: expression.provenance,
                 macro_origin: expression.macro_origin.clone(),
+                leading_space: expression.leading_space,
             },
         })
     }
@@ -885,6 +886,7 @@ fn derived_span(node: &Span<ValueKind>, value: ValueKind) -> Span<ValueKind> {
         expansion: node.expansion,
         provenance: node.provenance,
         macro_origin: node.macro_origin.clone(),
+        leading_space: node.leading_space,
     }
 }
 
@@ -916,6 +918,7 @@ fn conversion(
         expansion: value.node.expansion,
         provenance: value.node.provenance,
         macro_origin: value.node.macro_origin.clone(),
+        leading_space: value.node.leading_space,
         value: ValueKind::Convert {
             kind,
             operand: Box::new(value),

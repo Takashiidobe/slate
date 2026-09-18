@@ -467,6 +467,7 @@ pub struct Lexer {
     pos: usize,
     mark: usize,
     emit_newlines: bool,
+    space_before: bool,
     tokens: Vec<Span<Token>>,
     features: StandardFeatures,
 }
@@ -503,6 +504,7 @@ impl Lexer {
             pos: 0,
             mark: 0,
             emit_newlines: false,
+            space_before: false,
             tokens: Vec::new(),
             features: StandardFeatures::default(),
         }
@@ -569,7 +571,9 @@ impl Lexer {
 
     fn emit(&mut self, token: Token) {
         let loc = self.current_loc();
-        self.tokens.push(Span::new(token, loc, loc));
+        let leading_space = std::mem::take(&mut self.space_before);
+        self.tokens
+            .push(Span::new(token, loc, loc).with_leading_space(leading_space));
     }
 
     pub fn tokenize(mut self) -> Vec<Span<Token>> {
@@ -587,14 +591,17 @@ impl Lexer {
         if c == '\n' && self.emit_newlines {
             self.pos += 1;
             self.emit(Token::Newline);
+            self.space_before = true;
         } else if c.is_whitespace() {
             self.pos += 1;
+            self.space_before = true;
         } else if self.try_consume("//") {
             while self.peek().is_some_and(|c| c != '\n') {
                 self.pos += 1;
             }
             let text: String = self.chars[i..self.pos].iter().collect();
             self.emit(Token::Comment(text));
+            self.space_before = true;
         } else if self.try_consume("/*") {
             while self.pos < self.chars.len() && !self.peek_str("*/") {
                 self.pos += 1;
@@ -602,6 +609,7 @@ impl Lexer {
             self.pos = (self.pos + 2).min(self.chars.len());
             let text: String = self.chars[i..self.pos].iter().collect();
             self.emit(Token::Comment(text));
+            self.space_before = true;
         } else if c.is_ascii_digit()
             || (c == '.' && self.peek_at(1).is_some_and(|next| next.is_ascii_digit()))
         {

@@ -1159,12 +1159,8 @@ fn stringized_source(tokens: &[Span<Token>]) -> String {
     let mut text = String::new();
     let mut previous: Option<&Span<Token>> = None;
     for token in tokens {
-        if let Some(previous) = previous {
-            let adjacent = previous.spelling.file == token.spelling.file
-                && previous.spelling.offset + previous.spelling.length == token.spelling.offset;
-            if !adjacent {
-                text.push(' ');
-            }
+        if previous.is_some() && token.leading_space {
+            text.push(' ');
         }
         let spelling = String::from(&token.value);
         if is_quoted_literal(&token.value) {
