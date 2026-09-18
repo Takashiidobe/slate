@@ -99,6 +99,16 @@ pub enum ValueKind {
     VaArg {
         list: Place,
     },
+    VaStart {
+        list: Place,
+    },
+    VaEnd {
+        list: Place,
+    },
+    VaCopy {
+        destination: Place,
+        source: Place,
+    },
     Convert {
         kind: ConversionKind,
         operand: Box<Value>,
@@ -352,6 +362,17 @@ impl Value {
             ValueKind::VaArg { list } => {
                 write!(f, "va_arg<{}>({})", self.ty, list.display_mode(compact))
             }
+            ValueKind::VaStart { list } => write!(f, "va_start({})", list.display_mode(compact)),
+            ValueKind::VaEnd { list } => write!(f, "va_end({})", list.display_mode(compact)),
+            ValueKind::VaCopy {
+                destination,
+                source,
+            } => write!(
+                f,
+                "va_copy({}, {})",
+                destination.display_mode(compact),
+                source.display_mode(compact)
+            ),
             ValueKind::AddressOf(place) => {
                 write!(f, "addr_of<{}>({})", self.ty, place.display_mode(compact))
             }

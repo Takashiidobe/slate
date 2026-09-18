@@ -339,7 +339,9 @@ impl Resolver {
                 self.expr(else_value)
             }
             ExprKind::Call { callee, arguments } => {
-                self.expr(callee)?;
+                if super::expression::va_builtin(callee).is_none() {
+                    self.expr(callee)?;
+                }
                 for argument in arguments {
                     self.expr(argument)?;
                 }

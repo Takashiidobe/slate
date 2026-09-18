@@ -1090,6 +1090,10 @@ impl Lowerer {
                 let selected = self.generic_selected(controlling, associations)?;
                 self.expr(selected)
             }
+            ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
+                let builtin = va_builtin(callee).ok_or(ResolveError::Unsupported("va builtin"))?;
+                self.va_builtin(e, builtin, arguments)
+            }
             ExprKind::Call { callee, arguments } => {
                 let (callee, ty) = self.callee(callee)?;
                 let Type::Function {
@@ -1202,6 +1206,57 @@ impl Lowerer {
             }
             _ => Err(ResolveError::Unsupported("advanced expression")),
         }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum VaBuiltin {
+    Start,
+    End,
+    Copy,
+}
+
+pub(super) fn va_builtin(callee: &Expr) -> Option<VaBuiltin> {
+    let ExprKind::Identifier(name) = &callee.value else {
+        return None;
+    };
+    match name.as_str() {
+        "__builtin_va_start" | "__builtin_c23_va_start" => Some(VaBuiltin::Start),
+        "__builtin_va_end" => Some(VaBuiltin::End),
+        "__builtin_va_copy" => Some(VaBuiltin::Copy),
+        _ => None,
+    }
+}
+
+impl Lowerer {
+    fn va_list_place(&mut self, argument: &Expr) -> Result<Place, ResolveError> {
+        let place = self.place(argument)?;
+        if place.ty != Type::VaList {
+            return Err(ResolveError::Unsupported("va builtin on non-va_list"));
+        }
+        Ok(place)
+    }
+
+    fn va_builtin(
+        &mut self,
+        e: &Expr,
+        builtin: VaBuiltin,
+        arguments: &[Expr],
+    ) -> Result<Value, ResolveError> {
+        let kind = match (builtin, arguments) {
+            (VaBuiltin::Start, [list] | [list, _]) => ValueKind::VaStart {
+                list: self.va_list_place(list)?,
+            },
+            (VaBuiltin::End, [list]) => ValueKind::VaEnd {
+                list: self.va_list_place(list)?,
+            },
+            (VaBuiltin::Copy, [destination, source]) => ValueKind::VaCopy {
+                destination: self.va_list_place(destination)?,
+                source: self.va_list_place(source)?,
+            },
+            _ => return Err(ResolveError::Unsupported("va builtin argument count")),
+        };
+        Ok(self.value(e, Type::Void, kind))
     }
 }
 

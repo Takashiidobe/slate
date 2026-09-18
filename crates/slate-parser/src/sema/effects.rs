@@ -360,6 +360,19 @@ impl Hoister {
             ValueKind::VaArg { list } => ValueKind::VaArg {
                 list: self.place(list, out)?,
             },
+            ValueKind::VaStart { list } => ValueKind::VaStart {
+                list: self.place(list, out)?,
+            },
+            ValueKind::VaEnd { list } => ValueKind::VaEnd {
+                list: self.place(list, out)?,
+            },
+            ValueKind::VaCopy {
+                destination,
+                source,
+            } => ValueKind::VaCopy {
+                destination: self.place(destination, out)?,
+                source: self.place(source, out)?,
+            },
             ValueKind::ArrayDecay { place, length } => ValueKind::ArrayDecay {
                 place: self.place(place, out)?,
                 length,
@@ -396,6 +409,9 @@ fn effects(value: &Value) -> bool {
         | ValueKind::Update { .. }
         | ValueKind::Call { .. }
         | ValueKind::VaArg { .. }
+        | ValueKind::VaStart { .. }
+        | ValueKind::VaEnd { .. }
+        | ValueKind::VaCopy { .. }
         | ValueKind::Sequence { .. } => true,
         ValueKind::Arith { left, right, .. }
         | ValueKind::Compare { left, right, .. }

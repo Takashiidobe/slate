@@ -87,8 +87,12 @@ sized elsewhere. It does not model the array-to-pointer decay the x86_64 and
 aarch64 ABIs give a `va_list` parameter; it is passed as one scalar handle.
 `__builtin_va_arg(ap, T)` lowers to `va_arg<T>(place)`: a type-directed read
 that advances the list, so it counts as a side effect for hoisting like a call.
-`T` may be a record (`tests/fixtures/sema/ir_va_arg.c`). `va_start`, `va_end`
-and `va_copy` are not lowered yet.
+`T` may be a record (`tests/fixtures/sema/ir_va_arg.c`). `__builtin_va_start`,
+`__builtin_va_end` and `__builtin_va_copy` lower to void `va_start(place)`,
+`va_end(place)` and `va_copy(dest, src)` values, also effects
+(`tests/fixtures/sema/ir_va_start_end_copy.c`). They are recognized by callee
+name in sema, not declared; va_start's last-named-parameter argument is
+resolved but dropped, as the IR does not need it.
 
 `_Generic` resolves during lowering rather than reaching the IR: sema types the
 controlling operand, matches it against the association types, and lowers only
