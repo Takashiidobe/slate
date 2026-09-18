@@ -16,10 +16,14 @@
 int feclearexcept(int excepts);
 int fegetexceptflag(fexcept_t *flagp, int excepts);
 int feraiseexcept(int excepts);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 int fesetexcept(int excepts);
+#endif
 int fesetexceptflag(const fexcept_t *flagp, int excepts);
 int fetestexcept(int excepts);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 int fetestexceptflag(const fexcept_t *flagp, int excepts);
+#endif
 
 int fegetround(void);
 int fesetround(int rounding_direction);
@@ -29,8 +33,10 @@ int feholdexcept(fenv_t *envp);
 int fesetenv(const fenv_t *envp);
 int feupdateenv(const fenv_t *envp);
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 int fegetmode(femode_t *modep);
 int fesetmode(const femode_t *modep);
+#endif
 
 #ifdef _GNU_SOURCE
 int feenableexcept(int excepts);

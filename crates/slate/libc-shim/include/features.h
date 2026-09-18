@@ -113,6 +113,13 @@
 #define _BSD_SOURCE 1
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC) && !defined(_POSIX_SOURCE) &&                 \
+    !defined(_POSIX_C_SOURCE) && !defined(_XOPEN_SOURCE) &&                    \
+    !defined(_GNU_SOURCE) && !defined(_BSD_SOURCE) &&                          \
+    !defined(__STRICT_ANSI__)
+#define __SLATE_DEFAULT_SOURCE 1
+#endif
+
 #if !defined(__SLATE_LIBC_MSVC) && !defined(__SLATE_LIBC_DARWIN) &&            \
     !defined(__SLATE_LIBC_FREEBSD) &&                                         \
     !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) &&                    \

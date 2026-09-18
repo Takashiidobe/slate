@@ -75,8 +75,9 @@ int           fwscanf(FILE *, const wchar_t *, ...);
 #if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
      defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
     (!defined(__SLATE_LIBC_GLIBC) ||                                          \
+     (!defined(__SLATE_DEFAULT_SOURCE) &&                                    \
     (defined(__USE_XOPEN) && !defined(__USE_GNU) &&                          \
-     (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI))))
+     (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI)))))
 int           iswalnum(wint_t);
 int           iswalpha(wint_t);
 int           iswcntrl(wint_t);
@@ -112,8 +113,9 @@ int           swscanf(const wchar_t *, const wchar_t *, ...);
 #if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
      defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
     (!defined(__SLATE_LIBC_GLIBC) ||                                          \
+     (!defined(__SLATE_DEFAULT_SOURCE) &&                                    \
      (defined(__USE_XOPEN) && !defined(__USE_GNU) &&                         \
-      (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI))))
+      (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI)))))
 wint_t        towlower(wint_t);
 wint_t        towupper(wint_t);
 #endif
@@ -162,7 +164,8 @@ unsigned long long wcstoull(const wchar_t *, wchar_t **, int);
 #endif
 #if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
      defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
-    (!defined(__SLATE_LIBC_GLIBC) || defined(__USE_XOPEN))
+    (!defined(__SLATE_LIBC_GLIBC) ||                                         \
+     (!defined(__SLATE_DEFAULT_SOURCE) && defined(__USE_XOPEN)))
 wchar_t           *wcswcs(const wchar_t *, const wchar_t *);
 int                wcswidth(const wchar_t *, size_t);
 #endif
@@ -171,13 +174,15 @@ int                wctob(wint_t);
 #if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
      defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
     (!defined(__SLATE_LIBC_GLIBC) ||                                          \
+     (!defined(__SLATE_DEFAULT_SOURCE) &&                                    \
      (defined(__USE_XOPEN) && !defined(__USE_GNU) &&                         \
-      (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI))))
+      (!defined(__USE_XOPEN2K) || defined(__USE_XOPEN2KXSI)))))
 wctype_t           wctype(const char *);
 #endif
 #if (!defined(__SLATE_LIBC_MUSL) || defined(_XOPEN_SOURCE) ||                \
      defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                        \
-    (!defined(__SLATE_LIBC_GLIBC) || defined(__USE_XOPEN))
+    (!defined(__SLATE_LIBC_GLIBC) ||                                         \
+     (!defined(__SLATE_DEFAULT_SOURCE) && defined(__USE_XOPEN)))
 int                wcwidth(wchar_t);
 #endif
 wchar_t           *wmemchr(const wchar_t *, wchar_t, size_t);
