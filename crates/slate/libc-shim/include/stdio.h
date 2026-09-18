@@ -3,6 +3,15 @@
 
 #include <features.h>
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#define __SLATE_STDIO_C99 1
+#endif
+
+#if defined(__SLATE_STDIO_C99) && defined(__STRICT_ANSI__) &&                  \
+    defined(_XOPEN_SOURCE)
+#define __SLATE_STDIO_WIDE_C99 1
+#endif
+
 #define __NEED_FILE
 #define __NEED_size_t
 #if defined(__SLATE_LIBC_MSVC)
@@ -14,7 +23,8 @@
 #define __NEED_struct__IO_FILE
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+#if defined(__SLATE_STDIO_WIDE_C99) ||                                        \
+    defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
     defined(__SLATE_LIBC_DARWIN)
 #define __NEED_ssize_t
@@ -171,23 +181,27 @@ int puts(const char *);
 int printf(const char *__restrict, ...);
 int fprintf(FILE *__restrict, const char *__restrict, ...);
 int sprintf(char *__restrict, const char *__restrict, ...);
+#if defined(__SLATE_STDIO_C99)
 int snprintf(char *__restrict, size_t, const char *__restrict, ...);
+#endif
 
 int vprintf(const char *__restrict, va_list);
 int vfprintf(FILE *__restrict, const char *__restrict, va_list);
 int vsprintf(char *__restrict, const char *__restrict, va_list);
+#if defined(__SLATE_STDIO_C99)
 int vsnprintf(char *__restrict, size_t, const char *__restrict, va_list);
+#endif
 
 int scanf(const char *__restrict, ...);
 int fscanf(FILE *__restrict, const char *__restrict, ...);
 int sscanf(const char *__restrict, const char *__restrict, ...);
+#if defined(__SLATE_STDIO_C99)
 int vscanf(const char *__restrict, va_list);
 int vfscanf(FILE *__restrict, const char *__restrict, va_list);
 int vsscanf(const char *__restrict, const char *__restrict, va_list);
+#endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    defined(__SLATE_LIBC_DARWIN)
+#if defined(__SLATE_STDIO_WIDE_C99) || defined(__SLATE_LIBC_DARWIN)
 int vfwprintf(FILE *__restrict, const wchar_t *__restrict, va_list);
 int vswprintf(wchar_t *__restrict, size_t, const wchar_t *__restrict, va_list);
 int vwprintf(const wchar_t *__restrict, va_list);
@@ -247,7 +261,9 @@ char *tempnam(const char *, const char *);
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define L_cuserid 20
+#if !defined(__SLATE_LIBC_GLIBC)
 char  *cuserid(char *);
+#endif
 void   setlinebuf(FILE *);
 void   setbuffer(FILE *, char *, size_t);
 int    fgetc_unlocked(FILE *);
@@ -261,7 +277,9 @@ int    ferror_unlocked(FILE *);
 int    fileno_unlocked(FILE *);
 int    getw(FILE *);
 int    putw(int, FILE *);
+#if !defined(__SLATE_LIBC_GLIBC)
 char  *fgetln(FILE *, size_t *);
+#endif
 int    asprintf(char **, const char *, ...);
 int    vasprintf(char **, const char *, va_list);
 #endif
