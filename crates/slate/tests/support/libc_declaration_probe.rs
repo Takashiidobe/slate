@@ -561,6 +561,15 @@ fn canonicalize_type(type_spelling: &str, aliases: &BTreeMap<String, String>) ->
 }
 
 fn header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value, String> {
+    header_ast_with_args(config, header, source, &["-std=gnu23", "-D_GNU_SOURCE"])
+}
+
+fn header_ast_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    source: &Path,
+    language_args: &[&str],
+) -> Result<Value, String> {
     std::fs::write(source, format!("#include <{header}>\n"))
         .map_err(|error| format!("write {}: {error}", source.display()))?;
 
@@ -568,13 +577,8 @@ fn header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value
     command.args(&config.oracle_compiler_args);
     command.arg(format!("--target={}", config.target));
     command.arg(format!("--sysroot={}", config.sysroot.display()));
-    command.args([
-        "-std=gnu23",
-        "-D_GNU_SOURCE",
-        "-Xclang",
-        "-ast-dump=json",
-        "-fsyntax-only",
-    ]);
+    command.args(language_args);
+    command.args(["-Xclang", "-ast-dump=json", "-fsyntax-only"]);
     command.args(&config.defines);
     command.arg(source);
     let ast = command_output(command, &format!("extract oracle declaration {header}"))?;
@@ -583,6 +587,15 @@ fn header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value
 }
 
 fn shim_header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<Value, String> {
+    shim_header_ast_with_args(config, header, source, &["-std=gnu23", "-D_GNU_SOURCE"])
+}
+
+fn shim_header_ast_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    source: &Path,
+    language_args: &[&str],
+) -> Result<Value, String> {
     std::fs::write(source, format!("#include <{header}>\n"))
         .map_err(|error| format!("write {}: {error}", source.display()))?;
 
@@ -592,13 +605,8 @@ fn shim_header_ast(config: &ProbeConfig, header: &str, source: &Path) -> Result<
     command.arg("-nostdlibinc");
     command.arg("-isystem").arg(libc_shim_dir());
     command.arg("-D__SLATE_LIBC_SHIM");
-    command.args([
-        "-std=gnu23",
-        "-D_GNU_SOURCE",
-        "-Xclang",
-        "-ast-dump=json",
-        "-fsyntax-only",
-    ]);
+    command.args(language_args);
+    command.args(["-Xclang", "-ast-dump=json", "-fsyntax-only"]);
     command.args(&config.defines);
     command.arg(source);
     let ast = command_output(command, &format!("extract shim declaration {header}"))?;
@@ -1317,6 +1325,64 @@ pub fn extract_shim_header_objects(
     Ok(objects.into_values().collect())
 }
 
+fn visible_symbol_names(root: &Value) -> BTreeSet<String> {
+    let mut names = BTreeSet::new();
+    if let Some(children) = root.get("inner").and_then(Value::as_array) {
+        for node in children {
+            if node.get("isImplicit").and_then(Value::as_bool) == Some(true) {
+                continue;
+            }
+            let kind = match node.get("kind").and_then(Value::as_str) {
+                Some("FunctionDecl") => "function",
+                Some("VarDecl") => "object",
+                _ => continue,
+            };
+            if let Some(name) = node
+                .get("name")
+                .and_then(Value::as_str)
+                .filter(|name| !name.starts_with("__"))
+            {
+                names.insert(format!("{kind}:{name}"));
+            }
+        }
+    }
+    names
+}
+
+pub fn extract_oracle_header_symbol_names_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+    language_args: &[&str],
+) -> Result<BTreeSet<String>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = header_ast_with_args(
+        config,
+        header,
+        &output_dir.join("oracle-header.c"),
+        language_args,
+    )?;
+    Ok(visible_symbol_names(&root))
+}
+
+pub fn extract_shim_header_symbol_names_with_args(
+    config: &ProbeConfig,
+    header: &str,
+    output_dir: &Path,
+    language_args: &[&str],
+) -> Result<BTreeSet<String>, String> {
+    std::fs::create_dir_all(output_dir)
+        .map_err(|error| format!("create {}: {error}", output_dir.display()))?;
+    let root = shim_header_ast_with_args(
+        config,
+        header,
+        &output_dir.join("shim-header.c"),
+        language_args,
+    )?;
+    Ok(visible_symbol_names(&root))
+}
+
 pub fn render_object_probe(object: &OracleObject) -> Result<String, String> {
     if !simple_type(&object.type_spelling) {
         return Err(format!("{} has non-simple type", object.name));
@@ -1547,6 +1613,10 @@ fn probe_body(source: String, header: &str) -> String {
         .map_or_else(|| source.clone(), |(body, _)| body.to_string())
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the matrix probe combines independent oracle surfaces and output controls"
+)]
 pub fn write_header_matrix_probe(
     header: &str,
     functions: &[OracleFunction],

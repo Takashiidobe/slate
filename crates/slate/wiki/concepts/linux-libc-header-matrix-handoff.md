@@ -163,6 +163,26 @@ shim probe compiles.
 
 ## Profile-gating rules
 
+The `feature_visibility_matrix` test in `tests/libc_declaration_matrix_suite.rs`
+compares visible function and object names from the oracle and shim Clang ASTs
+for C89/C99/C11, ISO 9899:1990/199409/1999/2011, GNU89/GNU99/GNU11, and GNU
+modes with explicit `_DEFAULT_SOURCE` or `_GNU_SOURCE`. It checks the
+C90/C95/C99/C11 header set for both x86-64 glibc and musl. Because existing shim
+gates leak names, the test is ignored in the default profile until the linked
+`slate-khfh` issues are fixed. Run it to regenerate the complete tab-separated
+report at
+`target/libc-feature-visibility/extra-symbols.tsv`:
+
+```bash
+cargo nextest r --release --profile libc --test libc_declaration_matrix_suite \
+  -E 'test(feature_visibility_matrix)' --run-ignored ignored-only --nocapture
+```
+
+Set `SLATE_LIBC_FEATURE_PROFILE=c89`, `c99`, or `c11` (and the corresponding GNU
+mode) to inspect one mode. The report lists
+target, mode, header, and each extra declaration; the test fails when the
+report contains extras. The AST path does not cover macros.
+
 Use the macro family established by `features.h`; do not infer libc from an
 architecture or a feature-test macro.
 

@@ -5,12 +5,13 @@ use std::path::{Path, PathBuf};
 use support::libc_declaration_probe::{
     GeneratedProbe, compile_and_link_oracle_probe, compile_and_link_shim_probe, diff_header_files,
     diff_macro_names, extract_oracle_header_files, extract_oracle_header_functions,
-    extract_oracle_header_macros, extract_oracle_header_objects, extract_oracle_type_surface,
+    extract_oracle_header_macros, extract_oracle_header_objects,
+    extract_oracle_header_symbol_names_with_args, extract_oracle_type_surface,
     extract_shim_header_files, extract_shim_header_functions, extract_shim_header_macros,
-    extract_shim_type_surface, select_cross_checkable_shim_macros,
-    select_oracle_object_macro_value_probes, select_shim_object_macro_value_probes,
-    write_header_matrix_probe, write_header_object_macro_value_probe, write_header_shim_probe,
-    write_type_surface_probe,
+    extract_shim_header_symbol_names_with_args, extract_shim_type_surface,
+    select_cross_checkable_shim_macros, select_oracle_object_macro_value_probes,
+    select_shim_object_macro_value_probes, write_header_matrix_probe,
+    write_header_object_macro_value_probe, write_header_shim_probe, write_type_surface_probe,
 };
 use support::libc_probe::resolve;
 use support::libc_shim::{Architecture, LibcVariant};
@@ -293,12 +294,11 @@ fn declaration_matrices() {
                             &header,
                             &output.join("shim-files"),
                         )?;
-                        if descriptor.libc != LibcVariant::Msvc {
-                            if let Some(failure) =
+                        if descriptor.libc != LibcVariant::Msvc
+                            && let Some(failure) =
                                 header_visibility_failure(&header, &oracle_files, &shim_files)
-                            {
-                                return Err(failure);
-                            }
+                        {
+                            return Err(failure);
                         }
                         compile_and_link_shim_probe(
                             &config,
@@ -409,4 +409,129 @@ fn bidirectional_declaration_checks() {
             failures.join("\n\n")
         );
     }
+}
+
+const C11_HEADERS: &[&str] = &[
+    "assert.h",
+    "ctype.h",
+    "errno.h",
+    "float.h",
+    "limits.h",
+    "locale.h",
+    "math.h",
+    "setjmp.h",
+    "signal.h",
+    "stdarg.h",
+    "stddef.h",
+    "stdio.h",
+    "stdlib.h",
+    "string.h",
+    "time.h",
+    "iso646.h",
+    "wchar.h",
+    "wctype.h",
+    "stdbool.h",
+    "stdint.h",
+    "inttypes.h",
+    "complex.h",
+    "fenv.h",
+    "tgmath.h",
+    "stdalign.h",
+    "stdatomic.h",
+    "stdnoreturn.h",
+    "threads.h",
+    "uchar.h",
+];
+
+const FEATURE_MODES: &[(&str, &[&str])] = &[
+    ("c89", &["-std=c89"]),
+    ("iso9899-1990", &["-std=iso9899:1990"]),
+    ("iso9899-199409", &["-std=iso9899:199409"]),
+    ("gnu89", &["-std=gnu89"]),
+    ("gnu89-default", &["-std=gnu89", "-D_DEFAULT_SOURCE"]),
+    ("gnu89-gnu", &["-std=gnu89", "-D_GNU_SOURCE"]),
+    ("c99", &["-std=c99"]),
+    ("iso9899-1999", &["-std=iso9899:1999"]),
+    ("gnu99", &["-std=gnu99"]),
+    ("gnu99-default", &["-std=gnu99", "-D_DEFAULT_SOURCE"]),
+    ("gnu99-gnu", &["-std=gnu99", "-D_GNU_SOURCE"]),
+    ("c11", &["-std=c11"]),
+    ("iso9899-2011", &["-std=iso9899:2011"]),
+    ("gnu11", &["-std=gnu11"]),
+    ("gnu11-default", &["-std=gnu11", "-D_DEFAULT_SOURCE"]),
+    ("gnu11-gnu", &["-std=gnu11", "-D_GNU_SOURCE"]),
+];
+
+#[test]
+#[ignore = "known shim visibility gaps; run manually to inspect the full report"]
+fn feature_visibility_matrix() {
+    let targets = [
+        (Architecture::X86_64, LibcVariant::Glibc, "glibc-x86_64"),
+        (Architecture::X86_64, LibcVariant::Musl, "musl-x86_64"),
+    ];
+    let selected = std::env::var("SLATE_LIBC_FEATURE_PROFILE").ok();
+    assert!(
+        selected
+            .as_deref()
+            .is_none_or(|selected| FEATURE_MODES.iter().any(|(name, _)| *name == selected)),
+        "unknown SLATE_LIBC_FEATURE_PROFILE {selected:?}"
+    );
+    let mut failures = Vec::new();
+    let mut extras = Vec::new();
+    for (arch, libc, target) in targets {
+        let config = resolve(arch, libc)
+            .unwrap_or_else(|error| panic!("resolve {target} feature visibility: {error}"));
+        for (mode, args) in FEATURE_MODES {
+            if selected
+                .as_deref()
+                .is_some_and(|selected| selected != *mode)
+            {
+                continue;
+            }
+            let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("target/libc-feature-visibility")
+                .join(target)
+                .join(mode);
+            for header in C11_HEADERS {
+                let output = root.join(header_directory(header));
+                let result = extract_oracle_header_symbol_names_with_args(
+                    &config,
+                    header,
+                    &output.join("oracle"),
+                    args,
+                )
+                .and_then(|oracle| {
+                    let shim = extract_shim_header_symbol_names_with_args(
+                        &config,
+                        header,
+                        &output.join("shim"),
+                        args,
+                    )?;
+                    let diff = diff_header_files(&oracle, &shim);
+                    if diff.extra_in_shim.is_empty() {
+                        Ok(())
+                    } else {
+                        for symbol in &diff.extra_in_shim {
+                            extras.push(format!("{target}\t{mode}\t{header}\t{symbol}"));
+                        }
+                        Err(format!("{} extra symbol(s)", diff.extra_in_shim.len()))
+                    }
+                });
+                if let Err(error) = result {
+                    failures.push(format!("{target} {mode} {header}: {error}"));
+                }
+            }
+        }
+    }
+    let report = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/libc-feature-visibility/extra-symbols.tsv");
+    std::fs::write(&report, extras.join("\n") + "\n")
+        .unwrap_or_else(|error| panic!("write {}: {error}", report.display()));
+    assert!(
+        failures.is_empty(),
+        "libc feature visibility mismatches ({} extra symbols; full report at {}):\n{}",
+        extras.len(),
+        report.display(),
+        failures.join("\n")
+    );
 }
