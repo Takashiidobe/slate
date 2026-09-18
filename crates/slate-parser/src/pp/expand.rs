@@ -1,4 +1,4 @@
-use super::{MacroDef, Preprocessor, lex, tokens_source};
+use super::{MacroDef, Preprocessor, lex, stringized_source};
 use crate::ast::{FileId, Loc, MacroOrigin, Span};
 use crate::lexer::{Token, TokenSpanExt};
 use std::collections::HashSet;
@@ -442,7 +442,7 @@ fn substitute_function_macro(
                 output.push(
                     token
                         .clone()
-                        .with_value(Token::StringLit(tokens_source(argument.values()))),
+                        .with_value(Token::StringLit(stringized_source(&argument))),
                 );
                 i += 2;
                 continue;
@@ -544,21 +544,33 @@ fn replacement_tokens(
 }
 
 fn variadic_tokens(arguments: &[Vec<Span<Token>>], fixed: usize) -> Vec<Span<Token>> {
-    arguments
-        .iter()
-        .skip(fixed)
-        .enumerate()
-        .flat_map(|(index, argument)| {
-            let separator = (index != 0).then(|| {
-                argument.first().cloned().map_or_else(
-                    || {
-                        let loc = Loc::new(FileId(0), 0, 0);
-                        Span::new(Token::Comma, loc, loc)
-                    },
-                    |token| token.with_value(Token::Comma),
-                )
-            });
-            separator.into_iter().chain(argument.iter().cloned())
-        })
-        .collect()
+    let mut output: Vec<Span<Token>> = Vec::new();
+    for (index, argument) in arguments.iter().skip(fixed).enumerate() {
+        if index != 0 {
+            output.push(argument_separator(output.last(), argument.first()));
+        }
+        output.extend(argument.iter().cloned());
+    }
+    output
+}
+
+fn argument_separator(previous: Option<&Span<Token>>, next: Option<&Span<Token>>) -> Span<Token> {
+    let Some(next) = next else {
+        let loc = Loc::new(FileId(0), 0, 0);
+        return Span::new(Token::Comma, loc, loc);
+    };
+    let mut comma = next.clone().with_value(Token::Comma);
+    if let Some(previous) = previous
+        && previous.spelling.file == next.spelling.file
+        && let Some(gap) = next
+            .spelling
+            .offset
+            .checked_sub(previous.spelling.offset + previous.spelling.length)
+        && gap >= 1
+    {
+        // the original comma is not kept, so infer `a,b`, `a, b` or `a , b` from the gap
+        let offset = previous.spelling.offset + previous.spelling.length + usize::from(gap >= 3);
+        comma.spelling = Loc::new(next.spelling.file, offset, 1);
+    }
+    comma
 }

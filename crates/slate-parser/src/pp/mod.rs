@@ -1139,6 +1139,47 @@ fn tokens_source<'a>(tokens: impl IntoIterator<Item = &'a Token>) -> String {
         .join(" ")
 }
 
+fn is_quoted_literal(token: &Token) -> bool {
+    matches!(
+        token,
+        Token::CharLit(..)
+            | Token::Utf8CharLit(..)
+            | Token::Utf16CharLit(..)
+            | Token::Utf32CharLit(..)
+            | Token::WideCharLit(..)
+            | Token::StringLit(_)
+            | Token::Utf8StringLit(_)
+            | Token::Utf16StringLit(_)
+            | Token::Utf32StringLit(_)
+            | Token::WideStringLit(_)
+    )
+}
+
+fn stringized_source(tokens: &[Span<Token>]) -> String {
+    let mut text = String::new();
+    let mut previous: Option<&Span<Token>> = None;
+    for token in tokens {
+        if let Some(previous) = previous {
+            let adjacent = previous.spelling.file == token.spelling.file
+                && previous.spelling.offset + previous.spelling.length == token.spelling.offset;
+            if !adjacent {
+                text.push(' ');
+            }
+        }
+        let spelling = String::from(&token.value);
+        if is_quoted_literal(&token.value) {
+            text.extend(spelling.chars().flat_map(|c| match c {
+                '"' | '\\' => vec!['\\', c],
+                _ => vec![c],
+            }));
+        } else {
+            text.push_str(&spelling);
+        }
+        previous = Some(token);
+    }
+    text
+}
+
 fn lex(src: &str) -> Vec<Token> {
     lex_spanned(src)
         .into_iter()
