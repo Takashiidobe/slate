@@ -193,14 +193,16 @@ size_t __ctype_get_mb_cur_max(void);
 #define MB_CUR_MAX (__ctype_get_mb_cur_max())
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200112L)
 int   posix_memalign(void **memptr, size_t alignment, size_t size);
 int   setenv(const char *name, const char *value, int overwrite);
 int   unsetenv(const char *name);
 int   mkstemp(char *template);
 #if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
-    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__) &&                   \
+     defined(_GNU_SOURCE))
 int   mkostemp(char *template, int flags);
 #endif
 char *mkdtemp(char *template);

@@ -20,8 +20,9 @@
 
 #define __NEED_wint_t
 #define __NEED_wctype_t
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L) ||            \
     defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
     defined(__SLATE_LIBC_FREEBSD)
 #define __NEED_locale_t
@@ -60,8 +61,9 @@ wctype_t  wctype(const char *);
 #define iswdigit(a) (0 ? iswdigit(a) : ((unsigned)(a)-'0') < 10)
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L) ||            \
     defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
     defined(__SLATE_LIBC_FREEBSD)
 int       iswalnum_l(wint_t, locale_t);

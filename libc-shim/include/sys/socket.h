@@ -429,7 +429,9 @@ int bind(int, const struct sockaddr *, socklen_t);
 int connect(int, const struct sockaddr *, socklen_t);
 int listen(int, int);
 int accept(int, struct sockaddr *__restrict, socklen_t *__restrict);
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int accept4(int, struct sockaddr *__restrict, socklen_t *__restrict, int);
+#endif
 
 int getsockname(int, struct sockaddr *__restrict, socklen_t *__restrict);
 int getpeername(int, struct sockaddr *__restrict, socklen_t *__restrict);

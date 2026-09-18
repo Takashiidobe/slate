@@ -106,7 +106,8 @@ int timespec_getres(struct timespec *, int);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L &&              \
+     !defined(__SLATE_LIBC_MUSL))
 struct tm *gmtime_r(const time_t *__restrict, struct tm *__restrict);
 struct tm *localtime_r(const time_t *__restrict, struct tm *__restrict);
 #endif
@@ -114,8 +115,13 @@ struct tm *localtime_r(const time_t *__restrict, struct tm *__restrict);
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L
 size_t strftime_l(char *__restrict, size_t, const char *__restrict,
                   const struct tm *__restrict, locale_t);
+#elif defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+size_t strftime_l(char *__restrict, size_t, const char *__restrict,
+                  const struct tm *__restrict, locale_t);
+#endif
 
 char *asctime_r(const struct tm *__restrict, char *__restrict);
 char *ctime_r(const time_t *, char *);
@@ -142,6 +148,8 @@ struct itimerspec {
 
 #define TIMER_ABSTIME 1
 
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) ||               \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int nanosleep(const struct timespec *, struct timespec *);
 int clock_getres(clockid_t, struct timespec *);
 int clock_gettime(clockid_t, struct timespec *);
@@ -156,6 +164,7 @@ int timer_settime(timer_t, int, const struct itimerspec *__restrict,
                   struct itimerspec *__restrict);
 int timer_gettime(timer_t, struct itimerspec *);
 int timer_getoverrun(timer_t);
+#endif
 
 extern char *tzname[2];
 
@@ -189,7 +198,8 @@ int clock_adjtime(clockid_t, struct timex *);
 #endif
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L &&              \
+     !defined(__SLATE_LIBC_MUSL))
 time_t timegm(struct tm *);
 #endif
 

@@ -52,8 +52,7 @@ int            readdir_r(DIR *__restrict, struct dirent *__restrict,
 void           rewinddir(DIR *);
 int            dirfd(DIR *);
 
-#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD) &&          \
-    !defined(__SLATE_LIBC_BIONIC)
+#if defined(__SLATE_LIBC_MUSL) && (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
 ssize_t posix_getdents(int, void *, size_t, int);
 #endif
 
@@ -85,7 +84,7 @@ ssize_t getdents64(int, void *, size_t);
 
 #if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
     !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD) &&         \
-    !defined(__SLATE_LIBC_BIONIC)
+    !defined(__SLATE_LIBC_BIONIC) && !defined(__SLATE_LIBC_GLIBC)
 #define IFTODT(x) ((x) >> 12 & 017)
 #define DTTOIF(x) ((x) << 12)
 int getdents(int, struct dirent *, size_t);

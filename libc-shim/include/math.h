@@ -112,8 +112,7 @@ double tan(double);
 
 #if defined(__SLATE_MATH_EXT)
 
-#if defined(__SLATE_LIBC_GLIBC) &&                                       \
-    (defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
+#if defined(__SLATE_LIBC_GLIBC) && (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
 int (isinf)(double);
 int (isnan)(double);
 #endif
@@ -488,7 +487,7 @@ double y1(double);
 double yn(int, double);
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define HUGE 3.40282346638528859812e+38F
 
 double drem(double, double);

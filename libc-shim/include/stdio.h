@@ -8,7 +8,7 @@
 #endif
 
 #if defined(__SLATE_STDIO_C99) && defined(__STRICT_ANSI__) &&                  \
-    defined(_XOPEN_SOURCE)
+    defined(_GNU_SOURCE)
 #define __SLATE_STDIO_WIDE_C99 1
 #endif
 
@@ -219,7 +219,7 @@ char *tmpnam(char *);
 FILE *tmpfile(void);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
     defined(__SLATE_LIBC_DARWIN)
 FILE   *fmemopen(void *__restrict, size_t, const char *__restrict);
 FILE   *open_memstream(char **, size_t *);
@@ -247,6 +247,7 @@ char   *ctermid(char *);
 #else
 #define L_ctermid 20
 #endif
+
 #endif
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \

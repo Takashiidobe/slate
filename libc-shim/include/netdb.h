@@ -6,7 +6,9 @@
 #include <inttypes.h>
 #endif
 #if defined(__SLATE_LIBC_GLIBC)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #include <rpc/netdb.h>
+#endif
 #include <sys/types.h>
 #endif
 #include <netinet/in.h>

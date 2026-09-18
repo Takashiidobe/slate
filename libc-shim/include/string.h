@@ -5,8 +5,9 @@
 #include <stddef.h>
 
 #define __NEED_size_t
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L)
 #define __NEED_locale_t
 #endif
 #define __NEED_NULL
@@ -15,7 +16,8 @@
 void *memcpy(void *__restrict, const void *__restrict, size_t);
 void *memmove(void *, const void *, size_t);
 void *memset(void *, int, size_t);
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L &&                 \
+    !defined(__SLATE_LIBC_MUSL)
 void *memset_explicit(void *, int, size_t);
 #endif
 int   memcmp(const void *, const void *, size_t);
@@ -86,8 +88,9 @@ int __xpg_strerror_r(int, char *, size_t);
 #define strerror_r __xpg_strerror_r
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L)
 char  *strtok_r(char *__restrict, const char *__restrict, char **__restrict);
 char  *stpcpy(char *__restrict, const char *__restrict);
 char  *stpncpy(char *__restrict, const char *__restrict, size_t);
@@ -96,18 +99,23 @@ char  *strsignal(int);
 char  *strerror_l(int, locale_t);
 int    strcoll_l(const char *, const char *, locale_t);
 size_t strxfrm_l(char *__restrict, const char *__restrict, size_t, locale_t);
-void  *memmem(const void *, size_t, const void *, size_t);
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+void *memmem(const void *, size_t, const void *, size_t);
+#endif
 #endif
 
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+#if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                          \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE + 0 >= 500) ||                   \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE + 0 >= 200809L) ||            \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L &&              \
+     !defined(__SLATE_LIBC_MUSL)))
 char *strdup(const char *);
 char *strndup(const char *, size_t);
 #endif
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L &&              \
+     !defined(__SLATE_LIBC_MUSL))
 void *memccpy(void *__restrict, const void *__restrict, int, size_t);
 #endif
 
