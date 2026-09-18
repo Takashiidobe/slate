@@ -570,6 +570,35 @@ using resolved dependencies and explicit translation/linkage/attribute
 roots. The parser preserves declarations for that resolution. See
 [IR validation and pruning](ir-spec.md#validation-and-declaration-pruning).
 
+## Post-C89 constructs in older standard modes
+
+slate-parser accepts these in every standard mode. Checked with clang 22.1
+and gcc 16.2 over `c89 gnu89 c99 c11 c17 gnu17 c23`, plain and
+`-pedantic`. `ok` = silent, `warn` = only under `-pedantic`, `err` = hard
+error. Where a compiler accepts a construct as an extension, slate-parser
+records it as an extension (like `_BitInt`, see [ir-spec](ir-spec.md)) and
+does not reject; input is assumed to have compiled with the real compiler.
+
+| Construct                                   | Introduced | clang before intro. | gcc before intro. | slate-parser |
+| ------------------------------------------- | ---------- | ------------------- | ----------------- | ------------ |
+| VLAs, `[*]` parameters                      | C99        | warn                | warn              | extension    |
+| compound literals                           | C99        | warn                | warn              | extension    |
+| designated initializers                     | C99        | warn                | warn              | extension    |
+| declarations after statements               | C99        | warn                | warn              | extension    |
+| flexible array members                      | C99        | warn                | warn              | extension    |
+| variadic macros                             | C99        | warn                | warn              | extension    |
+| `//` comments                               | C99        | `c89`: warn, `gnu89`: ok | `c89`: err, `gnu89`: warn | extension |
+| `for (int i…)` declaration                  | C99        | warn                | `c89`/`gnu89`: err | gated by `control_statement_scopes` |
+| `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11 | warn | warn      | extension    |
+| `[[…]]` attributes                          | C23        | warn (all modes before C23) | warn | extension |
+| `0b` binary literals                        | C23        | warn                | warn              | extension    |
+| digit separators (`1'000`)                  | C23        | err                 | err               | see below    |
+
+Digit separators are the one construct both compilers reject before C23
+(both lex the `'` as the start of an unterminated character constant, so
+there is no dedicated extension diagnostic). It is tracked separately rather than
+recorded as an extension. `0b` literals are an extension in both.
+
 ## Migration
 
 Where `src/ast.rs` does not match this spec yet. Each row is tracked under
