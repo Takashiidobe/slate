@@ -783,6 +783,13 @@ fn resolve_char_literal(literal: &CharLiteral, target: &TargetInfo) -> Result<()
     if literal.encoding == Encoding::Plain {
         return Ok(());
     }
+    if literal.code_units.len() > 1 {
+        return Err(match literal.encoding {
+            Encoding::Wide => "wide character literals may not contain multiple characters",
+            _ => "Unicode character literals may not contain multiple characters",
+        }
+        .to_string());
+    }
     if let [unit] = literal.code_units.as_slice()
         && *unit > char_literal_max(literal.encoding, target)
     {

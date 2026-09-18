@@ -163,10 +163,10 @@ impl TypeResolver {
                     )),
                 };
             }
-            ExprKind::CharLiteral(literal) if literal.code_units.len() == 1 => (
-                context.int_type(),
-                ValueKind::Constant(Number::Integer(literal.code_units[0].into())),
-            ),
+            ExprKind::CharLiteral(literal) => {
+                let (ty, number) = character_constant(literal, &self.target)?;
+                (ty, ValueKind::Constant(number))
+            }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
                 let ty = self.assertion_operand_type(operand)?;
                 let layout = self.storage(ty)?;
@@ -1478,6 +1478,46 @@ fn resolve_parameters(
         fixed,
         variadic: signature.is_variadic(),
     })
+}
+
+pub(super) fn character_constant(
+    literal: &crate::const_expr::CharLiteral,
+    target: &TargetInfo,
+) -> Result<(Type, Number), ResolveError> {
+    let units = literal.execution_units(target.wchar_width);
+    if literal.encoding == Encoding::Plain {
+        let value = match units.as_slice() {
+            [] => return Err(ResolveError::Invalid("empty character constant")),
+            [single] => wrapped(u64::from(*single), 8, target.char_signed),
+            multiple => {
+                let packed = multiple
+                    .iter()
+                    .fold(0u64, |acc, &byte| (acc << 8) | u64::from(byte & 0xFF));
+                wrapped(packed, target.int_width, true)
+            }
+        };
+        return Ok((Type::integer(target.int_width, true), value));
+    }
+    let [single] = units.as_slice() else {
+        return Err(ResolveError::Invalid(
+            "character constant does not fit its type",
+        ));
+    };
+    let width = literal.encoding.unit_width(target.wchar_width);
+    let signed = literal.encoding == Encoding::Wide && target.wchar_signed;
+    Ok((
+        Type::integer(width, signed),
+        wrapped(u64::from(*single), width, signed),
+    ))
+}
+
+fn wrapped(value: u64, width: u32, signed: bool) -> Number {
+    let value = value & (u64::MAX >> (u64::BITS - width));
+    if signed && value >> (width - 1) != 0 {
+        Number::SignedInteger(BigInt::from(value) - (BigInt::from(1u64) << width))
+    } else {
+        Number::Integer(BigUint::from(value))
+    }
 }
 
 pub(super) fn string_literal_type(

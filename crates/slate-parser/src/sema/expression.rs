@@ -1,7 +1,7 @@
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, NodeId, Span};
-use crate::const_expr::{AssignOp, BinaryOp, Encoding, PostfixOp, UnaryOp};
+use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::*;
 use std::collections::HashMap;
 
@@ -683,14 +683,8 @@ impl Lowerer {
                 self.read(e, place)
             }
             ExprKind::CharLiteral(lit) => {
-                if lit.encoding != Encoding::Plain || lit.code_units.len() != 1 {
-                    return Err(ResolveError::Unsupported("wide or multicharacter literal"));
-                }
-                Ok(self.value(
-                    e,
-                    self.context.int_type(),
-                    ValueKind::Constant(Number::Integer(lit.code_units[0].into())),
-                ))
+                let (ty, number) = super::types::character_constant(lit, &self.context.target)?;
+                Ok(self.value(e, ty, ValueKind::Constant(number)))
             }
             ExprKind::LabelAddress(label) => {
                 let id = self

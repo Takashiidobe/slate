@@ -515,14 +515,26 @@ pub struct StringLiteral {
     pub pieces: Vec<Span<String>>,
 }
 
-impl StringLiteral {
-    pub fn unit_width(&self, wchar_width: u32) -> u32 {
-        match self.encoding {
+impl Encoding {
+    pub fn unit_width(self, wchar_width: u32) -> u32 {
+        match self {
             Encoding::Plain | Encoding::Utf8 => 8,
             Encoding::Utf16 => 16,
             Encoding::Utf32 => 32,
             Encoding::Wide => wchar_width,
         }
+    }
+}
+
+impl CharLiteral {
+    pub fn execution_units(&self, wchar_width: u32) -> Vec<u32> {
+        execution_units(&self.spelling, self.encoding.unit_width(wchar_width))
+    }
+}
+
+impl StringLiteral {
+    pub fn unit_width(&self, wchar_width: u32) -> u32 {
+        self.encoding.unit_width(wchar_width)
     }
 
     // code_units holds characters; sizes and contents need execution-charset units
@@ -530,16 +542,22 @@ impl StringLiteral {
         let width = self.unit_width(wchar_width);
         let mut units = Vec::with_capacity(self.code_units.len());
         for piece in &self.pieces {
-            let chars: Vec<char> = piece.value.chars().collect();
-            for unit in crate::lexer::Lexer::decode_source_units(&chars, 0, chars.len()) {
-                match unit {
-                    crate::lexer::SourceUnit::CodeUnit(value) => units.push(truncate(value, width)),
-                    crate::lexer::SourceUnit::Character(value) => encode(value, width, &mut units),
-                }
-            }
+            units.extend(execution_units(&piece.value, width));
         }
         units
     }
+}
+
+fn execution_units(spelling: &str, width: u32) -> Vec<u32> {
+    let chars: Vec<char> = spelling.chars().collect();
+    let mut units = Vec::with_capacity(chars.len());
+    for unit in crate::lexer::Lexer::decode_source_units(&chars, 0, chars.len()) {
+        match unit {
+            crate::lexer::SourceUnit::CodeUnit(value) => units.push(truncate(value, width)),
+            crate::lexer::SourceUnit::Character(value) => encode(value, width, &mut units),
+        }
+    }
+    units
 }
 
 fn truncate(value: u32, width: u32) -> u32 {
