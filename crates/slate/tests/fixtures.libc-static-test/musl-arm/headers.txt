@@ -160,3 +160,7 @@ tar.h
 termios.h
 tgmath.h
 threads.h
+ucontext.h
+ulimit.h
+utime.h
+utmp.h

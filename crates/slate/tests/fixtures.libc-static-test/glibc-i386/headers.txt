@@ -226,3 +226,7 @@ tgmath.h
 thread_db.h
 threads.h
 ttyent.h
+ucontext.h
+ulimit.h
+utime.h
+utmp.h
