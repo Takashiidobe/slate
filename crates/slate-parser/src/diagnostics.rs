@@ -73,10 +73,9 @@ impl DiagnosticOptions {
     pub fn severity(&self, warning: Warning, standard: LanguageStandard) -> Option<Severity> {
         let setting = self.settings.get(&warning).copied().unwrap_or_default();
         let pedantic_group = warning.is_pedantic() && (self.pedantic || self.pedantic_errors);
-        if !setting
-            .enabled
-            .unwrap_or(warning.enabled_by_default(standard) || pedantic_group)
-        {
+        if !setting.enabled.unwrap_or(
+            warning.enabled_by_default(standard) || pedantic_group || setting.error == Some(true),
+        ) {
             return None;
         }
         let error = setting

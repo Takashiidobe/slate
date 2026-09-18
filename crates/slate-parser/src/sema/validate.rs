@@ -106,6 +106,13 @@ impl TranslationUnit {
             }
         }
 
+        let types = TypeContext {
+            typedefs: &typedefs,
+            tags: &tags,
+            features,
+            diagnostics: &self.options.diagnostics,
+            standard: self.standard,
+        };
         let mut errors = super::assertion::validate(self);
         for decl in &self.decls {
             match &decl.value {
@@ -129,8 +136,7 @@ impl TranslationUnit {
                     );
                     check_type(
                         &function.specifiers.ty,
-                        &typedefs,
-                        &tags,
+                        types,
                         provenance,
                         decl.expansion,
                         &mut errors,
@@ -139,6 +145,7 @@ impl TranslationUnit {
                         check_function_asm(self, function, provenance, &mut errors);
                     }
                     check_literals(function, literals, provenance, &mut errors);
+                    check_body_types(function, types, provenance, &mut errors);
                 }
                 DeclKind::Declaration(declaration) => {
                     let provenance = decl.provenance;
@@ -146,12 +153,11 @@ impl TranslationUnit {
                     if let TypeSpecifier::Tag(TagSpecifier::Definition(id)) = &specifiers.ty
                         && let Some(tag) = self.tag(*id)
                     {
-                        check_tag_definition(tag, &typedefs, &tags, decl.expansion, &mut errors);
+                        check_tag_definition(tag, types, decl.expansion, &mut errors);
                     }
                     check_type(
                         &specifiers.ty,
-                        &typedefs,
-                        &tags,
+                        types,
                         provenance,
                         decl.expansion,
                         &mut errors,
@@ -181,8 +187,7 @@ impl TranslationUnit {
                         }
                         check_declarator(
                             declarator,
-                            &typedefs,
-                            &tags,
+                            types,
                             init_declarator.provenance,
                             decl.expansion,
                             &mut errors,
@@ -245,10 +250,81 @@ fn declarator_indirects_void(declarator: &Declarator) -> bool {
     }
 }
 
+fn walk_type(ty: &TypeSpecifier, visit: &mut impl FnMut(&TypeSpecifier)) {
+    visit(ty);
+    match ty {
+        TypeSpecifier::Atomic(ty)
+        | TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
+            walk_type(&ty.specifiers.ty, visit)
+        }
+        TypeSpecifier::Vector(vector) => walk_type(&vector.element, visit),
+        TypeSpecifier::Imaginary(ty) => walk_type(ty, visit),
+        TypeSpecifier::Tag(TagSpecifier::Reference {
+            fixed_type: Some(fixed_type),
+            ..
+        }) => walk_type(&fixed_type.specifiers.ty, visit),
+        TypeSpecifier::Void
+        | TypeSpecifier::Bool
+        | TypeSpecifier::Integer(_)
+        | TypeSpecifier::Floating(_)
+        | TypeSpecifier::Complex(_)
+        | TypeSpecifier::FixedPoint(_)
+        | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
+        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
+        | TypeSpecifier::TargetBuiltin(_)
+        | TypeSpecifier::Named(_)
+        | TypeSpecifier::Tag(_) => {}
+    }
+}
+
+fn extension_warning(
+    ty: &TypeSpecifier,
+    features: StandardFeatures,
+) -> Option<(Warning, &'static str)> {
+    match ty {
+        TypeSpecifier::Integer(IntegerType::Ranked {
+            rank: IntegerRank::LongLong,
+            ..
+        }) if features.long_long_type != Availability::Standard => Some((
+            Warning::LongLong,
+            "'long long' is an extension when C99 mode is not enabled",
+        )),
+        _ => None,
+    }
+}
+
+fn check_extensions(
+    ty: &TypeSpecifier,
+    context: TypeContext<'_>,
+    provenance: Provenance,
+    loc: Loc,
+    errors: &mut Vec<SemaError>,
+) {
+    let Some((warning, message)) = extension_warning(ty, context.features) else {
+        return;
+    };
+    errors.extend(warning.diagnose(
+        message,
+        context.diagnostics,
+        context.standard,
+        provenance,
+        loc,
+    ));
+}
+
+#[derive(Clone, Copy)]
+struct TypeContext<'a> {
+    typedefs: &'a HashSet<String>,
+    tags: &'a HashSet<String>,
+    features: StandardFeatures,
+    diagnostics: &'a DiagnosticOptions,
+    standard: LanguageStandard,
+}
+
 fn check_declarator(
     declarator: &Declarator,
-    typedefs: &HashSet<String>,
-    tags: &HashSet<String>,
+    context: TypeContext<'_>,
     provenance: Provenance,
     loc: Loc,
     errors: &mut Vec<SemaError>,
@@ -257,39 +333,25 @@ fn check_declarator(
         Declarator::Function {
             parameters, inner, ..
         } => {
-            check_declarator(inner, typedefs, tags, provenance, loc, errors);
+            check_declarator(inner, context, provenance, loc, errors);
             for parameter in parameters.parameters() {
-                check_type(
-                    &parameter.specifiers.ty,
-                    typedefs,
-                    tags,
-                    provenance,
-                    loc,
-                    errors,
-                );
+                check_type(&parameter.specifiers.ty, context, provenance, loc, errors);
                 check_attributes(&parameter.attributes, provenance, loc, errors);
-                check_declarator(
-                    &parameter.declarator,
-                    typedefs,
-                    tags,
-                    provenance,
-                    loc,
-                    errors,
-                );
+                check_declarator(&parameter.declarator, context, provenance, loc, errors);
             }
         }
         Declarator::Attributed { inner, attributes } => {
             check_attributes(attributes, provenance, loc, errors);
-            check_declarator(inner, typedefs, tags, provenance, loc, errors);
+            check_declarator(inner, context, provenance, loc, errors);
         }
         Declarator::Pointer {
             inner, attributes, ..
         } => {
             check_attributes(attributes, provenance, loc, errors);
-            check_declarator(inner, typedefs, tags, provenance, loc, errors);
+            check_declarator(inner, context, provenance, loc, errors);
         }
         Declarator::Grouped(inner) | Declarator::Array { inner, .. } => {
-            check_declarator(inner, typedefs, tags, provenance, loc, errors)
+            check_declarator(inner, context, provenance, loc, errors)
         }
         Declarator::Abstract | Declarator::Name(_) => {}
     }
@@ -392,8 +454,7 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
 
 fn check_tag_definition(
     tag: &Span<TagDefinition>,
-    typedefs: &HashSet<String>,
-    tags: &HashSet<String>,
+    context: TypeContext<'_>,
     loc: Loc,
     errors: &mut Vec<SemaError>,
 ) {
@@ -403,7 +464,7 @@ fn check_tag_definition(
         TagBody::Record(fields) => fields,
         TagBody::Enum { fixed_type, .. } => {
             if let Some(fixed_type) = fixed_type {
-                check_type_name(fixed_type, typedefs, tags, provenance, loc, errors);
+                check_type_name(fixed_type, context, provenance, loc, errors);
             }
             return;
         }
@@ -414,8 +475,7 @@ fn check_tag_definition(
         };
         check_type(
             &field.specifiers.ty,
-            typedefs,
-            tags,
+            context,
             field_item.provenance,
             field_item.expansion,
             errors,
@@ -462,14 +522,14 @@ fn collect_tag_names(ty: &TypeSpecifier, tags: &mut HashSet<String>) {
 
 fn check_type(
     ty: &TypeSpecifier,
-    typedefs: &HashSet<String>,
-    tags: &HashSet<String>,
+    context: TypeContext<'_>,
     provenance: Provenance,
     loc: Loc,
     errors: &mut Vec<SemaError>,
 ) {
+    check_extensions(ty, context, provenance, loc, errors);
     match ty {
-        TypeSpecifier::Named(name) if !typedefs.contains(name) => errors.push(error(
+        TypeSpecifier::Named(name) if !context.typedefs.contains(name) => errors.push(error(
             provenance,
             loc,
             format!("unknown type name `{name}`"),
@@ -477,22 +537,22 @@ fn check_type(
         TypeSpecifier::Tag(TagSpecifier::Reference {
             name, fixed_type, ..
         }) => {
-            if !tags.contains(name) {
+            if !context.tags.contains(name) {
                 errors.push(error(provenance, loc, format!("unknown tag `{name}`")));
             }
             if let Some(fixed_type) = fixed_type {
-                check_type_name(fixed_type, typedefs, tags, provenance, loc, errors);
+                check_type_name(fixed_type, context, provenance, loc, errors);
             }
         }
-        TypeSpecifier::Atomic(ty) => check_type_name(ty, typedefs, tags, provenance, loc, errors),
+        TypeSpecifier::Atomic(ty) => check_type_name(ty, context, provenance, loc, errors),
         TypeSpecifier::Vector(vector) => {
-            check_type(&vector.element, typedefs, tags, provenance, loc, errors)
+            check_type(&vector.element, context, provenance, loc, errors)
         }
         TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
-            check_type_name(ty, typedefs, tags, provenance, loc, errors)
+            check_type_name(ty, context, provenance, loc, errors)
         }
-        TypeSpecifier::Imaginary(ty) => check_type(ty, typedefs, tags, provenance, loc, errors),
+        TypeSpecifier::Imaginary(ty) => check_type(ty, context, provenance, loc, errors),
         TypeSpecifier::Void
         | TypeSpecifier::Bool
         | TypeSpecifier::Integer(_)
@@ -509,28 +569,30 @@ fn check_type(
 
 fn check_type_name(
     type_name: &TypeName,
-    typedefs: &HashSet<String>,
-    tags: &HashSet<String>,
+    context: TypeContext<'_>,
     provenance: Provenance,
     loc: Loc,
     errors: &mut Vec<SemaError>,
 ) {
-    check_type(
-        &type_name.specifiers.ty,
-        typedefs,
-        tags,
-        provenance,
-        loc,
-        errors,
-    );
-    check_declarator(
-        &type_name.declarator,
-        typedefs,
-        tags,
-        provenance,
-        loc,
-        errors,
-    );
+    check_type(&type_name.specifiers.ty, context, provenance, loc, errors);
+    check_declarator(&type_name.declarator, context, provenance, loc, errors);
+}
+
+impl Warning {
+    fn diagnose(
+        self,
+        message: impl Into<String>,
+        diagnostics: &DiagnosticOptions,
+        standard: LanguageStandard,
+        provenance: Provenance,
+        loc: Loc,
+    ) -> Option<SemaError> {
+        let severity = diagnostics.severity(self, standard)?;
+        let mut diagnostic = error(provenance, loc, message);
+        diagnostic.severity = severity;
+        diagnostic.warning = Some(self);
+        Some(diagnostic)
+    }
 }
 
 pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>) -> SemaError {
@@ -922,17 +984,16 @@ fn push_literal_diagnostics(
     errors: &mut Vec<SemaError>,
 ) {
     for (warning, message) in check_literal_expr(expr, context) {
-        let severity = match warning {
-            None => Severity::Error,
-            Some(warning) => match context.diagnostics.severity(warning, context.standard) {
-                Some(severity) => severity,
-                None => continue,
-            },
-        };
-        let mut diagnostic = error(provenance, expr.expansion, message);
-        diagnostic.severity = severity;
-        diagnostic.warning = warning;
-        errors.push(diagnostic);
+        match warning {
+            None => errors.push(error(provenance, expr.expansion, message)),
+            Some(warning) => errors.extend(warning.diagnose(
+                message,
+                context.diagnostics,
+                context.standard,
+                provenance,
+                expr.expansion,
+            )),
+        }
     }
 }
 
@@ -947,6 +1008,25 @@ fn check_literals(
             return;
         };
         push_literal_diagnostics(expr, context, provenance, errors);
+    });
+}
+
+fn check_body_types(
+    function: &FunctionDefinition,
+    context: TypeContext<'_>,
+    provenance: Provenance,
+    errors: &mut Vec<SemaError>,
+) {
+    walk_stmts(&function.body, &mut |node| {
+        let BodyNode::Stmt(stmt) = node else {
+            return;
+        };
+        let StmtKind::Decl(declaration) = &stmt.value else {
+            return;
+        };
+        walk_type(&declaration.specifiers.ty, &mut |ty| {
+            check_extensions(ty, context, provenance, stmt.expansion, errors)
+        });
     });
 }
 

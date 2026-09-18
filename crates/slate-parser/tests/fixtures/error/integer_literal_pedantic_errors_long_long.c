@@ -9,6 +9,13 @@ long long extension = 4294967296;
 // C89: Error:   × semantic analysis failed
 // C89: Error: -Wlong-long
 // C89: × 'long long' is an extension when C99 mode is not enabled
+// C89: ╭─[tests/fixtures/error/integer_literal_pedantic_errors_long_long.c:1:1]
+// C89: 1 │ long long extension = 4294967296;
+// C89: · ─────────────────────────────────
+// C89: 2 │
+// C89: ╰────
+// C89: Error: -Wlong-long
+// C89: × 'long long' is an extension when C99 mode is not enabled
 // C89: ╭─[tests/fixtures/error/integer_literal_pedantic_errors_long_long.c:1:23]
 // C89: 1 │ long long extension = 4294967296;
 // C89: ·                       ──────────

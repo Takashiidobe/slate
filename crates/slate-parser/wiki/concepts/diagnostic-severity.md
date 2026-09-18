@@ -20,8 +20,13 @@ severity(w) =
   None                       otherwise
 ```
 
-`None` means the diagnostic is not produced at all. Later flags win, matching
-the `Opt` parser's ordering rule.
+`None` means the diagnostic is not produced at all. An explicit `-Wno-<w>`
+wins over the pedantic group regardless of flag order; otherwise later flags
+win, matching the `Opt` parser's ordering rule.
+
+`-Werror=<w>` also *enables* a default-off warning, which blanket `-Werror`
+does not. Verified against clang 22: `-Werror=long-long` alone errors on a
+c89 `long long`, while `-Werror` alone is silent, as is `-Wno-error=<w>`.
 
 ## Severity never changes the AST or IR
 
@@ -36,7 +41,7 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 
 | Warning | Default | Pedantic | Raised when |
 | --- | --- | --- | --- |
-| `long-long` | off | yes | the selected integer literal rank is `LongLong` while `long_long_type` is not `Standard` |
+| `long-long` | off | yes | a written `long long` specifier, or a selected integer literal rank of `LongLong`, while `long_long_type` is not `Standard` |
 | `c99-compat` | on in c89 | no | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate |
 | `implicitly-unsigned-literal` | on | no | a signed-only decimal literal lands on an unsigned candidate at the widest rank |
 
@@ -47,6 +52,31 @@ Both literal warnings are derived from the candidate the selection actually
 picked, so they cannot drift from the typing rules in
 [`ir-spec.md`](ir-spec.md). `select_integer_candidate` in `sema/validate.rs`
 is the one selection point, shared with the IR lowering in `sema/numeric.rs`.
+
+## Where type-level extension warnings come from
+
+Two things would otherwise be re-derived for every new warning: *where* types
+are written, and *which* feature a written specifier needs. Each is stated
+once.
+
+`extension_warning(ty, features)` in `sema/validate.rs` maps a single
+specifier to the warning it earns. Adding a type-level extension warning is a
+new match arm there — no new call sites.
+
+`check_type` consults it for every specifier it already visits, so the
+declarations, parameters, fields, and return types it walks are covered for
+free. Block-scope locals cannot use `check_type`, because its `typedefs` set
+is file-scope only and a function-local `typedef` would be misreported as an
+unknown type name; `check_body_types` walks those with `walk_type` and the
+same table.
+
+## One warning per specifier, not per declarator
+
+`long long a, b, c;` reports once. Clang reports three identical diagnostics
+at the same span, because it warns in `ConvertDeclSpecToType`, which runs once
+per declarator. That is an artifact of clang's implementation, not a semantic
+difference, so it is not reproduced. Every other location and count matches:
+verified over 54 (source, standard, flag) combinations.
 
 ## Unrecognized `-W` names
 
