@@ -49,7 +49,9 @@ struct sigevent {
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
 #if defined(__SLATE_LIBC_GLIBC)
+#if defined(_GNU_SOURCE) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #include <unistd.h>
+#endif
 #if defined(__SLATE_ARCH_AARCH64)
 #include <sys/types.h>
 #endif
@@ -264,7 +266,9 @@ int __libc_current_sigrtmax(void);
 #define SIGRTMAX (__libc_current_sigrtmax())
 
 int kill(pid_t, int);
+#if defined(_GNU_SOURCE) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 int tgkill(pid_t, pid_t, int);
+#endif
 
 int sigemptyset(sigset_t *);
 int sigfillset(sigset_t *);
@@ -291,7 +295,8 @@ void psignal(int, const char *);
 
 #endif
 
-#if defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE) || defined(_GNU_SOURCE)
+#if !defined(__SLATE_LIBC_GLIBC) || defined(_GNU_SOURCE) ||                  \
+    (defined(_XOPEN_SOURCE) && defined(__STRICT_ANSI__))
 int  killpg(pid_t, int);
 int  sigaltstack(const stack_t *__restrict, stack_t *__restrict);
 int  sighold(int);
@@ -355,7 +360,9 @@ typedef void (*sig_t)(int);
 #ifdef _GNU_SOURCE
 typedef void (*sighandler_t)(int);
 
+#if !defined(__SLATE_LIBC_GLIBC)
 void (*bsd_signal(int, void (*)(int)))(int);
+#endif
 int  sigisemptyset(const sigset_t *);
 int  sigorset(sigset_t *, const sigset_t *, const sigset_t *);
 int  sigandset(sigset_t *, const sigset_t *, const sigset_t *);
