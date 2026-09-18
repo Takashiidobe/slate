@@ -296,8 +296,15 @@ required evaluation must not rewrite the surrounding source expression tree.
 literals, parentheses, same-concrete-type `+`, `-`, `*`, `/`, `%`, `&`, `|`,
 `^`, integer `<<`/`>>`, unary `-`, integer `~`, unary `+`, same-type
 comparisons, `!`, `&&`, `||`, and `true`/`false` directly to
-`ir::Value`. Integer literal selection uses the existing C candidate order
-and target integer widths. Floating constants retain their exact value bits.
+`ir::Value`. Integer literal selection uses the standard-dependent C
+candidate order and target integer widths: `StandardFeatures::long_long_type`
+is `Standard` from C99 on and `Extension` in C89, so a C89 unsuffixed or
+`l`-suffixed decimal literal may become `unsigned long` (C89 6.1.3.2) before
+falling back to the `long long` extension tail, while C99 (6.4.4.1) reaches
+`long long` first. In every mode a decimal literal that fits no signed type
+falls back to the unsigned form of the widest rank, matching clang's
+`-Wimplicitly-unsigned-literal`. C89 and C99 only diverge where `long` is
+narrower than `long long`, i.e. ILP32 and LLP64 targets, not LP64. Floating constants retain their exact value bits.
 The dump prints f32/f64 numerically using round-trippable decimal formatting
 (including signed zero); NaNs retain hexadecimal bits to preserve payloads.
 The f16, f80, and f128 printer uses `rustc_apfloat` directly, without an f64

@@ -12,9 +12,11 @@ use std::collections::HashMap;
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
 /// diagnostics, including failed static assertions.
 pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
-    let context = Context::new(unit.target.clone()).with_options(&unit.options);
-    let names = super::names::resolve(unit)?;
     let features = StandardFeatures::new(unit.standard);
+    let context = Context::new(unit.target.clone())
+        .with_options(&unit.options)
+        .with_features(features);
+    let names = super::names::resolve(unit)?;
     let next_id = names
         .bindings
         .iter()

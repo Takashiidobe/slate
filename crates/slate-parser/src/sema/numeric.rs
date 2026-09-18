@@ -11,6 +11,7 @@ use crate::ir::{
     Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
     ShiftFill, Type, UbPolicy, UnaryArithOp, Value, ValueKind,
 };
+use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetInfo;
 use num_bigint::BigUint;
 use thiserror::Error;
@@ -47,6 +48,7 @@ const UNSUPPORTED_INCREMENT: &str = "increment and decrement (requires place low
 
 pub struct Context {
     pub target: TargetInfo,
+    pub features: StandardFeatures,
     pub signed_overflow: Overflow,
     pub pointer_wrap: bool,
     pub floating: FloatingSemantics,
@@ -62,9 +64,15 @@ impl Context {
         self.floating = options.operations.floating;
         self
     }
+    pub fn with_features(mut self, features: StandardFeatures) -> Self {
+        self.features = features;
+        self
+    }
+
     pub fn new(target: TargetInfo) -> Self {
         Self {
             target,
+            features: StandardFeatures::default(),
             signed_overflow: Overflow::Undefined,
             pointer_wrap: false,
             floating: FloatingSemantics {
@@ -80,7 +88,7 @@ impl Context {
                 if literal.suffix.size == IntegerSizeSuffix::BitInt {
                     return Err(ResolveError::Unsupported("bit-precise integer literals"));
                 }
-                let (width, signed) = integer_candidates(literal)
+                let (width, signed) = integer_candidates(literal, self.features)
                     .into_iter()
                     .map(|(rank, signed)| (integer_rank_width(rank, &self.target), signed))
                     .find(|(width, signed)| {

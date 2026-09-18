@@ -17,7 +17,11 @@ use crate::ir::Value;
 use numeric::{Context, ResolveError};
 
 pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, ResolveError> {
-    let context = Context::new(unit.target.clone()).with_options(&unit.options);
+    let context = Context::new(unit.target.clone())
+        .with_options(&unit.options)
+        .with_features(crate::standard_features::StandardFeatures::new(
+            unit.standard,
+        ));
     let mut expressions: Vec<&Expr> = Vec::new();
     for declaration in &unit.decls {
         match &declaration.value {

@@ -2,6 +2,7 @@ use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{CharLiteral, Encoding, IntegerLiteral, IntegerSizeSuffix, Radix, UnaryOp};
 use crate::files::{Files, decode_source_bytes, display_path};
+use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use num_bigint::BigUint;
@@ -30,6 +31,7 @@ pub struct SemaErrors {
 impl TranslationUnit {
     pub fn analyze(&self, files: &Files) -> Result<(), SemaErrors> {
         let flavor = self.flavor;
+        let features = StandardFeatures::new(self.standard);
         let typedefs = self
             .decls
             .iter()
@@ -110,7 +112,7 @@ impl TranslationUnit {
                     if flavor == CompilerFlavor::Clang {
                         check_function_asm(self, function, provenance, &mut errors);
                     }
-                    check_literals(function, &self.target, provenance, &mut errors);
+                    check_literals(function, &self.target, features, provenance, &mut errors);
                 }
                 DeclKind::Declaration(declaration) => {
                     let provenance = decl.provenance;
@@ -134,7 +136,13 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
-                    check_declaration_literals(declaration, &self.target, provenance, &mut errors);
+                    check_declaration_literals(
+                        declaration,
+                        &self.target,
+                        features,
+                        provenance,
+                        &mut errors,
+                    );
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
                         if matches!(specifiers.ty, TypeSpecifier::Void)
@@ -717,42 +725,54 @@ pub(super) fn fits_rank(value: &BigUint, width: u32, signed: bool) -> bool {
     *value < limit
 }
 
-pub(super) fn integer_candidates(literal: &IntegerLiteral) -> Vec<(IntegerRank, bool)> {
+pub(super) fn integer_candidates(
+    literal: &IntegerLiteral,
+    features: StandardFeatures,
+) -> Vec<(IntegerRank, bool)> {
     use IntegerRank::{Int, Long, LongLong};
-    let decimal = literal.radix == Radix::Decimal;
-    match (literal.suffix.size, literal.suffix.unsigned) {
-        (IntegerSizeSuffix::None, false) if decimal => {
-            vec![(Int, true), (Long, true), (LongLong, true)]
-        }
-        (IntegerSizeSuffix::None, false) => vec![
-            (Int, true),
-            (Int, false),
-            (Long, true),
-            (Long, false),
-            (LongLong, true),
-            (LongLong, false),
-        ],
-        (IntegerSizeSuffix::None, true) => vec![(Int, false), (Long, false), (LongLong, false)],
-        (IntegerSizeSuffix::Long, false) if decimal => vec![(Long, true), (LongLong, true)],
-        (IntegerSizeSuffix::Long, false) => vec![
-            (Long, true),
-            (Long, false),
-            (LongLong, true),
-            (LongLong, false),
-        ],
-        (IntegerSizeSuffix::Long, true) => vec![(Long, false), (LongLong, false)],
-        (IntegerSizeSuffix::LongLong, false) if decimal => vec![(LongLong, true)],
-        (IntegerSizeSuffix::LongLong, false) => vec![(LongLong, true), (LongLong, false)],
-        (IntegerSizeSuffix::LongLong, true) => vec![(LongLong, false)],
-        (IntegerSizeSuffix::BitInt, _) => Vec::new(),
+    let size = literal.suffix.size;
+    if size == IntegerSizeSuffix::BitInt {
+        return Vec::new();
     }
+    let unsigned_only = literal.suffix.unsigned;
+    let signed_only = !unsigned_only && literal.radix == Radix::Decimal;
+    let push = |candidates: &mut Vec<(IntegerRank, bool)>, rank| {
+        if !unsigned_only {
+            candidates.push((rank, true));
+        }
+        if !signed_only {
+            candidates.push((rank, false));
+        }
+    };
+    let long_long = features.long_long_type.is_accepted() || size == IntegerSizeSuffix::LongLong;
+    let mut candidates = Vec::new();
+    if size == IntegerSizeSuffix::None {
+        push(&mut candidates, Int);
+    }
+    if size != IntegerSizeSuffix::LongLong {
+        push(&mut candidates, Long);
+        if signed_only && long_long && features.long_long_type != Availability::Standard {
+            candidates.push((Long, false));
+        }
+    }
+    if long_long {
+        push(&mut candidates, LongLong);
+    }
+    if signed_only {
+        candidates.push((if long_long { LongLong } else { Long }, false));
+    }
+    candidates
 }
 
-fn resolve_integer_literal(literal: &IntegerLiteral, target: &TargetInfo) -> Result<(), String> {
+fn resolve_integer_literal(
+    literal: &IntegerLiteral,
+    target: &TargetInfo,
+    features: StandardFeatures,
+) -> Result<(), String> {
     if literal.suffix.size == IntegerSizeSuffix::BitInt {
         return Ok(());
     }
-    integer_candidates(literal)
+    integer_candidates(literal, features)
         .into_iter()
         .any(|(rank, signed)| fits_rank(&literal.value, integer_rank_width(rank, target), signed))
         .then_some(())
@@ -798,9 +818,15 @@ fn resolve_char_literal(literal: &CharLiteral, target: &TargetInfo) -> Result<()
     Ok(())
 }
 
-fn check_literal_expr(expr: &Expr, target: &TargetInfo) -> Option<String> {
+fn check_literal_expr(
+    expr: &Expr,
+    target: &TargetInfo,
+    features: StandardFeatures,
+) -> Option<String> {
     match &expr.value {
-        ExprKind::IntegerLiteral(literal) => resolve_integer_literal(literal, target).err(),
+        ExprKind::IntegerLiteral(literal) => {
+            resolve_integer_literal(literal, target, features).err()
+        }
         ExprKind::CharLiteral(literal) => resolve_char_literal(literal, target).err(),
         ExprKind::FloatLiteral(literal) => super::numeric::resolve_float_literal(literal, target)
             .err()
@@ -812,6 +838,7 @@ fn check_literal_expr(expr: &Expr, target: &TargetInfo) -> Option<String> {
 fn check_literals(
     function: &FunctionDefinition,
     target: &TargetInfo,
+    features: StandardFeatures,
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
@@ -819,7 +846,7 @@ fn check_literals(
         let BodyNode::Expr(expr) = node else {
             return;
         };
-        if let Some(message) = check_literal_expr(expr, target) {
+        if let Some(message) = check_literal_expr(expr, target, features) {
             errors.push(error(provenance, expr.expansion, message));
         }
     });
@@ -828,6 +855,7 @@ fn check_literals(
 fn check_declaration_literals(
     declaration: &Declaration,
     target: &TargetInfo,
+    features: StandardFeatures,
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
@@ -839,7 +867,7 @@ fn check_declaration_literals(
             let BodyNode::Expr(expr) = node else {
                 return;
             };
-            if let Some(message) = check_literal_expr(expr, target) {
+            if let Some(message) = check_literal_expr(expr, target, features) {
                 errors.push(error(provenance, expr.expansion, message));
             }
         });

@@ -152,7 +152,8 @@ impl TypeResolver {
 
     pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Value, ResolveError> {
         use crate::ast::ExprKind;
-        let context = super::numeric::Context::new(self.target.clone());
+        let context =
+            super::numeric::Context::new(self.target.clone()).with_features(self.features);
         let (ty, kind) = match &e.value {
             ExprKind::Paren(inner) => return self.constant_value(inner),
             ExprKind::Identifier(name) => {
