@@ -190,3 +190,8 @@ sys/statvfs.h
 sys/swap.h
 sys/syscall.h
 sys/sysinfo.h
+sys/syslog.h
+sys/sysmacros.h
+sys/termios.h
+sys/time.h
+sys/timeb.h

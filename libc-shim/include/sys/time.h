@@ -15,16 +15,48 @@
 
 #include <sys/select.h>
 
+#define ITIMER_REAL 0
+#define ITIMER_VIRTUAL 1
+#define ITIMER_PROF 2
+
+#define TIMESPEC_TO_TIMEVAL(tv, ts) \
+  do { \
+    (tv)->tv_sec = (ts)->tv_sec; \
+    (tv)->tv_usec = (ts)->tv_nsec / 1000; \
+  } while (0)
+#define TIMEVAL_TO_TIMESPEC(tv, ts) \
+  do { \
+    (ts)->tv_sec = (tv)->tv_sec; \
+    (ts)->tv_nsec = (tv)->tv_usec * 1000; \
+  } while (0)
+#define timerisset(tv) ((tv)->tv_sec || (tv)->tv_usec)
+#define timerclear(tv) ((tv)->tv_sec = (tv)->tv_usec = 0)
+#define timercmp(a, b, op) ((a)->tv_sec op (b)->tv_sec || \
+                            ((a)->tv_sec == (b)->tv_sec && \
+                             (a)->tv_usec op (b)->tv_usec))
+#define timeradd(a, b, res) \
+  do { \
+    (res)->tv_sec = (a)->tv_sec + (b)->tv_sec; \
+    (res)->tv_usec = (a)->tv_usec + (b)->tv_usec; \
+    if ((res)->tv_usec >= 1000000) { \
+      ++(res)->tv_sec; \
+      (res)->tv_usec -= 1000000; \
+    } \
+  } while (0)
+#define timersub(a, b, res) \
+  do { \
+    (res)->tv_sec = (a)->tv_sec - (b)->tv_sec; \
+    (res)->tv_usec = (a)->tv_usec - (b)->tv_usec; \
+    if ((res)->tv_usec < 0) { \
+      --(res)->tv_sec; \
+      (res)->tv_usec += 1000000; \
+    } \
+  } while (0)
+
 #define __NEED_struct_timeval
 #include <bits/types.h>
 
 int gettimeofday(struct timeval *__restrict, void *__restrict);
-
-enum {
-  ITIMER_REAL    = 0,
-  ITIMER_VIRTUAL = 1,
-  ITIMER_PROF    = 2,
-};
 
 struct itimerval {
   struct timeval it_interval;
@@ -46,16 +78,6 @@ int futimesat(int, const char *, const struct timeval[2]);
 int lutimes(const char *, const struct timeval[2]);
 int settimeofday(const struct timeval *, const struct timezone *);
 int adjtime(const struct timeval *, struct timeval *);
-#include <stdbool.h>
-#include <sys/time.h>
-
-bool timerisset(const struct timeval *tv);
-void timerclear(struct timeval *tv);
-int  timercmp(const struct timeval *a, const struct timeval *b);
-void timeradd(const struct timeval *a, const struct timeval *b,
-              struct timeval *res);
-void timersub(const struct timeval *a, const struct timeval *b,
-              struct timeval *res);
 #endif
 
 #if defined(_GNU_SOURCE)
