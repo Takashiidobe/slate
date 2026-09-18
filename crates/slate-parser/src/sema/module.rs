@@ -319,12 +319,20 @@ impl Lowerer {
                     _ => return Err(ResolveError::Unsupported("nonautomatic local")),
                 }
             };
-            let initializer = match &declarator.initializer {
-                None => None,
-                Some(Initializer::Expr(expr)) => {
-                    let value = self.expr(expr)?;
-                    Some(self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?)
-                }
+            let (ty, initializer) = match &declarator.initializer {
+                None => (ty, None),
+                Some(Initializer::Expr(expr)) => match self.string_array_initializer(expr, &ty)? {
+                    Some((ty, value)) => {
+                        self.bindings.insert(id, ty.clone());
+                        (ty, Some(value))
+                    }
+                    None => {
+                        let value = self.expr(expr)?;
+                        let value =
+                            self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?;
+                        (ty, Some(value))
+                    }
+                },
                 _ => return Err(ResolveError::Unsupported("aggregate initializer")),
             };
             let variable = Variable {
