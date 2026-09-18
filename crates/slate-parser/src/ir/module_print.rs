@@ -528,6 +528,9 @@ impl fmt::Display for DisplayModule<'_> {
                 None => f.write_str("void")?,
             }
             write!(f, " [linkage={}]", function.linkage)?;
+            if function.abi.has_nontrivial_pass() {
+                write!(f, " [abi={}]", function.abi)?;
+            }
             if let Some(fallthrough) = function.fallthrough {
                 write!(
                     f,

@@ -906,6 +906,13 @@ become parameters in this source-to-source IR. If an unusual ABI requires
 a wrapper, preserve that requirement explicitly for emission rather than
 assuming `extern "C"` covers every signature.
 
+The implemented module IR stores a resolved `AbiSignature` on each function
+declaration and call. It classifies nontrivial value passing without changing
+the semantic function type. Flat records and complex values have target ABI
+classes; other records explicitly retain `native_c` for the target's ordinary
+foreign ABI. See [IR Spec](ir-spec.md#complex-imaginary-vector-and-fixed-point-types)
+for the current matrix and fixtures.
+
 ### Attributes by meaning and attachment
 
 **Decided:** attribute storage is extensible. Preserve arbitrary GNU/vendor

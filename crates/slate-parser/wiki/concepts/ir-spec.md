@@ -639,9 +639,28 @@ division. `ArithSema::ComplexFloating` carries rounding and exception policy;
 of a complex conversion is converted on each side, with the conversion
 contract recorded on the operation. `tests/fixtures/sema/ir_complex.c` pins
 these forms, the common complex sizes, and GNU integer-complex spelling.
-The existing IR still does not classify call arguments or returns by target
-ABI; this is a general function-call prerequisite, including for complex,
-tracked by `slate-parser-lh7.2.18`.
+Function declarations and calls now carry an `AbiSignature` resolved from the
+target's ISA and ABI environment. It records the calling convention and the
+passing shape of each argument and the result without replacing source-level
+types with hidden pointers or machine registers. Scalar passes remain implicit
+in the default dump; nontrivial signatures print `abi=...`. `coerce<...>`
+records direct value pieces, `byval` a copied memory argument, `byref` an
+indirect argument, and `sret` an indirect result. `native_c` leaves an
+unclassified record to the target's ordinary C ABI for `repr(C)` emission;
+it is explicit so Rust lowering does not mistake a guessed coercion for a
+verified one. Call nodes keep their own ABI signature because an indirect
+callee or a variadic call can differ from the enclosing function.
+
+The initial matrix covers SysV x86-64, Windows x86-64 MSVC, i386 cdecl,
+AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
+128-bit integers where Clang supports them, and flat records. For example,
+`complex<f64>` is two direct floating pieces on SysV x86-64, a copied memory
+argument plus indirect result on i386, and a reference argument plus indirect
+result on Windows x86-64. ARM hard-float variadic signatures use base AAPCS;
+Windows AArch64 variadic aggregate arguments use integer pieces. The
+`ir_call_abi.c` and target-specific `abi_target.c` FileCheck fixtures pin
+these cases against Clang IR signatures. More elaborate records use
+`native_c` until their ABI coercion is modeled explicitly.
 
 **Out of scope for current IR lowering:** imaginary, vector, and fixed-point
 types remain unrepresented. Their separate implementation work is tracked by

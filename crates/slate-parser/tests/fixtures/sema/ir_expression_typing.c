@@ -99,7 +99,7 @@ int pointers(int *p) {
 // IR-NEXT:             write<bool>(%28, ne<i32>(read<i32>(%29), const<i32>(0)));
 // IR-NEXT:         return from_bool<i32, reason=return>(read<bool>(%28));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @fields(%14 p: ptr<@type0>, %15 q: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %13 @fields(%14 p: ptr<@type0>, %15 q: @type0) -> i32 [linkage=external] [abi=sysv64(scalar, coerce<i64>) -> scalar] [fallthrough=ub_if_used] {
 // IR-NEXT:         write<i16>(field0(deref(read<ptr<@type0>>(%14))), truncate<i16, reason=assign, fits=unknown>(read<i32>(field1(%15))));
 // IR-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field0(%15))), read<i32>(field1(deref(read<ptr<@type0>>(%14)))));
 // IR-NEXT:     }

@@ -1129,12 +1129,14 @@ impl Lowerer {
                     };
                     lowered.push(value);
                 }
+                let abi = self.abi_signature(&ty, Some(&lowered))?;
                 Ok(self.value(
                     e,
                     return_type.as_ref().map_or(Type::Void, |ty| (**ty).clone()),
                     ValueKind::Call {
                         callee,
                         signature: ty,
+                        abi,
                         arguments: lowered,
                     },
                 ))

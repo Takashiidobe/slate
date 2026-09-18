@@ -1376,6 +1376,13 @@ pub fn resolve_type_module(
                 let return_type = resolver.resolve(&function.specifiers, &Declarator::Abstract)?;
                 let parameters =
                     resolve_parameters(&mut resolver, signature, &mut module, &mut next_binding)?;
+                let parameter_types = parameter_types(&parameters);
+                let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
+                    return_type.ty.as_ref(),
+                    &parameter_types,
+                    matches!(&parameters, crate::ir::Parameters::Prototype { variadic: true, .. }),
+                    parameter_types.len(),
+                )?;
                 module
                     .metadata
                     .insert(declaration.id, return_type.c.entries());
@@ -1386,6 +1393,7 @@ pub fn resolve_type_module(
                         name: name.into(),
                         parameters,
                         return_type: return_type.ty,
+                        abi,
                         linkage: if function.specifiers.storage == StorageClass::Static {
                             Linkage::Internal
                         } else {
@@ -1412,6 +1420,13 @@ pub fn resolve_type_module(
                         &mut module,
                         &mut next_binding,
                     )?;
+                    let parameter_types = parameter_types(&parameters);
+                    let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
+                        return_type.ty.as_ref(),
+                        &parameter_types,
+                        matches!(&parameters, crate::ir::Parameters::Prototype { variadic: true, .. }),
+                        parameter_types.len(),
+                    )?;
                     module
                         .metadata
                         .insert(declarator.id, return_type.c.entries());
@@ -1422,6 +1437,7 @@ pub fn resolve_type_module(
                             name: name.into(),
                             parameters,
                             return_type: return_type.ty,
+                            abi,
                             linkage: if item.specifiers.storage == StorageClass::Static {
                                 Linkage::Internal
                             } else {
@@ -1455,6 +1471,15 @@ pub fn resolve_type_module(
         }
     }
     Ok(module)
+}
+
+fn parameter_types(parameters: &crate::ir::Parameters) -> Vec<Type> {
+    match parameters {
+        crate::ir::Parameters::Prototype { fixed, .. } => {
+            fixed.iter().map(|parameter| parameter.ty.clone()).collect()
+        }
+        crate::ir::Parameters::Unprototyped => Vec::new(),
+    }
 }
 
 fn resolve_parameters(

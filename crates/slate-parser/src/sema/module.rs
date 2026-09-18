@@ -73,6 +73,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     return Err(ResolveError::Unsupported("function definition declarator"));
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
+                let abi = lower.abi_signature(&ty, None)?;
                 lower.bindings.insert(id, ty);
                 let mut metadata = vec![
                     (
@@ -107,6 +108,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                         name: name.into(),
                         parameters,
                         return_type,
+                        abi,
                         linkage: linkage(function.specifiers.storage)?,
                         body: Some(body),
                         fallthrough: Some(fallthrough),
@@ -292,6 +294,7 @@ impl Lowerer {
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing prototype"))?;
                 let parameters = self.parameters(params, false)?;
+                let abi = self.abi_signature(&ty, None)?;
                 self.module
                     .functions
                     .push(declarator.clone().with_value(Function {
@@ -299,6 +302,7 @@ impl Lowerer {
                         name: name.into(),
                         parameters,
                         return_type: return_type.as_ref().map(|ty| (**ty).clone()),
+                        abi,
                         linkage: linkage(item.specifiers.storage)?,
                         body: None,
                         fallthrough: None,

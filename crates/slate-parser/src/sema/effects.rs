@@ -251,6 +251,7 @@ impl Hoister {
             ValueKind::Call {
                 callee,
                 signature,
+                abi,
                 arguments,
             } => {
                 let callee = match callee {
@@ -264,6 +265,7 @@ impl Hoister {
                 ValueKind::Call {
                     callee,
                     signature,
+                    abi,
                     arguments: lowered,
                 }
             }

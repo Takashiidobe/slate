@@ -65,7 +65,7 @@ int side_effect_branch(int i) { int n = _Generic(i, int: i++, default: 0); retur
 // IR-NEXT:     fn %14 @qualifier_stripped(%15 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @record_tag(%17 t: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %16 @record_tag(%17 t: @type0) -> i32 [linkage=external] [abi=sysv64(coerce<i64>) -> scalar] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<i32>(field0(%17));
 // IR-NEXT:     }
 // IR-NEXT:     fn %18 @nested(%19 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {

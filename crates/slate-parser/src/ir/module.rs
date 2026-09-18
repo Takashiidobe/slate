@@ -1,4 +1,4 @@
-use super::{BindingId, Global, Parameters, Place, Type, TypeDefinition, Value, Variable};
+use super::{AbiSignature, BindingId, Global, Parameters, Place, Type, TypeDefinition, Value, Variable};
 use crate::ast::{NodeId, Span};
 use crate::target_info::TargetInfo;
 use std::collections::HashMap;
@@ -26,6 +26,7 @@ pub struct Function {
     pub name: String,
     pub parameters: Parameters,
     pub return_type: Option<Type>,
+    pub abi: AbiSignature,
     pub linkage: Linkage,
     pub body: Option<Vec<Span<Statement>>>,
     pub fallthrough: Option<Fallthrough>,

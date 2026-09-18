@@ -1,3 +1,4 @@
+mod abi;
 mod declarations;
 mod module;
 mod module_print;
@@ -9,6 +10,7 @@ pub use declarations::{
     PlaceKind, RecordKind, RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind,
     TypeId, Variable,
 };
+pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -89,6 +91,7 @@ pub enum ValueKind {
     Call {
         callee: Callee,
         signature: Type,
+        abi: AbiSignature,
         arguments: Vec<Value>,
     },
     Read(Place),
@@ -305,11 +308,15 @@ impl Value {
             ValueKind::Call {
                 callee,
                 signature,
+                abi,
                 arguments,
             } => {
                 write!(f, "call<{}", self.ty)?;
                 if !compact {
                     write!(f, ", signature={signature}")?;
+                }
+                if abi.has_nontrivial_pass() {
+                    write!(f, ", abi={abi}")?;
                 }
                 f.write_str(">(")?;
                 match callee {
