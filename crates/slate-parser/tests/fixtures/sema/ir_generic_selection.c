@@ -42,7 +42,7 @@ int side_effect_branch(int i) { int n = _Generic(i, int: i++, default: 0); retur
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
 // IR-NEXT:     global %1 table: array<i32, 4> [storage=static] [linkage=external];
-// IR-NEXT:     global %29 .str29: array<i8, 7> [storage=static] = bytes<array<i8, 7>>([100, 111, 117, 98, 108, 101, 0]) [linkage=internal];
+// IR-NEXT:     global %29 .str29: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([100, 111, 117, 98, 108, 101, 0]) [linkage=internal];
 // IR-NEXT:     fn %2 @routine() -> void [linkage=external];
 // IR-NEXT:     fn %3 @constant_branch(%4 i: i32, %5 d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);

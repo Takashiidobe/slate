@@ -45,7 +45,7 @@ int guarded(Op op, int n) { return op ? op(n, n) : 0; }
 // IR-NEXT:     type @type1 Vtbl = struct {
 // IR-NEXT:         field0 op: ptr<fn(i32, i32) -> i32>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     global %39 .str39: array<i8, 2> [storage=static] = bytes<array<i8, 2>>([120, 0]) [linkage=internal];
+// IR-NEXT:     global %39 .str39: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([120, 0]) [linkage=internal];
 // IR-NEXT:     fn %2 @add(%3 a: i32, %4 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), read<i32>(%4));
 // IR-NEXT:     }

@@ -104,7 +104,7 @@ void contexts(void) {
 // IR-NEXT:     global %11 ul: u64 [storage=static] [linkage=external];
 // IR-NEXT:     global %12 sh: i16 [storage=static] [linkage=external];
 // IR-NEXT:     global %13 bo: bool [storage=static] [linkage=external];
-// IR-NEXT:     global %20 .str20: array<i8, 3> [storage=static] = bytes<array<i8, 3>>([37, 100, 0]) [linkage=internal];
+// IR-NEXT:     global %20 .str20: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
 // IR-NEXT:     fn %14 @printf(%19 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %15 @unpromoted() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         add<i8b>(read<i8b>(%0), read<i8b>(%0));

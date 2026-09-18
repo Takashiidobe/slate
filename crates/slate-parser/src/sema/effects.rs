@@ -358,7 +358,7 @@ impl Hoister {
             | ValueKind::Null
             | ValueKind::LabelAddress(_)
             | ValueKind::Void
-            | ValueKind::Bytes(_)) => leaf,
+            | ValueKind::CodeUnits(_)) => leaf,
         };
         Ok(Value {
             ty,
@@ -406,6 +406,6 @@ fn effects(value: &Value) -> bool {
         | ValueKind::Null
         | ValueKind::LabelAddress(_)
         | ValueKind::Void
-        | ValueKind::Bytes(_) => false,
+        | ValueKind::CodeUnits(_) => false,
     }
 }

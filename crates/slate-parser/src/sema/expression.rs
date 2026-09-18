@@ -704,26 +704,11 @@ impl Lowerer {
                 Ok(self.value(e, ty, ValueKind::Null))
             }
             ExprKind::StringLiteral(lit) => {
-                if lit.encoding != Encoding::Plain {
-                    return Err(ResolveError::Unsupported("encoded string literal"));
-                }
-                let mut bytes = lit
-                    .execution_units(self.context.target.wchar_width)
-                    .into_iter()
-                    .map(|unit| {
-                        u8::try_from(unit)
-                            .map_err(|_| ResolveError::Unsupported("string code unit"))
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
-                bytes.push(0);
-                let length = Some(bytes.len() as u64);
-                let element = Type::integer(8, self.context.target.char_signed);
-                let ty = Type::Array {
-                    element: Box::new(element),
-                    length,
-                };
+                let mut units = lit.execution_units(self.context.target.wchar_width);
+                units.push(0);
+                let ty = super::types::string_literal_type(lit, &self.context.target);
                 let id = self.fresh();
-                let initializer = self.value(e, ty.clone(), ValueKind::Bytes(bytes));
+                let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
                 self.module.globals.push(e.clone().with_value(Global {
                     variable: Variable {
                         id,

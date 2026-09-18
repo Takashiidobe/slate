@@ -23,7 +23,7 @@ int exercise_add(void) { return main(); }
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = bytes<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// IR-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
 // IR-NEXT:     fn %0 @printf(%7 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
 // IR-NEXT:     fn %1 @add(%2 a: i32, %3 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %4 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%2), read<i32>(%3));

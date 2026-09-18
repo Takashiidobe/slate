@@ -47,7 +47,7 @@ pub enum ValueKind {
     Null,
     LabelAddress(BindingId),
     Void,
-    Bytes(Vec<u8>),
+    CodeUnits(Vec<u32>),
     ArrayDecay {
         place: Place,
         length: Option<u64>,
@@ -191,7 +191,7 @@ impl Value {
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
             ),
-            ValueKind::Bytes(bytes) => write!(f, "bytes<{}>({bytes:?})", self.ty),
+            ValueKind::CodeUnits(units) => write!(f, "code_units<{}>({units:?})", self.ty),
             ValueKind::ArrayDecay { place, length } => {
                 write!(
                     f,
