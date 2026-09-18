@@ -1272,6 +1272,8 @@ pub struct FieldDeclaratorKind {
 #[derive(CustomDebug, Clone, PartialEq)]
 pub struct Enumerator {
     pub name: String,
+    #[debug(skip_if = Vec::is_empty)]
+    pub attributes: Vec<Attribute>,
     pub value: Option<Expr>,
 }
 

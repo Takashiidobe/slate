@@ -462,9 +462,22 @@ fn check_tag_definition(
     check_attributes(&tag.attributes, provenance, loc, errors);
     let fields = match &tag.body {
         TagBody::Record(fields) => fields,
-        TagBody::Enum { fixed_type, .. } => {
+        TagBody::Enum {
+            fixed_type,
+            enumerators,
+        } => {
             if let Some(fixed_type) = fixed_type {
                 check_type_name(fixed_type, context, provenance, loc, errors);
+            }
+            for item in enumerators {
+                if let EnumItemKind::Enumerator(enumerator) = &item.value {
+                    check_attributes(
+                        &enumerator.attributes,
+                        item.provenance,
+                        item.expansion,
+                        errors,
+                    );
+                }
             }
             return;
         }

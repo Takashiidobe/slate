@@ -567,6 +567,7 @@ impl<'a> DeclaratorParser<'a> {
                 return Err(DeclaratorError::ExpectedEnumerator);
             };
             self.pos += 1;
+            let attributes = self.parse_attributes()?;
             let value = if self.matches(Token::Equal) {
                 let (value, end) =
                     const_expr::Parser::parse_one(self.tokens, self.pos, self.context)
@@ -580,7 +581,11 @@ impl<'a> DeclaratorParser<'a> {
                 parser.names.bind(&name, false);
             }
             items.push(span_tokens(
-                EnumItemKind::Enumerator(Enumerator { name, value }),
+                EnumItemKind::Enumerator(Enumerator {
+                    name,
+                    attributes,
+                    value,
+                }),
                 &self.tokens[start..self.pos],
             ));
             if self.matches(Token::Comma) {

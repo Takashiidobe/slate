@@ -350,6 +350,10 @@ EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | Co
   forward declaration) is name resolution, done in `src/ir/sema`.
 - Enumerator values are unevaluated expressions. An omitted value is `None`;
   "previous + 1" is sema's rule, not the parser's.
+- An enumerator's attributes are written between the name and the `=`, per C23
+  6.7.2.2, in either the `[[...]]` or `__attribute__((...))` spelling. Neither
+  clang nor gcc accepts them after the value, and neither do we. The IR drops
+  attributes everywhere, so they stop at the AST.
 
 ## Statements
 
