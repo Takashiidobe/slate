@@ -2,8 +2,10 @@
 // SLATE-FILECHECK-ARGS --dump-ir --compact-ir
 
 // C23 6.3.1.1: bit-precise integers are exempt from the integer promotions, and
-// rank at equal width is below the standard integer type. Every result type
-// below was verified against clang 22.1.8 and gcc 16.2.1.
+// rank at equal width is below the standard integer type. These rules are not
+// gated on the standard mode: clang and gcc accept _BitInt as an extension in
+// c89 through c17 and apply the same conversions there. Every result type below
+// was verified against clang 22.1.8 and gcc 16.2.1, in every standard mode.
 
 _BitInt(8) a8;
 unsigned _BitInt(8) u8;
