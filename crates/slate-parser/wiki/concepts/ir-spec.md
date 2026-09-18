@@ -528,8 +528,8 @@ filter after resolution is required for this design.
 Module
   target:    triple + endian + scalar/pointer storage + stack ABI policy
   types:     records (with computed layout), enums
-  globals:   name, type, linkage, initializer, metadata
-  functions: name, linkage, parameters, return type, variadic, body, metadata
+  globals:   name, type, storage, linkage, symbol attributes, initializer, metadata
+  functions: name, linkage, symbol attributes, parameters, return type, variadic, body, metadata
   metadata:  side table NodeId → Metadata
 ```
 
@@ -748,9 +748,28 @@ lowered to a module `Global` with `storage=static`, `linkage=internal` and its
 own `BindingId`; no statement is emitted at the declaration, and uses read the
 global's binding. Its initializer is lowered once like any global
 initializer, and an absent one means zero initialization. Two locals (or a
-local and a file-scope object) sharing a source name stay distinct globals;
-only file-scope redeclarations merge by name. Not yet: `_Thread_local`
-locals and block-scope `extern` declarations.
+local and a file-scope object) sharing a source name stay distinct globals.
+
+**Implemented for globals and linkage (`lh7.2.9`):** name resolution gives
+every declaration node its binding (`NameResolution.declarations`), and every
+declaration with linkage (file-scope objects and functions, block-scope
+`extern` objects, block-scope function prototypes) shares one binding per
+name, even when the block-scope declaration comes first or the name is
+shadowed by a local. Lowering merges redeclarations by `BindingId`, not by
+name. That gives one `Global` per object: array types complete, the
+initializer comes from whichever declaration has one, and `definition` is set
+by any non-`extern` declaration, initializer, or `alias`. It also gives one
+`Function` per function, taking the body and parameters from the definition,
+or else the first prototype. Linkage stays internal once any declaration is
+`static`. `_Thread_local`, `__thread`, and `__declspec(thread)` give
+`storage=thread` at file scope and on block-scope `static`/`extern`; on an
+automatic local they are invalid. Symbol attributes are a semantic
+`SymbolAttributes` on both `Global` and `Function`, printed after the linkage
+and merged across redeclarations (first value wins, flags OR): `asm_name`
+(from `asm("sym")` labels), `visibility`, `weak`, `alias`, `section`, `used`,
+`retain`, `tls_model`, `dllimport`/`dllexport`. Any other declaration
+attribute, and any attribute on a typedef, parameter, or automatic local, is
+still unsupported. Fixture: `sema/ir_globals_linkage.c`.
 
 **Implemented for variable-length arrays (`er8`):** a block-scope declarator
 whose array bound is not a constant emits a synthetic size_t

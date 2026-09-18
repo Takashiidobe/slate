@@ -3,7 +3,7 @@ use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::*;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 pub(super) struct Lowerer {
     pub context: Context,
@@ -18,7 +18,6 @@ pub(super) struct Lowerer {
     pub continue_targets: Vec<BindingId>,
     pub switches: Vec<(BindingId, Type)>,
     pub in_function: bool,
-    pub local_statics: HashSet<BindingId>,
 }
 
 impl Lowerer {
@@ -40,6 +39,9 @@ impl Lowerer {
     }
 
     pub fn declaration_id(&self, node: NodeId, name: &str) -> Result<BindingId, ResolveError> {
+        if let Some(id) = self.names.declarations.get(&node) {
+            return Ok(*id);
+        }
         self.names
             .bindings
             .iter()
@@ -850,6 +852,7 @@ impl Lowerer {
                         initializer: Some(initializer),
                     },
                     linkage: Linkage::Internal,
+                    symbol: SymbolAttributes::default(),
                     definition: true,
                 }));
                 self.read(

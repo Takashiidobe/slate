@@ -39,11 +39,10 @@ int main(void) {
 // C17-NEXT:         storage f128 [size=16, align=16];
 // C17-NEXT:     }
 // C17-NEXT:     global %15 .str15: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 120, 116, 0]) [linkage=internal];
-// C17-NEXT:     fn %0 @old(unprototyped) -> i32 [linkage=external];
+// C17-NEXT:     fn %0 @old(%11 first: i32, %12 second: f64) -> i32 [linkage=external];
 // C17-NEXT:     fn %1 @before(%2 small: i16, %3 real: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C17-NEXT:         return call<i32, signature=fn(unprototyped) -> i32>(%0, widen<i32, reason=vararg>(read<i16>(%2)), float_widen<f64, reason=vararg>(read<f32>(%3)));
 // C17-NEXT:     }
-// C17-NEXT:     fn %0 @old(%11 first: i32, %12 second: f64) -> i32 [linkage=external];
 // C17-NEXT:     fn %4 @after(%5 small: i16, %6 real: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C17-NEXT:         return call<i32, signature=fn(i32, f64) -> i32>(%0, widen<i32, reason=arg>(read<i16>(%5)), float_widen<f64, reason=arg>(read<f32>(%6)));
 // C17-NEXT:     }

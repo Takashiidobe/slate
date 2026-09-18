@@ -11,7 +11,10 @@ pub use declarations::{
     Global, Parameter, Parameters, Place, PlaceKind, RecordKind, RecordLayout, StorageDuration,
     TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
-pub use module::{Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement};
+pub use module::{
+    DllStorage, Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement,
+    SymbolAttributes, TlsModel, Visibility,
+};
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
 

@@ -1532,6 +1532,7 @@ pub fn resolve_type_module(
                         } else {
                             Linkage::External
                         },
+                        symbol: Default::default(),
                         body: None,
                         fallthrough: None,
                     }));
@@ -1580,6 +1581,7 @@ pub fn resolve_type_module(
                             } else {
                                 Linkage::External
                             },
+                            symbol: Default::default(),
                             body: None,
                             fallthrough: None,
                         }));

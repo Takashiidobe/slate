@@ -46,6 +46,7 @@ struct Resolver {
     tag_ids: HashMap<AstTagId, Entry>,
     display_counts: HashMap<String, u32>,
     unit_tags: HashMap<AstTagId, Span<crate::ast::TagDefinition>>,
+    linked: HashMap<String, Entry>,
     next_id: u32,
 }
 
@@ -69,6 +70,7 @@ impl Resolver {
                 .iter()
                 .map(|tag| (tag.value.id, tag.clone()))
                 .collect(),
+            linked: HashMap::new(),
             next_id: 0,
         }
     }
@@ -88,7 +90,7 @@ impl Resolver {
             DeclKind::Function(function) => {
                 self.type_specifier(&function.specifiers.ty, declaration)?;
                 let name = function.declarator.name().unwrap_or("<anonymous>");
-                self.bind_ordinary(name, BindingKind::Function, declaration)?;
+                self.bind_ordinary(name, BindingKind::Function, true, declaration)?;
                 let outer_labels = std::mem::take(&mut self.labels);
                 let outer_local_labels =
                     std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
@@ -98,7 +100,7 @@ impl Resolver {
                     for parameter in parameters.parameters() {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
                         if let Some(name) = parameter.declarator.name() {
-                            self.bind_ordinary(name, BindingKind::Parameter, parameter)?;
+                            self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
                         }
                     }
                 }
@@ -136,7 +138,12 @@ impl Resolver {
             if !self.collecting_labels
                 && let Some(name) = declarator.declarator.name()
             {
-                self.bind_ordinary(name, kind, declarator)?;
+                let linked = kind != BindingKind::Typedef
+                    && (self.ordinary.len() == 1
+                        || declaration.specifiers.storage == StorageClass::Extern
+                        || (kind == BindingKind::Function
+                            && declaration.specifiers.storage == StorageClass::None));
+                self.bind_ordinary(name, kind, linked, declarator)?;
             }
             if let Some(initializer) = &declarator.initializer {
                 self.initializer(initializer)?;
@@ -535,7 +542,12 @@ impl Resolver {
                             self.expr(value)?;
                         }
                         if !self.collecting_labels {
-                            self.bind_ordinary(&enumerator.name, BindingKind::Enumerator, item)?;
+                            self.bind_ordinary(
+                                &enumerator.name,
+                                BindingKind::Enumerator,
+                                false,
+                                item,
+                            )?;
                         }
                     }
                 }
@@ -609,10 +621,12 @@ impl Resolver {
         &mut self,
         name: &str,
         kind: BindingKind,
+        linked: bool,
         span: &Span<T>,
     ) -> Result<Entry, ResolveError> {
         if let Some(existing) = self.ordinary.last().unwrap().get(name).cloned() {
-            if self.ordinary.len() == 1 && existing.kind == kind {
+            if (self.ordinary.len() == 1 || linked) && existing.kind == kind {
+                self.resolution.declarations.insert(span.id, existing.id);
                 return Ok(existing);
             }
             return Err(ResolveError::Duplicate {
@@ -620,11 +634,18 @@ impl Resolver {
                 name: name.into(),
             });
         }
-        let entry = self.new_entry(name, kind, span);
+        let entry = match self.linked.get(name) {
+            Some(entry) if linked && entry.kind == kind => entry.clone(),
+            _ => self.new_entry(name, kind, span),
+        };
+        if linked {
+            self.linked.insert(name.into(), entry.clone());
+        }
         self.ordinary
             .last_mut()
             .unwrap()
             .insert(name.into(), entry.clone());
+        self.resolution.declarations.insert(span.id, entry.id);
         Ok(entry)
     }
 

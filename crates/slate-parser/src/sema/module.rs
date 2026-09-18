@@ -6,7 +6,7 @@ use crate::ast::{
 };
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
 /// diagnostics, including failed static assertions.
@@ -35,7 +35,6 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         continue_targets: Vec::new(),
         switches: Vec::new(),
         in_function: false,
-        local_statics: HashSet::new(),
     };
     for declaration in &unit.decls {
         match &declaration.value {
@@ -45,9 +44,14 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
             }
             DeclKind::Function(function) => {
                 check_specifiers(&function.specifiers)?;
-                if !function.attributes.is_empty() {
-                    return Err(ResolveError::Unsupported("function attributes"));
-                }
+                let symbol = function_symbol(
+                    function
+                        .specifiers
+                        .attributes
+                        .iter()
+                        .chain(&function.attributes),
+                    None,
+                )?;
                 let name = function
                     .declarator
                     .name()
@@ -105,19 +109,17 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 } else {
                     Fallthrough::UndefinedIfUsed
                 };
-                lower
-                    .module
-                    .functions
-                    .push(declaration.clone().with_value(Function {
-                        id,
-                        name: name.into(),
-                        parameters,
-                        return_type,
-                        abi,
-                        linkage: linkage(function.specifiers.storage)?,
-                        body: Some(body),
-                        fallthrough: Some(fallthrough),
-                    }));
+                lower.declare_function(declaration.clone().with_value(Function {
+                    id,
+                    name: name.into(),
+                    parameters,
+                    return_type,
+                    abi,
+                    linkage: linkage(function.specifiers.storage)?,
+                    symbol,
+                    body: Some(body),
+                    fallthrough: Some(fallthrough),
+                }));
             }
             _ => return Err(ResolveError::Unsupported("module declaration")),
         }
@@ -158,11 +160,7 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
 }
 
 fn check_specifiers(specifiers: &ast::DeclarationSpecifiers) -> Result<(), ResolveError> {
-    if !specifiers.attributes.is_empty()
-        || specifiers.is_inline
-        || specifiers.is_noreturn
-        || specifiers.is_constexpr
-    {
+    if specifiers.is_inline || specifiers.is_noreturn || specifiers.is_constexpr {
         return Err(ResolveError::Unsupported(
             "attributes or function specifiers",
         ));
@@ -170,7 +168,153 @@ fn check_specifiers(specifiers: &ast::DeclarationSpecifiers) -> Result<(), Resol
     Ok(())
 }
 
+fn symbol_attributes<'a>(
+    attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+    asm_label: Option<&Span<ast::AsmLabel>>,
+) -> Result<SymbolAttributes, ResolveError> {
+    let mut symbol = SymbolAttributes::default();
+    if let Some(label) = asm_label {
+        let ast::AsmLabel::Symbol(name) = &label.value else {
+            return Err(ResolveError::Unsupported("register asm label"));
+        };
+        symbol.asm_name = Some(name.clone());
+    }
+    for attribute in attributes {
+        match attribute {
+            ast::Attribute::Visibility(name) => {
+                symbol.visibility = Some(match name.as_str() {
+                    "default" => Visibility::Default,
+                    "hidden" => Visibility::Hidden,
+                    "protected" => Visibility::Protected,
+                    "internal" => Visibility::Internal,
+                    _ => return Err(ResolveError::Invalid("visibility")),
+                });
+            }
+            ast::Attribute::TlsModel(name) => {
+                symbol.tls_model = Some(match name.as_str() {
+                    "global-dynamic" => TlsModel::GlobalDynamic,
+                    "local-dynamic" => TlsModel::LocalDynamic,
+                    "initial-exec" => TlsModel::InitialExec,
+                    "local-exec" => TlsModel::LocalExec,
+                    _ => return Err(ResolveError::Invalid("tls_model")),
+                });
+            }
+            ast::Attribute::Weak => symbol.weak = true,
+            ast::Attribute::Alias(target) => symbol.alias = Some(target.clone()),
+            ast::Attribute::Section(name) => symbol.section = Some(name.clone()),
+            ast::Attribute::Used => symbol.used = true,
+            ast::Attribute::Retain => symbol.retain = true,
+            ast::Attribute::DllImport => symbol.dll_storage = Some(DllStorage::Import),
+            ast::Attribute::DllExport => symbol.dll_storage = Some(DllStorage::Export),
+            ast::Attribute::ThreadLocal => {}
+            _ => return Err(ResolveError::Unsupported("declaration attribute")),
+        }
+    }
+    Ok(symbol)
+}
+
+fn function_symbol<'a>(
+    attributes: impl IntoIterator<Item = &'a ast::Attribute> + Clone,
+    asm_label: Option<&Span<ast::AsmLabel>>,
+) -> Result<SymbolAttributes, ResolveError> {
+    if attributes
+        .clone()
+        .into_iter()
+        .any(|attribute| matches!(attribute, ast::Attribute::ThreadLocal))
+    {
+        return Err(ResolveError::Invalid("thread-local function"));
+    }
+    symbol_attributes(attributes, asm_label)
+}
+
 impl Lowerer {
+    fn declare_global(&mut self, global: Span<Global>) -> Result<(), ResolveError> {
+        let Some(existing) = self
+            .module
+            .globals
+            .iter_mut()
+            .find(|existing| existing.value.variable.id == global.value.variable.id)
+        else {
+            self.module.globals.push(global);
+            return Ok(());
+        };
+        let global = global.value;
+        let existing = &mut existing.value;
+        if existing.variable.ty != global.variable.ty {
+            match (&existing.variable.ty, &global.variable.ty) {
+                (
+                    Type::Array {
+                        element: a,
+                        length: None,
+                    },
+                    Type::Array {
+                        element: b,
+                        length: Some(_),
+                    },
+                ) if a == b => existing.variable.ty = global.variable.ty.clone(),
+                (
+                    Type::Array {
+                        element: a,
+                        length: Some(_),
+                    },
+                    Type::Array {
+                        element: b,
+                        length: None,
+                    },
+                ) if a == b => {}
+                _ => {
+                    return Err(ResolveError::Unsupported(
+                        "incompatible global redeclaration",
+                    ));
+                }
+            }
+        }
+        self.bindings
+            .insert(existing.variable.id, existing.variable.ty.clone());
+        if global.variable.initializer.is_some() {
+            if existing.variable.initializer.is_some() {
+                return Err(ResolveError::Unsupported("multiple global initializers"));
+            }
+            existing.variable.initializer = global.variable.initializer;
+        }
+        if global.variable.storage == StorageDuration::Thread {
+            existing.variable.storage = StorageDuration::Thread;
+        }
+        existing.definition |= global.definition;
+        if matches!(global.linkage, Linkage::Internal) {
+            existing.linkage = Linkage::Internal;
+        }
+        existing.symbol.merge(global.symbol);
+        Ok(())
+    }
+
+    fn declare_function(&mut self, function: Span<Function>) {
+        let Some(existing) = self
+            .module
+            .functions
+            .iter_mut()
+            .find(|existing| existing.value.id == function.value.id)
+        else {
+            self.module.functions.push(function);
+            return;
+        };
+        let function = function.value;
+        let linkage = match (existing.value.linkage, function.linkage) {
+            (Linkage::External, Linkage::External) => Linkage::External,
+            _ => Linkage::Internal,
+        };
+        let mut symbol = std::mem::take(&mut existing.value.symbol);
+        symbol.merge(function.symbol.clone());
+        let replaces = function.body.is_some()
+            || (existing.value.body.is_none()
+                && matches!(existing.value.parameters, Parameters::Unprototyped));
+        if replaces {
+            existing.value = function;
+        }
+        existing.value.linkage = linkage;
+        existing.value.symbol = symbol;
+    }
+
     fn parameters(
         &mut self,
         params: &ParameterList,
@@ -183,6 +327,9 @@ impl Lowerer {
         let mut fixed = Vec::new();
         for parameter in params.parameters() {
             check_specifiers(&parameter.specifiers)?;
+            if !parameter.specifiers.attributes.is_empty() {
+                return Err(ResolveError::Unsupported("parameter attributes"));
+            }
             let start = self.types.definitions.len();
             let resolved = self
                 .types
@@ -257,16 +404,30 @@ impl Lowerer {
             ));
         }
         if item.declarators.is_empty() {
+            if !item.specifiers.attributes.is_empty() {
+                return Err(ResolveError::Unsupported("declaration attributes"));
+            }
             self.types
                 .resolve(&item.specifiers, &Declarator::Abstract)?;
         }
+        let storage_class = item.specifiers.storage;
         let mut statements = Vec::new();
         for declarator in &item.declarators {
-            if !declarator.attributes.is_empty() || declarator.asm_label.is_some() {
-                return Err(ResolveError::Unsupported(
-                    "declarator attributes or asm label",
-                ));
+            let attributes = item
+                .specifiers
+                .attributes
+                .iter()
+                .chain(&declarator.attributes);
+            let has_attributes = attributes.clone().next().is_some();
+            if storage_class == StorageClass::Typedef
+                && (has_attributes || declarator.asm_label.is_some())
+            {
+                return Err(ResolveError::Unsupported("typedef attributes or asm label"));
             }
+            let thread = item.specifiers.is_thread_local
+                || attributes
+                    .clone()
+                    .any(|attribute| matches!(attribute, ast::Attribute::ThreadLocal));
             let name = declarator
                 .declarator
                 .name()
@@ -306,42 +467,57 @@ impl Lowerer {
             self.bindings.insert(id, ty.clone());
             self.access.insert(id, super::types::access(qualifiers));
             if let Type::Function { return_type, .. } = &ty {
-                if !global || declarator.initializer.is_some() {
-                    return Err(ResolveError::Unsupported(
-                        "local function prototype or function initializer",
-                    ));
+                if declarator.initializer.is_some() {
+                    return Err(ResolveError::Invalid("function initializer"));
                 }
+                if thread {
+                    return Err(ResolveError::Invalid("thread-local function"));
+                }
+                if !global && storage_class == StorageClass::Static {
+                    return Err(ResolveError::Invalid("block scope static function"));
+                }
+                let symbol = function_symbol(attributes, declarator.asm_label.as_ref())?;
                 let params = declarator
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing prototype"))?;
                 let parameters = self.parameters(params, false)?;
                 let abi = self.abi_signature(&ty, None)?;
-                self.module
-                    .functions
-                    .push(declarator.clone().with_value(Function {
-                        id,
-                        name: name.into(),
-                        parameters,
-                        return_type: return_type.as_ref().map(|ty| (**ty).clone()),
-                        abi,
-                        linkage: linkage(item.specifiers.storage)?,
-                        body: None,
-                        fallthrough: None,
-                    }));
+                self.declare_function(declarator.clone().with_value(Function {
+                    id,
+                    name: name.into(),
+                    parameters,
+                    return_type: return_type.as_ref().map(|ty| (**ty).clone()),
+                    abi,
+                    linkage: linkage(storage_class)?,
+                    symbol,
+                    body: None,
+                    fallthrough: None,
+                }));
                 continue;
             }
-            let storage = if global {
-                StorageDuration::Static
-            } else {
-                match item.specifiers.storage {
-                    StorageClass::None | StorageClass::Auto | StorageClass::Register => {
-                        StorageDuration::Automatic
-                    }
-                    StorageClass::Static => StorageDuration::Static,
-                    _ => return Err(ResolveError::Unsupported("nonautomatic local")),
+            let linked = global || storage_class == StorageClass::Extern;
+            let storage = if !linked && storage_class != StorageClass::Static {
+                if thread {
+                    return Err(ResolveError::Invalid("thread-local automatic variable"));
                 }
+                StorageDuration::Automatic
+            } else if thread {
+                StorageDuration::Thread
+            } else {
+                StorageDuration::Static
             };
+            if storage == StorageDuration::Automatic
+                && (has_attributes || declarator.asm_label.is_some())
+            {
+                return Err(ResolveError::Unsupported(
+                    "automatic variable attributes or asm label",
+                ));
+            }
+            if !global && linked && declarator.initializer.is_some() {
+                return Err(ResolveError::Invalid("block scope extern initializer"));
+            }
+            let symbol = symbol_attributes(attributes, declarator.asm_label.as_ref())?;
             if matches!(ty, Type::VariableArray { .. }) && declarator.initializer.is_some() {
                 return Err(ResolveError::Unsupported(
                     "variable length array initializer",
@@ -368,78 +544,35 @@ impl Lowerer {
                 restrict: qualifiers.is_restrict,
                 initializer,
             };
-            if global {
-                let declared_linkage = linkage(item.specifiers.storage)?;
-                let definition = item.specifiers.storage != StorageClass::Extern
-                    || variable.initializer.is_some();
-                if let Some(existing) = self.module.globals.iter_mut().find(|global| {
-                    global.variable.name == name
-                        && !self.local_statics.contains(&global.variable.id)
-                }) {
-                    if existing.value.variable.ty != variable.ty {
-                        match (&existing.value.variable.ty, &variable.ty) {
-                            (
-                                Type::Array {
-                                    element: a,
-                                    length: None,
-                                },
-                                Type::Array {
-                                    element: b,
-                                    length: Some(_),
-                                },
-                            ) if a == b => existing.value.variable.ty = variable.ty.clone(),
-                            (
-                                Type::Array {
-                                    element: a,
-                                    length: Some(_),
-                                },
-                                Type::Array {
-                                    element: b,
-                                    length: None,
-                                },
-                            ) if a == b => {}
-                            _ => {
-                                return Err(ResolveError::Unsupported(
-                                    "incompatible global redeclaration",
-                                ));
-                            }
-                        }
-                    }
-                    if variable.initializer.is_some() {
-                        if existing.value.variable.initializer.is_some() {
-                            return Err(ResolveError::Unsupported("multiple global initializers"));
-                        }
-                        existing.value.variable.initializer = variable.initializer;
-                    }
-                    existing.value.definition |= definition;
-                    if matches!(declared_linkage, Linkage::Internal) {
-                        existing.value.linkage = Linkage::Internal;
-                    }
-                } else {
-                    self.module
-                        .globals
-                        .push(declarator.clone().with_value(Global {
-                            variable,
-                            linkage: declared_linkage,
-                            definition,
-                        }));
-                }
-            } else if storage == StorageDuration::Static {
-                if matches!(variable.ty, Type::VariableArray { .. }) {
-                    return Err(ResolveError::Invalid(
-                        "variable length array with static storage duration",
-                    ));
-                }
-                self.local_statics.insert(variable.id);
+            if storage != StorageDuration::Automatic
+                && matches!(variable.ty, Type::VariableArray { .. })
+            {
+                return Err(ResolveError::Invalid(
+                    "variable length array with static storage duration",
+                ));
+            }
+            if linked {
+                let declared_linkage = linkage(storage_class)?;
+                let definition = storage_class != StorageClass::Extern
+                    || variable.initializer.is_some()
+                    || symbol.alias.is_some();
+                self.declare_global(declarator.clone().with_value(Global {
+                    variable,
+                    linkage: declared_linkage,
+                    symbol,
+                    definition,
+                }))?;
+            } else if storage == StorageDuration::Automatic {
+                statements.push(declarator.clone().with_value(Statement::Let(variable)));
+            } else {
                 self.module
                     .globals
                     .push(declarator.clone().with_value(Global {
                         variable,
                         linkage: Linkage::Internal,
+                        symbol,
                         definition: true,
                     }));
-            } else {
-                statements.push(declarator.clone().with_value(Statement::Let(variable)));
             }
         }
         Ok(statements)

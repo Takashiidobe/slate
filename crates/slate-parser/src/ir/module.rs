@@ -22,6 +22,55 @@ pub enum Linkage {
     External,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Visibility {
+    Default,
+    Hidden,
+    Protected,
+    Internal,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TlsModel {
+    GlobalDynamic,
+    LocalDynamic,
+    InitialExec,
+    LocalExec,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DllStorage {
+    Import,
+    Export,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct SymbolAttributes {
+    pub asm_name: Option<String>,
+    pub visibility: Option<Visibility>,
+    pub weak: bool,
+    pub alias: Option<String>,
+    pub section: Option<String>,
+    pub used: bool,
+    pub retain: bool,
+    pub tls_model: Option<TlsModel>,
+    pub dll_storage: Option<DllStorage>,
+}
+
+impl SymbolAttributes {
+    pub fn merge(&mut self, later: Self) {
+        self.asm_name = self.asm_name.take().or(later.asm_name);
+        self.visibility = self.visibility.or(later.visibility);
+        self.weak |= later.weak;
+        self.alias = self.alias.take().or(later.alias);
+        self.section = self.section.take().or(later.section);
+        self.used |= later.used;
+        self.retain |= later.retain;
+        self.tls_model = self.tls_model.or(later.tls_model);
+        self.dll_storage = self.dll_storage.or(later.dll_storage);
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Function {
     pub id: BindingId,
@@ -30,6 +79,7 @@ pub struct Function {
     pub return_type: Option<Type>,
     pub abi: AbiSignature,
     pub linkage: Linkage,
+    pub symbol: SymbolAttributes,
     pub body: Option<Vec<Span<Statement>>>,
     pub fallthrough: Option<Fallthrough>,
 }

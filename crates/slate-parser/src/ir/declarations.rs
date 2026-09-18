@@ -158,6 +158,7 @@ impl std::fmt::Display for AggregateTarget {
 pub struct Global {
     pub variable: Variable,
     pub linkage: super::Linkage,
+    pub symbol: super::SymbolAttributes,
     pub definition: bool,
 }
 

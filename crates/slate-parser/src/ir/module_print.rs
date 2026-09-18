@@ -1,6 +1,7 @@
 use super::{
-    Evaluation, FloatType, Linkage, Metadata, Module, NumericType, Parameters, RecordKind,
-    Statement, StorageDuration, Type, TypeDefinitionKind, Variable,
+    DllStorage, Evaluation, FloatType, Linkage, Metadata, Module, NumericType, Parameters,
+    RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel, Type, TypeDefinitionKind,
+    Variable, Visibility,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -37,6 +38,62 @@ impl fmt::Display for Linkage {
             Self::Internal => "internal",
             Self::External => "external",
         })
+    }
+}
+
+impl fmt::Display for Visibility {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Default => "default",
+            Self::Hidden => "hidden",
+            Self::Protected => "protected",
+            Self::Internal => "internal",
+        })
+    }
+}
+
+impl fmt::Display for TlsModel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::GlobalDynamic => "global-dynamic",
+            Self::LocalDynamic => "local-dynamic",
+            Self::InitialExec => "initial-exec",
+            Self::LocalExec => "local-exec",
+        })
+    }
+}
+
+impl fmt::Display for SymbolAttributes {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(name) = &self.asm_name {
+            write!(f, " [asm_name={name:?}]")?;
+        }
+        if let Some(visibility) = self.visibility {
+            write!(f, " [visibility={visibility}]")?;
+        }
+        if self.weak {
+            f.write_str(" [weak]")?;
+        }
+        if let Some(target) = &self.alias {
+            write!(f, " [alias={target:?}]")?;
+        }
+        if let Some(section) = &self.section {
+            write!(f, " [section={section:?}]")?;
+        }
+        if self.used {
+            f.write_str(" [used]")?;
+        }
+        if self.retain {
+            f.write_str(" [retain]")?;
+        }
+        if let Some(model) = self.tls_model {
+            write!(f, " [tls_model={model}]")?;
+        }
+        match self.dll_storage {
+            Some(DllStorage::Import) => f.write_str(" [dllimport]"),
+            Some(DllStorage::Export) => f.write_str(" [dllexport]"),
+            None => Ok(()),
+        }
     }
 }
 
@@ -500,7 +557,7 @@ impl fmt::Display for DisplayModule<'_> {
                 }
             )?;
             self.variable(f, &global.variable)?;
-            write!(f, " [linkage={}]", global.linkage)?;
+            write!(f, " [linkage={}]{}", global.linkage, global.symbol)?;
             metadata(f, self.table(), global.id)?;
             writeln!(f, ";")?;
         }
@@ -535,7 +592,7 @@ impl fmt::Display for DisplayModule<'_> {
                 Some(ty) => write!(f, "{ty}")?,
                 None => f.write_str("void")?,
             }
-            write!(f, " [linkage={}]", function.linkage)?;
+            write!(f, " [linkage={}]{}", function.linkage, function.symbol)?;
             if function.abi.has_nontrivial_pass() {
                 write!(f, " [abi={}]", function.abi)?;
             }
