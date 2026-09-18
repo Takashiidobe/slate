@@ -592,12 +592,13 @@ does not reject; input is assumed to have compiled with the real compiler.
 | `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11 | warn | warn      | extension    |
 | `[[…]]` attributes                          | C23        | warn (all modes before C23) | warn | extension |
 | `0b` binary literals                        | C23        | warn                | warn              | extension    |
-| digit separators (`1'000`)                  | C23        | err                 | err               | see below    |
+| digit separators (`1'000`)                  | C23        | err                 | err               | extension    |
 
 Digit separators are the one construct both compilers reject before C23
 (both lex the `'` as the start of an unterminated character constant, so
-there is no dedicated extension diagnostic). It is tracked separately rather than
-recorded as an extension. `0b` literals are an extension in both.
+there is no dedicated extension diagnostic). slate-parser still accepts
+them in every mode: the input is assumed to have compiled, so rejecting
+buys no fidelity. `0b` literals are likewise an extension.
 
 ## Migration
 
