@@ -12,7 +12,7 @@
 #define SOUND_VERSION 0x030802
 #define OPEN_SOUND_SYSTEM
 #include <endian.h>
-#include <sys/ioctl.h>
+#include <bits/ioctl.h>
 
 #define SNDCARD_ADLIB      1
 #define SNDCARD_SB         2

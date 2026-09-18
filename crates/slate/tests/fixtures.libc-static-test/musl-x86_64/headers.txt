@@ -130,3 +130,4 @@ sys/shm.h
 sys/signal.h
 sys/signalfd.h
 sys/socket.h
+sys/stat.h

@@ -187,3 +187,6 @@ sys/signal.h
 sys/signalfd.h
 sys/single_threaded.h
 sys/socket.h
+sys/socketvar.h
+sys/soundcard.h
+sys/stat.h

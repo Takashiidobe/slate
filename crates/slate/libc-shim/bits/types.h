@@ -55,7 +55,11 @@ typedef unsigned int       __mode_t;
 typedef int                __pid_t;
 typedef unsigned int       __uid_t;
 typedef unsigned int       __gid_t;
+#if defined(__SLATE_WORDSIZE_64)
+typedef unsigned long __dev_t;
+#else
 typedef unsigned long long __dev_t;
+#endif
 #if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ARCH_X86_64)
 typedef unsigned long __nlink_t;
 #else
