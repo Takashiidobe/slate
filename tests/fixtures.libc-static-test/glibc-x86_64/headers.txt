@@ -220,3 +220,7 @@ sysexits.h
 syslog.h
 tar.h
 termios.h
+tgmath.h
+thread_db.h
+threads.h
+ttyent.h
