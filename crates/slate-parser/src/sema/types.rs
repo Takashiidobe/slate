@@ -663,6 +663,9 @@ impl TypeResolver {
                 };
                 (Type::Numeric(NumericType::Float(kind)), spelling.into())
             }
+            TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => {
+                (Type::VaList, "__builtin_va_list".into())
+            }
             _ => return Err(ResolveError::Unsupported("type specifier")),
         };
         Ok((Some(scalar.0), scalar.1.clone(), scalar.1, Vec::new()))

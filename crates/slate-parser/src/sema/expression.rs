@@ -1187,6 +1187,19 @@ impl Lowerer {
                 let (_, offset) = self.types.offsetof_member(ty.clone(), member)?;
                 Ok(self.layout_constant(e, offset, "offset_of", format!("{ty}.{member}")))
             }
+            ExprKind::VaArg { list, ty } => {
+                let list = self.place(list)?;
+                if list.ty != Type::VaList {
+                    return Err(ResolveError::Unsupported("va_arg of non-va_list"));
+                }
+                let ty = self
+                    .types
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Unsupported("va_arg of void"))?;
+                self.types.storage(ty.clone())?;
+                Ok(self.value(e, ty, ValueKind::VaArg { list }))
+            }
             _ => Err(ResolveError::Unsupported("advanced expression")),
         }
     }

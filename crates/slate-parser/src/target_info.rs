@@ -368,6 +368,20 @@ impl TargetInfo {
         }
     }
 
+    fn va_list_storage(&self) -> StorageLayout {
+        match (self.family, self.os) {
+            (TargetFamily::X86_64, TargetOs::Linux) => StorageLayout {
+                size_bytes: 24,
+                alignment_bytes: 8,
+            },
+            (TargetFamily::AArch64, TargetOs::Linux) => StorageLayout {
+                size_bytes: 32,
+                alignment_bytes: 8,
+            },
+            _ => self.pointer,
+        }
+    }
+
     pub fn storage_of(&self, ty: Type) -> Result<StorageLayout, LayoutError> {
         if let Type::Complex(component) = &ty {
             let component = self.storage_of(Type::Numeric(*component))?;
@@ -393,6 +407,7 @@ impl TargetInfo {
             }
             Type::Numeric(NumericType::Float(format)) => ScalarKey::Float(format),
             Type::Pointer { .. } => return Ok(self.pointer),
+            Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
             | Type::Defined(_)
             | Type::Array { .. }

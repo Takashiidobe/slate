@@ -81,6 +81,15 @@ and unprototyped distinction even when a later redeclaration of the same
 function changes it
 (`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
 
+`__builtin_va_list` lowers to the opaque `Type::VaList` (printed `va_list`),
+with per-target storage: 24/8 on x86_64 Linux, 32/8 on aarch64 Linux, pointer
+sized elsewhere. It does not model the array-to-pointer decay the x86_64 and
+aarch64 ABIs give a `va_list` parameter; it is passed as one scalar handle.
+`__builtin_va_arg(ap, T)` lowers to `va_arg<T>(place)`: a type-directed read
+that advances the list, so it counts as a side effect for hoisting like a call.
+`T` may be a record (`tests/fixtures/sema/ir_va_arg.c`). `va_start`, `va_end`
+and `va_copy` are not lowered yet.
+
 `_Generic` resolves during lowering rather than reaching the IR: sema types the
 controlling operand, matches it against the association types, and lowers only
 the selected expression, so the selected branch can be constant or runtime and

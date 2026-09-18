@@ -124,7 +124,9 @@ impl<'a> AbiClassifier<'a> {
                     Ok(AbiPass::ByReference { align: 16 })
                 }
             }
-            Type::Bool | Type::Numeric(_) | Type::Pointer { .. } => Ok(AbiPass::Scalar),
+            Type::Bool | Type::Numeric(_) | Type::Pointer { .. } | Type::VaList => {
+                Ok(AbiPass::Scalar)
+            }
             Type::Complex(component) => self.complex_abi(*component, result, convention),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.abi_pass(inner, result, convention),

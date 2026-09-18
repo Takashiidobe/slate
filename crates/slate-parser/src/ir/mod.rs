@@ -96,6 +96,9 @@ pub enum ValueKind {
     },
     Read(Place),
     AddressOf(Place),
+    VaArg {
+        list: Place,
+    },
     Convert {
         kind: ConversionKind,
         operand: Box<Value>,
@@ -345,6 +348,9 @@ impl Value {
             ValueKind::Null => write!(f, "null<{}>", self.ty),
             ValueKind::Read(place) => {
                 write!(f, "read<{}>({})", place.ty, place.display_mode(compact))
+            }
+            ValueKind::VaArg { list } => {
+                write!(f, "va_arg<{}>({})", self.ty, list.display_mode(compact))
             }
             ValueKind::AddressOf(place) => {
                 write!(f, "addr_of<{}>({})", self.ty, place.display_mode(compact))

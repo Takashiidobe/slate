@@ -7,6 +7,7 @@ pub enum Type {
     Bool,
     Numeric(NumericType),
     Complex(NumericType),
+    VaList,
     Defined(super::TypeId),
     Pointer {
         pointee: Box<Type>,
@@ -30,6 +31,7 @@ impl fmt::Display for Type {
             Self::Void => f.write_str("void"),
             Self::Defined(id) => write!(f, "@type{}", id.0),
             Self::Bool => f.write_str("bool"),
+            Self::VaList => f.write_str("va_list"),
             Self::Numeric(ty) => write!(f, "{ty}"),
             Self::Complex(ty) => write!(f, "complex<{ty}>"),
             Self::Pointer { pointee, is_const } => {

@@ -357,6 +357,9 @@ impl Hoister {
             },
             ValueKind::Read(place) => ValueKind::Read(self.place(place, out)?),
             ValueKind::AddressOf(place) => ValueKind::AddressOf(self.place(place, out)?),
+            ValueKind::VaArg { list } => ValueKind::VaArg {
+                list: self.place(list, out)?,
+            },
             ValueKind::ArrayDecay { place, length } => ValueKind::ArrayDecay {
                 place: self.place(place, out)?,
                 length,
@@ -392,6 +395,7 @@ fn effects(value: &Value) -> bool {
         ValueKind::Store { .. }
         | ValueKind::Update { .. }
         | ValueKind::Call { .. }
+        | ValueKind::VaArg { .. }
         | ValueKind::Sequence { .. } => true,
         ValueKind::Arith { left, right, .. }
         | ValueKind::Compare { left, right, .. }
