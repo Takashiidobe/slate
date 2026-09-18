@@ -15,6 +15,9 @@
 #define __NEED_pid_t
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC)
+#include <sys/types.h>
+#endif
 #include <bits/types.h>
 
 #define UIO_MAXIOV 1024
@@ -45,6 +48,9 @@ ssize_t pwritev2(int, const struct iovec *, int, off_t, int);
 #define RWF_NOWAIT   0x00000008
 #define RWF_APPEND   0x00000010
 #define RWF_NOAPPEND 0x00000020
+#define RWF_ATOMIC 0x00000040
+#define RWF_DONTCACHE 0x00000080
+#define RWF_NOSIGNAL 0x00004000
 #endif
 
 #endif

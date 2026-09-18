@@ -145,3 +145,8 @@ sys/timerfd.h
 sys/times.h
 sys/timex.h
 sys/ttydefaults.h
+sys/ucontext.h
+sys/uio.h
+sys/un.h
+sys/user.h
+sys/utsname.h

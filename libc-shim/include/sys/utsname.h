@@ -3,6 +3,8 @@
 
 #include <features.h>
 
+#define SYS_NMLN 65
+
 struct utsname {
   char sysname[65];
   char nodename[65];
@@ -17,5 +19,9 @@ struct utsname {
 };
 
 int uname(struct utsname *);
+
+#if defined(__SLATE_LIBC_GLIBC)
+#define SYS_NMLN _UTSNAME_LENGTH
+#endif
 
 #endif

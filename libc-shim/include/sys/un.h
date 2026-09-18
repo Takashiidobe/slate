@@ -2,7 +2,11 @@
 #define _SLATE_SYS_UN_H
 
 #include <features.h>
-#include <sys/types.h>
+
+#if defined(__SLATE_LIBC_GLIBC)
+#include <string.h>
+#include <strings.h>
+#endif
 
 #define __NEED_sa_family_t
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN)
@@ -27,7 +31,6 @@ struct sockaddr_un {
 };
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-size_t strlen(const char *);
 #define SUN_LEN(s) (2 + strlen((s)->sun_path))
 #endif
 
