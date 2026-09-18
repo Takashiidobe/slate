@@ -303,7 +303,7 @@ properties. There is no intermediate semantic AST. `CompilerOptions` now
 groups operation settings, layout overrides, and ordered argument provenance.
 The parser retains it on `TranslationUnit`; sema materializes its operation
 contracts without making IR consumers interpret options. See the
-[numeric seed](ir-spec.md#implemented-numeric-seed) for supported scope.
+[numeric operations](ir-spec.md#numeric-operations) for supported scope.
 
 The first flag hookup accepts positive/negative wrapv, trapv, strict-overflow,
 rounding-math, and trapping-math options for Clang/GCC flavors. GCC uses the

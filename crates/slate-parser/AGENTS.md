@@ -55,6 +55,9 @@ re-deriving something from scratch:
 - `wiki/concepts/ast-spec.md` and `wiki/concepts/ir-spec.md` — evergreen
   specs of what the AST means and what it lowers into. Update them in the
   same change as any AST or IR change.
+- `wiki/concepts/ir-grammar.md` — EBNF of the printed IR, derived from
+  the printers in `src/ir/`. Update it in the same change as anything that
+  alters what the IR printer emits.
 - `wiki/concepts/ast-enum-touchpoints.md` — before adding a variant to
   `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`: every file that matches it
   exhaustively, so you don't have to grep the whole crate to find out

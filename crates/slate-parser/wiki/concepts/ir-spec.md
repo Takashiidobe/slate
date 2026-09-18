@@ -5,7 +5,10 @@ _created 2026-09-13 — living design doc, decisions marked **Decided** / **Open
 Pipeline: C → AST (target-independent) → **IR (targeted)** → Rust → rewritten
 Rust (Slate). This page covers the IR only. Epic: `slate-parser-lh7`.
 
-For proposed node fields and information ownership, see [IR Shape](ir-shape.md).
+The syntax of the printed IR (every node, its fields, and their choices) is
+specified in [IR Grammar](ir-grammar.md). This page explains the design
+behind it and records what is implemented. For proposed node fields and
+information ownership, see [IR Shape](ir-shape.md).
 
 The IR is not Clang IR and does not aim for CIR compatibility. It exists for
 translation to Rust, not optimization. Slate's current CIR consumer will be
@@ -69,7 +72,7 @@ inline at their uses. A direct function's `fn` declaration carries its complete
 signature; it has no duplicate type-table entry. `Type::Defined(TypeId)`
 references named or recursive definitions, preserving incomplete type identity.
 Variables and parameters have binding IDs; root places use those IDs and concrete types.
-Statements support declarations and writes as well as the numeric seed.
+Statements support declarations, writes, and numeric operations.
 Pointer nulls, address-of values, byte-array constants, array decay,
 function decay, and calls are represented explicitly. A call names its callee
 either as a binding ID (`call<T>(%3, ...)`) when the designator resolves to a
@@ -134,8 +137,7 @@ printer, and lowering must succeed for the whole module before output is
 printed. The expression and name dump modes are separate diagnostic views.
 `slate-parser parse source.c --dump-ir-types --show-metadata` resolves and
 prints type aliases and function signatures without lowering function bodies.
-This declaration view works for `tests/fixtures/add.c`. Derived pointer, array, and function
-types use `TypeId` definitions. Each resolved declaration carries `c`,
+Each resolved declaration carries `c`,
 `c_canon` when different, and `typedef_chain` metadata; qualifiers are kept
 as `c_const`, `c_volatile`, `c_restrict`, and `c_atomic` metadata. The shown
 type is target concrete, so `size_t` and `unsigned long` both display as
@@ -233,7 +235,7 @@ MSVC-environment profiles, with LLP64 widths, binary64 long double, and unsigned
 `--flavor=msvc` loads the checked-in MSVC 19.51.36256 snapshots; the default
 Clang flavor loads the Clang 22.1.8 Windows snapshots. Neither loads Linux/glibc
 shim defaults. GCC on these Windows profiles is rejected rather than falling
-back to Linux macros. Existing Linux flavor behavior is unchanged.
+back to Linux macros.
 
 This is selection scaffolding, not Windows compatibility: Microsoft record
 layout, calling conventions, extended-type availability, compiler-option
@@ -310,7 +312,7 @@ a concrete constant is required to resolve a type or layout, such as fixed
 array bounds, `_BitInt` widths, and constant `offsetof` array indices. This
 required evaluation must not rewrite the surrounding source expression tree.
 
-### Implemented numeric seed
+### Numeric operations
 
 `sema::numeric::Context::resolve` lowers integer and binary floating-point
 literals, parentheses, same-concrete-type `+`, `-`, `*`, `/`, `%`, `&`, `|`,
@@ -335,7 +337,7 @@ conversion. NaNs retain hexadecimal bits in every format.
 These lower to one `ValueKind::Arith` node keyed by `ArithOp`
 (`add`/`sub`/`mul`/`div`/`rem`/`and`/`or`/`xor`/`shl`/`shr`), all carrying `ArithSema` metadata. They are
 not folded or reassociated. Signed overflow defaults to
-`ub`, unsigned overflow to `wraps`; floating arithmetic defaults to
+`ub`, unsigned overflow to `wrap`; floating arithmetic defaults to
 nearest-even rounding with ignored exceptions for the default Clang flavor
 (observable exceptions for GCC). Translation-unit operation options
 initialize the context's independent integer and floating semantic settings.
@@ -351,7 +353,7 @@ operand-range predictions. `%` on floating operands is rejected as invalid opera
 Shift operands are not converted to a common type: the node takes the left
 operand's type and the amount keeps its own. Clang 22 emits plain
 `shl`/`ashr`/`lshr` under `-fwrapv` and `-ftrapv`, so signed `shl` is always
-`overflow=ub` (unsigned `overflow=wraps`). Both shifts explicitly carry
+`overflow=ub` (unsigned `overflow=wrap`). Both shifts explicitly carry
 `amount_out_of_range=ub` (negative amounts or amounts at least the promoted
 left width). Signed `shl` also carries `negative_left=ub`, independently of
 overflow flags. `shr` resolves signed fill through `TargetInfo.signed_right_shift`
@@ -437,15 +439,13 @@ matching clang's `-Wbit-int-extension` is separate work (slate-parser-jgf). Sema
 the current x86-64 Linux baseline uses f80; `-mlong-double-64/80/128`
 selects the corresponding format. Literal digits are parsed directly into
 that format, never rounded through an intermediate f80 or f64 value.
-It does not yet implement the full type/storage metadata proposed below.
 Builtin scalar casts and mixed-type arithmetic insert conversion nodes with
 `reason=promotion|usual_arith|explicit`. Integer width changes precede sign
 changes. Float narrowing and integer-to-float conversions carry rounding
 and exception settings; float-to-int truncates toward zero and records
 `out_of_range=ub` plus exception settings. Widening floats is exact.
-Typedef and non-scalar casts, `_BitInt`, decimal/imaginary
-literals, target-dependent `f64x` suffixes, and other expressions return
-explicit unsupported errors.
+Imaginary literals and target-dependent `f64x` suffixes return explicit
+unsupported errors.
 Supported flags are `-f[no-]wrapv`, `-f[no-]trapv`,
 `-f[no-]strict-overflow`, `-f[no-]rounding-math`, and
 `-f[no-]trapping-math`, plus the long-double options above. Scoped pragma
@@ -479,9 +479,9 @@ arguments to both the test harness and expectation generator.
 
 ```text
 add<i32, overflow=ub>(const<i32>(1), const<i32>(2))
-add<u32, overflow=wraps>(const<u32>(1), const<u32>(2))
+add<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
 add<f64, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0), const<f64>(2.0))
-sub<u32, overflow=wraps>(const<u32>(1), const<u32>(2))
+sub<u32, overflow=wrap>(const<u32>(1), const<u32>(2))
 ```
 
 ### Validation and declaration pruning
@@ -512,26 +512,10 @@ The current parser calls `filter_translation_unit` before resolution, and
 `src/reachability.rs` indexes declarations by string names. Moving that
 filter after resolution is required for this design.
 
-### Remaining prerequisites
-
-- **Scopes and general typing.** The numeric seed does not resolve names,
-  declarations, or assignment/argument/return conversions.
-- **Target data layout.** Supported Linux x86_64, x86, AArch64, and ARM32
-  profiles expose endian, pointer, scalar storage, long-double, stack alignment,
-  and record layout policy. Calling ABI details remain future work.
-- **Full provenance model.** Existing spans and macro origins survive the
-  numeric lowering. The expansion records proposed below remain future work.
-
 ## Module shape
 
-```
-Module
-  target:    triple + endian + scalar/pointer storage + stack ABI policy
-  types:     records (with computed layout), enums
-  globals:   name, type, storage, linkage, symbol attributes, initializer, metadata
-  functions: name, linkage, symbol attributes, parameters, return type, variadic, body, metadata
-  metadata:  side table NodeId → Metadata
-```
+A module is its target, type definitions, globals and functions, plus a
+`NodeId`-keyed metadata side table ([grammar](ir-grammar.md#module)).
 
 **Open:** "type parameters" on functions — needs a concrete C use case
 (`_Generic`, `<tgmath.h>`, type-generic macros) before it gets a slot.
@@ -541,8 +525,7 @@ Module
 **Decided:** a body is a list of statements containing typed expression
 trees.
 
-- Statements: `let`, assignment/`write`, expression statement, `return`,
-  `if`, `loop`/`while`, `switch`, `break`, `continue`, `goto`, label, block.
+- Statements are those in [the grammar](ir-grammar.md#statements).
 - Expressions are side-effect-free except calls. Every node has a `NodeId`
   and concrete type; metadata is looked up by `NodeId`.
 - Local and global references use stable binding IDs; field references use
@@ -583,33 +566,17 @@ shape tells the Rust rewriter what the "ideal" form was.
 
 Side effects in a loop's condition or `for` increment are hoisted into a
 statement block evaluated in that position, with the condition as its
-trailing expression (valid Rust: `while { ch = getc(f); ch != EOF } {}`):
-
-```c
-a[i++] = x;
-while ((ch = getc(f)) != EOF) { ... }
-```
-
-```
-write(index(a, i), x);
-i = add(i, 1i32) [overflow=ub, from=post_inc];
-
-while { ch = getc(f); ne(ch, -1i32 [macro=EOF]) } {
-    ...
-}
-```
+trailing expression, the `evaluation` form in the grammar (valid Rust:
+`while { ch = getc(f); ch != EOF } {}`).
 
 Hard cases hoisting must respect (evaluation order and sequencing):
 
-- `f(i++)`: C increments before the call executes. `f(i); i = i + 1;` is only
-  valid if `f` cannot observe `i` (a local that is not address-taken, but
-  that fact isn't computed yet during lowering). Otherwise a synthetic
-  temp is needed: `let t#0 = i [synthetic]; i = add(i, 1); f(t#0);`.
-  **Open:** always emit the temp during lowering and let the analysis pass
-  remove it, or special-case never-escaping locals up front.
+- `f(i++)`: C increments before the call executes. Lowering always
+  snapshots the old value in a synthetic temporary, writes `i`, and passes
+  the temporary; removing temporaries that turn out unnecessary is left to
+  the analysis pass.
 - `&&`, `||`, `?:`, comma with side effects in a later operand: hoisting
   must turn into `if`, not unconditional statements.
-  `if (p && p->n++)` → `if p != null { let t = read(field(deref(p), n)); write … ; if t != 0 { … } }`.
 - Loop conditions and `for` increments with side effects stay attached to
   their `while`/`for` as a statement block with a trailing expression, so
   they re-run per iteration without changing the loop's form.
@@ -633,9 +600,9 @@ original C type is metadata.
 | `__float128`                             | `f128`                           |                                       |
 | `_Decimal32` / `_Decimal64` / `_Decimal128` | `d32` / `d64` / `d128`        |                                       |
 | `_BitInt(128)`                           | `i128b`                          | `c=_BitInt(128)`                      |
-| `const char *`                           | `*const i8`                      | `c=const char *`                      |
-| `enum E`                                 | `enum E` (underlying `u32`)      | underlying type computed per compiler |
-| `struct S`                               | `struct S`                       | layout in module                      |
+| `const char *`                           | `ptr<const i8>`                  | `c=const char *`                      |
+| `enum E`                                 | `@typeN` (underlying `u32`)      | underlying type computed per compiler |
+| `struct S`                               | `@typeN`                         | layout in module                      |
 
 The whole typedef chain is kept in metadata (`uint32_t` → `__uint32_t` →
 `unsigned int`) since it's the strongest idiomization signal
@@ -713,7 +680,7 @@ rules, so adding bare `Type` variants alone would not make headers lower.
 
 Layout is computed during lowering: field offsets, padding, alignment,
 bit-field storage units. Source field order and names kept; anonymous
-members get a synthesized name plus `anonymous` metadata.
+members print as `<anonymous>`.
 
 ## Objects, lifetime, and initialization
 
@@ -886,10 +853,8 @@ short inc(short s) { return s + 1; }
 ```
 
 ```
-fn inc(s: i16 [c=short]) -> i16 [c=short] {
-    return truncate<i16>(
-        add(widen<i32>(s) [reason=promotion], 1i32) [overflow=ub]
-    ) [reason=return];
+fn %2 @inc(%3 s: i16 [c="short"]) -> i16 [linkage=external] [fallthrough=ub_if_used] [c_return="short"] {
+    return truncate<i16, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%3)), const<i32>(1)));
 }
 ```
 
@@ -908,13 +873,14 @@ Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
 - `div`/`rem`: `by_zero=ub`; signed also `min_by_neg_one=ub`.
 - `shl`/`shr`: amount type kept separately; `amount_out_of_range=ub`; `shl` of
   a negative signed value is `ub`. Right shift of negative signed values is
-  resolved by target (`shr<i32, fill=sign_extend>`).
+  resolved by target (`shr<i32, amount_out_of_range=ub, fill=sign_extend>`).
 - Comparisons, `!`, `&&`, `||` produce `bool`; `from_bool<i32>` is inserted
   only where the result is used as an integer.
-- Scalars in boolean context lower to `ne(x, 0)` / `is_non_null(p)`.
+- Scalars in boolean context lower to `ne<T>(x, const<T>(0))`; pointers to
+  `ne<ptr<T>>(p, null<ptr<T>>)`.
 - Short-circuit and `?:` with side-effect-free operands stay as expression
-  nodes (`logical_and`, `logical_or`, `select`); with side effects they become `if`
-  statements (see hoisting).
+  nodes (`logical_and`, `logical_or`, `conditional`); with side effects they
+  become `if` statements (see hoisting).
 
 ## Pointers
 
@@ -950,12 +916,8 @@ cover unsupported pointer cases. No range-based facts are inferred.
 ### Places and values
 
 **Decided:** a typed place describes a storage location; a value is the
-result of computation. Places retain object and projection structure:
-
-```
-Place = Local(LocalId) | Global(GlobalId) | Deref(Value)
-      | Field(Place, FieldId) | Index(Place, Value)
-```
+result of computation. Places retain object and projection structure
+([grammar](ir-grammar.md#places)).
 
 `read(place)`, `write(place, value)`, and `addr_of(place)` consume places.
 `Index` projects into an array place. Pointer indexing uses
@@ -976,31 +938,32 @@ Accesses retain the applicable alignment and volatile/atomic behavior;
 forming a place alone does not read its stored value. Lowering must preserve
 single evaluation of side-effecting bases and indices when reusing a place.
 
-This resolves the member-access choice for `lh7.2.6` and `lh7.2.7` in favor
-of projections on places.
-
 | C                        | IR                                          | Metadata                           |
 | ------------------------ | ------------------------------------------- | ---------------------------------- |
-| `a[i]` (array read)      | `read(index(a, i))`                         | `form=index`                       |
-| `a[i] = v` (array)       | `write(index(a, i), v)`                     | `form=index`                       |
-| `*p`                     | `read(deref(p))`                            | `form=deref`                       |
-| `*p = v`                 | `write(deref(p), v)`                        | `form=deref`                       |
-| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`             | `form=deref_offset` / `form=index` |
-| `p + i`, `p++`           | `ptr_offset(p, i)` / `p = ptr_offset(p, 1)` | elem type                          |
-| `p - q`                  | `ptr_diff(p, q)` → `i64`                    | elem type, `c=ptrdiff_t`           |
-| `p < q`                  | `ptr_lt(p, q)`                              |                                    |
-| `&x`                     | `addr_of(x)`                                |                                    |
-| `arr` in pointer context | address of its first element, typed `*T`    | `decay[len=N]`                     |
-| `f` as value             | `function_decay<*fn(..)>(f)`                |                                    |
-| `0`, `NULL`, `(void*)0`  | `null<*T>`                                  | `macro=NULL` if applicable         |
-| `if (p)`, `!p`           | `is_non_null(p)` / `is_null(p)`             |                                    |
-| `char* → const char*`    | (no node)                                   | `add_const`                        |
-| `void* ↔ T*`             | `ptr_cast<*T>(p)`                           | `implicit`                         |
-| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<*T>(n)`  |                                    |
+Types and policies are elided below; the grammar has the full forms.
+
+| C                        | IR                                              |
+| ------------------------ | ----------------------------------------------- |
+| `a[i]` (array read)      | `read(deref(ptr_offset(array_decay(a), i)))`    |
+| `a[i] = v` (array)       | `write(deref(ptr_offset(array_decay(a), i)), v)` |
+| `*p`                     | `read(deref(p))`                                |
+| `*p = v`                 | `write(deref(p), v)`                            |
+| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`                 |
+| `p + i`                  | `ptr_offset(p, i)`                              |
+| `p - q`                  | `ptr_diff<i64, element=T, ...>(p, q)`           |
+| `p < q`                  | `lt<ptr<T>>(p, q)`                              |
+| `&x`                     | `addr_of(x)`                                    |
+| `arr` in pointer context | `array_decay<ptr<T>, length=Some(N)>(arr)`      |
+| `f` as value             | `function_decay<ptr<fn(..)>>(f)`                |
+| `0`, `NULL`, `(void*)0`  | `null<ptr<T>>`                                  |
+| `if (p)`, `!p`           | `ne(p, null)` / `not<bool>(ne(p, null))`         |
+| `char* → const char*`    | `pointer_cast<ptr<const i8>>(p)`                |
+| `void* ↔ T*`             | `pointer_cast<ptr<T>>(p)`                       |
+| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<ptr<T>>(n)`  |
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
-is shown in the type (`*const T`) since Rust distinguishes it.
+is shown in the type (`ptr<const T>`) since Rust distinguishes it.
 
 ### Qualified access
 
@@ -1042,7 +1005,8 @@ alignment that differ from the unqualified type are not modeled yet.
 - A void function falling off the end → `fallthrough=ret_void`; a non-void function reached at the end has `fallthrough=ub_if_used`.
 - Constant `sizeof`/`_Alignof`/`offsetof` → folded value with `size_of=T`
   metadata; runtime array sizes use captured extents.
-- String literals: `c"..."` typed `*const i8`, metadata `c=char[N]`, `decay[len=N]`.
+- String literals: an internal `.strN` global holding `code_units<array<i8, N>>(..)`,
+  used through `array_decay<ptr<i8>, length=Some(N)>`.
 - Tentative definitions and `extern` declarations merge into one global with linkage; an incomplete tentative array completes to one element.
 - Pre-C23 `f()` is unprototyped; C23 `f()` and `f(void)` are zero-parameter prototypes.
 - Default argument promotions for variadic calls → `widen`/`float_widen`
@@ -1057,41 +1021,34 @@ int add(int a, int b) { int c = a + b; return c; }
 int main(void) { printf("%d\n", add(2, 3)); }
 ```
 
-The executable version is `cargo run --example ir_module`; its generated
-FileCheck fixture is `tests/fixtures/ir/module.c`. It includes additional
-declarations to exercise the module tables. These excerpts omit those
-tables and the target header for readability. IDs identify declarations;
-source names remain available beside them.
+`tests/fixtures/sema/ir_add.c` is the executable version; it includes
+`tests/fixtures/add.c`. The excerpts omit the target header and the string
+literal global.
 
-Source metadata shown (excerpt):
+Source metadata shown (`--show-metadata`):
 
 ```text
-fn %10 @add(%0 a: i32 [c="int"], %1 b: i32) -> i32 [linkage=external] [source="add.c"] {
-    let %2 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%0) [c="a"], read<i32>(%1)) [source="a + b"] [c="int c"];
-    return read<i32>(%2);
+fn %1 @add(%2 a: i32 [c="int"], %3 b: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int, int)"] {
+    let %4 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%2), read<i32>(%3)) [c="int"];
+    return read<i32>(%4);
 }
 ```
 
 Source metadata hidden (required semantics remain visible):
 
 ```text
-fn %10 @add(%0 a: i32, %1 b: i32) -> i32 [linkage=external] {
-    let %2 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%0), read<i32>(%1));
-    return read<i32>(%2);
+fn %1 @add(%2 a: i32, %3 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+    let %4 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%2), read<i32>(%3));
+    return read<i32>(%4);
 }
-
-fn %17 @main() -> i32 [linkage=external] {
-    call<i32>(%15, array_decay<@type11>(%14), call<i32>(%10, const<i32>(2), const<i32>(3)));
-    return const<i32>(0);
+fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+    call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(i32, i32) -> i32>(%1, const<i32>(2), const<i32>(3)));
 }
 ```
 
 ## Open questions
 
-1. Hoisting `f(i++)`: always emit synthetic temps and let analysis remove
-   them, or special-case during lowering.
-2. What function "type parameters" represent in C.
-3. Metadata printer syntax (`[k=v]` trailing per node is the working form).
+1. What function "type parameters" represent in C.
 
 ## Explicit calling conventions at the AST boundary
 

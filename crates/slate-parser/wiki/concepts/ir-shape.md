@@ -95,7 +95,7 @@ the effective `TargetInfo.long_double` for long-double literals. Layout
 options are applied before both target predefines and sema; consumers do not
 re-read flags. Ordered arguments remain translation-unit provenance until
 module lowering exists. The complete type/storage metadata below
-remains the design target; see [implemented numeric seed](ir-spec.md#implemented-numeric-seed)
+remains the design target; see [numeric operations](ir-spec.md#numeric-operations)
 for current scope and dump examples.
 
 **Decided:** storage information is metadata on the type, alongside
