@@ -424,7 +424,7 @@ and a shift's left operand keep their declared width instead of widening to
 `_BitInt(8)` passed to a variadic function is passed as `i8b`, matching
 clang's `i8 signext`.
 
-Rank at equal width puts the bit-precise type *below* the standard one, so
+Rank at equal width puts the bit-precise type _below_ the standard one, so
 the usual arithmetic conversions resolve `_BitInt(32) + int` to `int` and
 `unsigned _BitInt(32) + int` to `unsigned int`, while a wider bit-precise
 type still wins (`_BitInt(40) + int` is `i40b`). Because `i32b` and `i32`
@@ -588,21 +588,21 @@ Hard cases hoisting must respect (evaluation order and sequencing):
 **Decided:** the shown type is the concrete, target-resolved type. The
 original C type is metadata.
 
-| C                                        | Shown                            | Metadata                              |
-| ---------------------------------------- | -------------------------------- | ------------------------------------- |
-| `int`                                    | `i32`                            | `c=int`                               |
-| `long` (LP64 / LLP64)                    | `i64` / `i32`                    | `c=long`                              |
-| `char` / `signed char` / `unsigned char` | `i8`/`u8` per target, `i8`, `u8` | `c=char` etc.                         |
-| `_Bool`                                  | `bool`                           | `c=_Bool`                             |
-| `size_t`                                 | `u64`                            | `c=size_t`, `c_canon=unsigned long`   |
-| `float` / `double`                       | `f32` / `f64`                    | `c=float` / `c=double`                |
-| `long double` (x86)                      | `f80`                            | `c=long double`                       |
-| `__float128`                             | `f128`                           |                                       |
-| `_Decimal32` / `_Decimal64` / `_Decimal128` | `d32` / `d64` / `d128`        |                                       |
-| `_BitInt(128)`                           | `i128b`                          | `c=_BitInt(128)`                      |
-| `const char *`                           | `ptr<const i8>`                  | `c=const char *`                      |
-| `enum E`                                 | `@typeN` (underlying `u32`)      | underlying type computed per compiler |
-| `struct S`                               | `@typeN`                         | layout in module                      |
+| C                                           | Shown                            | Metadata                              |
+| ------------------------------------------- | -------------------------------- | ------------------------------------- |
+| `int`                                       | `i32`                            | `c=int`                               |
+| `long` (LP64 / LLP64)                       | `i64` / `i32`                    | `c=long`                              |
+| `char` / `signed char` / `unsigned char`    | `i8`/`u8` per target, `i8`, `u8` | `c=char` etc.                         |
+| `_Bool`                                     | `bool`                           | `c=_Bool`                             |
+| `size_t`                                    | `u64`                            | `c=size_t`, `c_canon=unsigned long`   |
+| `float` / `double`                          | `f32` / `f64`                    | `c=float` / `c=double`                |
+| `long double` (x86)                         | `f80`                            | `c=long double`                       |
+| `__float128`                                | `f128`                           |                                       |
+| `_Decimal32` / `_Decimal64` / `_Decimal128` | `d32` / `d64` / `d128`           |                                       |
+| `_BitInt(128)`                              | `i128b`                          | `c=_BitInt(128)`                      |
+| `const char *`                              | `ptr<const i8>`                  | `c=const char *`                      |
+| `enum E`                                    | `@typeN` (underlying `u32`)      | underlying type computed per compiler |
+| `struct S`                                  | `@typeN`                         | layout in module                      |
 
 The whole typedef chain is kept in metadata (`uint32_t` → `__uint32_t` →
 `unsigned int`) since it's the strongest idiomization signal
@@ -662,11 +662,11 @@ these cases against Clang IR signatures. More elaborate records use
 types remain unrepresented. Their separate implementation work is tracked by
 the corresponding children of `slate-parser-lh7.2.17`:
 
-| Family | Reason lowering remains out of scope |
-| ------ | ------------------------------------ |
-| Imaginary | Imaginary literals are explicitly rejected today; mixed real/imaginary operations can change the result family and cannot use scalar usual-arithmetic conversion unchanged. |
-| Vector | Byte-sized and lane-sized AST forms need validated target-dependent lane counts and alignment; vector arithmetic and comparisons require per-lane result and operation contracts. |
-| Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled. |
+| Family      | Reason lowering remains out of scope                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Imaginary   | Imaginary literals are explicitly rejected today; mixed real/imaginary operations can change the result family and cannot use scalar usual-arithmetic conversion unchanged.       |
+| Vector      | Byte-sized and lane-sized AST forms need validated target-dependent lane counts and alignment; vector arithmetic and comparisons require per-lane result and operation contracts. |
+| Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled.                                                        |
 
 `ArithSema` needs a distinct saturating fixed-point case rather than treating
 saturation as integer overflow. Vector operations need an explicit per-lane
@@ -770,7 +770,7 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
   element. `char`-like arrays from string literals (also `{"..."}`) stay
   `CodeUnits` on the declared array type, zero-padded or truncated to length.
 - Compound literals lower to `PlaceKind::CompoundLiteral { object, storage,
-  initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
+initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
   Each literal gets a fresh `BindingId` (its own object identity) and its type
   is the initializer value's type, so `(int[]){1,2}` is `array<i32, 2>`.
   Storage is `Static` outside a function body and `Automatic` inside; values
@@ -829,15 +829,15 @@ the parser propagates it into every expression node, including `ConstExpr`.
 
 Each conversion node does exactly one thing; the reason is metadata.
 
-| Node                                           | Meaning                                                  | Metadata                                                       |
-| ---------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
-| `widen<i32>(x)`                                | value-preserving sign/zero extend (by source signedness) | `reason=promotion\|usual_arith\|assign\|arg\|vararg\|explicit` |
-| `truncate<i8>(x)`                              | keep low bits                                            | `fits=always\|unknown`                                         |
-| `reinterpret<u32>(x)`                          | same width, sign change                                  | `fits=always\|unknown`                                         |
-| `from_bool<i32>(b)`                            | 0-1 (truth conversion is `ne(x, 0)`, not a node)         |                                                                |
+| Node                                                                     | Meaning                                                  | Metadata                                                       |
+| ------------------------------------------------------------------------ | -------------------------------------------------------- | -------------------------------------------------------------- |
+| `widen<i32>(x)`                                                          | value-preserving sign/zero extend (by source signedness) | `reason=promotion\|usual_arith\|assign\|arg\|vararg\|explicit` |
+| `truncate<i8>(x)`                                                        | keep low bits                                            | `fits=always\|unknown`                                         |
+| `reinterpret<u32>(x)`                                                    | same width, sign change                                  | `fits=always\|unknown`                                         |
+| `from_bool<i32>(b)`                                                      | 0-1 (truth conversion is `ne(x, 0)`, not a node)         |                                                                |
 | `float_widen<f64>(x)` / `float_narrow<f32>(x)` / `float_convert<d64>(x)` |                                                          |                                                                |
-| `int_to_float<f64>(x)`                         |                                                          | `exact=true\|false`                                            |
-| `float_to_int<i32>(x)`                         |                                                          | `out_of_range=ub`                                              |
+| `int_to_float<f64>(x)`                                                   |                                                          | `exact=true\|false`                                            |
+| `float_to_int<i32>(x)`                                                   |                                                          | `out_of_range=ub`                                              |
 
 A C conversion changing width and signedness is two nodes in fixed order:
 width first (in source signedness), then reinterpret.
@@ -938,28 +938,29 @@ Accesses retain the applicable alignment and volatile/atomic behavior;
 forming a place alone does not read its stored value. Lowering must preserve
 single evaluation of side-effecting bases and indices when reusing a place.
 
-| C                        | IR                                          | Metadata                           |
-| ------------------------ | ------------------------------------------- | ---------------------------------- |
+| C   | IR  | Metadata |
+| --- | --- | -------- |
+
 Types and policies are elided below; the grammar has the full forms.
 
-| C                        | IR                                              |
-| ------------------------ | ----------------------------------------------- |
-| `a[i]` (array read)      | `read(deref(ptr_offset(array_decay(a), i)))`    |
+| C                        | IR                                               |
+| ------------------------ | ------------------------------------------------ |
+| `a[i]` (array read)      | `read(deref(ptr_offset(array_decay(a), i)))`     |
 | `a[i] = v` (array)       | `write(deref(ptr_offset(array_decay(a), i)), v)` |
-| `*p`                     | `read(deref(p))`                                |
-| `*p = v`                 | `write(deref(p), v)`                            |
-| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`                 |
-| `p + i`                  | `ptr_offset(p, i)`                              |
-| `p - q`                  | `ptr_diff<i64, element=T, ...>(p, q)`           |
-| `p < q`                  | `lt<ptr<T>>(p, q)`                              |
-| `&x`                     | `addr_of(x)`                                    |
-| `arr` in pointer context | `array_decay<ptr<T>, length=Some(N)>(arr)`      |
-| `f` as value             | `function_decay<ptr<fn(..)>>(f)`                |
-| `0`, `NULL`, `(void*)0`  | `null<ptr<T>>`                                  |
+| `*p`                     | `read(deref(p))`                                 |
+| `*p = v`                 | `write(deref(p), v)`                             |
+| `*(p + i)` / `p[i]`      | `read(deref(ptr_offset(p, i)))`                  |
+| `p + i`                  | `ptr_offset(p, i)`                               |
+| `p - q`                  | `ptr_diff<i64, element=T, ...>(p, q)`            |
+| `p < q`                  | `lt<ptr<T>>(p, q)`                               |
+| `&x`                     | `addr_of(x)`                                     |
+| `arr` in pointer context | `array_decay<ptr<T>, length=Some(N)>(arr)`       |
+| `f` as value             | `function_decay<ptr<fn(..)>>(f)`                 |
+| `0`, `NULL`, `(void*)0`  | `null<ptr<T>>`                                   |
 | `if (p)`, `!p`           | `ne(p, null)` / `not<bool>(ne(p, null))`         |
-| `char* → const char*`    | `pointer_cast<ptr<const i8>>(p)`                |
-| `void* ↔ T*`             | `pointer_cast<ptr<T>>(p)`                       |
-| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<ptr<T>>(n)`  |
+| `char* → const char*`    | `pointer_cast<ptr<const i8>>(p)`                 |
+| `void* ↔ T*`             | `pointer_cast<ptr<T>>(p)`                        |
+| `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<ptr<T>>(n)`   |
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`
@@ -986,7 +987,7 @@ on the type:
   other way. A volatile-qualified object type is not shown.
 - An atomic compound assignment or `++`/`--` is one read-modify-write, so
   side-effect hoisting keeps `update<T, result=..., atomic=seq_cst>(place,
-  f(old))` whole in a synthetic temporary instead of splitting it into
+f(old))` whole in a synthetic temporary instead of splitting it into
   read, compute, write. Volatile updates are split, and both the read and
   the write stay volatile.
 - `restrict` is an aliasing promise about a pointer binding, so it is a

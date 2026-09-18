@@ -32,13 +32,13 @@ remains part of the module, not removable provenance.
 Prefer one owning configuration with separate groups over a flat
 `LangOptions` containing unrelated settings.
 
-| Category | Inputs | Resolved effects |
-| --- | --- | --- |
-| Operation semantics | `-fwrapv`, `-ftrapv`, `-fno-strict-overflow`, `-fno-delete-null-pointer-checks`, `-frounding-math` | Required behavior on relevant operations |
-| Type meaning and layout | `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`, `-mlong-double-*` | Effective `TargetInfo`, concrete types, layouts, and calling contracts |
-| Language | `-std`, `-fms-extensions`, `-fdollars-in-identifiers`, `-fgnu89-inline` | Parsing and declaration meaning, including emitted definitions |
-| Linkage | `-fcommon`/`-fno-common`, `-fvisibility` | Definition kinds and symbol visibility |
-| Codegen settings | `-O`, `-g`, `-fstack-protector` | Applicable predefines and configuration provenance within this translation scope |
+| Category                | Inputs                                                                                             | Resolved effects                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Operation semantics     | `-fwrapv`, `-ftrapv`, `-fno-strict-overflow`, `-fno-delete-null-pointer-checks`, `-frounding-math` | Required behavior on relevant operations                                         |
+| Type meaning and layout | `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`, `-mlong-double-*`            | Effective `TargetInfo`, concrete types, layouts, and calling contracts           |
+| Language                | `-std`, `-fms-extensions`, `-fdollars-in-identifiers`, `-fgnu89-inline`                            | Parsing and declaration meaning, including emitted definitions                   |
+| Linkage                 | `-fcommon`/`-fno-common`, `-fvisibility`                                                           | Definition kinds and symbol visibility                                           |
+| Codegen settings        | `-O`, `-g`, `-fstack-protector`                                                                    | Applicable predefines and configuration provenance within this translation scope |
 
 Applicable predefines must be generated from the same effective
 configuration used by parsing and sema. Examples include `__OPTIMIZE__`,
@@ -131,17 +131,17 @@ Group resolved properties by meaning and attach them to their actual owner.
 The categories are orthogonal; individual compiler flags need not be. One
 flag can affect several categories, and several flags can affect one field.
 
-| Category | Resolved properties | Owner |
-| --- | --- | --- |
-| Integer arithmetic | Overflow policy, division exceptional cases, shift rules | Arithmetic operation |
-| Floating-point behavior | Rounding source, exception observability, evaluation precision | Arithmetic or conversion operation |
-| Pointer semantics | Offset overflow, bounds/provenance requirements, null-access contract | Pointer operation or memory access |
-| Memory access | Volatile, atomic ordering, access width, alignment | Load/store/copy operation |
-| Type representation and ABI | Signedness, numeric format, size/alignment, field layout, calling convention | Types, objects, function signatures |
-| Symbol and definition semantics | Linkage, visibility, common definitions, interposition, inline-definition behavior | Global/function declaration |
-| Execution and instrumentation | Required initialization, runtime checks, trap/report behavior | Explicit operations and function properties |
-| Language interpretation | Standard, extensions, builtin recognition | Frontend configuration; resolved effects flow into IR |
-| Invocation provenance | Original arguments, normalized defaults, compiler flavor | Module header |
+| Category                        | Resolved properties                                                                | Owner                                                 |
+| ------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Integer arithmetic              | Overflow policy, division exceptional cases, shift rules                           | Arithmetic operation                                  |
+| Floating-point behavior         | Rounding source, exception observability, evaluation precision                     | Arithmetic or conversion operation                    |
+| Pointer semantics               | Offset overflow, bounds/provenance requirements, null-access contract              | Pointer operation or memory access                    |
+| Memory access                   | Volatile, atomic ordering, access width, alignment                                 | Load/store/copy operation                             |
+| Type representation and ABI     | Signedness, numeric format, size/alignment, field layout, calling convention       | Types, objects, function signatures                   |
+| Symbol and definition semantics | Linkage, visibility, common definitions, interposition, inline-definition behavior | Global/function declaration                           |
+| Execution and instrumentation   | Required initialization, runtime checks, trap/report behavior                      | Explicit operations and function properties           |
+| Language interpretation         | Standard, extensions, builtin recognition                                          | Frontend configuration; resolved effects flow into IR |
+| Invocation provenance           | Original arguments, normalized defaults, compiler flavor                           | Module header                                         |
 
 These groups describe semantic ownership, not a universal property bag
 attached to every node. Language options are mostly consumed before IR.
@@ -225,10 +225,10 @@ in the first change:
 With the same preserved calls and semantic information, IR has no inherent
 advantage in determining the runtime FP environment.
 
-| Stage | Responsibility |
-| --- | --- |
-| Sema/IR | Record required rounding and exception behavior from flags and scoped pragmas |
-| Initial Rust emission | Preserve calls through the existing `extern C` path and carry required operation contracts to the rewriter |
+| Stage                 | Responsibility                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Sema/IR               | Record required rounding and exception behavior from flags and scoped pragmas                                                  |
+| Initial Rust emission | Preserve calls through the existing `extern C` path and carry required operation contracts to the rewriter                     |
 | Existing Rust rewrite | Prove lifting to higher-level Rust is valid; dynamic environment changes prevent lifting under the current conservative policy |
 
 Recognizable environment functions can remain resolved calls. Dedicated

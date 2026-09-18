@@ -20,11 +20,11 @@ Sema.
 pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution + lowering) ──▶ typed IR
 ```
 
-| Stage         | Owns                                                                                   | Does not                                                     |
-| ------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Parser        | syntax, source form, spans, provenance, typedef-name tracking needed to parse          | evaluate, resolve names, compute types                       |
-| `src/sema/validate.rs` | existing early checks and diagnostics | guarantee of full semantic validity |
-| `src/sema/` | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics, direct typed IR construction | produce an intermediate semantic AST |
+| Stage                  | Owns                                                                                                                 | Does not                               |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Parser                 | syntax, source form, spans, provenance, typedef-name tracking needed to parse                                        | evaluate, resolve names, compute types |
+| `src/sema/validate.rs` | existing early checks and diagnostics                                                                                | guarantee of full semantic validity    |
+| `src/sema/`            | name resolution, types, conversions, constant evaluation, layout, semantic diagnostics, direct typed IR construction | produce an intermediate semantic AST   |
 
 Early checks require no resolved names or types. Validation that depends on
 resolution belongs to `src/sema/`; surviving the early pass does not prove
@@ -103,7 +103,7 @@ increment and body, then the enclosing bindings are restored.
   duplicate provenance. Debug output includes provenance only when
   `system_header` is `Some`.
 - `macro_origin: Option<Rc<MacroOrigin>>` (`MacroOrigin { name, definition:
-  Provenance, parent: Option<Rc<MacroOrigin>> }`) identifies which macro
+Provenance, parent: Option<Rc<MacroOrigin>> }`) identifies which macro
   produced a token, e.g. `int m = INT_MAX;` gives the folded literal's `Span`
   a `macro_origin` of `{ name: "INT_MAX", definition: <limits.h provenance> }`
   so Slate can pattern-match macro name + system header. `name`/`definition` are the
@@ -579,20 +579,20 @@ error. Where a compiler accepts a construct as an extension, slate-parser
 records it as an extension (like `_BitInt`, see [ir-spec](ir-spec.md)) and
 does not reject; input is assumed to have compiled with the real compiler.
 
-| Construct                                   | Introduced | clang before intro. | gcc before intro. | slate-parser |
-| ------------------------------------------- | ---------- | ------------------- | ----------------- | ------------ |
-| VLAs, `[*]` parameters                      | C99        | warn                | warn              | extension    |
-| compound literals                           | C99        | warn                | warn              | extension    |
-| designated initializers                     | C99        | warn                | warn              | extension    |
-| declarations after statements               | C99        | warn                | warn              | extension    |
-| flexible array members                      | C99        | warn                | warn              | extension    |
-| variadic macros                             | C99        | warn                | warn              | extension    |
-| `//` comments                               | C99        | `c89`: warn, `gnu89`: ok | `c89`: err, `gnu89`: warn | extension |
-| `for (int i…)` declaration                  | C99        | warn                | `c89`/`gnu89`: err | gated by `control_statement_scopes` |
-| `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11 | warn | warn      | extension    |
-| `[[…]]` attributes                          | C23        | warn (all modes before C23) | warn | extension |
-| `0b` binary literals                        | C23        | warn                | warn              | extension    |
-| digit separators (`1'000`)                  | C23        | err                 | err               | extension    |
+| Construct                                                        | Introduced | clang before intro.         | gcc before intro.         | slate-parser                        |
+| ---------------------------------------------------------------- | ---------- | --------------------------- | ------------------------- | ----------------------------------- |
+| VLAs, `[*]` parameters                                           | C99        | warn                        | warn                      | extension                           |
+| compound literals                                                | C99        | warn                        | warn                      | extension                           |
+| designated initializers                                          | C99        | warn                        | warn                      | extension                           |
+| declarations after statements                                    | C99        | warn                        | warn                      | extension                           |
+| flexible array members                                           | C99        | warn                        | warn                      | extension                           |
+| variadic macros                                                  | C99        | warn                        | warn                      | extension                           |
+| `//` comments                                                    | C99        | `c89`: warn, `gnu89`: ok    | `c89`: err, `gnu89`: warn | extension                           |
+| `for (int i…)` declaration                                       | C99        | warn                        | `c89`/`gnu89`: err        | gated by `control_statement_scopes` |
+| `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11        | warn                        | warn                      | extension                           |
+| `[[…]]` attributes                                               | C23        | warn (all modes before C23) | warn                      | extension                           |
+| `0b` binary literals                                             | C23        | warn                        | warn                      | extension                           |
+| digit separators (`1'000`)                                       | C23        | err                         | err                       | extension                           |
 
 Digit separators are the one construct both compilers reject before C23
 (both lex the `'` as the start of an unterminated character constant, so
@@ -605,15 +605,15 @@ buys no fidelity. `0b` literals are likewise an extension.
 Where `src/ast.rs` does not match this spec yet. Each row is tracked under
 the AST redesign epic.
 
-| Current                                                                                                                                                                                       | Target                                                                                        | Also fixes                                                             |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `TagSpecifier::Reference` stores an optional boxed fixed enum underlying type; `TagBody::Record` holds `FieldItem`                                                                        | `MemberItem`, `EnumItem`                                                                      | opaque C23 enum declarations retain `: type`                                                  |
-| `TypeSpecifier` variants use `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` instead of the table above                     | variant names and shapes in the `TypeSpecifier` table                                         |                                                                        |
-| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                                             | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                                                        |
-| `Designator::Array`/`ArrayRange`                                                                                                                                                              | `Index`/`IndexRange`                                                                          |                                                                        |
-| bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                                                   | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                                                        |
-| `sema.rs` returns errors only; rejects tag definitions in parameter lists                                                                                                                     | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` |                                                                        |
-| parser calls name-based `filter_translation_unit` before resolution                                                                                                                           | IR pipeline prunes resolved symbol dependencies from explicit roots                           |                                                                        |
+| Current                                                                                                                                                                   | Target                                                                                        | Also fixes                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `TagSpecifier::Reference` stores an optional boxed fixed enum underlying type; `TagBody::Record` holds `FieldItem`                                                        | `MemberItem`, `EnumItem`                                                                      | opaque C23 enum declarations retain `: type` |
+| `TypeSpecifier` variants use `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` instead of the table above | variant names and shapes in the `TypeSpecifier` table                                         |                                              |
+| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` ordered by id; reachability pruning leaves gaps, so look tags up with `TranslationUnit::tag`                         | indexed by `TagId` once pruning moves to the IR pipeline                                      |                                              |
+| `Designator::Array`/`ArrayRange`                                                                                                                                          | `Index`/`IndexRange`                                                                          |                                              |
+| bare `aligned` attribute reads `__BIGGEST_ALIGNMENT__` from the target macros in the parser                                                                               | argument-less `Aligned`, value chosen in `src/ir/sema`                                        |                                              |
+| `sema.rs` returns errors only; rejects tag definitions in parameter lists                                                                                                 | returns structurally checked AST plus diagnostics; semantic validity checked by `src/ir/sema` |                                              |
+| parser calls name-based `filter_translation_unit` before resolution                                                                                                       | IR pipeline prunes resolved symbol dependencies from explicit roots                           |                                              |
 
 ## Calling conventions and Microsoft declaration attributes
 

@@ -339,7 +339,7 @@ floating          = ", rounding=" ( "nearest_even" | "environment" )
 exceptions        = "ignore" | "observable" ;
 ```
 
-- A policy is the operation's behavior *if* the case occurs, not a claim that
+- A policy is the operation's behavior _if_ the case occurs, not a claim that
   it does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or
   `-fwrapv`; `trap` is `-ftrapv`.
 - `fits` appears on `truncate`/`reinterpret`; `exact=` on `int_to_float`;

@@ -24,14 +24,14 @@ severity(w) =
 wins over the pedantic group regardless of flag order; otherwise later flags
 win, matching the `Opt` parser's ordering rule.
 
-`-Werror=<w>` also *enables* a default-off warning, which blanket `-Werror`
+`-Werror=<w>` also _enables_ a default-off warning, which blanket `-Werror`
 does not. Verified against clang 22: `-Werror=long-long` alone errors on a
 c89 `long long`, while `-Werror` alone is silent, as is `-Wno-error=<w>`.
 
 ## Severity never changes the AST or IR
 
 Verified against clang 22: `clang -m32 -std=c89 -pedantic-errors` still types
-`4294967296` as `long long` and reports the *use* of the extension as an
+`4294967296` as `long long` and reports the _use_ of the extension as an
 error. The extension type is chosen first; severity only decides how the use
 is reported. So `Availability::Extension` never degrades to `Rejected`, and
 `StandardFeatures` does not read `DiagnosticOptions`. An earlier design note
@@ -39,11 +39,11 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 
 ## Warnings in use
 
-| Warning | Default | Pedantic | Raised when |
-| --- | --- | --- | --- |
-| `long-long` | off | yes | a written `long long` specifier, or a selected integer literal rank of `LongLong`, while `long_long_type` is not `Standard` |
-| `c99-compat` | on in c89 | no | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate |
-| `implicitly-unsigned-literal` | on | no | a signed-only decimal literal lands on an unsigned candidate at the widest rank |
+| Warning                       | Default   | Pedantic | Raised when                                                                                                                 |
+| ----------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `long-long`                   | off       | yes      | a written `long long` specifier, or a selected integer literal rank of `LongLong`, while `long_long_type` is not `Standard` |
+| `c99-compat`                  | on in c89 | no       | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate                                            |
+| `implicitly-unsigned-literal` | on        | no       | a signed-only decimal literal lands on an unsigned candidate at the widest rank                                             |
 
 `c99-compat` is deliberately not in the pedantic group: clang leaves it a
 warning even under `-pedantic-errors`.
@@ -55,8 +55,8 @@ is the one selection point, shared with the IR lowering in `sema/numeric.rs`.
 
 ## Where type-level extension warnings come from
 
-Two things would otherwise be re-derived for every new warning: *where* types
-are written, and *which* feature a written specifier needs. Each is stated
+Two things would otherwise be re-derived for every new warning: _where_ types
+are written, and _which_ feature a written specifier needs. Each is stated
 once.
 
 `extension_warning(ty, features)` in `sema/validate.rs` maps a single
