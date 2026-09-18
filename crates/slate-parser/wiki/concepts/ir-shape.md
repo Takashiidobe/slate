@@ -62,8 +62,8 @@ worked out later; the list above covers the binary numeric variants.
 
 `Bool` is a separate type with two values, not a one-bit integer.
 Enums retain a separate identity and refer to an underlying integer type
-(see [Enums](#enums)). Complex, vector, and
-fixed-point types likewise need their own shapes.
+(see [Enums](#enums)). Complex now has a structural `Type::Complex` with a
+numeric component; vector and fixed-point types still need their own shapes.
 
 The numeric variant itself contains no literal value, variable name, C
 rank, typedef name, range proof, or overflow policy. A type wraps the

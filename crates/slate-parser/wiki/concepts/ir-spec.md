@@ -627,14 +627,28 @@ because arithmetic and representation must remain visible without consulting
 source metadata. This is the type-shape decision of `slate-parser-lh7.2.17`,
 not an implemented IR API.
 
-**Out of scope for current IR lowering:** none of the four families is yet
-represented by `ir::Type`, and module lowering currently rejects their
-`TypeSpecifier`s. The separate implementation work is tracked by the four
-children of `slate-parser-lh7.2.17`:
+**Implemented for complex:** `Type::Complex(NumericType)` prints as
+`complex<f64>` and retains a concrete component type. Target storage is two
+adjacent components with the component's alignment. The module lowerer handles
+floating and GNU integer-complex declarations, scalar/complex and
+complex/complex conversions, `+ - * /`, `== !=`, truth tests, unary negation,
+and `__real__`/`__imag__` reads and writes. Mixed scalar/complex arithmetic
+retains the scalar operand, which matters for floating multiplication and
+division. `ArithSema::ComplexFloating` carries rounding and exception policy;
+`ComplexInteger` carries overflow and division-by-zero policy. The component
+of a complex conversion is converted on each side, with the conversion
+contract recorded on the operation. `tests/fixtures/sema/ir_complex.c` pins
+these forms, the common complex sizes, and GNU integer-complex spelling.
+The existing IR still does not classify call arguments or returns by target
+ABI; this is a general function-call prerequisite, including for complex,
+tracked by `slate-parser-lh7.2.18`.
+
+**Out of scope for current IR lowering:** imaginary, vector, and fixed-point
+types remain unrepresented. Their separate implementation work is tracked by
+the corresponding children of `slate-parser-lh7.2.17`:
 
 | Family | Reason lowering remains out of scope |
 | ------ | ------------------------------------ |
-| Complex | Real/complex conversions, pair arithmetic, equality, and component storage need contracts beyond scalar `ArithSema::Floating`; GNU integer-complex types also need a deliberate component rule. |
 | Imaginary | Imaginary literals are explicitly rejected today; mixed real/imaginary operations can change the result family and cannot use scalar usual-arithmetic conversion unchanged. |
 | Vector | Byte-sized and lane-sized AST forms need validated target-dependent lane counts and alignment; vector arithmetic and comparisons require per-lane result and operation contracts. |
 | Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled. |

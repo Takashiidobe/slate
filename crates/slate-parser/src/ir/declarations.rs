@@ -121,6 +121,10 @@ pub struct Place {
 pub enum PlaceKind {
     Binding(BindingId),
     Deref(Box<Value>),
+    ComplexPart {
+        base: Box<Place>,
+        imaginary: bool,
+    },
     Field {
         base: Box<Place>,
         index: usize,
@@ -162,6 +166,11 @@ impl Place {
                 "deref({})",
                 value.display_metadata(false, None).with_compact(compact)
             ),
+            PlaceKind::ComplexPart { base, imaginary } => {
+                f.write_str(if *imaginary { "imag(" } else { "real(" })?;
+                base.format(f, compact)?;
+                f.write_str(")")
+            }
             PlaceKind::Index { base, index } => write!(
                 f,
                 "index({}, {})",

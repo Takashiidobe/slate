@@ -366,6 +366,13 @@ impl TargetInfo {
     }
 
     pub fn storage_of(&self, ty: Type) -> Result<StorageLayout, LayoutError> {
+        if let Type::Complex(component) = &ty {
+            let component = self.storage_of(Type::Numeric(*component))?;
+            return Ok(StorageLayout {
+                size_bytes: component.size_bytes * 2,
+                alignment_bytes: component.alignment_bytes,
+            });
+        }
         let key = match ty {
             Type::Bool => ScalarKey::Bool,
             Type::Numeric(NumericType::Integer {
@@ -383,7 +390,11 @@ impl TargetInfo {
             }
             Type::Numeric(NumericType::Float(format)) => ScalarKey::Float(format),
             Type::Pointer { .. } => return Ok(self.pointer),
-            Type::Defined(_) | Type::Array { .. } | Type::Function { .. } | Type::Void => {
+            Type::Complex(_)
+            | Type::Defined(_)
+            | Type::Array { .. }
+            | Type::Function { .. }
+            | Type::Void => {
                 return Err(LayoutError::UnsupportedScalar(ty));
             }
         };

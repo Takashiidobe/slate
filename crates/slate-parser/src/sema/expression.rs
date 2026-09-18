@@ -94,6 +94,33 @@ impl Lowerer {
         let mut result = match &value.ty {
             Type::Bool => return Ok(value),
             Type::Numeric(_) => self.context.condition(value),
+            Type::Complex(component) => {
+                let component = *component;
+                let zero = self.value(
+                    &value.node,
+                    Type::Numeric(component),
+                    ValueKind::Constant(match component {
+                        NumericType::Integer { .. } => Number::Integer(0u32.into()),
+                        NumericType::Float(_) => Number::FloatBits(0),
+                    }),
+                );
+                let zero =
+                    self.context
+                        .convert(zero, value.ty.clone(), ConversionReason::UsualArith);
+                let node = value.node.clone();
+                self.value(
+                    &node,
+                    Type::Bool,
+                    ValueKind::Compare {
+                        op: CompareOp::Ne,
+                        left: Box::new(value),
+                        right: Box::new(zero),
+                        exceptions: matches!(component, NumericType::Float(_))
+                            .then_some(self.context.floating.exceptions),
+                        reason,
+                    },
+                )
+            }
             ty if self.pointee(ty).is_ok() => {
                 let zero = self.value(&value.node, ty.clone(), ValueKind::Null);
                 let node = value.node.clone();
@@ -187,7 +214,9 @@ impl Lowerer {
         if to == Type::Bool {
             return self.condition(value, Some(reason));
         }
-        if matches!(to, Type::Numeric(_)) && matches!(value.ty, Type::Numeric(_) | Type::Bool) {
+        if matches!(to, Type::Numeric(_) | Type::Complex(_))
+            && matches!(value.ty, Type::Numeric(_) | Type::Complex(_) | Type::Bool)
+        {
             return Ok(self.context.convert(value, to, reason));
         }
         if self.pointee(&to).is_ok() {
@@ -292,6 +321,30 @@ impl Lowerer {
                 Ok(Place {
                     ty: self.pointee(&value.ty)?,
                     kind: PlaceKind::Deref(Box::new(value)),
+                })
+            }
+            ExprKind::Unary {
+                op: UnaryOp::Real | UnaryOp::Imag,
+                operand,
+            } => {
+                let base = self.place(operand)?;
+                let Type::Complex(component) = base.ty else {
+                    return Err(ResolveError::Unsupported(
+                        "complex component of non-complex place",
+                    ));
+                };
+                Ok(Place {
+                    ty: Type::Numeric(component),
+                    kind: PlaceKind::ComplexPart {
+                        base: Box::new(base),
+                        imaginary: matches!(
+                            &e.value,
+                            ExprKind::Unary {
+                                op: UnaryOp::Imag,
+                                ..
+                            }
+                        ),
+                    },
                 })
             }
             ExprKind::Index { base, index } => {
@@ -790,12 +843,46 @@ impl Lowerer {
                     matches!(e.value, ExprKind::Postfix { .. }),
                 )
             }
+            ExprKind::Unary {
+                op: UnaryOp::Real | UnaryOp::Imag,
+                operand,
+            } => {
+                if let Ok(place) = self.place(e) {
+                    return self.read(e, place);
+                }
+                let value = self.expr(operand)?;
+                let Type::Complex(component) = value.ty else {
+                    return Err(ResolveError::Unsupported(
+                        "complex component of non-complex value",
+                    ));
+                };
+                Ok(self.value(
+                    e,
+                    Type::Numeric(component),
+                    ValueKind::Convert {
+                        kind: if matches!(
+                            &e.value,
+                            ExprKind::Unary {
+                                op: UnaryOp::Real,
+                                ..
+                            }
+                        ) {
+                            ConversionKind::ComplexToReal
+                        } else {
+                            ConversionKind::ComplexToImag
+                        },
+                        operand: Box::new(value),
+                        reason: ConversionReason::Explicit,
+                        semantics: ConversionSema::Exact,
+                    },
+                ))
+            }
             ExprKind::Unary { op, operand } => {
                 let value = self.expr(operand)?;
                 let value = self.enum_integer(value);
                 match op {
                     UnaryOp::Plus => {
-                        if !matches!(value.ty, Type::Bool | Type::Numeric(_)) {
+                        if !matches!(value.ty, Type::Bool | Type::Numeric(_) | Type::Complex(_)) {
                             return Err(ResolveError::Unsupported("non-numeric unary plus"));
                         }
                         Ok(self.context.promote(value))
@@ -960,8 +1047,8 @@ impl Lowerer {
                 let condition = self.condition(condition, None)?;
                 let mut left = self.expr(then_value)?;
                 let mut right = self.expr(else_value)?;
-                if matches!(left.ty, Type::Bool | Type::Numeric(_))
-                    && matches!(right.ty, Type::Bool | Type::Numeric(_))
+                if matches!(left.ty, Type::Bool | Type::Numeric(_) | Type::Complex(_))
+                    && matches!(right.ty, Type::Bool | Type::Numeric(_) | Type::Complex(_))
                 {
                     (left, right) = self
                         .context

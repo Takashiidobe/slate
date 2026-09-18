@@ -6,6 +6,7 @@ pub enum Type {
     Void,
     Bool,
     Numeric(NumericType),
+    Complex(NumericType),
     Defined(super::TypeId),
     Pointer {
         pointee: Box<Type>,
@@ -30,6 +31,7 @@ impl fmt::Display for Type {
             Self::Defined(id) => write!(f, "@type{}", id.0),
             Self::Bool => f.write_str("bool"),
             Self::Numeric(ty) => write!(f, "{ty}"),
+            Self::Complex(ty) => write!(f, "complex<{ty}>"),
             Self::Pointer { pointee, is_const } => {
                 write!(f, "ptr<{}{pointee}>", if *is_const { "const " } else { "" })
             }
@@ -279,6 +281,11 @@ pub enum ArithSema {
         negative_left: Option<UbPolicy>,
     },
     Floating(FloatingSemantics),
+    ComplexFloating(FloatingSemantics),
+    ComplexInteger {
+        overflow: Overflow,
+        by_zero: Option<UbPolicy>,
+    },
     Exact,
     ShiftRight {
         fill: ShiftFill,
@@ -316,6 +323,10 @@ pub enum ConversionKind {
     FloatNarrow,
     FloatToInt,
     PointerCast,
+    RealToComplex,
+    ComplexToReal,
+    ComplexToImag,
+    ComplexConvert,
     EnumToInt,
     IntToEnum,
     PtrToInt,
@@ -334,6 +345,10 @@ impl fmt::Display for ConversionKind {
             Self::FloatNarrow => "float_narrow",
             Self::FloatToInt => "float_to_int",
             Self::PointerCast => "pointer_cast",
+            Self::RealToComplex => "real_to_complex",
+            Self::ComplexToReal => "complex_to_real",
+            Self::ComplexToImag => "complex_to_imag",
+            Self::ComplexConvert => "complex_convert",
             Self::EnumToInt => "enum_to_int",
             Self::IntToEnum => "int_to_enum",
             Self::PtrToInt => "ptr_to_int",

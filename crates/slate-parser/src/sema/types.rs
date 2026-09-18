@@ -591,6 +591,18 @@ impl TypeResolver {
                 ));
             }
             TypeSpecifier::Bool => (Type::Bool, "_Bool".into()),
+            TypeSpecifier::Complex(inner) => {
+                let (component, spelling, canonical, chain) = self.base(inner)?;
+                let Some(Type::Numeric(component)) = component else {
+                    return Err(ResolveError::Unsupported("complex component type"));
+                };
+                return Ok((
+                    Some(Type::Complex(component)),
+                    format!("_Complex {spelling}"),
+                    format!("_Complex {canonical}"),
+                    chain,
+                ));
+            }
             TypeSpecifier::Integer(IntegerType::Char { signed }) => {
                 let spelling = match signed {
                     None => "char",

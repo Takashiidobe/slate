@@ -105,7 +105,7 @@ impl<'a> DeclaratorParser<'a> {
             return Err(DeclaratorError::ExpectedDeclarationType);
         };
         self.pos += 1;
-        Ok(match token {
+        let ty = match token {
             Token::Keyword(Keyword::Bool) => TypeSpecifier::Bool,
             Token::Keyword(Keyword::BFloat16) => TypeSpecifier::Floating(FloatingType::BFloat16),
             Token::Keyword(Keyword::Char) => {
@@ -406,7 +406,13 @@ impl<'a> DeclaratorParser<'a> {
             }
             Token::Ident(name) => TypeSpecifier::Named(name),
             other => return Err(DeclaratorError::UnexpectedToken(other)),
-        })
+        };
+        if matches!(ty, TypeSpecifier::Integer(_)) && self.matches(Token::Keyword(Keyword::Complex))
+        {
+            Ok(TypeSpecifier::Complex(Box::new(ty)))
+        } else {
+            Ok(ty)
+        }
     }
 
     pub(super) fn parse_record_type(

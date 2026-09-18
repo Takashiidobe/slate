@@ -536,6 +536,22 @@ impl Value {
                 },
                 exceptions_name(properties.exceptions)
             )?,
+            ArithSema::ComplexFloating(properties) => write!(
+                f,
+                ", complex=true, rounding={}, exceptions={}",
+                match properties.rounding {
+                    Rounding::NearestEven => "nearest_even",
+                    Rounding::Environment => "environment",
+                },
+                exceptions_name(properties.exceptions)
+            )?,
+            ArithSema::ComplexInteger { overflow, by_zero } => {
+                f.write_str(", complex=true")?;
+                format_overflow(f, overflow)?;
+                if let Some(policy) = by_zero {
+                    write!(f, ", by_zero={policy}")?;
+                }
+            }
             ArithSema::Exact => {}
             ArithSema::ShiftRight {
                 fill,

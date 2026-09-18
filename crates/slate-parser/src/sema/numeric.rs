@@ -210,6 +210,11 @@ impl Context {
             BinaryOp::BitXor => ArithOp::Xor,
             BinaryOp::ShiftLeft => ArithOp::Shl,
             BinaryOp::ShiftRight => ArithOp::Shr,
+            BinaryOp::Equal | BinaryOp::NotEqual
+                if matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_)) =>
+            {
+                return self.complex_binary(op, left, right);
+            }
             BinaryOp::Equal => return self.compare(CompareOp::Eq, left, right),
             BinaryOp::NotEqual => return self.compare(CompareOp::Ne, left, right),
             BinaryOp::Less => return self.compare(CompareOp::Lt, left, right),
@@ -221,6 +226,9 @@ impl Context {
         };
         let left = self.promote(left);
         let right = self.promote(right);
+        if matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_)) {
+            return self.complex_binary(op, left, right);
+        }
         let is_shift = matches!(arith, ArithOp::Shl | ArithOp::Shr);
         let (left, right) = if is_shift {
             (left, right)
@@ -299,6 +307,30 @@ impl Context {
             UnaryOp::Minus => UnaryArithOp::Neg,
             _ => UnaryArithOp::Not,
         };
+        if let Type::Complex(component) = operand.ty {
+            if arith != UnaryArithOp::Neg {
+                return Err(ResolveError::Unsupported("complex bitwise complement"));
+            }
+            let semantics = match component {
+                NumericType::Float(_) => ArithSema::ComplexFloating(self.floating),
+                NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {
+                    overflow: if signed {
+                        self.signed_overflow
+                    } else {
+                        Overflow::Wrap
+                    },
+                    by_zero: None,
+                },
+            };
+            return Ok((
+                operand.ty.clone(),
+                ValueKind::Unary {
+                    op: arith,
+                    operand: Box::new(operand),
+                    semantics,
+                },
+            ));
+        }
         let semantics = match (numeric(&operand)?, arith) {
             (NumericType::Float(_), UnaryArithOp::Neg) => ArithSema::Exact,
             (ty @ NumericType::Float(_), UnaryArithOp::Not) => {
@@ -334,6 +366,77 @@ impl Context {
         Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
     }
 
+    fn complex_binary(
+        &self,
+        op: BinaryOp,
+        left: Value,
+        right: Value,
+    ) -> Result<Resolved, ResolveError> {
+        let component = match (&left.ty, &right.ty) {
+            (Type::Complex(a), Type::Complex(b))
+            | (Type::Complex(a), Type::Numeric(b))
+            | (Type::Numeric(a), Type::Complex(b)) => wider_component(*a, *b),
+            _ => return Err(ResolveError::Unsupported("complex arithmetic conversion")),
+        };
+        let result_ty = Type::Complex(component);
+        let left_to = if matches!(left.ty, Type::Complex(_)) {
+            result_ty.clone()
+        } else {
+            Type::Numeric(component)
+        };
+        let right_to = if matches!(right.ty, Type::Complex(_)) {
+            result_ty.clone()
+        } else {
+            Type::Numeric(component)
+        };
+        let left = self.convert(left, left_to, ConversionReason::UsualArith);
+        let right = self.convert(right, right_to, ConversionReason::UsualArith);
+        if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
+            return Ok((
+                Type::Bool,
+                ValueKind::Compare {
+                    op: if op == BinaryOp::Equal {
+                        CompareOp::Eq
+                    } else {
+                        CompareOp::Ne
+                    },
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    exceptions: matches!(component, NumericType::Float(_))
+                        .then_some(self.floating.exceptions),
+                    reason: None,
+                },
+            ));
+        }
+        let arith = match op {
+            BinaryOp::Add => ArithOp::Add,
+            BinaryOp::Sub => ArithOp::Sub,
+            BinaryOp::Mul => ArithOp::Mul,
+            BinaryOp::Div => ArithOp::Div,
+            _ => return Err(ResolveError::Unsupported("complex operator")),
+        };
+        let semantics = match component {
+            NumericType::Float(_) => ArithSema::ComplexFloating(self.floating),
+            NumericType::Integer { signed, .. } => ArithSema::ComplexInteger {
+                overflow: if signed {
+                    self.signed_overflow
+                } else {
+                    Overflow::Wrap
+                },
+                by_zero: (arith == ArithOp::Div).then_some(UbPolicy::Undefined),
+            },
+        };
+        Ok((
+            result_ty,
+            ValueKind::Arith {
+                op: arith,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics,
+            },
+        ))
+    }
+
     fn comparison(&self, op: CompareOp, ty: NumericType, left: Value, right: Value) -> ValueKind {
         ValueKind::Compare {
             op,
@@ -365,6 +468,14 @@ impl Context {
         }
         let numeric = match &ty.specifiers.ty {
             TypeSpecifier::Bool => return Ok(Type::Bool),
+            TypeSpecifier::Complex(inner) => {
+                let mut component = ty.clone();
+                component.specifiers.ty = (**inner).clone();
+                let Type::Numeric(component) = self.cast_type(&component)? else {
+                    return Err(ResolveError::Unsupported("complex cast component"));
+                };
+                return Ok(Type::Complex(component));
+            }
             TypeSpecifier::Integer(IntegerType::Char { signed }) => {
                 NumericType::integer(8, signed.unwrap_or(self.target.char_signed))
             }
@@ -413,6 +524,10 @@ impl Context {
 
     pub(super) fn usual_arithmetic(&self, left: Value, right: Value) -> (Value, Value) {
         let ty = match (left.ty.clone(), right.ty.clone()) {
+            (Type::Complex(a), Type::Complex(b)) => Type::Complex(wider_component(a, b)),
+            (Type::Complex(a), Type::Numeric(b)) | (Type::Numeric(b), Type::Complex(a)) => {
+                Type::Complex(wider_component(a, b))
+            }
             (Type::Numeric(NumericType::Float(a)), Type::Numeric(NumericType::Float(b))) => {
                 Type::Numeric(NumericType::Float(a.max(b)))
             }
@@ -485,6 +600,71 @@ impl Context {
             return self.convert(value, to, reason);
         }
         match (value.ty.clone(), to.clone()) {
+            (Type::Numeric(_), Type::Complex(component)) => {
+                let value = self.convert(value, Type::Numeric(component), reason);
+                conversion(
+                    value,
+                    to,
+                    ConversionKind::RealToComplex,
+                    reason,
+                    ConversionSema::Exact,
+                )
+            }
+            (Type::Complex(source), Type::Numeric(_)) => {
+                let value = conversion(
+                    value,
+                    Type::Numeric(source),
+                    ConversionKind::ComplexToReal,
+                    reason,
+                    ConversionSema::Exact,
+                );
+                self.convert(value, to, reason)
+            }
+            (Type::Complex(from), Type::Complex(target)) => {
+                let semantics = match (from, target) {
+                    (NumericType::Float(a), NumericType::Float(b)) if a < b => {
+                        ConversionSema::Exact
+                    }
+                    (NumericType::Float(_), NumericType::Float(_)) => {
+                        ConversionSema::Floating(self.floating)
+                    }
+                    (NumericType::Integer { width, signed, .. }, NumericType::Float(format)) => {
+                        let precision = match format {
+                            FloatType::F16 => 11,
+                            FloatType::F32 => 24,
+                            FloatType::F64 => 53,
+                            FloatType::F80 => 64,
+                            FloatType::F128 => 113,
+                        };
+                        ConversionSema::IntToFloat {
+                            exact: width - u32::from(signed) <= precision,
+                            floating: self.floating,
+                        }
+                    }
+                    (NumericType::Float(_), NumericType::Integer { .. }) => {
+                        ConversionSema::Exceptions(self.floating.exceptions)
+                    }
+                    (
+                        NumericType::Integer {
+                            width: a,
+                            signed: sa,
+                            ..
+                        },
+                        NumericType::Integer {
+                            width: b,
+                            signed: sb,
+                            ..
+                        },
+                    ) => {
+                        if a < b && sa == sb {
+                            ConversionSema::Exact
+                        } else {
+                            ConversionSema::Fits(Fits::Unknown)
+                        }
+                    }
+                };
+                conversion(value, to, ConversionKind::ComplexConvert, reason, semantics)
+            }
             (
                 Type::Numeric(NumericType::Integer {
                     width: from_width,
@@ -620,10 +800,46 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         Type::Numeric(ty) => Ok(ty),
         Type::Bool => Err(ResolveError::Unsupported("unpromoted boolean operand")),
         Type::Defined(_)
+        | Type::Complex(_)
         | Type::Pointer { .. }
         | Type::Array { .. }
         | Type::Function { .. }
         | Type::Void => Err(ResolveError::Unsupported("non-numeric operand")),
+    }
+}
+
+fn wider_component(a: NumericType, b: NumericType) -> NumericType {
+    match (a, b) {
+        (NumericType::Float(a), NumericType::Float(b)) => NumericType::Float(a.max(b)),
+        (ty @ NumericType::Float(_), _) | (_, ty @ NumericType::Float(_)) => ty,
+        (
+            NumericType::Integer {
+                width: a,
+                signed: sa,
+                bit_precise: pa,
+            },
+            NumericType::Integer {
+                width: b,
+                signed: sb,
+                bit_precise: pb,
+            },
+        ) => NumericType::Integer {
+            width: a.max(b),
+            signed: if a == b {
+                sa && sb
+            } else if a > b {
+                sa
+            } else {
+                sb
+            },
+            bit_precise: if a == b {
+                pa && pb
+            } else if a > b {
+                pa
+            } else {
+                pb
+            },
+        },
     }
 }
 
