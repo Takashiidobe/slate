@@ -1176,13 +1176,15 @@ fn stringized_source(tokens: &[Span<Token>]) -> String {
     text
 }
 
-fn lex(src: &str) -> Vec<Token> {
-    lex_spanned(src)
+fn lex(src: &str, features: StandardFeatures) -> Vec<Token> {
+    lex_spanned(src, features)
         .into_iter()
         .map(|span| span.value)
         .collect()
 }
 
-fn lex_spanned(src: &str) -> Vec<Span<Token>> {
-    Lexer::new(FileId(0), src).tokenize()
+fn lex_spanned(src: &str, features: StandardFeatures) -> Vec<Span<Token>> {
+    Lexer::new(FileId(0), src)
+        .with_features(features)
+        .tokenize()
 }

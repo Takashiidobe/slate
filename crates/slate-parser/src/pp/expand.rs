@@ -1,6 +1,7 @@
 use super::{MacroDef, Preprocessor, lex, stringized_source};
 use crate::ast::{MacroOrigin, Span};
 use crate::lexer::{Token, TokenSpanExt};
+use crate::standard_features::StandardFeatures;
 use std::collections::HashSet;
 use std::rc::Rc;
 
@@ -227,6 +228,7 @@ impl Preprocessor<'_> {
                     expanded: &expanded_arguments,
                     commas: &commas,
                 },
+                self.features,
             );
             let consumed = i + 1 + end - from_tail;
             let (produced, used) = self.rescan(
@@ -427,6 +429,7 @@ fn substitute_function_macro(
     definition: &MacroDef,
     parameters: &[String],
     arguments: &Arguments,
+    features: StandardFeatures,
 ) -> Vec<Span<Token>> {
     let mut output = Vec::new();
     let mut i = 0;
@@ -484,11 +487,14 @@ fn substitute_function_macro(
             let right_tokens =
                 replacement_tokens(&definition.replacement[i + 1], parameters, arguments, false);
             if let Some(right) = right_tokens.first() {
-                let pasted = lex(&format!(
-                    "{}{}",
-                    String::from(&left.value),
-                    String::from(&right.value)
-                ));
+                let pasted = lex(
+                    &format!(
+                        "{}{}",
+                        String::from(&left.value),
+                        String::from(&right.value)
+                    ),
+                    features,
+                );
                 if pasted.len() == 1 {
                     output.push(
                         Span::new(
