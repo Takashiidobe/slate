@@ -382,6 +382,32 @@ impl Lowerer {
 
     fn braced(&mut self, ty: &Type, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
         let shape = self.types.shape(ty)?;
+        if let (Type::Complex(component), [real, imaginary]) = (self.types.unaliased(ty), items)
+            && real.designators.is_empty()
+            && imaginary.designators.is_empty()
+        {
+            let component = Type::Numeric(component);
+            let mut members = Vec::new();
+            for (index, item) in [real, imaginary].into_iter().enumerate() {
+                let Entry::Leaf(value) = self.init_initializer(&component, &item.value)? else {
+                    return Err(ResolveError::Unsupported(
+                        "braced initializer for complex component",
+                    ));
+                };
+                members.push(AggregateMember {
+                    target: AggregateTarget::Index(index as u64),
+                    value,
+                });
+            }
+            let node = members[0].value.node.clone();
+            return Ok(Entry::Leaf(Value {
+                ty: ty.clone(),
+                node: node.with_value(ValueKind::Aggregate {
+                    members,
+                    zero_fill: false,
+                }),
+            }));
+        }
         if matches!(shape, Shape::Scalar) {
             return match items {
                 [item] if item.designators.is_empty() => self.init_initializer(ty, &item.value),

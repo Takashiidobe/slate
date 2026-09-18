@@ -772,6 +772,10 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
 - A designator whose target is an aggregate and whose value is a bare
   expression continues brace elision with the following items
   (`.a = 1, 2, 3` fills `a[0..3]`).
+- A two-element braced complex initializer (`_Complex float c = {re, im}`)
+  lowers to `aggregate<complex<T>>(index0 = re, index1 = im)`, each converted
+  to the component type. `{x}` and a bare scalar stay `real_to_complex`.
+  Brace elision into a complex component pair is not modeled.
 - A trailing flexible array member has size 0 and the element's alignment in
   the record layout. Omitted, it is skipped by `zero_fill` and absent from the
   members. Initialized (`{1, {2, 3}}`, elided `{1, 2, 3}`, or `.d = {..}`),
