@@ -3,7 +3,7 @@ use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub(super) struct Lowerer {
     pub context: Context,
@@ -17,6 +17,7 @@ pub(super) struct Lowerer {
     pub continue_targets: Vec<BindingId>,
     pub switches: Vec<(BindingId, Type)>,
     pub in_function: bool,
+    pub local_statics: HashSet<BindingId>,
 }
 
 impl Lowerer {

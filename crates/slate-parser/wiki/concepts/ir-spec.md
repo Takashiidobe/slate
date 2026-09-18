@@ -743,6 +743,15 @@ they are not merely interchangeable aggregate values.
   the captured extents; do not re-evaluate the original bound expression.
   Runtime `sizeof` is represented as a computation rather than folded.
 
+**Implemented for static locals (`e0s`):** a block-scope `static` object is
+lowered to a module `Global` with `storage=static`, `linkage=internal` and its
+own `BindingId`; no statement is emitted at the declaration, and uses read the
+global's binding. Its initializer is lowered once like any global
+initializer, and an absent one means zero initialization. Two locals (or a
+local and a file-scope object) sharing a source name stay distinct globals;
+only file-scope redeclarations merge by name. Not yet: `_Thread_local`
+locals and block-scope `extern` declarations.
+
 **Implemented for variable-length arrays (`er8`):** a block-scope declarator
 whose array bound is not a constant emits a synthetic size_t
 `Statement::Temporary` capturing the bound at the declaration, and the

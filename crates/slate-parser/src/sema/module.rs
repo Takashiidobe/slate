@@ -6,7 +6,7 @@ use crate::ast::{
 };
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
 /// diagnostics, including failed static assertions.
@@ -34,6 +34,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         continue_targets: Vec::new(),
         switches: Vec::new(),
         in_function: false,
+        local_statics: HashSet::new(),
     };
     for declaration in &unit.decls {
         match &declaration.value {
@@ -323,6 +324,7 @@ impl Lowerer {
                     StorageClass::None | StorageClass::Auto | StorageClass::Register => {
                         StorageDuration::Automatic
                     }
+                    StorageClass::Static => StorageDuration::Static,
                     _ => return Err(ResolveError::Unsupported("nonautomatic local")),
                 }
             };
@@ -355,12 +357,10 @@ impl Lowerer {
                 let declared_linkage = linkage(item.specifiers.storage)?;
                 let definition = item.specifiers.storage != StorageClass::Extern
                     || variable.initializer.is_some();
-                if let Some(existing) = self
-                    .module
-                    .globals
-                    .iter_mut()
-                    .find(|global| global.variable.name == name)
-                {
+                if let Some(existing) = self.module.globals.iter_mut().find(|global| {
+                    global.variable.name == name
+                        && !self.local_statics.contains(&global.variable.id)
+                }) {
                     if existing.value.variable.ty != variable.ty {
                         match (&existing.value.variable.ty, &variable.ty) {
                             (
@@ -409,6 +409,20 @@ impl Lowerer {
                             definition,
                         }));
                 }
+            } else if storage == StorageDuration::Static {
+                if matches!(variable.ty, Type::VariableArray { .. }) {
+                    return Err(ResolveError::Invalid(
+                        "variable length array with static storage duration",
+                    ));
+                }
+                self.local_statics.insert(variable.id);
+                self.module
+                    .globals
+                    .push(declarator.clone().with_value(Global {
+                        variable,
+                        linkage: Linkage::Internal,
+                        definition: true,
+                    }));
             } else {
                 statements.push(declarator.clone().with_value(Statement::Let(variable)));
             }
