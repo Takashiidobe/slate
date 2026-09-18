@@ -391,10 +391,15 @@ impl Context {
         Type::integer(self.target.long_width, false)
     }
 
+    // C23 6.3.1.1: bit-precise integers are exempt from the integer promotions
     pub(super) fn promote(&self, value: Value) -> Value {
         match value.ty {
             Type::Bool => self.convert(value, self.int_type(), ConversionReason::Promotion),
-            Type::Numeric(NumericType::Integer { width, .. }) if width < self.target.int_width => {
+            Type::Numeric(NumericType::Integer {
+                width,
+                bit_precise: false,
+                ..
+            }) if width < self.target.int_width => {
                 self.convert(value, self.int_type(), ConversionReason::Promotion)
             }
             _ => value,
@@ -512,6 +517,15 @@ impl Context {
                         ConversionKind::Reinterpret,
                         reason,
                         ConversionSema::Fits(fits),
+                    );
+                } else if value.ty != to {
+                    // same width and signedness, so only bit-precision distinguishes the two types
+                    value = conversion(
+                        value,
+                        to,
+                        ConversionKind::Reinterpret,
+                        reason,
+                        ConversionSema::Exact,
                     );
                 }
                 value

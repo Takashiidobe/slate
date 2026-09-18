@@ -367,7 +367,26 @@ the same width and print with a `b` suffix (`i128b`, `u32b`): on x86-64
 with size 16 align 8, and arm32 rejects `__int128` while still accepting
 `_BitInt(128)`. Bit-precise layouts come from `ScalarLayouts::bit_precise`,
 which rounds the width up to the widest standard integer's alignment. These denote value formats, not
-storage sizes. Sema resolves `long double` through `TargetInfo.long_double`:
+storage sizes.
+
+Bit-precise integers follow C23's own conversion rules rather than the
+standard-integer ones. They are exempt from the integer promotions
+(6.3.1.1), so `_BitInt(8) + _BitInt(8)` stays `i8b`, and `~a`, `-a`, `+a`,
+and a shift's left operand keep their declared width instead of widening to
+`i32`. The exemption covers the default argument promotions too: a
+`_BitInt(8)` passed to a variadic function is passed as `i8b`, matching
+clang's `i8 signext`.
+
+Rank at equal width puts the bit-precise type *below* the standard one, so
+the usual arithmetic conversions resolve `_BitInt(32) + int` to `int` and
+`unsigned _BitInt(32) + int` to `unsigned int`, while a wider bit-precise
+type still wins (`_BitInt(40) + int` is `i40b`). Because `i32b` and `i32`
+share a value representation, the conversion between them changes only the
+type; `convert` emits an exact `reinterpret` for it rather than nothing, so
+the operand type cannot silently disagree with the operation's type.
+`tests/fixtures/sema/ir_bitint_conversions.c` pins every case; its result
+types were verified against clang 22.1.8 and gcc 16.2.1, which agree on all
+of them. MSVC 19.51 has no `_BitInt` at all, so there is no third oracle. Sema resolves `long double` through `TargetInfo.long_double`:
 the current x86-64 Linux baseline uses f80; `-mlong-double-64/80/128`
 selects the corresponding format. Literal digits are parsed directly into
 that format, never rounded through an intermediate f80 or f64 value.

@@ -1044,11 +1044,11 @@ impl Lowerer {
                                 Type::Numeric(NumericType::Float(FloatType::F64))
                             }
                             Type::Bool => self.context.int_type(),
-                            Type::Numeric(NumericType::Integer { width, .. })
-                                if *width < self.context.target.int_width =>
-                            {
-                                self.context.int_type()
-                            }
+                            Type::Numeric(NumericType::Integer {
+                                width,
+                                bit_precise: false,
+                                ..
+                            }) if *width < self.context.target.int_width => self.context.int_type(),
                             _ => value.ty.clone(),
                         };
                         self.convert(value, to, ConversionReason::Vararg)?
