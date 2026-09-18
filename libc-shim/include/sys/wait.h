@@ -24,6 +24,11 @@ pid_t waitpid(pid_t, int *, int);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(__SLATE_LIBC_MUSL)
+#include <sys/resource.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#endif
 #include <signal.h>
 #if defined(__SLATE_LIBC_MUSL)
 int waitid(idtype_t, unsigned int, siginfo_t *, int);
@@ -54,11 +59,23 @@ pid_t wait4(pid_t, int *, int, struct rusage *);
 #define WTERMSIG(s)    ((s) & 0x7f)
 #define WSTOPSIG(s)    WEXITSTATUS(s)
 #define WCOREDUMP(s)   ((s) & 0x80)
+#define WAIT_ANY (-1)
+#define WAIT_MYPGRP 0
+#define WCOREFLAG 0x80
+#define W_EXITCODE(ret, sig) ((ret) << 8 | (sig))
+#define W_STOPCODE(sig) ((sig) << 8 | 0x7f)
 #define WIFEXITED(s)   ((((s) & 0x7f) == 0) ? 1 : 0)
 #define WIFSTOPPED(s)                                                          \
   (((short)((((s) & 0xffff) * 0x10001U) >> 8) > 0x7f00) ? 1 : 0)
 #define WIFSIGNALED(s)  ((((s) & 0xffff) - 1U < 0xffu) ? 1 : 0)
 #define WIFCONTINUED(s) (((s) == 0xffff) ? 1 : 0)
+#if defined(__SLATE_LIBC_GLIBC)
+#define WCOREFLAG __WCOREFLAG
+#define W_EXITCODE __W_EXITCODE (ret, sig)
+#define W_STOPCODE __W_STOPCODE (sig)
+#define WAIT_ANY (-1)
+#define WAIT_MYPGRP 0
+#endif
 
 #if _REDIR_TIME64
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
