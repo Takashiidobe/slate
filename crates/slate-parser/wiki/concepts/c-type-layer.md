@@ -112,14 +112,31 @@ compared on C types rather than IR widths, plain `char` is distinct from
 `signed char` (slate-parser-4o9) and nested pointer levels are compared as
 carefully as the first.
 
-Two transitional pieces remain. `types::compatible` over `ir::Type` still
-backs function-redeclaration conflicts in `src/sema/module.rs`, because
-`Function` stores IR types; it moves with 9ve.4. Taking the address of a
-`register` variable is still accepted, since no storage class is recorded per
-binding (slate-parser-zm8).
+Taking the address of a `register` variable is still accepted, since no
+storage class is recorded per binding (slate-parser-zm8).
+
+## Redeclaration merging
+
+`TypeResolver::declared` holds the merged C type of each redeclared entity,
+keyed by `BindingId`, alongside `bindings` (which holds the type currently in
+scope). `merge_redeclaration` is called by both `declare_global` and
+`declare_function` in `src/sema/module.rs`, *before* either looks for an
+existing entry — the first declaration has to register its type, or the second
+one looks like a first and the conflict goes unnoticed.
+
+Compatible declarations merge into their `composite`, which is how
+`int a[]; int a[5];` completes without a special case. Otherwise the conflict
+table in [`ir-spec.md`](ir-spec.md) applies, and the only IR-level question
+left is whether the two layouts coincide: `types::same_layout` answers it,
+comparing lowered types while ignoring integer signedness. That is a genuine
+layout question, not a type-identity one, which is why it survives the phase
+that removed `types::compatible`, `same_layout_ignoring_sign` and
+`function_redeclaration_conflict`.
+
+`__builtin_types_compatible_p` calls `CTypes::compatible` directly, so it and
+redeclaration merging cannot drift apart.
 
 ## Remaining phases
 
-Redeclaration merging still decides type identity on layout. 9ve.4 moves it
-onto `compatible`/`composite`; 9ve.5 moves compiler personality into
-`layout()`.
+9ve.5 moves compiler personality (atomic promotion, alignment attribute rules)
+into `layout()`.

@@ -32,6 +32,7 @@ pub struct TypeResolver {
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) bindings: HashMap<BindingId, QualType>,
+    pub(super) declared: HashMap<BindingId, QualType>,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
@@ -64,6 +65,7 @@ impl TypeResolver {
             extents: HashMap::new(),
             references: HashMap::new(),
             bindings: HashMap::new(),
+            declared: HashMap::new(),
             typeof_operands: HashMap::new(),
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
@@ -466,6 +468,60 @@ impl TypeResolver {
             }
             _ => self.constant_value(e).map(|value| value.c),
         }
+    }
+
+    pub(super) fn merge_redeclaration(
+        &mut self,
+        id: BindingId,
+        declared: QualType,
+    ) -> Result<Option<&'static str>, ResolveError> {
+        let Some(previous) = self.declared.insert(id, declared) else {
+            return Ok(None);
+        };
+        if let Some(composite) = self.ctypes.composite(previous, declared) {
+            self.declared.insert(id, composite);
+            self.bindings.insert(id, composite);
+            return Ok(None);
+        }
+        let message = self.conflict_message(previous, declared)?;
+        self.declared.insert(id, previous);
+        self.bindings.insert(id, previous);
+        Ok(Some(message))
+    }
+
+    /// The conflict table in ir-spec.md: a return or object type may differ only
+    /// where the layouts coincide, but a prototyped parameter list may always
+    /// differ, because MSVC warns (C4028/C4030/C4031/C4052) rather than rejecting.
+    fn conflict_message(
+        &mut self,
+        previous: QualType,
+        declared: QualType,
+    ) -> Result<&'static str, ResolveError> {
+        let returns = self
+            .ctypes
+            .function_parts(previous)
+            .map(|(ret, ..)| ret)
+            .zip(self.ctypes.function_parts(declared).map(|(ret, ..)| ret));
+        if let Some((previous_return, declared_return)) = returns {
+            if self.ctypes.compatible(previous_return, declared_return) {
+                return Ok("function redeclared with a different parameter list");
+            }
+            if same_layout(
+                &self.ir_type(previous_return),
+                &self.ir_type(declared_return),
+            ) {
+                return Ok(
+                    "function redeclared with a different integer return type of the same size",
+                );
+            }
+            return Err(ResolveError::Invalid(
+                "conflicting types for function redeclaration",
+            ));
+        }
+        if same_layout(&self.ir_type(previous), &self.ir_type(declared)) {
+            return Ok("redeclaration with a different integer type of the same size");
+        }
+        Err(ResolveError::Invalid("conflicting types for redeclaration"))
     }
 
     pub(super) fn require_modifiable_lvalue(&self, q: QualType) -> Result<(), ResolveError> {
@@ -1215,10 +1271,7 @@ impl TypeResolver {
             self.render(left).canonical,
             self.render(right).canonical
         );
-        let compatible = self.ctypes.same(left, right)
-            || self.enum_matches(left, right)
-            || self.enum_matches(right, left);
-        Ok((compatible, compared))
+        Ok((self.ctypes.compatible(left, right), compared))
     }
 
     fn compared_type(&mut self, name: &TypeName) -> Result<QualType, ResolveError> {
@@ -1634,25 +1687,22 @@ fn substitute_enumerators(
     result
 }
 
-pub(super) fn compatible(a: &Type, b: &Type) -> bool {
+/// Layout identity in MSVC's sense: the same storage shape, ignoring integer
+/// signedness. C4142 ("benign redefinition") fires exactly here, C2371 otherwise.
+pub(super) fn same_layout(a: &Type, b: &Type) -> bool {
     match (a, b) {
         (
-            Type::VariableArray { element: a, .. },
-            Type::VariableArray { element: b, .. } | Type::Array { element: b, .. },
-        )
-        | (Type::Array { element: a, .. }, Type::VariableArray { element: b, .. }) => {
-            compatible(a, b)
-        }
-        (
-            Type::Array {
-                element: a,
-                length: a_length,
-            },
-            Type::Array {
-                element: b,
-                length: b_length,
-            },
-        ) => a_length == b_length && compatible(a, b),
+            Type::Numeric(NumericType::Integer {
+                width: a_width,
+                bit_precise: a_bit_precise,
+                ..
+            }),
+            Type::Numeric(NumericType::Integer {
+                width: b_width,
+                bit_precise: b_bit_precise,
+                ..
+            }),
+        ) => a_width == b_width && a_bit_precise == b_bit_precise,
         (
             Type::Pointer {
                 pointee: a,
@@ -1664,7 +1714,17 @@ pub(super) fn compatible(a: &Type, b: &Type) -> bool {
                 is_const: b_const,
                 access: b_access,
             },
-        ) => a_const == b_const && a_access == b_access && compatible(a, b),
+        ) => a_const == b_const && a_access == b_access && same_layout(a, b),
+        (
+            Type::Array {
+                element: a,
+                length: a_length,
+            },
+            Type::Array {
+                element: b,
+                length: b_length,
+            },
+        ) => a_length == b_length && same_layout(a, b),
         _ => a == b,
     }
 }

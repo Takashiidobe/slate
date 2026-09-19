@@ -322,70 +322,35 @@ impl Lowerer {
     }
 
     fn declare_global(&mut self, global: Span<Global>) -> Result<(), ResolveError> {
+        let id = global.value.variable.id;
+        let declared = self
+            .types
+            .bindings
+            .get(&id)
+            .copied()
+            .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
+        if let Some(message) = self.types.merge_redeclaration(id, declared)? {
+            self.warn(Warning::ConflictingTypes, message, &global);
+        }
         let Some(index) = self
             .module
             .globals
             .iter()
-            .position(|existing| existing.value.variable.id == global.value.variable.id)
+            .position(|existing| existing.value.variable.id == id)
         else {
             self.module.globals.push(global);
             return Ok(());
         };
-        let existing_ty = &self.module.globals[index].value.variable.ty;
-        let ty = match (existing_ty, &global.value.variable.ty) {
-            (a, b) if a == b => None,
-            (
-                Type::Array {
-                    element: a,
-                    length: None,
-                },
-                Type::Array {
-                    element: b,
-                    length: Some(_),
-                },
-            ) if a == b => Some(global.value.variable.ty.clone()),
-            (
-                Type::Array {
-                    element: a,
-                    length: Some(_),
-                },
-                Type::Array {
-                    element: b,
-                    length: None,
-                },
-            ) if a == b => None,
-            (a, b) if same_layout_ignoring_sign(a, b) => {
-                self.warn(
-                    Warning::ConflictingTypes,
-                    "redeclaration with a different integer type of the same size",
-                    &global,
-                );
-                None
-            }
-            _ => {
-                return Err(ResolveError::Unsupported(
-                    "incompatible global redeclaration",
-                ));
-            }
-        };
+        let merged = self
+            .types
+            .bindings
+            .get(&id)
+            .copied()
+            .ok_or(ResolveError::Unsupported("untyped global redeclaration"))?;
+        let merged_ty = self.types.object_type(merged, "void object")?;
         let global = global.value;
         let existing = &mut self.module.globals[index].value;
-        if let Some(ty) = ty {
-            existing.variable.ty = ty;
-        }
-        if let Some(c) = self.types.bindings.get(&existing.variable.id).copied()
-            && let Some((element, super::ctype::Extent::Incomplete)) = self.types.ctypes.element(c)
-            && let Type::Array {
-                length: Some(length),
-                ..
-            } = existing.variable.ty
-        {
-            let completed = self.types.ctypes.qual(super::ctype::CTypeKind::Array {
-                element,
-                extent: super::ctype::Extent::Fixed(length),
-            });
-            self.types.bindings.insert(existing.variable.id, completed);
-        }
+        existing.variable.ty = merged_ty;
         if global.variable.initializer.is_some() {
             if existing.variable.initializer.is_some() {
                 return Err(ResolveError::Unsupported("multiple global initializers"));
@@ -404,20 +369,21 @@ impl Lowerer {
     }
 
     fn declare_function(&mut self, function: Span<Function>) -> Result<(), ResolveError> {
+        let id = function.value.id;
+        if let Some(declared) = self.types.bindings.get(&id).copied()
+            && let Some(message) = self.types.merge_redeclaration(id, declared)?
+        {
+            self.warn(Warning::ConflictingTypes, message, &function);
+        }
         let Some(index) = self
             .module
             .functions
             .iter()
-            .position(|existing| existing.value.id == function.value.id)
+            .position(|existing| existing.value.id == id)
         else {
             self.module.functions.push(function);
             return Ok(());
         };
-        if let Some(message) =
-            function_redeclaration_conflict(&self.module.functions[index].value, &function.value)?
-        {
-            self.warn(Warning::ConflictingTypes, message, &function);
-        }
         let existing = &mut self.module.functions[index];
         let function = function.value;
         let linkage = match (existing.value.linkage, function.linkage) {
@@ -1065,75 +1031,5 @@ impl Lowerer {
             result.push(lowered);
         }
         Ok(result)
-    }
-}
-
-fn function_redeclaration_conflict(
-    existing: &Function,
-    function: &Function,
-) -> Result<Option<&'static str>, ResolveError> {
-    let returns_match = match (&existing.return_type, &function.return_type) {
-        (None, None) => true,
-        (Some(a), Some(b)) if super::types::compatible(a, b) => true,
-        (Some(a), Some(b)) if same_layout_ignoring_sign(a, b) => false,
-        _ => {
-            return Err(ResolveError::Invalid(
-                "conflicting types for function redeclaration",
-            ));
-        }
-    };
-    if !returns_match {
-        return Ok(Some(
-            "function redeclared with a different integer return type of the same size",
-        ));
-    }
-    let (
-        Parameters::Prototype {
-            fixed: a,
-            variadic: a_variadic,
-        },
-        Parameters::Prototype {
-            fixed: b,
-            variadic: b_variadic,
-        },
-    ) = (&existing.parameters, &function.parameters)
-    else {
-        return Ok(None);
-    };
-    let parameters_match = a_variadic == b_variadic
-        && a.len() == b.len()
-        && a.iter()
-            .zip(b)
-            .all(|(a, b)| super::types::compatible(&a.value.ty, &b.value.ty));
-    Ok((!parameters_match).then_some("function redeclared with a different parameter list"))
-}
-
-fn same_layout_ignoring_sign(a: &Type, b: &Type) -> bool {
-    match (a, b) {
-        (
-            Type::Numeric(NumericType::Integer {
-                width: a_width,
-                bit_precise: a_bit_precise,
-                ..
-            }),
-            Type::Numeric(NumericType::Integer {
-                width: b_width,
-                bit_precise: b_bit_precise,
-                ..
-            }),
-        ) => a_width == b_width && a_bit_precise == b_bit_precise,
-        (
-            Type::Pointer {
-                pointee: a,
-                is_const: a_const,
-                access: a_access,
-            },
-            Type::Pointer {
-                pointee: b,
-                is_const: b_const,
-                access: b_access,
-            },
-        ) => a_const == b_const && a_access == b_access && same_layout_ignoring_sign(a, b),
-        _ => super::types::compatible(a, b),
     }
 }

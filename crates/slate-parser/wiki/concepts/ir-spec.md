@@ -894,14 +894,24 @@ warning:
 | Conflict                                                            | Result  |
 | ------------------------------------------------------------------- | ------- |
 | return/object type of another kind, size, or pointer depth          | error   |
-| return/object type: same-size integers differing only in sign, also through pointers | warning (MSVC C4142) |
-| prototyped parameter lists differing in types, count, or `...`     | warning (MSVC C4028/C4030/C4031) |
+| return/object type: incompatible C types of identical layout, also through pointers | warning (MSVC C4142) |
+| prototyped parameter lists differing in types, count, or `...`     | warning (MSVC C4028/C4030/C4031/C4052) |
 | unprototyped vs prototyped, or only top-level parameter qualifiers  | accepted silently |
 | a struct/union/enum redefined in the same scope                     | error   |
 | the same, in C23, when fields (name, type, access, bit width) or enumerators (name, value) match | accepted, reuses the first definition |
 
-The warning compares lowered IR types, so on a target where `int` and `long`
-share a layout (Windows) `int x; long x;` is silent (slate-parser-y47). Tag
+Merging is decided on C types, in `TypeResolver::merge_redeclaration`
+(`src/sema/types.rs`). Compatible declarations merge into their composite
+type, which is what completes `int a[]; int a[5];`. Otherwise the layouts
+decide: `types::same_layout` compares the lowered types ignoring integer
+signedness, and an incompatible pair that still shares a layout is the
+`conflicting-types` warning rather than an error. This is MSVC's own rule —
+C4142 "benign redefinition" fires exactly when the layouts coincide and C2371
+"different basic types" when they do not — so on Windows (LLP64) `int x;
+long x;` and `int f(int); long f(int);` warn, while on LP64 they are errors
+and `int x; long long x;` is an error everywhere (slate-parser-y47). Parameter
+lists are the exception: they may always differ, because MSVC only warns.
+Fixture: `sema/x86_64-pc-windows-msvc/ir_redeclaration_layout.c`. Tag
 redefinitions are caught in `TypeResolver::define_tag`: a second
 definition of a tag that is already complete in the same scope; C23 mode is
 `StandardFeatures::compatible_tag_redefinitions`. Fixtures:
@@ -1461,10 +1471,17 @@ their own:
   metadata; runtime array sizes use captured extents.
 - `__builtin_types_compatible_p(A, B)` → `const<i32>(0|1)` with
   `types_compatible="A, B"` metadata naming the two unqualified canonical C
-  types. Top-level qualifiers (and array element qualifiers) are ignored;
-  distinct C integer types that share an IR type (`long`/`long long`,
-  `char`/`signed char`) are incompatible; an enum is compatible with its
-  underlying integer type. It also folds in `static_assert` conditions.
+  types. It answers with `CTypes::compatible` (6.2.7), the same predicate
+  redeclaration merging uses. Top-level qualifiers (and array element
+  qualifiers) are ignored; distinct C integer types that share an IR type
+  (`long`/`long long` on LLP64, `char`/`signed char`) are incompatible;
+  an enum is compatible with its underlying integer type but not with another
+  enum; `int[]` and `int[5]` are compatible; an unprototyped function is
+  compatible with a prototype whose parameters survive the default argument
+  promotions, so `int(*)()` and `int(*)(int)` are compatible before C23 and
+  incompatible from C23 on, where `()` is itself a prototype. Verified against
+  clang 22 and gcc 16 on both standards. It also folds in `static_assert`
+  conditions.
 - `__builtin_constant_p(x)` → `const<i32>(0|1)` with
   `c_builtin="__builtin_constant_p"` metadata; the operand is not evaluated.
   It is 1 when the lowered operand folds (enumerators, literals, `sizeof`,
