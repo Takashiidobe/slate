@@ -1,5 +1,5 @@
 use crate::ast::*;
-use crate::const_expr::UnaryOp;
+use crate::const_expr::{BinaryOp, UnaryOp};
 use crate::ir::{Number, NumericType, Type, Value, ValueKind};
 use num_bigint::{BigInt, Sign};
 
@@ -34,8 +34,17 @@ struct Checker<'a> {
 impl Checker<'_> {
     fn assertion(&mut self, assertion: &StaticAssert) {
         let condition = &assertion.condition;
-        if !ice_shape(&mut self.types, condition) {
-            return;
+        match ice_shape(&mut self.types, condition) {
+            Shape::Constant => {}
+            Shape::Skip => return,
+            Shape::NotConstant(call) => {
+                self.errors.push(error(
+                    call.provenance,
+                    call.expansion,
+                    "static assertion requires an integer constant expression: call to a function that cannot be constant folded",
+                ));
+                return;
+            }
         }
         let result = self
             .types
@@ -176,7 +185,7 @@ impl Checker<'_> {
                     continue;
                 };
                 let value = match &enumerator.value {
-                    Some(expr) if ice_shape(&mut self.types, expr) => {
+                    Some(expr) if ice_shape(&mut self.types, expr).is_constant() => {
                         self.types.constant_integer(expr).ok()
                     }
                     Some(_) => None,
@@ -368,7 +377,74 @@ impl Checker<'_> {
 }
 
 // Fold evaluates executed IR only, so enforce the supported ICE syntax separately.
-fn ice_shape(types: &mut TypeResolver, expr: &Expr) -> bool {
+#[derive(Clone, Copy)]
+enum Shape<'e> {
+    Constant,
+    Skip,
+    NotConstant(&'e Expr),
+}
+
+impl<'e> Shape<'e> {
+    fn and(self, other: Self) -> Self {
+        match (self, other) {
+            (Shape::NotConstant(expr), _) | (_, Shape::NotConstant(expr)) => {
+                Shape::NotConstant(expr)
+            }
+            (Shape::Constant, Shape::Constant) => Shape::Constant,
+            _ => Shape::Skip,
+        }
+    }
+
+    fn opaque(self) -> Self {
+        self.and(Shape::Skip)
+    }
+
+    fn unevaluated(self) -> Self {
+        match self {
+            Shape::NotConstant(_) => Shape::Skip,
+            shape => shape,
+        }
+    }
+
+    fn is_constant(self) -> bool {
+        matches!(self, Shape::Constant)
+    }
+}
+
+fn evaluated_shape<'e>(types: &mut TypeResolver, expr: &'e Expr, evaluated: bool) -> Shape<'e> {
+    let shape = ice_shape(types, expr);
+    if evaluated {
+        shape
+    } else {
+        shape.unevaluated()
+    }
+}
+
+fn constant_truth(types: &mut TypeResolver, expr: &Expr, shape: Shape) -> Option<bool> {
+    if !shape.is_constant() {
+        return None;
+    }
+    types
+        .constant_integer(expr)
+        .ok()
+        .map(|value| value.sign() != Sign::NoSign)
+}
+
+fn call_shape<'e>(expr: &'e Expr, callee: &Expr, arguments: &[Expr]) -> Shape<'e> {
+    if super::expression::constant_p_operand(callee, arguments).is_some() {
+        return Shape::Constant;
+    }
+    let mut callee = callee;
+    while let ExprKind::Paren(inner) = &callee.value {
+        callee = inner;
+    }
+    match &callee.value {
+        ExprKind::Identifier(name) if super::builtins::is_foldable_builtin(name) => Shape::Skip,
+        _ => Shape::NotConstant(expr),
+    }
+}
+
+fn ice_shape<'e>(types: &mut TypeResolver, expr: &'e Expr) -> Shape<'e> {
     match &expr.value {
         ExprKind::IntegerLiteral(_)
         | ExprKind::FloatLiteral(_)
@@ -380,36 +456,53 @@ fn ice_shape(types: &mut TypeResolver, expr: &Expr) -> bool {
         | ExprKind::SizeOfExpr(_)
         | ExprKind::AlignOfExpr(_)
         | ExprKind::OffsetOf { .. }
-        | ExprKind::TypesCompatible { .. } => true,
-        ExprKind::Call { callee, arguments } => {
-            super::expression::constant_p_operand(callee, arguments).is_some()
-        }
-        ExprKind::Paren(expr) => ice_shape(types, expr),
+        | ExprKind::TypesCompatible { .. } => Shape::Constant,
+        ExprKind::Call { callee, arguments } => call_shape(expr, callee, arguments),
+        ExprKind::Paren(expr) | ExprKind::Cast { value: expr, .. } => ice_shape(types, expr),
         ExprKind::Unary { op, operand } => {
-            matches!(
+            let shape = ice_shape(types, operand);
+            if matches!(
                 op,
                 UnaryOp::Plus | UnaryOp::Minus | UnaryOp::Not | UnaryOp::BitNot
-            ) && ice_shape(types, operand)
+            ) {
+                shape
+            } else {
+                shape.opaque()
+            }
         }
-        ExprKind::Binary { left, right, .. } => ice_shape(types, left) && ice_shape(types, right),
+        ExprKind::Binary {
+            op: op @ (BinaryOp::And | BinaryOp::Or),
+            left,
+            right,
+        } => {
+            let left_shape = ice_shape(types, left);
+            let short_circuits = constant_truth(types, left, left_shape)
+                .map(|truth| truth == matches!(op, BinaryOp::Or));
+            left_shape.and(evaluated_shape(types, right, short_circuits == Some(false)))
+        }
+        ExprKind::Binary { left, right, .. } => ice_shape(types, left).and(ice_shape(types, right)),
+        ExprKind::Comma { left, right } => {
+            ice_shape(types, left).and(ice_shape(types, right)).opaque()
+        }
         ExprKind::Conditional {
             condition,
             then_value,
             else_value,
         } => {
-            ice_shape(types, condition)
-                && then_value
-                    .as_ref()
-                    .is_none_or(|value| ice_shape(types, value))
-                && ice_shape(types, else_value)
+            let condition_shape = ice_shape(types, condition);
+            let truth = constant_truth(types, condition, condition_shape);
+            let then_shape = then_value.as_ref().map_or(Shape::Constant, |value| {
+                evaluated_shape(types, value, truth == Some(true))
+            });
+            let else_shape = evaluated_shape(types, else_value, truth == Some(false));
+            condition_shape.and(then_shape).and(else_shape)
         }
-        ExprKind::Cast { value, .. } => ice_shape(types, value),
         ExprKind::Generic {
             controlling,
             associations,
         } => types
             .generic_selection(controlling, associations)
-            .is_ok_and(|selected| ice_shape(types, selected)),
-        _ => false,
+            .map_or(Shape::Skip, |selected| ice_shape(types, selected)),
+        _ => Shape::Skip,
     }
 }

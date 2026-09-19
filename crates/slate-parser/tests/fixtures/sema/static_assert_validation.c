@@ -6,6 +6,10 @@
 // SLATE-FILECHECK-DEFINES FLOAT FLOAT
 // SLATE-FILECHECK-DEFINES SHADOW SHADOW
 // SLATE-FILECHECK-DEFINES SHADOW_TAG SHADOW_TAG
+// SLATE-FILECHECK-DEFINES CALL CALL
+// SLATE-FILECHECK-DEFINES CALL_POINTER CALL_POINTER
+// SLATE-FILECHECK-DEFINES CALL_COMMA CALL_COMMA
+// SLATE-FILECHECK-DEFINES CALL_LIBRARY CALL_LIBRARY
 // SLATE-FILECHECK-ERROR FALSE_FILE
 // SLATE-FILECHECK-ERROR FALSE_BLOCK
 // SLATE-FILECHECK-ERROR NONCONSTANT
@@ -13,6 +17,10 @@
 // SLATE-FILECHECK-ERROR FLOAT
 // SLATE-FILECHECK-ERROR SHADOW
 // SLATE-FILECHECK-ERROR SHADOW_TAG
+// SLATE-FILECHECK-ERROR CALL
+// SLATE-FILECHECK-ERROR CALL_POINTER
+// SLATE-FILECHECK-ERROR CALL_COMMA
+// SLATE-FILECHECK-ERROR CALL_LIBRARY
 // SLATE-FILECHECK-ARGS -std=c23
 
 #if defined(FALSE_FILE)
@@ -31,6 +39,18 @@ void shadow(void) { int VALUE = 1; static_assert(VALUE, "object shadows enum"); 
 #elif defined(SHADOW_TAG)
 struct Tag { int a; };
 void tag(void) { struct Tag { long long a, b; }; static_assert(sizeof(struct Tag) == 4, "inner tag"); }
+#elif defined(CALL)
+int f(void);
+static_assert(1 && f(), "call is never constant");
+#elif defined(CALL_POINTER)
+int (*fp)(void);
+static_assert((fp)(), "call through pointer");
+#elif defined(CALL_COMMA)
+int f(void);
+static_assert((1, f()), "comma operand call");
+#elif defined(CALL_LIBRARY)
+int abs(int);
+static_assert(abs(-2) == 2, "abs does not fold");
 #else
 typedef unsigned char byte;
 enum { FIRST = 2, SECOND = FIRST + 1 };
@@ -42,6 +62,16 @@ static_assert((int)3.5 == 3);
 static_assert(1 || (1 / 0));
 static_assert(1 ? 7 : (1 / 0));
 static_assert(-1 < 0 && ~(unsigned)0 > 0);
+int opaque(void);
+unsigned long strlen(const char *);
+static_assert(1 || opaque());
+static_assert(!(0 && opaque()));
+static_assert(1 ? 1 : opaque());
+static_assert(sizeof(opaque()) == sizeof(int));
+static_assert(_Generic(1, int: 1, default: opaque()));
+static_assert(__builtin_clz(8) == 28);
+static_assert(strlen("ab") == 2);
+static_assert(__builtin_choose_expr(1, 1, opaque()));
 struct Outer { int a; };
 void valid(int n) {
     static_assert(sizeof(n) == sizeof(int));
@@ -128,6 +158,50 @@ void valid(int n) {
 // SHADOW_TAG: 16 │ struct Tag { int a; };
 // SHADOW_TAG: 17 │ void tag(void) { struct Tag { long long a, b; }; static_assert(sizeof(struct Tag) == 4, "inner tag"); }
 // SHADOW_TAG: ·                                                                ───────────────────────
-// SHADOW_TAG: 18 │ #else
+// SHADOW_TAG: 18 │ #elif defined(CALL)
 // SHADOW_TAG: ╰────
 // SLATE-FILECHECK-END SHADOW_TAG
+// SLATE-FILECHECK-BEGIN CALL
+// CALL: Error:   × semantic analysis failed
+// CALL: Error:
+// CALL: × static assertion requires an integer constant expression: call to a
+// CALL: ╭─[tests/fixtures/sema/static_assert_validation.c:20:20]
+// CALL: 19 │ int f(void);
+// CALL: 20 │ static_assert(1 && f(), "call is never constant");
+// CALL: ·                    ───
+// CALL: 21 │ #elif defined(CALL_POINTER)
+// CALL: ╰────
+// SLATE-FILECHECK-END CALL
+// SLATE-FILECHECK-BEGIN CALL_POINTER
+// CALL_POINTER: Error:   × semantic analysis failed
+// CALL_POINTER: Error:
+// CALL_POINTER: × static assertion requires an integer constant expression: call to a
+// CALL_POINTER: ╭─[tests/fixtures/sema/static_assert_validation.c:23:15]
+// CALL_POINTER: 22 │ int (*fp)(void);
+// CALL_POINTER: 23 │ static_assert((fp)(), "call through pointer");
+// CALL_POINTER: ·               ──────
+// CALL_POINTER: 24 │ #elif defined(CALL_COMMA)
+// CALL_POINTER: ╰────
+// SLATE-FILECHECK-END CALL_POINTER
+// SLATE-FILECHECK-BEGIN CALL_COMMA
+// CALL_COMMA: Error:   × semantic analysis failed
+// CALL_COMMA: Error:
+// CALL_COMMA: × static assertion requires an integer constant expression: call to a
+// CALL_COMMA: ╭─[tests/fixtures/sema/static_assert_validation.c:26:19]
+// CALL_COMMA: 25 │ int f(void);
+// CALL_COMMA: 26 │ static_assert((1, f()), "comma operand call");
+// CALL_COMMA: ·                   ───
+// CALL_COMMA: 27 │ #elif defined(CALL_LIBRARY)
+// CALL_COMMA: ╰────
+// SLATE-FILECHECK-END CALL_COMMA
+// SLATE-FILECHECK-BEGIN CALL_LIBRARY
+// CALL_LIBRARY: Error:   × semantic analysis failed
+// CALL_LIBRARY: Error:
+// CALL_LIBRARY: × static assertion requires an integer constant expression: call to a
+// CALL_LIBRARY: ╭─[tests/fixtures/sema/static_assert_validation.c:29:15]
+// CALL_LIBRARY: 28 │ int abs(int);
+// CALL_LIBRARY: 29 │ static_assert(abs(-2) == 2, "abs does not fold");
+// CALL_LIBRARY: ·               ───────
+// CALL_LIBRARY: 30 │ #else
+// CALL_LIBRARY: ╰────
+// SLATE-FILECHECK-END CALL_LIBRARY
