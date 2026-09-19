@@ -9,3 +9,4 @@
 - [Compiler flags](concepts/compiler-flags.md)
 - [Compiler argument rules](concepts/compiler-arg-rules.md)
 - [Diagnostic severity](concepts/diagnostic-severity.md)
+- [MSVC oracle](concepts/msvc-oracle.md)
