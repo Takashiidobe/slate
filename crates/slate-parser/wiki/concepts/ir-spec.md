@@ -864,9 +864,32 @@ automatic local they are invalid. Symbol attributes are a semantic
 `SymbolAttributes` on both `Global` and `Function`, printed after the linkage
 and merged across redeclarations (first value wins, flags OR): `asm_name`
 (from `asm("sym")` labels), `visibility`, `weak`, `alias`, `section`, `used`,
-`retain`, `tls_model`, `dllimport`/`dllexport`. Other object declaration
-attributes, and attributes on typedefs, parameters, or automatic locals, remain
-unsupported. Fixture: `sema/ir_globals_linkage.c`.
+`retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`, `selectany`.
+Attributes on typedefs, parameters, or automatic locals remain unsupported.
+Fixture: `sema/ir_globals_linkage.c`.
+
+**Object attributes (`lh7.2.22`):** `weakref("t")` is not `weak` plus
+`alias`: `alias` defines a symbol, while a weakref emits none and its uses
+resolve to an `extern_weak` reference to `t`. So a weakref global prints as
+`extern` with `[weakref="t"]`, and must have internal linkage; it also applies
+to functions. `selectany` (clang: `weak_odr` plus a COMDAT) requires external
+linkage. Alignment and common-ness are object properties on `Global`, not
+symbol attributes, resolved after all redeclarations merge:
+
+- `[align=N]` comes from `aligned`, `_Alignas`, and `__declspec(align)`, taking
+  the largest request across declarations. It prints only when it differs from
+  the type's natural alignment. Clang honors the request as written, even
+  below natural (`aligned(1)` on an `int` gives `align=1`); gcc and MSVC take
+  the max with natural.
+- `[common]` marks an external tentative definition: a definition with no
+  initializer on any declaration, not thread-local, and not `alias`, `section`,
+  `weak`, or `selectany`. `common` on any declaration wins over `nocommon`
+  (clang); otherwise `nocommon` opts out; otherwise `-fcommon`/`-fno-common`
+  decides (default off, rejected under MSVC). On an MSVC target, an alignment
+  request also opts out.
+
+Fixtures: `sema/ir_object_attributes.c`, `sema/ir_object_attributes_fcommon.c`,
+`sema/ir_object_alignment_gcc.c`, `sema/x86_64-pc-windows-msvc/ir_selectany.c`.
 
 **Function specifiers (`lh7.2.14`):** `FunctionSemantics` separates inlining
 preference (`hint`, `always`, `never`), definition emission, and `noreturn`.

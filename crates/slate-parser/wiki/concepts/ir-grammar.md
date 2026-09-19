@@ -126,15 +126,17 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ## Globals
 
 ```ebnf
-global       = ( "global" | "extern" ) variable linkage symbol_attrs { metadata } ";" ;
+global       = ( "global" | "extern" ) variable linkage symbol_attrs [ "[align=" int "]" ]
+               [ "[common]" ] { metadata } ";" ;
 variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ] [ "[constexpr]" ]
                [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
 symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]
-               [ "[weak]" ] [ "[alias=" string "]" ] [ "[section=" string "]" ]
-               [ "[used]" ] [ "[retain]" ] [ "[tls_model=" tls_model "]" ]
-               [ "[dllimport]" | "[dllexport]" ] ;
+               [ "[weak]" ] [ "[alias=" string "]" ] [ "[weakref=" string "]" ]
+               [ "[section=" string "]" ] [ "[used]" ] [ "[retain]" ]
+               [ "[tls_model=" tls_model "]" ] [ "[dllimport]" | "[dllexport]" ]
+               [ "[selectany]" ] ;
 visibility   = "default" | "hidden" | "protected" | "internal" ;
 tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec" ;
 ```

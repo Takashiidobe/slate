@@ -158,6 +158,8 @@ pub struct Global {
     pub linkage: super::Linkage,
     pub symbol: super::SymbolAttributes,
     pub definition: bool,
+    pub alignment: Option<u64>,
+    pub common: bool,
 }
 
 #[derive(Debug, Clone)]

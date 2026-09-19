@@ -1877,9 +1877,9 @@ fn align_up(value: u64, alignment: u64) -> Result<u64, ResolveError> {
         .ok_or(ResolveError::Unsupported("record size overflow"))
 }
 
-fn requested_alignment(
+pub(super) fn requested_alignment<'a>(
     resolver: &mut TypeResolver,
-    attributes: &[Attribute],
+    attributes: impl IntoIterator<Item = &'a Attribute>,
 ) -> Result<Option<u64>, ResolveError> {
     let mut requested: Option<u64> = None;
     for attribute in attributes {

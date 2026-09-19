@@ -121,6 +121,7 @@ struct ParsedCompilerArgs {
     rounding_math: Option<bool>,
     trapping_math: Option<bool>,
     gnu89_inline: Option<bool>,
+    common: Option<bool>,
     long_double: Option<LongDoubleFormat>,
     isa: IsaRequest,
     diagnostics: DiagnosticOptions,
@@ -142,6 +143,7 @@ enum Opt {
     RoundingMath,
     TrappingMath,
     Gnu89Inline,
+    Common,
     LongDouble,
     IsaFeature,
     Arch,
@@ -169,6 +171,7 @@ impl std::fmt::Display for Opt {
             Self::RoundingMath => "rounding-math",
             Self::TrappingMath => "trapping-math",
             Self::Gnu89Inline => "gnu89-inline",
+            Self::Common => "common",
             Self::LongDouble => "long-double",
             Self::IsaFeature => "m<feature>",
             Self::Arch => "march",
@@ -192,6 +195,7 @@ impl Opt {
             Self::RoundingMath => "rounding-math",
             Self::TrappingMath => "trapping-math",
             Self::Gnu89Inline => "gnu89-inline",
+            Self::Common => "common",
             _ => "",
         }
     }
@@ -208,8 +212,9 @@ impl Opt {
     }
 }
 
-const FLAG_OPTS: [Opt; 6] = [
+const FLAG_OPTS: [Opt; 7] = [
     Opt::Gnu89Inline,
+    Opt::Common,
     Opt::Wrapv,
     Opt::Trapv,
     Opt::StrictOverflow,
@@ -258,6 +263,7 @@ impl CompilerArgParser {
                 InlineSemantics::ProvideDef
             }
         });
+        options.common = raw.common.unwrap_or(false);
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
@@ -326,6 +332,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::RoundingMath => parsed.rounding_math = Some(value),
                 Opt::TrappingMath => parsed.trapping_math = Some(value),
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
+                Opt::Common => parsed.common = Some(value),
                 _ => return Err(invalid(argument, "unknown flag")),
             }
         } else if let Some(value) = option_value(argument, "D") {
@@ -651,8 +658,9 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 15] = [
+    const UNSUPPORTED: [Opt; 16] = [
         Opt::Gnu89Inline,
+        Opt::Common,
         Opt::Wrapv,
         Opt::Trapv,
         Opt::StrictOverflow,

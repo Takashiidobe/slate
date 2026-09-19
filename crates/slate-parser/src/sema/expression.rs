@@ -13,6 +13,7 @@ pub(super) struct Lowerer {
     pub c_types: HashMap<BindingId, super::types::CTypeMetadata>,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
+    pub object_requests: HashMap<BindingId, super::module::ObjectRequest>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
@@ -881,6 +882,8 @@ impl Lowerer {
                     linkage: Linkage::Internal,
                     symbol: SymbolAttributes::default(),
                     definition: true,
+                    alignment: None,
+                    common: false,
                 }));
                 self.read(
                     e,

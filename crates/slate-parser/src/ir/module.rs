@@ -51,11 +51,13 @@ pub struct SymbolAttributes {
     pub visibility: Option<Visibility>,
     pub weak: bool,
     pub alias: Option<String>,
+    pub weakref: Option<String>,
     pub section: Option<String>,
     pub used: bool,
     pub retain: bool,
     pub tls_model: Option<TlsModel>,
     pub dll_storage: Option<DllStorage>,
+    pub selectany: bool,
 }
 
 impl SymbolAttributes {
@@ -64,11 +66,13 @@ impl SymbolAttributes {
         self.visibility = self.visibility.or(later.visibility);
         self.weak |= later.weak;
         self.alias = self.alias.take().or(later.alias);
+        self.weakref = self.weakref.take().or(later.weakref);
         self.section = self.section.take().or(later.section);
         self.used |= later.used;
         self.retain |= later.retain;
         self.tls_model = self.tls_model.or(later.tls_model);
         self.dll_storage = self.dll_storage.or(later.dll_storage);
+        self.selectany |= later.selectany;
     }
 }
 

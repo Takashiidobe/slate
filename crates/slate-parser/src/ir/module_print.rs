@@ -77,6 +77,9 @@ impl fmt::Display for SymbolAttributes {
         if let Some(target) = &self.alias {
             write!(f, " [alias={target:?}]")?;
         }
+        if let Some(target) = &self.weakref {
+            write!(f, " [weakref={target:?}]")?;
+        }
         if let Some(section) = &self.section {
             write!(f, " [section={section:?}]")?;
         }
@@ -90,10 +93,14 @@ impl fmt::Display for SymbolAttributes {
             write!(f, " [tls_model={model}]")?;
         }
         match self.dll_storage {
-            Some(DllStorage::Import) => f.write_str(" [dllimport]"),
-            Some(DllStorage::Export) => f.write_str(" [dllexport]"),
-            None => Ok(()),
+            Some(DllStorage::Import) => f.write_str(" [dllimport]")?,
+            Some(DllStorage::Export) => f.write_str(" [dllexport]")?,
+            None => {}
         }
+        if self.selectany {
+            f.write_str(" [selectany]")?;
+        }
+        Ok(())
     }
 }
 
@@ -572,6 +579,12 @@ impl fmt::Display for DisplayModule<'_> {
             )?;
             self.variable(f, &global.variable)?;
             write!(f, " [linkage={}]{}", global.linkage, global.symbol)?;
+            if let Some(alignment) = global.alignment {
+                write!(f, " [align={alignment}]")?;
+            }
+            if global.common {
+                f.write_str(" [common]")?;
+            }
             metadata(f, self.table(), global.id)?;
             writeln!(f, ";")?;
         }

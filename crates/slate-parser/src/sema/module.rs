@@ -4,8 +4,10 @@ use super::types::TypeResolver;
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
+use crate::target_info::TargetEnvironment;
 use std::collections::HashMap;
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
@@ -32,6 +34,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         c_types: HashMap::new(),
         function_declarations: HashMap::new(),
         type_spans: HashMap::new(),
+        object_requests: HashMap::new(),
         next_id,
         break_targets: Vec::new(),
         continue_targets: Vec::new(),
@@ -154,9 +157,24 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
             *length = Some(1);
         }
     }
+    lower.resolve_object_requests(unit)?;
     lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
     super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.types.access)?;
     Ok(lower.module)
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+pub(super) struct ObjectRequest {
+    alignment: Option<u64>,
+    common: Option<bool>,
+}
+
+impl ObjectRequest {
+    fn merge(&mut self, later: Self) {
+        self.alignment = self.alignment.max(later.alignment);
+        // clang lets `common` on any declaration win over `nocommon`
+        self.common = self.common.max(later.common);
+    }
 }
 
 fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
@@ -212,7 +230,13 @@ fn symbol_attributes<'a>(
             ast::Attribute::Retain => symbol.retain = true,
             ast::Attribute::DllImport => symbol.dll_storage = Some(DllStorage::Import),
             ast::Attribute::DllExport => symbol.dll_storage = Some(DllStorage::Export),
-            ast::Attribute::ThreadLocal => {}
+            ast::Attribute::WeakRef(target) => symbol.weakref = Some(target.clone()),
+            ast::Attribute::SelectAny => symbol.selectany = true,
+            ast::Attribute::ThreadLocal
+            | ast::Attribute::Aligned(_)
+            | ast::Attribute::AlignAs(_)
+            | ast::Attribute::Common
+            | ast::Attribute::NoCommon => {}
             _ => return Err(ResolveError::Unsupported("declaration attribute")),
         }
     }
@@ -237,6 +261,7 @@ fn function_symbol<'a>(
                 ast::Attribute::Visibility(_)
                     | ast::Attribute::Weak
                     | ast::Attribute::Alias(_)
+                    | ast::Attribute::WeakRef(_)
                     | ast::Attribute::Section(_)
                     | ast::Attribute::Used
                     | ast::Attribute::Retain
@@ -249,6 +274,44 @@ fn function_symbol<'a>(
 }
 
 impl Lowerer {
+    fn resolve_object_requests(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
+        let msvc_target = self.context.target.environment == TargetEnvironment::Msvc;
+        for global in &mut self.module.globals {
+            let global = &mut global.value;
+            let request = self
+                .object_requests
+                .get(&global.variable.id)
+                .copied()
+                .unwrap_or_default();
+            if let Some(requested) = request.alignment {
+                let natural = u64::from(
+                    self.types
+                        .storage(global.variable.ty.clone())?
+                        .alignment_bytes,
+                );
+                // clang honors an alignment attribute on a variable even below the type's
+                let effective = if unit.flavor == CompilerFlavor::Clang {
+                    requested
+                } else {
+                    requested.max(natural)
+                };
+                global.alignment = (effective != natural).then_some(effective);
+            }
+            let symbol = &global.symbol;
+            let tentative = global.definition
+                && global.variable.initializer.is_none()
+                && matches!(global.linkage, Linkage::External)
+                && global.variable.storage == StorageDuration::Static
+                && symbol.alias.is_none()
+                && symbol.section.is_none()
+                && !symbol.weak
+                && !symbol.selectany
+                && !(msvc_target && request.alignment.is_some());
+            global.common = tentative && request.common.unwrap_or(unit.options.common);
+        }
+        Ok(())
+    }
+
     fn declare_global(&mut self, global: Span<Global>) -> Result<(), ResolveError> {
         let Some(existing) = self
             .module
@@ -598,7 +661,24 @@ impl Lowerer {
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
             }
-            let symbol = symbol_attributes(attributes, declarator.asm_label.as_ref())?;
+            let symbol = symbol_attributes(attributes.clone(), declarator.asm_label.as_ref())?;
+            let request = ObjectRequest {
+                alignment: super::types::requested_alignment(&mut self.types, attributes.clone())?,
+                common: if attributes
+                    .clone()
+                    .any(|attribute| matches!(attribute, ast::Attribute::Common))
+                {
+                    Some(true)
+                } else if attributes
+                    .clone()
+                    .any(|attribute| matches!(attribute, ast::Attribute::NoCommon))
+                {
+                    Some(false)
+                } else {
+                    None
+                },
+            };
+            self.object_requests.entry(id).or_default().merge(request);
             if matches!(ty, Type::VariableArray { .. }) && declarator.initializer.is_some() {
                 return Err(ResolveError::Unsupported(
                     "variable length array initializer",
@@ -641,14 +721,23 @@ impl Lowerer {
                 } else {
                     linkage(storage_class)?
                 };
-                let definition = storage_class != StorageClass::Extern
+                if symbol.weakref.is_some() && !matches!(declared_linkage, Linkage::Internal) {
+                    return Err(ResolveError::Invalid("weakref without internal linkage"));
+                }
+                if symbol.selectany && !matches!(declared_linkage, Linkage::External) {
+                    return Err(ResolveError::Invalid("selectany without external linkage"));
+                }
+                let definition = (storage_class != StorageClass::Extern
                     || variable.initializer.is_some()
-                    || symbol.alias.is_some();
+                    || symbol.alias.is_some())
+                    && symbol.weakref.is_none();
                 self.declare_global(declarator.clone().with_value(Global {
                     variable,
                     linkage: declared_linkage,
                     symbol,
                     definition,
+                    alignment: None,
+                    common: false,
                 }))?;
             } else if storage == StorageDuration::Automatic {
                 statements.push(declarator.clone().with_value(Statement::Let(variable)));
@@ -660,6 +749,8 @@ impl Lowerer {
                         linkage: Linkage::Internal,
                         symbol,
                         definition: true,
+                        alignment: None,
+                        common: false,
                     }));
             }
         }
