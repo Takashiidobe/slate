@@ -47,9 +47,12 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
 | `pointer-sign`                | on        | yes      | an implicit pointer conversion (assign/init, argument, return) whose integer pointees differ only in signedness            |
 | `incompatible-pointer-types-discards-qualifiers` | on | yes | the same conversions dropping pointee `const`/`volatile`, or differing in qualifiers below the first pointer level |
+| `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
 
 The two pointer warnings are clang `ExtWarn`s and need resolved types, so
-they come from IR lowering rather than `TranslationUnit::analyze`. `Lowerer`
+they come from IR lowering rather than `TranslationUnit::analyze`. So does
+`conflicting-types`, which has no clang counterpart (clang errors) and is
+named after clang's "conflicting types" error. `Lowerer`
 collects them in `diagnostics` through `Lowerer::warn`, `resolve_module`
 returns them next to the `Module`, and the driver passes them through
 `sema::with_sources`, the same function `analyze` uses. A promoted warning

@@ -6,6 +6,7 @@ use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
 use crate::compiler_args::CompilerFlavor;
+use crate::diagnostics::Warning;
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
 use crate::target_info::TargetEnvironment;
@@ -134,7 +135,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     semantics: Default::default(),
                     body: Some(body),
                     fallthrough: Some(fallthrough),
-                }));
+                }))?;
             }
             _ => return Err(ResolveError::Unsupported("module declaration")),
         }
@@ -318,45 +319,56 @@ impl Lowerer {
     }
 
     fn declare_global(&mut self, global: Span<Global>) -> Result<(), ResolveError> {
-        let Some(existing) = self
+        let Some(index) = self
             .module
             .globals
-            .iter_mut()
-            .find(|existing| existing.value.variable.id == global.value.variable.id)
+            .iter()
+            .position(|existing| existing.value.variable.id == global.value.variable.id)
         else {
             self.module.globals.push(global);
             return Ok(());
         };
-        let global = global.value;
-        let existing = &mut existing.value;
-        if existing.variable.ty != global.variable.ty {
-            match (&existing.variable.ty, &global.variable.ty) {
-                (
-                    Type::Array {
-                        element: a,
-                        length: None,
-                    },
-                    Type::Array {
-                        element: b,
-                        length: Some(_),
-                    },
-                ) if a == b => existing.variable.ty = global.variable.ty.clone(),
-                (
-                    Type::Array {
-                        element: a,
-                        length: Some(_),
-                    },
-                    Type::Array {
-                        element: b,
-                        length: None,
-                    },
-                ) if a == b => {}
-                _ => {
-                    return Err(ResolveError::Unsupported(
-                        "incompatible global redeclaration",
-                    ));
-                }
+        let existing_ty = &self.module.globals[index].value.variable.ty;
+        let ty = match (existing_ty, &global.value.variable.ty) {
+            (a, b) if a == b => None,
+            (
+                Type::Array {
+                    element: a,
+                    length: None,
+                },
+                Type::Array {
+                    element: b,
+                    length: Some(_),
+                },
+            ) if a == b => Some(global.value.variable.ty.clone()),
+            (
+                Type::Array {
+                    element: a,
+                    length: Some(_),
+                },
+                Type::Array {
+                    element: b,
+                    length: None,
+                },
+            ) if a == b => None,
+            (a, b) if same_layout_ignoring_sign(a, b) => {
+                self.warn(
+                    Warning::ConflictingTypes,
+                    "redeclaration with a different integer type of the same size",
+                    &global,
+                );
+                None
             }
+            _ => {
+                return Err(ResolveError::Unsupported(
+                    "incompatible global redeclaration",
+                ));
+            }
+        };
+        let global = global.value;
+        let existing = &mut self.module.globals[index].value;
+        if let Some(ty) = ty {
+            existing.variable.ty = ty;
         }
         self.types
             .bindings
@@ -378,16 +390,22 @@ impl Lowerer {
         Ok(())
     }
 
-    fn declare_function(&mut self, function: Span<Function>) {
-        let Some(existing) = self
+    fn declare_function(&mut self, function: Span<Function>) -> Result<(), ResolveError> {
+        let Some(index) = self
             .module
             .functions
-            .iter_mut()
-            .find(|existing| existing.value.id == function.value.id)
+            .iter()
+            .position(|existing| existing.value.id == function.value.id)
         else {
             self.module.functions.push(function);
-            return;
+            return Ok(());
         };
+        if let Some(message) =
+            function_redeclaration_conflict(&self.module.functions[index].value, &function.value)?
+        {
+            self.warn(Warning::ConflictingTypes, message, &function);
+        }
+        let existing = &mut self.module.functions[index];
         let function = function.value;
         let linkage = match (existing.value.linkage, function.linkage) {
             (Linkage::External, Linkage::External) => Linkage::External,
@@ -403,6 +421,7 @@ impl Lowerer {
         }
         existing.value.linkage = linkage;
         existing.value.symbol = symbol;
+        Ok(())
     }
 
     fn parameters(
@@ -639,7 +658,7 @@ impl Lowerer {
                     semantics: Default::default(),
                     body: None,
                     fallthrough: None,
-                }));
+                }))?;
                 continue;
             }
             let linked = global || storage_class == StorageClass::Extern;
@@ -1061,5 +1080,75 @@ impl Lowerer {
             result.push(statement.clone().with_value(kind));
         }
         Ok(result)
+    }
+}
+
+fn function_redeclaration_conflict(
+    existing: &Function,
+    function: &Function,
+) -> Result<Option<&'static str>, ResolveError> {
+    let returns_match = match (&existing.return_type, &function.return_type) {
+        (None, None) => true,
+        (Some(a), Some(b)) if super::types::compatible(a, b) => true,
+        (Some(a), Some(b)) if same_layout_ignoring_sign(a, b) => false,
+        _ => {
+            return Err(ResolveError::Invalid(
+                "conflicting types for function redeclaration",
+            ));
+        }
+    };
+    if !returns_match {
+        return Ok(Some(
+            "function redeclared with a different integer return type of the same size",
+        ));
+    }
+    let (
+        Parameters::Prototype {
+            fixed: a,
+            variadic: a_variadic,
+        },
+        Parameters::Prototype {
+            fixed: b,
+            variadic: b_variadic,
+        },
+    ) = (&existing.parameters, &function.parameters)
+    else {
+        return Ok(None);
+    };
+    let parameters_match = a_variadic == b_variadic
+        && a.len() == b.len()
+        && a.iter()
+            .zip(b)
+            .all(|(a, b)| super::types::compatible(&a.value.ty, &b.value.ty));
+    Ok((!parameters_match).then_some("function redeclared with a different parameter list"))
+}
+
+fn same_layout_ignoring_sign(a: &Type, b: &Type) -> bool {
+    match (a, b) {
+        (
+            Type::Numeric(NumericType::Integer {
+                width: a_width,
+                bit_precise: a_bit_precise,
+                ..
+            }),
+            Type::Numeric(NumericType::Integer {
+                width: b_width,
+                bit_precise: b_bit_precise,
+                ..
+            }),
+        ) => a_width == b_width && a_bit_precise == b_bit_precise,
+        (
+            Type::Pointer {
+                pointee: a,
+                is_const: a_const,
+                access: a_access,
+            },
+            Type::Pointer {
+                pointee: b,
+                is_const: b_const,
+                access: b_access,
+            },
+        ) => a_const == b_const && a_access == b_access && same_layout_ignoring_sign(a, b),
+        _ => super::types::compatible(a, b),
     }
 }

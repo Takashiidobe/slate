@@ -28,7 +28,7 @@ pub(super) struct Lowerer {
 }
 
 impl Lowerer {
-    fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
+    pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
         self.diagnostics.extend(warning.diagnose(
             message,
             &self.diagnostic_options,

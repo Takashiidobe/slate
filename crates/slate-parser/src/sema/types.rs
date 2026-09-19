@@ -1364,15 +1364,14 @@ impl TypeResolver {
         if let Some(id) = self.tag_ids.get(&tag.id) {
             return Ok(*id);
         }
-        let id = if let Some(name) = &tag.name {
+        let previous = tag.name.as_ref().and_then(|name| {
             self.tag_names
                 .last()
                 .and_then(|scope| scope.get(&(tag.kind, name.clone())))
                 .copied()
-        } else {
-            None
-        }
-        .unwrap_or_else(|| self.push(incomplete_tag(tag.kind)));
+        });
+        let redefines = previous.filter(|id| is_complete(&self.definitions[id.0 as usize].kind));
+        let id = previous.unwrap_or_else(|| self.push(incomplete_tag(tag.kind)));
         self.tag_ids.insert(tag.id, id);
         self.definitions[id.0 as usize].name = tag.name.clone();
         if let Some(name) = &tag.name {
@@ -1564,6 +1563,16 @@ impl TypeResolver {
                 }
             }
         };
+        if redefines.is_some() {
+            if self.features.compatible_tag_redefinitions
+                && same_tag_content(&self.definitions[id.0 as usize].kind, &kind)
+            {
+                return Ok(id);
+            }
+            return Err(ResolveError::Invalid(
+                "redefinition of struct, union, or enum tag",
+            ));
+        }
         self.definitions[id.0 as usize].kind = kind;
         Ok(id)
     }
@@ -1832,6 +1841,58 @@ impl TypeResolver {
             kind,
         });
         id
+    }
+}
+
+fn is_complete(kind: &TypeDefinitionKind) -> bool {
+    match kind {
+        TypeDefinitionKind::Record { fields, .. } => fields.is_some(),
+        TypeDefinitionKind::Enum { enumerators, .. } => enumerators.is_some(),
+        TypeDefinitionKind::Alias(_) => true,
+    }
+}
+
+fn same_tag_content(a: &TypeDefinitionKind, b: &TypeDefinitionKind) -> bool {
+    match (a, b) {
+        (
+            TypeDefinitionKind::Record {
+                fields: Some(a), ..
+            },
+            TypeDefinitionKind::Record {
+                fields: Some(b), ..
+            },
+        ) => {
+            a.len() == b.len()
+                && a.iter().zip(b).all(|(a, b)| {
+                    a.value.name == b.value.name
+                        && a.value.ty == b.value.ty
+                        && a.value.access == b.value.access
+                        && a.value.bit_width == b.value.bit_width
+                })
+        }
+        (
+            TypeDefinitionKind::Enum {
+                underlying: a_underlying,
+                enumerators: Some(a),
+                ..
+            },
+            TypeDefinitionKind::Enum {
+                underlying: b_underlying,
+                enumerators: Some(b),
+                ..
+            },
+        ) => {
+            a_underlying == b_underlying
+                && a.len() == b.len()
+                && a.iter().zip(b).all(|(a, b)| {
+                    a.value.name == b.value.name
+                        && matches!(
+                            (&a.value.value.node.value, &b.value.value.node.value),
+                            (ValueKind::Constant(a), ValueKind::Constant(b)) if a == b
+                        )
+                })
+        }
+        _ => false,
     }
 }
 

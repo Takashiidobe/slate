@@ -858,7 +858,28 @@ initializer comes from whichever declaration has one, and `definition` is set
 by any non-`extern` declaration, initializer, or `alias`. It also gives one
 `Function` per function, taking the body and parameters from the definition,
 or else the first prototype. Linkage stays internal once any declaration is
-`static`. `_Thread_local`, `__thread`, and `__declspec(thread)` give
+`static`.
+
+Conflicting redeclarations follow one rule, checked against clang 22, gcc, and
+MSVC (slate-parser-wxs.3). Where all three reject, lowering rejects. Where one
+only warns (always MSVC), lowering accepts with a `-Wconflicting-types`
+warning:
+
+| Conflict                                                            | Result  |
+| ------------------------------------------------------------------- | ------- |
+| return/object type of another kind, size, or pointer depth          | error   |
+| return/object type: same-size integers differing only in sign, also through pointers | warning (MSVC C4142) |
+| prototyped parameter lists differing in types, count, or `...`     | warning (MSVC C4028/C4030/C4031) |
+| unprototyped vs prototyped, or only top-level parameter qualifiers  | accepted silently |
+| a struct/union/enum redefined in the same scope                     | error   |
+| the same, in C23, when fields (name, type, access, bit width) or enumerators (name, value) match | accepted, reuses the first definition |
+
+The warning compares lowered IR types, so on a target where `int` and `long`
+share a layout (Windows) `int x; long x;` is silent (slate-parser-y47). Tag
+redefinitions are caught in `TypeResolver::define_tag`: a second
+definition of a tag that is already complete in the same scope; C23 mode is
+`StandardFeatures::compatible_tag_redefinitions`. Fixtures:
+`sema/ir_redeclaration_conflicts.c`, `sema/ir_redeclaration_compatible.c`. `_Thread_local`, `__thread`, and `__declspec(thread)` give
 `storage=thread` at file scope and on block-scope `static`/`extern`; on an
 automatic local they are invalid. Symbol attributes are a semantic
 `SymbolAttributes` on both `Global` and `Function`, printed after the linkage

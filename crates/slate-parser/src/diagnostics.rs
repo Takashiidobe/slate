@@ -10,16 +10,18 @@ pub enum Warning {
     C23Extensions,
     PointerSign,
     IncompatiblePointerTypesDiscardsQualifiers,
+    ConflictingTypes,
 }
 
 impl Warning {
-    pub const ALL: [Self; 6] = [
+    pub const ALL: [Self; 7] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
         Self::C23Extensions,
         Self::PointerSign,
         Self::IncompatiblePointerTypesDiscardsQualifiers,
+        Self::ConflictingTypes,
     ];
 
     pub fn name(self) -> &'static str {
@@ -32,6 +34,7 @@ impl Warning {
             Self::IncompatiblePointerTypesDiscardsQualifiers => {
                 "incompatible-pointer-types-discards-qualifiers"
             }
+            Self::ConflictingTypes => "conflicting-types",
         }
     }
 
@@ -56,7 +59,8 @@ impl Warning {
             Self::ImplicitlyUnsignedLiteral
             | Self::C23Extensions
             | Self::PointerSign
-            | Self::IncompatiblePointerTypesDiscardsQualifiers => true,
+            | Self::IncompatiblePointerTypesDiscardsQualifiers
+            | Self::ConflictingTypes => true,
         }
     }
 }
