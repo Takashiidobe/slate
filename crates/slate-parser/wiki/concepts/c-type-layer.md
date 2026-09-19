@@ -136,7 +136,35 @@ that removed `types::compatible`, `same_layout_ignoring_sign` and
 `__builtin_types_compatible_p` calls `CTypes::compatible` directly, so it and
 redeclaration merging cannot drift apart.
 
+## Where personality enters
+
+`TypeResolver` carries a `CompilerFlavor`, set once in `with_tags` from
+`unit.flavor`. Since all four resolvers (module lowering,
+`resolve_type_module`, `resolve_module`, `assertion.rs`) are built through
+that one constructor, they cannot disagree about personality — which matters
+because `static_assert(sizeof(_Atomic struct { char a[3]; }) == 3)` has to
+pass under `--flavor=gcc`, and the assertion checker builds its own resolver.
+
+Two rules read it, both on `TypeResolver`:
+
+- `promotes_atomic_layout`, consulted by `qualified_storage`: clang rounds an
+  atomic object up to the next lock-free width, gcc does not promote
+  aggregates at all. See the `_Atomic` entry in [`ir-spec.md`](ir-spec.md)
+  for the measured numbers and the MSVC gap (`slate-parser-rol`).
+- `effective_alignment`, consulted by `resolve_object_requests`: clang honors
+  an alignment attribute below the type's natural alignment, gcc and MSVC
+  raise it to the natural one.
+
+Keeping both here is the point of the phase: `src/sema/module.rs` no longer
+mentions `CompilerFlavor` at all. The flavor checks that remain in
+`src/sema/validate.rs` are about character literals and specific diagnostics,
+not layout, so they stay where they are.
+
+Personality is *reachable* from `AbiClassifier` too, since it holds a
+`&TypeResolver`, but argument classification still runs on `ir::Type` and so
+cannot see `_Atomic` on an aggregate (`slate-parser-lh7.2.29`).
+
 ## Remaining phases
 
-9ve.5 moves compiler personality (atomic promotion, alignment attribute rules)
-into `layout()`.
+9ve.6 is the acceptance sweep: a documented grep audit that no `ir::Type`
+equality or shape decides C type identity in `src/sema`.

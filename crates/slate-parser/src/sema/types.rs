@@ -5,6 +5,7 @@ use crate::ast::{
     FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, TagBody, TagDefinition,
     TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     Access, BindingId, BitFieldUnit, Enumerator, Field, Number, NumericType, RecordKind,
     RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
@@ -21,6 +22,7 @@ use crate::standard_features::StandardFeatures;
 
 pub struct TypeResolver {
     target: TargetInfo,
+    flavor: CompilerFlavor,
     pub features: StandardFeatures,
     pub ctypes: CTypes,
     tags: Vec<crate::ast::Span<TagDefinition>>,
@@ -54,6 +56,7 @@ impl TypeResolver {
     pub fn new(target: TargetInfo) -> Self {
         Self {
             target,
+            flavor: CompilerFlavor::Clang,
             features: StandardFeatures::default(),
             ctypes: CTypes::default(),
             tags: Vec::new(),
@@ -95,6 +98,7 @@ impl TypeResolver {
 
     pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
         let mut resolver = Self::new(target);
+        resolver.flavor = unit.flavor;
         resolver.features = StandardFeatures::new(unit.standard);
         resolver.tags = unit.tags.clone();
         resolver
@@ -1301,15 +1305,25 @@ impl TypeResolver {
         self.qualified_storage(ty, false)
     }
 
-    // _Atomic qualifies the element, never the array, so the flag rides
-    // through array layers down to the value type clang would promote
+    fn promotes_atomic_layout(&self) -> bool {
+        !matches!(self.flavor, CompilerFlavor::Gcc)
+    }
+
+    pub(super) fn effective_alignment(&self, requested: u64, natural: u64) -> u64 {
+        if matches!(self.flavor, CompilerFlavor::Clang) {
+            requested
+        } else {
+            requested.max(natural)
+        }
+    }
+
     pub(super) fn qualified_storage(
         &self,
         ty: Type,
         atomic: bool,
     ) -> Result<StorageLayout, ResolveError> {
         let promote = |layout| {
-            if atomic {
+            if atomic && self.promotes_atomic_layout() {
                 self.target.atomic_storage(layout)
             } else {
                 layout

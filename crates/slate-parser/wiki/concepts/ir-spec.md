@@ -1383,12 +1383,28 @@ on the type:
   one byte. The qualifier is never on an array type, so an array of atomic
   elements promotes each element, not the whole array. Sizes and alignments
   reaching the IR are already promoted; nothing in the dump re-derives them.
-  This is clang's rule and is applied under every flavor today. gcc does not
-  promote atomic aggregates at all (3/1 where clang says 4/4) and routes the
-  resulting non-lock-free accesses through libatomic, and the two also
-  disagree on how an atomic aggregate argument is passed. Both halves of
-  that personality split are `slate-parser-lh7.2.29` and
-  `slate-parser-lh7.2.30`.
+
+  That is clang's rule, and it is now selected by the compiler personality
+  rather than applied unconditionally. Under `--flavor=gcc` there is no
+  promotion at all: gcc keeps the unqualified layout (3/1 where clang says
+  4/4, 5/1 where clang says 8/8) and routes the resulting non-lock-free
+  accesses through libatomic. The divergence is confined to aggregates —
+  scalars agree, because their natural alignment already satisfies the
+  promotion — but it reaches member offsets too: `struct { char head;
+  _Atomic struct { char a[3]; } value; char tail; }` is 12 bytes with the
+  value at offset 4 under clang, and 5 bytes at offset 1 under gcc. Measured
+  against clang 22.1.8 and gcc 16.2.1; fixtures
+  `tests/fixtures/sema/ir_atomic_layout.c` (clang) and
+  `ir_atomic_layout_gcc.c` (gcc).
+
+  `--flavor=msvc` stays on clang's rule for now, and is known wrong: MSVC
+  prepends a lock word to a non-lock-free atomic, giving
+  `4 + round_up(sizeof(T), 4)` at alignment 4, which changes the object
+  representation rather than only its size (`slate-parser-rol`). The two
+  personalities also disagree on how an atomic aggregate *argument* is passed
+  (`slate-parser-lh7.2.29`), which is still open: the flavor reaches
+  `AbiClassifier`, but the C type does not, because it classifies `ir::Type`
+  and `_Atomic struct S` lowers to the same `Type::Defined` as `struct S`.
 
 `tests/fixtures/sema/ir_qualified_access.c`,
 `tests/fixtures/sema/ir_array_parameter.c` and

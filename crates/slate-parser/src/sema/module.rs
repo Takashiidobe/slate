@@ -6,7 +6,6 @@ use super::types::TypeResolver;
 use crate::ast::{
     self, DeclKind, Declarator, ParameterList, Span, Stmt, StmtKind, StorageClass, TranslationUnit,
 };
-use crate::compiler_args::CompilerFlavor;
 use crate::diagnostics::Warning;
 use crate::ir::*;
 use crate::standard_features::StandardFeatures;
@@ -298,12 +297,7 @@ impl Lowerer {
                         .storage(global.variable.ty.clone())?
                         .alignment_bytes,
                 );
-                // clang honors an alignment attribute on a variable even below the type's
-                let effective = if unit.flavor == CompilerFlavor::Clang {
-                    requested
-                } else {
-                    requested.max(natural)
-                };
+                let effective = self.types.effective_alignment(requested, natural);
                 global.alignment = (effective != natural).then_some(effective);
             }
             let symbol = &global.symbol;
