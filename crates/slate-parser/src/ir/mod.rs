@@ -127,6 +127,11 @@ pub enum ValueKind {
         list: Place,
     },
     StatementExpression(Box<Evaluation>),
+    Capture {
+        id: BindingId,
+        extent: Box<Value>,
+        value: Box<Value>,
+    },
     VaStart {
         list: Place,
     },
@@ -462,6 +467,17 @@ impl Value {
                 evaluation.statements.len(),
                 evaluation
                     .value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
+            ValueKind::Capture { id, extent, value } => write!(
+                f,
+                "capture<%{}>({}, {})",
+                id.0,
+                extent
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                value
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact)
             ),

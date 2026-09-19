@@ -383,6 +383,15 @@ impl Hoister {
                 self.discard(*left, None, out)?;
                 return self.value(*right, out);
             }
+            ValueKind::Capture { id, extent, value } => {
+                let extent = self.value(*extent, out)?;
+                out.push(source.with_value(Statement::Temporary {
+                    id,
+                    ty: extent.ty.clone(),
+                    initializer: Some(extent),
+                }));
+                return self.value(*value, out);
+            }
             ValueKind::Logical { op, left, right } => {
                 let left = self.value(*left, out)?;
                 if effects(&right) {
@@ -600,6 +609,7 @@ fn effects(value: &Value) -> bool {
         | ValueKind::Call { .. }
         | ValueKind::VaArg { .. }
         | ValueKind::StatementExpression(_)
+        | ValueKind::Capture { .. }
         | ValueKind::VaStart { .. }
         | ValueKind::VaEnd { .. }
         | ValueKind::VaCopy { .. }

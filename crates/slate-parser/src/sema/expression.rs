@@ -748,6 +748,34 @@ impl Lowerer {
         result
     }
 
+    fn type_name_extents(
+        &mut self,
+        ty: &crate::ast::TypeName,
+    ) -> Result<Vec<(BindingId, Value)>, ResolveError> {
+        let mut extents = Vec::new();
+        if self.in_function {
+            self.extents(&ty.declarator, &mut extents)?;
+        }
+        Ok(extents)
+    }
+
+    fn with_extents(&mut self, e: &Expr, extents: Vec<(BindingId, Value)>, value: Value) -> Value {
+        extents
+            .into_iter()
+            .rev()
+            .fold(value, |value, (id, extent)| {
+                self.value(
+                    e,
+                    value.ty.clone(),
+                    ValueKind::Capture {
+                        id,
+                        extent: Box::new(extent),
+                        value: Box::new(value),
+                    },
+                )
+            })
+    }
+
     fn runtime_size(&mut self, e: &Expr, ty: &Type) -> Result<Value, ResolveError> {
         let size_type = Type::integer(self.context.target.pointer_width, false);
         let Type::VariableArray { element, extent } = ty else {
@@ -895,21 +923,23 @@ impl Lowerer {
                 )
             }
             ExprKind::Cast { ty, value } => {
+                let extents = self.type_name_extents(ty)?;
                 let to = self.resolve_type_name(ty)?.ty;
                 let value = self.expr(value)?;
-                if let Some(to) = to {
-                    self.convert(value, to, ConversionReason::Explicit)
+                let cast = if let Some(to) = to {
+                    self.convert(value, to, ConversionReason::Explicit)?
                 } else {
                     let end = self.value(e, Type::Void, ValueKind::Void);
-                    Ok(self.value(
+                    self.value(
                         e,
                         Type::Void,
                         ValueKind::Sequence {
                             left: Box::new(value),
                             right: Box::new(end),
                         },
-                    ))
-                }
+                    )
+                };
+                Ok(self.with_extents(e, extents, cast))
             }
             ExprKind::Unary {
                 op: UnaryOp::AddrOf,
@@ -1293,6 +1323,7 @@ impl Lowerer {
                 self.context.resolve(e)
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
+                let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
                 let atomic = resolved.c.qualifiers.is_atomic;
                 let ty = resolved
@@ -1301,9 +1332,12 @@ impl Lowerer {
                 if matches!(e.value, ExprKind::SizeOfType { .. })
                     && matches!(ty, Type::VariableArray { .. })
                 {
-                    return self.runtime_size(e, &ty);
+                    let size = self.runtime_size(e, &ty)?;
+                    return Ok(self.with_extents(e, extents, size));
                 }
-                let layout = self.types.qualified_storage(ty.clone(), atomic)?;
+                let layout = self
+                    .types
+                    .qualified_storage(fixed_element(&ty).clone(), atomic)?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -1323,7 +1357,9 @@ impl Lowerer {
                 {
                     return self.runtime_size(e, &ty);
                 }
-                let layout = self.types.qualified_storage(ty.clone(), access.atomic)?;
+                let layout = self
+                    .types
+                    .qualified_storage(fixed_element(&ty).clone(), access.atomic)?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -1424,6 +1460,13 @@ impl Lowerer {
                 Ok(self.value(e, ty, ValueKind::VaArg { list }))
             }
         }
+    }
+}
+
+fn fixed_element(ty: &Type) -> &Type {
+    match ty {
+        Type::VariableArray { element, .. } => fixed_element(element),
+        _ => ty,
     }
 }
 

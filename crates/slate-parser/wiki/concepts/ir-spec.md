@@ -940,9 +940,22 @@ differences accept a VLA element, with the stride being its runtime size
 (`element=vla<i32, %m>`). VLA types are compatible with each other and with
 fixed arrays whose elements are compatible (C11 6.7.6.2p6), whatever their
 extents, so assigning between them is a `pointer_cast`. Not yet: VLA
-initializers (only C23 `{}` is valid), `sizeof(int[n])` and casts to VLA
-types, and `typedef` of VLA types. Fixture:
+initializers (only C23 `{}` is valid) and `typedef` of VLA types. Fixture:
 `sema/variable_length_array_parameters.c`.
+
+**Implemented for VLA type names in expressions (`lh7.2.24`):** a type name
+inside a function body (`sizeof(int[n])`, `(int (*)[n])p`) captures its
+non-constant bounds where the expression is evaluated, not at a declaration.
+Lowering wraps the expression in `ValueKind::Capture { id, extent, value }`
+(printed `capture<%id>(extent, value)`), one per bound, outermost first; the
+side-effect hoisting pass turns each into a synthetic `Statement::Temporary`
+at that evaluation point, so a capture under `?:` or `&&` runs only in its
+arm and never survives into printed function bodies. `sizeof` captures only
+when the named type is itself a VLA (C11 6.5.3.4p2): `sizeof(int (*)[n])` is
+a folded constant and does not evaluate `n`. `_Alignof` of a VLA type or
+object is its innermost fixed element's alignment and evaluates nothing.
+Casts capture every bound in the type, before the operand, as clang does.
+Fixture: `sema/variable_length_array_type_names.c`.
 
 **Implemented (`lh7.2.8`):** braced and string initializers lower to
 `ValueKind::Aggregate { members, zero_fill }` (`sema/initializer.rs`),

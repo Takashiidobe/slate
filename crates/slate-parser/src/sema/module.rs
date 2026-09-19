@@ -763,14 +763,31 @@ impl Lowerer {
         anchor: &Span<()>,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<(), ResolveError> {
+        let mut extents = Vec::new();
+        self.extents(declarator, &mut extents)?;
+        out.extend(extents.into_iter().map(|(id, count)| {
+            anchor.clone().with_value(Statement::Temporary {
+                id,
+                ty: count.ty.clone(),
+                initializer: Some(count),
+            })
+        }));
+        Ok(())
+    }
+
+    pub(super) fn extents(
+        &mut self,
+        declarator: &Declarator,
+        out: &mut Vec<(BindingId, Value)>,
+    ) -> Result<(), ResolveError> {
         match declarator {
             Declarator::Abstract | Declarator::Name(_) => Ok(()),
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
             | Declarator::Pointer { inner, .. }
-            | Declarator::Function { inner, .. } => self.capture_extents(inner, anchor, out),
+            | Declarator::Function { inner, .. } => self.extents(inner, out),
             Declarator::Array { inner, size, .. } => {
-                self.capture_extents(inner, anchor, out)?;
+                self.extents(inner, out)?;
                 let ast::ArraySize::Expression(expr) = size else {
                     return Ok(());
                 };
@@ -781,13 +798,9 @@ impl Lowerer {
                 let count = self.expr(expr)?;
                 let count = self.convert(count, extent_type.clone(), ConversionReason::Assign)?;
                 let id = self.fresh();
-                self.types.bindings.insert(id, extent_type.clone());
+                self.types.bindings.insert(id, extent_type);
                 self.types.extents.insert(expr.id, id);
-                out.push(anchor.clone().with_value(Statement::Temporary {
-                    id,
-                    ty: extent_type,
-                    initializer: Some(count),
-                }));
+                out.push((id, count));
                 Ok(())
             }
         }
