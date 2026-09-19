@@ -68,8 +68,9 @@ Every IR node has its own `NodeId`: a node synthesized from another node's
 span (conversion wrappers, hoisted temporaries, reads of temporaries,
 initializer values anchored at a declarator, type definitions created by a
 declarator) takes a fresh id via `Span::derive`. A rewrite of the same node
-(the effects pass) keeps its id with `Span::with_value`, and an IR enumerator
-keeps its AST enumerator's id because name resolution looks it up by that id.
+(the effects pass) keeps its id with `Span::with_value`. Nothing looks up an
+IR node by an AST id: enumerator references resolve through
+`TypeResolver.enumerators`, keyed by the AST enumerator's id.
 `Module.metadata` is keyed by IR node id and written with `Module::annotate`
 on the node that owns the fact, so each key prints on exactly one node. A
 declarator's C type annotates the declared entity (let, global, function,

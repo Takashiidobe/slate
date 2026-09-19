@@ -138,6 +138,7 @@ pub struct TypeResolver {
     pub(super) bindings: HashMap<BindingId, Type>,
     pub(super) access: HashMap<BindingId, Access>,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, ResolvedType>,
+    pub(super) enumerators: HashMap<crate::ast::NodeId, Value>,
     pub(super) field_c: HashMap<TypeId, Vec<CTypeMetadata>>,
     prototype_scope: bool,
 }
@@ -165,6 +166,7 @@ impl TypeResolver {
             bindings: HashMap::new(),
             access: HashMap::new(),
             typeof_operands: HashMap::new(),
+            enumerators: HashMap::new(),
             field_c: HashMap::new(),
             prototype_scope: false,
         }
@@ -1540,7 +1542,8 @@ impl TypeResolver {
                         })),
                     };
                     self.declare(&enumerator.name, Ordinary::Constant(value.clone()));
-                    entries.push(item.clone().with_value(Enumerator {
+                    self.enumerators.insert(item.id, value.clone());
+                    entries.push(item.derive(Enumerator {
                         id: BindingId(entries.len() as u32),
                         name: enumerator.name.clone(),
                         value,

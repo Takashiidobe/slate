@@ -860,22 +860,9 @@ impl Lowerer {
                     .id;
                 let value = self
                     .types
-                    .definitions
-                    .iter()
-                    .find_map(|definition| {
-                        if let TypeDefinitionKind::Enum {
-                            enumerators: Some(entries),
-                            ..
-                        } = &definition.kind
-                        {
-                            entries
-                                .iter()
-                                .find(|entry| entry.id == node)
-                                .map(|entry| entry.value.value.clone())
-                        } else {
-                            None
-                        }
-                    })
+                    .enumerators
+                    .get(&node)
+                    .cloned()
                     .ok_or(ResolveError::Unsupported("unresolved enumerator constant"))?;
                 Ok(self.value(e, value.ty, value.node.value))
             }
