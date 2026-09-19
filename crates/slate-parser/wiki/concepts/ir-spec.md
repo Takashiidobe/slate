@@ -740,7 +740,9 @@ Vector arguments and results are classified per convention. `AbiPass::Direct`
 is a vector passed in registers as its own type, distinct from `scalar` and
 from `native_c`. The classification is the target's **baseline** ISA, which is
 what clang assumes without `-mavx` and friends; a wider ISA would keep more of
-these in registers, and clang says so with `-Wpsabi`.
+these in registers, and clang says so with `-Wpsabi`. slate-parser has no flag
+for that yet, and the predefine headers are baseline captures to match, so the
+preprocessor and the ABI agree on what the target can do (`slate-parser-qiy`).
 
 | Convention           | < 8 bytes     | 8 bytes                      | 16 bytes | > 16 bytes                      |
 | -------------------- | ------------- | ---------------------------- | -------- | ------------------------------- |
