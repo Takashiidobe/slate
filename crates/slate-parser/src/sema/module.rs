@@ -362,15 +362,26 @@ impl Lowerer {
                 .clone()
                 .ok_or(ResolveError::Unsupported("void parameter"))?;
             let element_access = super::types::access(resolved.c.qualifiers);
+            let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
+            let array = match &ty {
+                Type::Array { length, .. } => Some(ArrayParameter {
+                    extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
+                    guaranteed: declared_array.is_static,
+                }),
+                Type::VariableArray { extent, .. } => Some(ArrayParameter {
+                    extent: ArrayExtent::Variable(*extent),
+                    guaranteed: declared_array.is_static,
+                }),
+                _ => None,
+            };
             let qualifiers = match ty {
-                Type::Array { .. } | Type::VariableArray { .. } => {
-                    parameter.declarator.array_qualifiers().unwrap_or_default()
-                }
+                Type::Array { .. } | Type::VariableArray { .. } => declared_array.qualifiers,
                 _ => resolved.c.qualifiers,
             };
+            let element_const = resolved.c.qualifiers.is_const;
             ty = match ty {
                 Type::Array { element, .. } | Type::VariableArray { element, .. } => {
-                    self.qualified_pointer(*element, false, element_access)
+                    self.qualified_pointer(*element, element_const, element_access)
                 }
                 function @ Type::Function { .. } => self.pointer(function, false),
                 other => other,
@@ -402,6 +413,8 @@ impl Lowerer {
                 name: name.map(str::to_owned),
                 ty,
                 restrict: qualifiers.is_restrict,
+                is_const: qualifiers.is_const,
+                array,
             }));
         }
         Ok(Parameters::Prototype {
@@ -536,6 +549,8 @@ impl Lowerer {
                                         name: None,
                                         ty: ty.clone(),
                                         restrict: false,
+                                        is_const: false,
+                                        array: None,
                                     },
                                     declarator.spelling,
                                     declarator.expansion,

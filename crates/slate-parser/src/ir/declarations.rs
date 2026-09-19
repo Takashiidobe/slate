@@ -166,6 +166,50 @@ pub struct Parameter {
     pub name: Option<String>,
     pub ty: Type,
     pub restrict: bool,
+    pub is_const: bool,
+    pub array: Option<ArrayParameter>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ArrayParameter {
+    pub extent: ArrayExtent,
+    pub guaranteed: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArrayExtent {
+    Unspecified,
+    Fixed(u64),
+    Variable(super::VariableExtent),
+}
+
+impl std::fmt::Display for ArrayParameter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("[array")?;
+        if self.guaranteed {
+            f.write_str("=static")?;
+        } else if !matches!(self.extent, ArrayExtent::Unspecified) {
+            f.write_str("=")?;
+        }
+        match self.extent {
+            ArrayExtent::Unspecified => Ok(()),
+            ArrayExtent::Fixed(length) => {
+                write!(f, "{}{length}", if self.guaranteed { " " } else { "" })
+            }
+            ArrayExtent::Variable(super::VariableExtent::Captured(binding)) => {
+                write!(
+                    f,
+                    "{}%{}",
+                    if self.guaranteed { " " } else { "" },
+                    binding.0
+                )
+            }
+            ArrayExtent::Variable(super::VariableExtent::Unspecified) => {
+                write!(f, "{}*", if self.guaranteed { " " } else { "" })
+            }
+        }?;
+        f.write_str("]")
+    }
 }
 
 #[derive(Debug, Clone)]

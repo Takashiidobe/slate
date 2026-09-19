@@ -156,7 +156,9 @@ function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               ( ";" | "{" { statement } "}" ) ;
 params      = "unprototyped" | param { ", " param } [ ", ..." ] | "..." ;
 param       = binding ( c_identifier | "<unnamed>" ) ":" type [ "[restrict]" ]
-              { metadata } ;
+              [ "[const]" ] [ array_param ] { metadata } ;
+array_param = "[array=" ( "static" [ " " extent ] | extent ) "]" ;
+extent      = integer | binding | "*" ;
 fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 ```
 

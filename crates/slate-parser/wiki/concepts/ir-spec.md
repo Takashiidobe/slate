@@ -1162,11 +1162,21 @@ on the type:
 - `restrict` is an aliasing promise about a pointer binding, so it is a
   `[restrict]` flag on the parameter or variable. For an array parameter,
   the qualifiers inside its first brackets (`int a[restrict 4]`) are the
-  adjusted pointer's own.
+  adjusted pointer's own; `const` there is `[const]` on the parameter,
+  while a `const` on the element type stays in the pointee
+  (`const int a[3]` is `ptr<const i32>`).
 - Qualifiers inherited through a typedef, and the `_Atomic(T)` specifier,
   count the same as written qualifiers.
+- An array parameter adjusts to a pointer, but the brackets it was written
+  with survive as `[array=...]` on the parameter: `[array=3]` for a fixed
+  length, `[array=%n]` for a captured VLA extent, `[array=*]` for `[*]`,
+  and a leading `static` (`[array=static 3]`) for the C99 6.7.6.3p7
+  guarantee that the argument gives access to at least that many elements,
+  which also implies it is non-null. Plain `int a[]` adds nothing, since it
+  is exactly the adjusted pointer.
 
-`tests/fixtures/sema/ir_qualified_access.c` covers these. `_Atomic` size and
+`tests/fixtures/sema/ir_qualified_access.c` and
+`tests/fixtures/sema/ir_array_parameter.c` cover these. `_Atomic` size and
 alignment that differ from the unqualified type are not modeled yet.
 
 ### Explicit atomic operations

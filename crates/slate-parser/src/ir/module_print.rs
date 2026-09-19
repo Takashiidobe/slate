@@ -1,7 +1,7 @@
 use super::{
-    DllStorage, Evaluation, FloatType, Inlining, Linkage, Metadata, Module, NumericType,
-    Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel, Type,
-    TypeDefinitionKind, Variable, Visibility,
+    ArrayExtent, DllStorage, Evaluation, FloatType, Inlining, Linkage, Metadata, Module,
+    NumericType, Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel,
+    Type, TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -593,6 +593,14 @@ impl fmt::Display for DisplayModule<'_> {
                         )?;
                         if parameter.restrict {
                             f.write_str(" [restrict]")?;
+                        }
+                        if parameter.value.is_const {
+                            f.write_str(" [const]")?;
+                        }
+                        if let Some(array) = parameter.value.array
+                            && (array.guaranteed || array.extent != ArrayExtent::Unspecified)
+                        {
+                            write!(f, " {array}")?;
                         }
                         metadata(f, self.table(), parameter.id)?;
                     }

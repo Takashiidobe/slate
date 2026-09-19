@@ -1020,6 +1020,12 @@ pub enum Declarator {
     },
 }
 
+#[derive(Clone, Copy, Default)]
+pub struct ArrayDeclarator {
+    pub qualifiers: Qualifiers,
+    pub is_static: bool,
+}
+
 #[derive(Clone, Copy)]
 struct Derivation {
     depth: usize,
@@ -1055,13 +1061,20 @@ impl Declarator {
         }
     }
 
-    pub fn array_qualifiers(&self) -> Option<Qualifiers> {
+    pub fn array_parameter(&self) -> Option<ArrayDeclarator> {
         let mut layer = self;
         for _ in 0..self.outermost_derivation()?.depth {
             layer = layer.inner()?;
         }
         match layer {
-            Self::Array { qualifiers, .. } => Some(*qualifiers),
+            Self::Array {
+                qualifiers,
+                is_static,
+                ..
+            } => Some(ArrayDeclarator {
+                qualifiers: *qualifiers,
+                is_static: *is_static,
+            }),
             _ => None,
         }
     }

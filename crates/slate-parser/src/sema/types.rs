@@ -2204,7 +2204,7 @@ fn resolve_parameters(
     module: &mut crate::ir::Module,
     next_binding: &mut u32,
 ) -> Result<crate::ir::Parameters, ResolveError> {
-    use crate::ir::{BindingId, Parameter, Parameters};
+    use crate::ir::{ArrayExtent, ArrayParameter, BindingId, Parameter, Parameters};
     if matches!(signature, ParameterList::Empty) && !resolver.features.empty_parens_are_prototype {
         return Ok(Parameters::Unprototyped);
     }
@@ -2212,10 +2212,25 @@ fn resolve_parameters(
     for parameter in signature.parameters() {
         let start = resolver.definitions.len();
         let resolved = resolver.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
-        let restrict = resolved.c.qualifiers.is_restrict;
+        let declared_array = parameter.declarator.array_parameter();
+        let qualifiers = match declared_array {
+            Some(array) => array.qualifiers,
+            None => resolved.c.qualifiers,
+        };
         let ty = resolved
             .ty
             .ok_or(ResolveError::Unsupported("void parameter"))?;
+        let array = match &ty {
+            Type::Array { length, .. } => Some(ArrayParameter {
+                extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
+                guaranteed: declared_array.is_some_and(|array| array.is_static),
+            }),
+            Type::VariableArray { extent, .. } => Some(ArrayParameter {
+                extent: ArrayExtent::Variable(*extent),
+                guaranteed: declared_array.is_some_and(|array| array.is_static),
+            }),
+            _ => None,
+        };
         module.metadata.insert(parameter.id, resolved.c.entries());
         for definition in &resolver.definitions[start..] {
             module
@@ -2226,7 +2241,9 @@ fn resolve_parameters(
             id: BindingId(*next_binding),
             name: parameter.declarator.name().map(str::to_owned),
             ty,
-            restrict,
+            restrict: qualifiers.is_restrict,
+            is_const: qualifiers.is_const,
+            array,
         }));
         *next_binding += 1;
     }

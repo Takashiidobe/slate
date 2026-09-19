@@ -9,9 +9,9 @@ mod numeric;
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
 pub use atomic::{FenceScope, MemoryOrder};
 pub use declarations::{
-    Access, AggregateMember, AggregateTarget, BitFieldAccess, BitFieldUnit, Enumerator, Field,
-    Global, Parameter, Parameters, Place, PlaceKind, RecordKind, RecordLayout, StorageDuration,
-    TypeDefinition, TypeDefinitionKind, TypeId, Variable,
+    Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, BitFieldAccess,
+    BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
+    RecordLayout, StorageDuration, TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{
     DllStorage, Evaluation, Fallthrough, Function, FunctionSemantics, Inlining, Linkage, Metadata,

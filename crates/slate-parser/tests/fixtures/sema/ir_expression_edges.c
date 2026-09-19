@@ -40,7 +40,7 @@ float casts(double d, unsigned long u) { return (short)d + (float)u; }
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %0 @narrow(%17 x: f32) -> f64 [linkage=external];
-// IR-NEXT:     fn %1 @sizes(%2 array: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %1 @sizes(%2 array: ptr<i32> [array=4]) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %3 local: array<i32, 3> [storage=automatic];
 // IR-NEXT:         return add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(12), const<u64>(8)), const<u64>(8));
 // IR-NEXT:     }

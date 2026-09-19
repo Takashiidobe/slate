@@ -84,7 +84,7 @@ int poll(volatile int *p, struct regs *r, vu *u, int a[restrict volatile 4]) {
 // IR-NEXT:         let %24: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%1, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
 // IR-NEXT:         write<i64, atomic=seq_cst>(%2, widen<i64, reason=assign>(read<i32, atomic=seq_cst>(%1)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @poll(%13 p: ptr<volatile i32>, %14 r: ptr<@type1>, %15 u: ptr<volatile u32>, %16 a: ptr<i32> [restrict]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %12 @poll(%13 p: ptr<volatile i32>, %14 r: ptr<@type1>, %15 u: ptr<volatile u32>, %16 a: ptr<i32> [restrict] [array=4]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         write<i32, volatile>(deref(read<ptr<volatile i32>>(%13)), const<i32>(0));
 // IR-NEXT:         write<i32, volatile>(field0(deref(read<ptr<@type1>>(%14))), const<i32>(1));
 // IR-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%14))), const<i32>(2));
