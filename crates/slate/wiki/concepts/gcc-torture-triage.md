@@ -98,9 +98,10 @@ upstream of Slate.
    `#cir.global_view<`, `cir.get_member`, a specific `sym_name`.
 4. **Clang AST**, when CIR alone doesn't disambiguate (e.g. anonymous struct
    member names, signedness on a typedef): `$SLATE_CLANG -Xclang -ast-dump=json -fsyntax-only <file.c>`.
-5. **`cargo run -- fixup-debug <file.c>`** — only if step 2 showed the bug is
-   fixup-introduced. `--only-pass <name>` / `--up-to-pass <name>` isolate a
-   single pass; see `wiki/concepts/passes.md` for the pass catalog and order.
+5. Compare the baseline and full outputs directly when step 2 shows the bug is
+   fixup-introduced. The old `fixup-debug` command and pass-isolation flags
+   were removed with the retired pass engine; see `passes.md` for the current
+   worklist catalog.
 
 ### Where the actually-compiled batch binary lives
 

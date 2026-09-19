@@ -168,11 +168,13 @@ compares visible function and object names from the oracle and shim Clang ASTs
 for C89/C99/C11/C17/C23, ISO 9899:1990/199409/1999/2011/2017, GNU89/GNU99/
 GNU11/GNU17/GNU23, and GNU modes with explicit `_DEFAULT_SOURCE` or
 `_GNU_SOURCE`; it also has explicit `_ISOC23_SOURCE` and `_ISOC2X_SOURCE`
-selectors. It checks the C90/C95/C99/C11/C23 header set for both x86-64 glibc
-and musl. Because existing shim gates leak names, the test is ignored in the
-default profile until the linked `slate-khfh` issues are fixed. Run it to
-regenerate the complete tab-separated report at
-`target/libc-feature-visibility/extra-symbols.tsv`:
+selectors. It checks the C90/C95/C99/C11/C17/C23 header set for both x86-64
+glibc and musl, and extracts mode-specific public macro names alongside
+functions and objects. Because existing shim gates still have tracked gaps,
+the test is ignored in the default profile. Run it to regenerate the complete
+tab-separated reports at
+`target/libc-feature-visibility/extra-symbols.tsv` and
+`target/libc-feature-visibility/extra-macros.tsv`:
 
 ```bash
 cargo nextest r --release --profile libc --test libc_declaration_matrix_suite \
@@ -183,7 +185,8 @@ Set `SLATE_LIBC_FEATURE_PROFILE=c89`, `c99`, `c11`, `c17`, or `c23` (and the
 corresponding GNU or explicit feature macro mode) to inspect one mode. The
 report lists
 target, mode, header, and each extra declaration; the test fails when the
-report contains extras. The AST path does not cover macros.
+report contains extras. The companion macro report covers public
+preprocessor names extracted from the same mode-specific headers.
 
 The same selector covers the POSIX/XOPEN ladder (`posix-source`, `posix-1`,
 `posix-2`, `posix-199309`, `posix-199506`, `posix-200112`, `posix-200809`,
@@ -195,8 +198,9 @@ common extension headers; large-file/time modes include only headers that own
 the relevant ABI types and remaps. The installed musl oracle's `aio.h` is
 incomplete under `_TIME_BITS=64`, so it is intentionally outside the
 large-file/time header set. Name visibility does not establish `off_t` or
-`time_t` width or `__REDIR` foreign identities; those require type and symbol
-probes.
+`time_t` width or `__REDIR` foreign identities; the matrix now adds
+feature-argument type-surface probes for `_FILE_OFFSET_BITS` and `_TIME_BITS`,
+while foreign identities still require dedicated symbol probes.
 
 Use the macro family established by `features.h`; do not infer libc from an
 architecture or a feature-test macro.

@@ -120,29 +120,20 @@ The vendored c-testsuite corpus is compiled and translated uniformly as GNU
 C17 because it predates C23 and includes declarations whose meaning changed in
 C23.
 
-`translate-project <dir> <out_dir>` lowers only the active `SLATE_TARGET`, or
-Slate's own build target when that variable is unset. Repeatable
-`--target <triple>` options add cfg-gated project variants; each triple selects
-its architecture, endianness, libc environment, operating system, vendor, and
-pointer width as one ABI configuration.
-
-Library projects can select their configured translation units explicitly:
+`translate-project` requires one or more compilation databases. Each command
+supplies its own target and flags, so a project can carry target variants in
+one generated crate; the crate is a binary when any unit defines `main`, and a
+library otherwise.
 
 ```bash
-cargo run -- translate-project --lib --source-manifest sources.txt project crate
+cargo run -- translate-project \
+  --compile-commands build/compile_commands.json project crate
 ```
 
-The manifest contains one `.c` path per line, resolved relative to the project
-directory. Blank lines and lines beginning with `#` are ignored. Explicit
-source mode translates only those files and does not auto-discover the
-project's `tests/` directory, so included `.c` fragments and inactive platform
-backends are not treated as standalone translation units.
-
-Configured library builds can instead provide one or more compilation
-databases:
+Multiple compilation databases can be supplied for configured target variants:
 
 ```bash
-cargo run -- translate-project --lib \
+cargo run -- translate-project \
   --compile-commands build-linux/compile_commands.json \
   --compile-commands build-android/compile_commands.json \
   project crate

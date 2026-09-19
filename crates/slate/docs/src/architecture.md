@@ -53,5 +53,5 @@ disabling any one of them still leaves correct Rust. More in
 
 This whole pipeline runs once per preprocessor configuration when a file
 branches on `#ifdef`/target macros, and the resulting programs are merged
-behind Rust `#[cfg(...)]` see
-[Translate Directives](./translate-directives.md) for that mechanism.
+behind Rust `#[cfg(...)]`; see
+[target-conditional translation](./translate-directives.md) for that mechanism.

@@ -285,7 +285,8 @@ interleaved with partial-construction cleanup (member N failed, destruct
 transliterations: exceptions become panics (untyped, unwind-based, loses the
 payload type) or get restructured into explicit `Result` propagation (typed,
 changes control flow shape). Compare
-[setjmp-longjmp-lowering.md](setjmp-longjmp-lowering.md), which already
+[setjmp-longjmp-lowering.md](../historical/setjmp-longjmp-lowering.md), which
+records the removed
 treats a related unwind-shaped C construct (`longjmp`) as
 `catch_unwind`/`panic!` rather than a raw FFI call — C++ exceptions are the
 same family of problem, at a larger scale (arbitrary destructor chains

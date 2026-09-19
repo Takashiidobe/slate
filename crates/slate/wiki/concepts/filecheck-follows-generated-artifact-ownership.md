@@ -17,8 +17,8 @@ shim, or export, checking that reference and compiling the complete generated
 crate already verifies the project-level property without a duplicate harness
 assertion.
 
-`translate-directives` checks its stdout with an explicit `DIRECTIVES` prefix.
-It does not reuse `LOWERING` because conditional-compilation reconstruction is
+Target-conditional `translate` checks use an explicit `DIRECTIVES` prefix.
+They do not reuse `LOWERING` because conditional-compilation reconstruction is
 a separate producer.
 
 Rewrite directives are checked against the new worklist engine's generated

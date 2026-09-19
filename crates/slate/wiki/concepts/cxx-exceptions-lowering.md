@@ -4,7 +4,8 @@
 > [cxx-translation-pain-points.md](cxx-translation-pain-points.md) (the "RAII
 >
 > - exceptions have no direct Rust control-flow shape" section originates
->   this doc) and [setjmp-longjmp-lowering.md](setjmp-longjmp-lowering.md),
+>   this doc) and the historical
+>   [setjmp-longjmp-lowering.md](../historical/setjmp-longjmp-lowering.md),
 >   which already treats a related unwind-shaped C construct the same way.
 
 ## Correction to prior scoping: CIR already models this in detail
@@ -77,7 +78,7 @@ something that has to be reconstructed from raw unwind tables.
 ## Raw-lowering target: `panic_any` / `catch_unwind`, not signals or a manual state machine
 
 Same design choice already made for `setjmp`/`longjmp`
-([setjmp-longjmp-lowering.md](setjmp-longjmp-lowering.md)): map the
+([setjmp-longjmp-lowering.md](../historical/setjmp-longjmp-lowering.md)): map the
 unwind-shaped source construct onto Rust's own unwind mechanism, not a
 hand-rolled reimplementation.
 

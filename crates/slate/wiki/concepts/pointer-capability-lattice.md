@@ -1,9 +1,11 @@
 # Pointer capability lattice
 
 Tracked by `slate-y0qs.4` (SCC-ordered call-graph worklist for interprocedural
-fixpoint families). Implements the c2rust-derived pointer representation
-lattice first proposed in `rewrite-worklist-engine.md`'s "Representation
-decisions are unification, not local rewrites" section, extended beyond
+fixpoint families). As of 2026-09-19, this page is the canonical reference for
+the capability analysis and the scalar/owned parameter rewrite. It implements
+the c2rust-derived pointer representation
+lattice first proposed in `wiki/historical/rewrite-worklist-engine.md`'s
+"Representation decisions are unification, not local rewrites" section, extended beyond
 c2rust per `wiki/log/2026-08-28-07-48.md`. Code: `src/backend/interproc/
 pointer_lattice.rs`. This is the canonical reference for how Slate chooses a
 pointer's Rust representation; it is wired into `engine::apply()` (see
@@ -170,11 +172,15 @@ _before_ the per-function arena is even built — see `engine::run_function`,
   cosmetic. Revisit only if a real corpus shows this row firing often and
   usefully.
 - `Buffer` (`&[T]`/`&mut [T]`/`&str`/`Vec<T>`/`String`, the `Slice`/
-  `SliceMut`/`Str`/`Vec`/`StringOwned` rows): needs call-site
-  slice-_length_ bridging (associating a length expression/parameter with
-  the pointer at every call site and use site) that doesn't exist yet —
-  a structurally different, larger piece of work than accessor insertion.
-  Tracked as `slate-y0qs.4.8`.
+  `SliceMut`/`Str`/`Vec`/`StringOwned` rows): these rows are consumed by
+  `interproc/length_lattice.rs`, after the capability solve, rather than by
+  `pointer_lattice::lift_kind()`. The shipped consumers include companion
+  pointer+length signature lifts, owned `Vec` and UTF-8-gated `String` lifts,
+  constant usage-bound lifts without a length parameter, and return-position
+  buffer ownership/retention across forwarding calls. Internal slice views are
+  used when changing a signature would be unsound or would discard side
+  effects. Unknown forwarding, insufficient allocation length, invalid UTF-8
+  content, or unsupported writes still fail closed to raw pointers.
 
 Requeueing/accessor-cleanup machinery from the original two-`NodeRule` plan
 turned out unnecessary given the whole-Program-rewrite shape that actually
@@ -216,8 +222,9 @@ parameters remain unsummarized and raw.
 
 `solve()` and `apply()` are both implemented and wired into
 `engine::apply()` (`slate-y0qs.4.2`). `apply()` lifts the `Scalar` and
-`Owned` rows only (see above for why `Cell`/`Buffer` are excluded from
-`lift_kind()`). Verified via three differential fixtures:
+`Owned` rows; `length_lattice::apply()` handles the buffer rows in the same
+interprocedural phase. Verified via pointer, return-alias, pointer/length,
+owned-vector, owned-string, constant-bound, and provenance regression fixtures:
 `tests/fixtures/pointer_lattice.c` (all three lifted shapes — `&mut T`,
 `&T`, `Box<T>` — in one program), `pointer_return_alias.c` (direct,
 forwarded, const, mutable, and ambiguous return aliases), plus the two
@@ -226,27 +233,11 @@ gaps, each tracked as its own follow-up rather than half-implemented here:
 `&mut str` (`slate-y0qs.4.4`), broader `Known`-libc-function semantics
 (`slate-y0qs.4.5`) — `classify_call_arg` currently only models
 `free`/`memcpy`/`memmove`/`memset`/the `str*` family and defaults every other
-call conservatively to `ESCAPE` — and the `Buffer`-kind rows
-(`slate-y0qs.4.8`).
-
-One latent soundness gap surfaced while implementing `Owned`, not yet
-filed as its own bead: the interprocedural `FREE` taint can over-approximate
-across a _shared_ helper. If function `h(int *q)` is called from two
-different callers, and only one of them later frees the pointer it passed
-in, `solve()`'s bidirectional merge taints `h`'s own parameter fact with
-`FREE` regardless of which call site produced it — there's no per-call-site
-attribution once the bit is merged. In this session's testing this was
-caught, not exploited: `validate_plans`'s bare-`Var`-only bridging
-requirement for `Owned` rejected the one call site (a non-`Var` address-of
-argument) that would have produced an actual unsound `Box::from_raw` on a
-stack address. That's incidental protection from an unrelated
-conservatism, not a designed guarantee — a shared helper called only via
-bare-`Var` args from both an owning and a non-owning context would not be
-caught the same way.
+call conservatively to `ESCAPE`.
 
 ## Related
 
-- [rewrite-worklist-engine.md](rewrite-worklist-engine.md) — original lattice
+- [rewrite-worklist-engine.md](../historical/rewrite-worklist-engine.md) — original lattice
   proposal and the interproc-vs-local-worklist split.
 - [rewrite-engine-v2.md](rewrite-engine-v2.md) — the arena/worklist engine
   this plugs into; "Known risks" section flags interprocedural rules as a

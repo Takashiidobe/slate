@@ -1,9 +1,9 @@
 # setjmp/longjmp lowering
 
-> See [fixups.md](../historical/fixups.md) for the general query-driven rewrite interface
-> this rule implements, and [lowerer-internals.md](lowerer-internals.md) for
+> Historical design record. See [fixups.md](fixups.md) for the retired query-driven rewrite interface
+> this rule implements, and [lowerer-internals.md](../concepts/lowerer-internals.md) for
 > where the plain-call side of `setjmp`/`longjmp` gets recognized during
-> lowering (`intrinsics.rs`).
+> lowering ([lowerer-internals.md](../concepts/lowerer-internals.md)).
 
 ## Design: `catch_unwind`, not signals or a state machine
 

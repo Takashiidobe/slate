@@ -14,16 +14,19 @@ configuration and then merge the results back into one file, using
 
 ## Translating Directives (`src/frontend/directive_translate.rs`)
 
-`slate translate` runs this automatically -- there is no separate
-subcommand. Two things must both hold for a source to get it:
+`slate translate` runs this automatically -- there is no separate subcommand.
+For a single source, `--targets=<t1>,<t2>,...` explicitly compiles a target
+matrix and merges structurally different items behind target `cfg` attributes;
+identical items are emitted once. Two things must both hold for the implicit
+host expansion:
 
 - `SLATE_TARGET` is unset (or set to the host's own default target). Under
   an explicit non-host `SLATE_TARGET`, clang's predefined macros for that
   triple and `-D`/`-U` pins from a second synthetic config can disagree with
   target-specific ABI facts (struct layouts, `va_list` shape, ...) that
   aren't macro-driven, so cross-target builds always go through
-  `translate-project --target` instead, which spawns one real clang
-  invocation per target rather than pinning macros on a single triple.
+  `translate-project` with one compilation database per target instead, which
+  spawns one real clang invocation per compilation command.
 - `should_auto_expand` says the source qualifies: every conditional chain in
   the file is a whole top-level `#if` region (not nested inside a function
   or struct body) whose non-`#else` branches each reference at least one
@@ -32,7 +35,7 @@ subcommand. Two things must both hold for a source to get it:
   `__SLATE_*` toolchain-identity macros, which `target_args()` re-asserts on
   every invocation and so can't be selectively pinned per variant either).
 
-If either check fails -- a non-host target is active, a region sits inside a
+If either check fails -- a region sits inside a
 function body, a branch is gated by a project-defined feature macro, or a
 branch's condition is a literal/opaque predicate with no macro to pin at
 all -- the whole file falls back to ordinary single-config translation of
@@ -68,6 +71,12 @@ When a file passes the gate:
 There's also a cap (`MAX_CFG_VARIANTS`, currently 16) on how many branch
 variants a file can expand to, since each one is a full clang invocation and
 we don't want to run exponentially long.
+
+Project translation uses `compile_commands.json` entries as its target axis.
+When a source has one top-level feature-macro chain, the project path also
+recompiles that source per branch and declares the resulting `cfg(feature =
+...)` names in the generated Cargo manifest. Multiple independent feature
+chains remain single-config until their per-file cross-product is supported.
 
 ## Example
 

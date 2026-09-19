@@ -27,7 +27,7 @@ not significant:
 
 ```c
 // COMMON-DAG: unsafe extern "C"
-// LOWERING-DAG: let _v{{[0-9]+}}: i32
+// LOWERING-DAG: let __v{{[0-9]+}}: i32
 // REWRITES-NOT: todo!()
 ```
 
@@ -95,8 +95,8 @@ python3 tools/update_filecheck.py --profile both --in-place \
   --target AARCH64-GNU=aarch64-unknown-linux-gnu tests/fixtures/add.c
 ```
 
-`translate-directives` fixtures use `DIRECTIVES` prefixes against that
-command's stdout. Those checks are separate from lowering and rewrite profile
+Target-conditional `translate` fixtures use `DIRECTIVES` prefixes against the
+translated output. Those checks are separate from lowering and rewrite profile
 selection because conditional-compilation reconstruction is its own producer.
 
 ## Regenerate and isolate fixture failures
@@ -177,7 +177,7 @@ uses `aarch64-lowering` and `aarch64-rewrites`; i686 uses `i686-lowering` and
 `i686-rewrites`. ARM32 also needs an installed Rust target, an ARM GNU sysroot
 and linker, and `qemu-arm-static`:
 
-The complete ARM32, AArch64, and planned i686 toolchain setup, including
+The complete ARM32, AArch64, and i686 toolchain setup, including
 sysroot, QEMU, libc-shim, and ABI guidance, is in
 [cross-target toolchains](cross-target-toolchains.md).
 

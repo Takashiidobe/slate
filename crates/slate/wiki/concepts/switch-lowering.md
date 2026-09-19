@@ -114,7 +114,7 @@ loop). `rebuild()` then does the actual recovery, entirely arm-local:
   leaves the trampoline alone rather than blowing up the output. That count
   is taken at `structure_dispatch`'s own priority (1), which runs before
   `compound_assign`/`inline_temps` (priority 41-70) fold raw arena statements
-  back into source shape — so it has to skip compiler-temp `let _vN = ...`
+  back into source shape — so it has to skip compiler-temp `let __vN = ...`
   bindings explicitly (`is_compiler_temp_let`) rather than counting
   `body.len()` directly. Counting the raw form meant `out += 1;` cost 4
   toward the budget (`let _v=1; let _v=out; let _v=_v+_v; out=_v;`) instead
@@ -136,13 +136,13 @@ loop). `rebuild()` then does the actual recovery, entirely arm-local:
 
 One correctness bug already surfaced and got fixed here
 (`wiki/log/2026-09-02-12-40.md`): naive tail duplication copied a
-fallthrough arm's `let _vN = ...` temp declarations verbatim into both arms,
+fallthrough arm's `let __vN = ...` temp declarations verbatim into both arms,
 and `inline_temps` refuses to touch a name that isn't declared exactly once
 in the function — so the duplicated copy kept every raw temp while the
 original arm got cleaned up, and one arm of the recovered `match` read
 noticeably worse than the other. Not a miscompile (conservative rules don't
 silently break code), but visibly asymmetric output. The fix renames every
-`_vN` in the copy to a fresh index before splicing it in
+`__vN` in the copy to a fresh index before splicing it in
 (`max_temp`/`rename_decls`/`freshen`), so both arms go through the same
 later cleanup passes identically.
 

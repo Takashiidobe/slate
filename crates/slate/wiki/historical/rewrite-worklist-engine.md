@@ -1,14 +1,19 @@
 # Rewrite Worklist Engine (proposed)
 
-Tracked by `slate-y0qs` (epic: rewrite pipeline performance). Not implemented
-yet — this is the design arrived at during a 2026-08-26/27 architecture
-discussion, written down before it's forgotten. Rewrite passes are currently
-commented out in `src/backend/mod.rs` while lowering is the focus; this is the
-design to land before re-enabling them at scale (~60+ rules).
+> Superseded by [rewrite-engine-v2.md](../concepts/rewrite-engine-v2.md). The arena and
+> worklist engine described here has landed, but the implementation no longer
+> uses the Salsa/query scaffolding proposed below. Keep this page as the
+> original 2026-08-26 design record; use the v2 page and [passes.md](../concepts/passes.md)
+> for current behavior.
+
+Tracked by `slate-y0qs` (epic: rewrite pipeline performance). This is the
+design arrived at during a 2026-08-26/27 architecture discussion, before the
+implementation moved to the v2 engine. Its references to `src/backend/query/`,
+Salsa, and the old pass-disabled state are historical.
 
 ## Problem
 
-Today (see [fixups.md](../historical/fixups.md)) each `QueryRule` walks the _entire_
+Today (see [fixups.md](fixups.md)) each `QueryRule` walks the _entire_
 `Program` to find its candidates, and `to_fixpoint_program_with_facts`
 (`src/backend/mod.rs`) reruns that per pass until the pass stops changing
 anything. With N passes that's `O(passes × rounds × program_size)` — doesn't
@@ -16,13 +21,13 @@ compose as more rules are added. `SalsaFacts::set_program`
 (`src/backend/salsa.rs`) also unconditionally clones the whole `Program` and
 diffs every item for changes every round, purely to rediscover what
 `Plan::apply` already knew it edited. Interprocedural fact families
-(`string_params`, `ptr_len`, see [facts.md](../historical/facts.md)) run as an outer Rust
+(`string_params`, `ptr_len`, see [facts.md](facts.md)) run as an outer Rust
 loop over a whole-program reduction until stable, which is effectively
 `O(n × propagation_depth)` on call-graph-shaped programs.
 
 CIR was considered and rejected as an alternative analysis substrate: Slate
 doesn't link MLIR's C++ analysis infrastructure (it parses `cir-opt`'s text
-dump — see [architecture.md](architecture.md)), so moving analysis there
+dump — see [architecture.md](../concepts/architecture.md)), so moving analysis there
 would mean rebuilding the same tracked/memoized/incremental machinery salsa
 already provides, while giving up the query engine's `EditSet`/conflict
 detection/tracing and per-fixture `COMMON`/`REWRITES` gating. The fix is
@@ -80,7 +85,7 @@ Three separate decisions, not one:
    needs a side set anyway to stop the same site being enqueued twice while
    pending (LLVM InstCombine pairs a `SmallVector` with a
    `DenseMap<Instr*, idx>` for this). `Site`/`AstPath` are already `Copy` and
-   `Ord` ([facts.md](../historical/facts.md)), so `BTreeSet` gives dedup and deterministic
+   `Ord` ([facts.md](facts.md)), so `BTreeSet` gives dedup and deterministic
    pop order (function, then path) in one structure — needed since output
    must stay byte-identical for differential tests. A `HashSet` would dedup
    but not give reproducible order across runs.
@@ -100,7 +105,7 @@ Three separate decisions, not one:
    `DefUseFact` via `SalsaFacts::def_use`. Prerequisite: these lookups must
    already be `BTreeMap`-indexed, not `iter().find()` linear scans — see the
    "Query-performance patterns" section of
-   [salsa-migration.md](../historical/salsa-migration.md), which flags this exact shape as
+   [salsa-migration.md](salsa-migration.md), which flags this exact shape as
    a recurring hotspot. The worklist calls this per touched site repeatedly,
    so unindexed lookups here would reintroduce the quadratic cost the
    worklist is meant to remove.
@@ -145,7 +150,7 @@ no local rule needs another global round.
 
 ### Pointer capability lattice (c2rust-derived)
 
-Superseded by [pointer-capability-lattice.md](pointer-capability-lattice.md),
+Superseded by [pointer-capability-lattice.md](../concepts/pointer-capability-lattice.md),
 which extends this table (drops `Box<[T]>`, adds `&str`/`String`/
 `Option<...>`) and documents the implemented `src/backend/interproc/
 pointer_lattice.rs` solve. Kept here for the original proposal history.
@@ -196,10 +201,10 @@ unblock before getting real signal on a real codebase.
 
 ## Related
 
-- [fixups.md](../historical/fixups.md) — the matcher/`EditSet` layer this reuses unchanged.
-- [facts.md](../historical/facts.md) — `def_use` and the `BTreeMap`-indexing pattern the
+- [fixups.md](fixups.md) — the matcher/`EditSet` layer this reuses unchanged.
+- [facts.md](facts.md) — `def_use` and the `BTreeMap`-indexing pattern the
   neighbor requeue depends on.
-- [salsa-migration.md](../historical/salsa-migration.md) — why facts are already
+- [salsa-migration.md](salsa-migration.md) — why facts are already
   incremental, and the "Query-performance patterns" hotspot section.
 - `slate-y0qs` — epic tracking this; `slate-y0qs.1`–`.4` are the sequenced
   children (profile first, then `set_program` fix, then this worklist

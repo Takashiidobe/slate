@@ -1,30 +1,18 @@
 # Goto
 
-C supports a lot of structured programming structures, like if, else,
-for, while, etc.
+Rust has no general `goto`, so Slate lowers goto-bearing C functions through a
+temporary control-flow state machine and then recovers structured Rust when
+the graph permits it.
 
-`goto` is the exception. Rust only has goto to break out of loops, but
-otherwise can't lower it. Thankfully there's a theorem called the
-structured programming theorem, that states any unstructured program can
-be represented with structured programming constructs, which basically
-turns any goto with labels into an interpreter.
+## Flattening and lowering
 
-## How to flatten
+`src/frontend/cir_input.rs` leaves ordinary structured functions in their
+native CIR form. Functions containing direct or indirect gotos are selectively
+re-emitted with CFG flattening; nested asm-goto uses CFG flattening without the
+goto solver so its labels remain available to the AST source-location join.
 
-`src/cir/flatten.rs` decides per function whether it needs the flattened form at all.
-A function is left in its structured, region-based form unless it's still
-single-block _and_ contains a `cir.goto` (`needs_flattening`).
-Functions without `goto`, and functions
-CIR already emits as multi-block on their own (computed goto, `asm goto`,
-functions with top-level labels), never pay for the extra `cir-opt
---cir-flatten-cfg --cir-goto-solver` invocation or the state-machine
-lowering path at all. Only the functions that actually need it get
-re-parsed in flattened form.
-
-## The dispatch loop
-
-`FunctionLowerer::lower_dispatch` (`control_flow.rs`) turns a flattened
-function body into:
+`FunctionLowerer::lower_dispatch` (`src/frontend/lowerer/control_flow.rs`)
+turns the flattened CFG into:
 
 ```rust
 let mut __state0: i32 = 0;
@@ -37,75 +25,26 @@ let mut __state0: i32 = 0;
 }
 ```
 
-which basically interprets an unstructured program with structured
-programming constructs. The con is that this is fairly inefficient (not
-to mention ugly). We'll talk about how to fix that in the next section,
-but note that not all gotos can be recovered into nicer if/else
-structure.
+Each arm is one basic block. Cross-block values and block arguments are
+hoisted into mutable locals, and branches assign the next state before
+continuing the dispatch loop. This form is always correct, including for
+computed goto and irreducible control flow.
 
-Look at `tests/fixtures/goto_irreducible.c`, which is like this:
+## Structure recovery
 
-```c
-if (choose_b) goto b;
-a: x = x + 1; if (x < 3) goto b; goto done;
-b: x = x + 2; if (x < 4) goto a;
-done: printf("%d\n", x);
-```
+`structure_goto` in the worklist engine handles literal-state dispatch loops
+in four stages: it threads forwarding arms and drops unreachable states; it
+collapses acyclic graphs into structured branches; it emits natural loops with
+real `loop`/`break`/`continue`; and it makes irreducible SCCs reducible by
+inserting per-edge trampolines and a scoped dispatch header. Computed goto and
+other non-literal state assignments remain as whole-function dispatch loops.
 
-Draw it out:
-
-```
-        +---------+ entry +---------+
-        |                           |
-   !choose_b                    choose_b
-        |                           |
-        v                           v
-  +-----------+   x<3          +-----------+
-  |     a     | -------------> |     b     |
-  | x = x + 1 |                | x = x + 2 |
-  +-----------+ <------------- +-----------+
-        |            x<4             |
-        |                            |
-     (else)                       (else)
-        |                            |
-        v                            v
-        +---------> done <----------+
-```
-
-Since neither `a` nor `b` dominates the other, there's no single loop
-header a relooper could wrap a `while`/`loop` around while keeping the
-cycle's stack usage at O(1).
-
-## Recovering structure
-
-Thankfully, most real `goto` usage can be repaired.
-`goto`s that are like `break`, `continue`, or early-exits can be
-recovered into structured programming constructs.
-
-Slate uses a relooper algorithm to check:
-
-- acyclic plain `if`/`else`/sequence, no loop at all;
-- a single self-loop `loop { ..; if !cond { break } }`, i.e. recovering
-  a `while`;
-- a single irreducible cycle localized within an otherwise-structured
-  function a smaller `loop { match __blockN }` peeled down to just the
-  cycle, with everything before and after it fully structured;
-- anything else a genuinely irreducible whole function like
-  `goto_irreducible.c`, or a `dynamic` state assignment from computed goto
-  stays exactly as the dispatch loop `lower_dispatch` produced. That's still
-  correct; it's just not idiomatic.
-
-This runs as `Pass::Goto`, the first fixup pass in the pipeline (see
-[Rewriting](./writing-a-rewrite.md)), so later passes only ever have to deal
-with whichever of those four shapes the function ended up in.
+A graph shape that cannot be proven safe is left in the baseline dispatch form.
 
 ## Switch
 
-Rust's `match` doesn't fall through between arms, but C's `switch` does, so
-`lower_switch` builds its own miniature version of the same trick: a
-`__switch_caseN` integer plus a labeled `loop { match __switch_caseN { .. } }`,
-where a case without an explicit `break` bumps the index and `continue`s
-into the next arm instead of falling through the match. For
-`tests/fixtures/switch_fallthrough.c`'s `case 1:` (no `break`, falls into
-`case 2:`), the lowered arm for state `0` ends with
-`__switch_case0 = 1; continue '__switch0;` instead of `break`.
+Rust's `match` does not fall through between arms, so `lower_switch` uses a
+separate state variable and labeled loop. A case without an explicit `break`
+assigns the next case index and continues the loop. `structure_dispatch`
+recovers this deterministic trampoline into a Rust `match` when its shape is
+unchanged; goto-shaped switches use `structure_goto` instead.

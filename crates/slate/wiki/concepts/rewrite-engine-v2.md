@@ -1,15 +1,15 @@
 # Rewrite engine v2: ground-up replacement for src/backend/query + salsa
 
-> **Where this stands (2026-08-30).** This is the design spec that guided the
+> **Where this stands (2026-09-19).** This is the design spec that guided the
 > engine that now ships in `src/backend/engine/` + `src/backend/interproc/`.
 > The replacement is real, not hypothetical: `src/backend/query/` and
 > `src/backend/salsa.rs` are **deleted**; the arena + one-edit worklist +
 > two-tier dispatch + hand-rolled fact caches described below are what runs
 > today, and the interprocedural phase landed as the pointer capability lattice
 > ([pointer-capability-lattice.md](pointer-capability-lattice.md)). What is
-> _not_ done is the pass port: only a handful of rules are on the new engine
-> (see [passes.md](passes.md) for the current registry) versus the historical
-> ~65. Sections below that talk about salsa/`query` as still-present, the
+> The old pass set has not been ported wholesale; the current registry in
+> [passes.md](passes.md) and `src/backend/engine/rules/mod.rs` is authoritative.
+> Sections below that talk about salsa/`query` as still-present, the
 > "currently uncommitted in the tree" state, and the "suggested first slice"
 > are **historical planning context** — read them for the _why_, not as a
 > description of the current tree. Per-session porting fast path:
@@ -29,8 +29,10 @@ document is the _what_/_why_; that one is the _how_, session to session.
 
 ## The mandate
 
-libexpat (21 TUs) currently takes ~65-67s to translate with rewrite passes
-enabled. Bare clang compiles it in a few seconds. Target: **under 10s**, and
+The original libexpat (21-TU) old-engine measurement was ~65-67s. The new
+engine reached roughly 5-6s translation in the 2026-08-28/29 measurements;
+rerun the benchmark before making a current performance claim. Bare clang
+compiles it in a few seconds. The original target was **under 10s**, and
 the architecture must scale to 60+ rewrite passes _without_ runtime growing
 linearly (or worse) with pass count -- that's the actual epic goal
 (`slate-y0qs`), not just "make libexpat faster once."
@@ -50,10 +52,11 @@ This is a full replacement of:
 
 **What survives:** the _algorithms_, not the _plumbing_.
 
-- `src/backend/facts/*.rs` -- what each fact means and how to derive it from
-  AST shape (binding uses, expression purity/effects, control-flow shape,
-  cast reasoning, loop shapes, pointer/string/heap provenance). Port the
-  logic; the caching/invalidation wrapper around it is being replaced.
+- The deleted `src/backend/facts/*.rs` implementation -- what each fact meant
+  and how to derive it from AST shape (binding uses, expression purity/effects,
+  control-flow shape, cast reasoning, loop shapes, pointer/string/heap
+  provenance). The surviving analyses now live under
+  `src/backend/interproc/` or directly in engine rules.
 - `wiki/concepts/passes.md`'s pass catalog -- the _semantic_ description of
   what each of the 65 passes does and why, including the prose next to each
   hand-placed re-run explaining why it's there (e.g. "`string_params`
@@ -144,7 +147,7 @@ or a small struct-of-maps if that's cleaner), invalidated **explicitly and
 locally**: editing binding B's initializer invalidates exactly B's own
 cached facts (and whatever's structurally/def-use downstream of B), nothing
 else recomputed, no whole-program refresh step at all. This is the same
-idea `wiki/concepts/rewrite-worklist-engine.md`'s original design sketched
+idea `wiki/historical/rewrite-worklist-engine.md`'s original design sketched
 for "requeue: structural parent + def-use-linked neighbors" -- it now also
 governs fact invalidation, not just worklist requeueing, since there's no
 salsa layer doing that job anymore.
@@ -211,8 +214,8 @@ decision explicitly discards.
 - **Termination isn't automatic.** Priority-ordered rule interaction plus
   incremental facts doesn't hand you confluence for free; nothing here
   currently proves the worklist can't oscillate (rule A's edit re-enables
-  rule B, whose edit re-enables rule A, forever). `wiki/concepts/
-rewrite-worklist-engine.md`'s "Open question" section flagged this
+  rule B, whose edit re-enables rule A, forever).
+  `wiki/historical/rewrite-worklist-engine.md`'s "Open question" section flagged this
   already for the local worklist; it applies at least as much here. At
   minimum, carry forward something like today's `FixpointLimit::Rounds`
   safety valve (a hard cap, used today for programs over ~2000 statements)
@@ -222,14 +225,14 @@ rewrite-worklist-engine.md`'s "Open question" section flagged this
   of this one.** `string_params`, `ptr_len`, and anything using
   `function_call_domain`/`direct_calls`-style whole-call-graph reasoning
   need an SCC-ordered call-graph fixed point (`slate-y0qs.4`,
-  `rewrite-worklist-engine.md`'s "Representation decisions are unification,
+  `wiki/historical/rewrite-worklist-engine.md`'s "Representation decisions are unification,
   not local rewrites" section, including the c2rust-derived pointer
   capability lattice for `write`/`unique`/`free`/`offset`). Don't try to
   shoehorn these into the local per-node worklist above; they need their
   own phase, run before the local worklist emits final AST, and that phase
   is still open work independent of this rewrite.
 
-## What's currently in the working tree (uncommitted)
+## Historical handoff snapshot (2026-08-27)
 
 As of this handoff, `src/backend/mod.rs`, `src/backend/query/item.rs`, and
 `src/backend/query/mod.rs` have **uncommitted** changes implementing the
@@ -266,7 +269,8 @@ Also holds, and needs explicit attention, not just "run the suite and see":
   `OnceLock::get_or_init` actually appears. These are a real regression
   net for "did pass X still fire the way it's supposed to," useful signal
   during the rewrite, not just a hurdle to clear at the end.
-- `tests/differential.rs` has several tests asserting on `fixup-debug`
+- Historical tests in `tests/differential.rs` asserted on the removed
+  `fixup-debug`
   trace output by rule/case _identity_ (e.g. `stdout.contains
 ("query_rule=rewrite_anonymous_structs")`, count assertions on
   `query_case=known_origin` occurrences). These are tied to the _old_
@@ -288,11 +292,11 @@ Also holds, and needs explicit attention, not just "run the suite and see":
 
 Measured this session, libexpat (21 TUs,
 `~/c-corpus/libexpat/expat/build/compile_commands.json`), same machine,
-`SLATE_FIXUP_TIMING=1 translate-project --lib` (that env var was old-engine-only
+`SLATE_FIXUP_TIMING=1 translate-project` (that env var was old-engine-only
 instrumentation and is a no-op against the new engine -- confirmed absent from
 `src/` entirely as of 2026-08-28; wrap the binary invocation in wall-clock
 timing instead, e.g. `date +%s.%N` before/after, and note the actual CLI shape
-is `translate-project --lib --compile-commands <file> <project_dir> <crate_dir>`,
+is `translate-project --compile-commands <file> <project_dir> <crate_dir>`,
 not a bare `--lib <dir>`):
 
 | state                                                                    | wall time   |
@@ -312,7 +316,7 @@ in that exact order, just a reasonable place to look for an early, real,
 measurable proof-of-architecture number rather than porting all 65 blind
 before the first measurement.
 
-## Suggested first slice
+## Historical first slice
 
 Don't port all 65 passes before getting a number. A reasonable first
 checkpoint: arena + worklist + two-tier dispatch core, hand-rolled fact
@@ -332,7 +336,7 @@ the remaining 63.
 
 ## Related
 
-- [rewrite-worklist-engine.md](rewrite-worklist-engine.md) -- the original
+- [rewrite-worklist-engine.md](../historical/rewrite-worklist-engine.md) -- the original
   (less radical) design this supersedes for the _scheduling_ layer; its
   data-structure reasoning (`BTreeSet<Site>` for determinism, tier-1/tier-2
   dispatch shape, def-use neighbor requeue) still applies here almost

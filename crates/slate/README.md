@@ -73,20 +73,19 @@ SLATE_CLANG=$(brew --prefix llvm)/bin/clang tools/macro-dump-plugin/build.sh
 
 ## Usage
 
-The main flag to use is `translate-project` which can either be
-followed by --lib for a library or plain for an application with a main
-function.
+Use `translate-project` with one or more compilation databases. It generates a
+binary crate when any translation unit defines `main`, and a library crate
+otherwise.
 
 ```
 translate   [clang args...] <file.c>  C -> Rust");
-translate-project --compile-commands <file>... <dir> <crate_dir>  cross-TU C dir -> Cargo binary crate, driven by a compile commands database"
-translate-project --lib [--source-manifest <file>|--compile-commands <file>...] <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
+translate-project --compile-commands <file>... <dir> <crate_dir>  cross-TU C project -> Cargo crate, driven by compilation databases"
 ```
 
 For example, to translate a library, say `libexpat`:
 
 ```sh
-slate translate-project --lib \
+slate translate-project \
 --compile-commands ~/c-corpus/libexpat/expat/build/compile_commands.json \
 ~/libexpat ./libexpat-rs
 ```

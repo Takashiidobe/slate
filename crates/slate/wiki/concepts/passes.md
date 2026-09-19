@@ -32,7 +32,7 @@ CIR op semantics and emits typed `rust_ast` nodes, never Rust source strings
 
 ## The rewrite stage
 
-`engine::apply` (`src/backend/engine/mod.rs`) runs in two phases:
+`engine::apply` (`src/backend/engine/mod.rs`) runs in four ordered phases:
 
 ```text
 engine::apply(program):
@@ -44,6 +44,8 @@ engine::apply(program):
   2. per-function worklist   (build an Arena per function, run NodeRules to a
                               fixed point; EDIT_BUDGET guards oscillation)
   3. prelude::inject         — add helper preludes the rewrites referenced
+  4. printf_format::rewrite   — recover safe `printf` calls and add flush
+                                barriers around writers that remain in libc
 ```
 
 ### Interproc analyses (phase 1)
@@ -72,20 +74,49 @@ function-signature facts, then applies `NodeRule`s while rescheduling affected
 nodes until a fixed point. The current registry
 (`engine/rules/mod.rs`, in order):
 
+- `StructureDispatch` (`structure_dispatch.rs`) — verifies and recovers the
+  deterministic switch trampoline emitted by `lower_switch`, including
+  fallthrough folding and bounded tail duplication.
+- `StructureGoto` and `StructureReducible` (`structure_goto.rs`) — normalize
+  literal-state dispatch loops, recover acyclic control flow and natural loops,
+  and scope irreducible SCCs under local dispatch loops. Non-literal computed
+  goto state assignments are left alone.
+- `BreakToElse`, `TailBreakDrop`, and `LabelElide` (`label_elide.rs`) — remove
+  labels and tail breaks once structured control flow no longer needs them.
+
 - `ZeroInitFold` (`zero_init.rs`) — fuses a zero-init `let` with the assignment that overwrites it.
 - `ParamSpillFold` (`param_spills.rs`) — renames a parameter to its same-typed top-level mutable spill and deletes the spill when the parameter's only read is that initialization.
 - `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapses redundant raw-pointer alias locals.
 - `ScopeFlatten` (`singleton_scopes.rs`) — splices any `{ }` scope's statements into its parent's statement list in place, since `cir.scope` always lowers to a plain `Stmt::Scope` regardless of what it wraps (a for-loop's induction-variable scope included).
 - `ForRangeRecover` (`for_range.rs`) — recognizes the canonical desugared for-loop shape (`let mut i; i = start; loop { if !(i<end){break} body; i=i+1; }`) and rewrites it to `for i in start..end { body }`, requiring the increment to be exactly `i = i + 1`, `body` to never reassign `i`, and `i` to have no reads outside the recognized region.
 - `ForArrayIterRecover` (`array_iter.rs`) — follow-on to `ForRangeRecover`: when a `for i in 0..N { body }`'s only use of `i` is as `arr[cast(i)]` for a single `Prim`-element array `arr` of length `N` not otherwise referenced in `body`, rewrites to `for i in arr.iter().copied() { ...i... }` (`.copied()` rather than `into_iter()` since `arr` is typically wrapped in `aligned::Aligned<_, [T; N]>`, whose `Deref` only ever yields `&[T; N]` under method-call autoderef, never an owned array).
-- `LoopToWhile` (`loop_to_while.rs`) — fallback for the general lowerer-emitted head-tested `loop { if !cond { break } body }` shape (any `while`/`for` the lowerer built, not just ones `ForRangeRecover` can further recover into a range) into idiomatic `while cond { body }`. Priority 20, run after `ForRangeRecover`/`ForArrayIterRecover` (13/14) so those get first claim on the raw `Loop` shape. Only fires on unlabeled loops — `Stmt::While` has no label field, so a loop kept alive by a real `continue`/labeled `break` (e.g. `continue_while.c`) stays in `loop` form until that's added.
+- `LoopToWhile` (`loop_to_while.rs`) — fallback for the general lowerer-emitted head-tested `loop { if !cond { break } body }` shape (any `while`/`for` the lowerer built, not just ones `ForRangeRecover` can further recover into a range) into idiomatic `while cond { body }`. Priority 20, run after `ForRangeRecover`/`ForArrayIterRecover` (13/14) so those get first claim on the raw `Loop` shape. It preserves the source loop label, allowing continue-bearing loops to recover without losing their control-flow target.
 - `ReturnCleanup` (`return_cleanup.rs`) — collapses an adjacent synthetic `__retval = value; return __retval;` pair after proving every slot use is a direct store, return, or single-use return-forwarding temp; removes the dead slot through `DeadStore`; and renders a final top-level return of a proven `Copy` type as a Rust tail expression.
+- `BoolTernaryFold` (`bool_ternary.rs`) — recovers boolean `&&`/`||` expressions from the lowerer's conditional temporary shape.
 - `LateInlineTemps` (`inline_temps.rs`) — inlines single-use temps into their sole use (pure temps generally; effectful/atomic ones into an adjacent use).
 - `EffectfulTempForward` (`inline_temps.rs`) — sinks a single-use effectful temp (chiefly a call result) forward into its one argument position.
 - `InlineConstArgTemps` (`inline_temps.rs`) — inlines a non-type-anchored numeric-constant temp into its sole call/macro argument.
+- `AsmOutputTempFold` (`inline_temps.rs`) — forwards pure temporaries into inline-asm operands and folds a late-output temporary plus copy into the direct named output operand.
 - `PeelCasts` (`peel_casts.rs`) — drops a redundant outer cast in an adjacent pair (`(e as T) as T`, or `(e as A) as B` where `A`,`B` are thin raw pointers and `e` provably yields a pointer/integer), never dropping a float or narrowing intermediate or touching a reference operand.
+- `ConstantIndexCasts` (`constant_index_casts.rs`) — removes redundant integer
+  casts used only to index a fixed array when the index is a compile-time
+  constant.
+- `MatchRangeFold` (`pattern_range.rs`) — combines adjacent integer match
+  patterns into inclusive ranges when the generated pattern remains valid.
+- `CStrLiteral` (`cstr_literal.rs`) — recovers generated pointer-plus-length
+  string literals where mutability and byte signedness permit it.
+- `GetenvVar` (`getenv_var.rs`) — recovers the generated environment-variable
+  lookup shape into the native helper form.
+- `CompoundAssignRecover` (`compound_assign.rs`) — folds generated
+  load/compute/store sequences into compound assignments.
 - `DeadStore` (`dead_store.rs`) — deletes a `let` with no def-use readers when its initializer is side-effect-free.
 - `libc_call::rules()` (`libc_call.rs`) — the libc call-rewrite table (`memcpy`/`memmove`/`memset`/`str*`/… → native Rust or `Box`/slice ops), matched by call anchor.
+
+After the per-function worklist, `printf_format::rewrite` handles stdout
+ordering at whole-program scope. Decimal-only `printf` calls become Rust
+`print!`/`println!`; unsupported or other stdout writers receive explicit
+flush barriers around the libc call so Rust and C buffering cannot reorder
+output. The pass preserves a call's return value when it is a tail expression.
 
 This is a much smaller set than the retired straight-line engine (~65 passes at
 `src/backend/query/rules/*`, now under `wiki/historical/`). The v2 worklist
@@ -96,9 +127,8 @@ fixture.
 
 ## Debugging the rewrite stage
 
-The engine does not currently emit a per-pass trace, so `fixup-debug`'s
-`--up-to-pass`/`--only-pass`/`--debug-only-pass` options are inert (it emits the
-fully-rewritten output). The working comparison workflow is baseline-vs-rewritten:
+The old `fixup-debug` command and pass-selection flags were removed with the
+retired pass engine. The working comparison workflow is baseline-vs-rewritten:
 
 ```bash
 cargo run -- translate-lowered tests/fixtures/<name>.c   # baseline, no rewrites

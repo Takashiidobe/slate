@@ -21,7 +21,6 @@
 - [va_list lowering](concepts/va-list-lowering.md)
 - [Pointer capability lattice](concepts/pointer-capability-lattice.md)
 - [long-double-f80](concepts/long-double-f80.md)
-- [setjmp/longjmp lowering](concepts/setjmp-longjmp-lowering.md)
 - [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
 - [libc-test functional harness: admission and companion-file vendoring](concepts/libc-test-functional-harness.md)
 - [Directive-driven differential fixtures use profile-scoped FileCheck](concepts/directive-driven-differential-fixtures-use-profile-scoped-filecheck.md)
@@ -57,6 +56,9 @@ superseded each one for what actually applies now.
 - [Salsa Migration](historical/salsa-migration.md) -- superseded by
   [Rewrite engine v2](concepts/rewrite-engine-v2.md), which dropped salsa
   for hand-rolled fact caches.
+- [setjmp/longjmp lowering](historical/setjmp-longjmp-lowering.md) -- describes
+  the removed `SetjmpRecovery` query pass; raw setjmp/longjmp lowering remains
+  in the frontend.
 - [Writing a Query-Driven Fixup](historical/writing-a-query-driven-fixup.md) --
   the retired `src/backend/query/` engine; see
   [Rewrite engine v2](concepts/rewrite-engine-v2.md).

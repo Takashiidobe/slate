@@ -78,6 +78,20 @@ output, not just a compilation failure. A target whose toolchain prerequisites
 are missing (no sysroot, no linker, no QEMU) fails with a clear "is missing"
 message rather than a compile/link error.
 
+The declaration matrix checks the public header surface in addition to fixed
+layout records. `libc_declaration_matrix_suite` uses target descriptors to
+collect oracle functions, objects, typedefs, records, enums, macros, and
+record layouts, then compiles persistent shim-header probes against each
+configured target/libc pair. Its generated fixtures live under
+`tests/fixtures.libc-static-test/`; the ignored oracle inventory and failed
+probes live under `target/libc-declaration-*`. Run the complete descriptor
+matrix with:
+
+```bash
+cargo nextest r --release --profile libc --test libc_declaration_matrix_suite \
+  -E 'test(declaration_matrices)'
+```
+
 The local defaults are `/` for x86-64 and i386, the checked-in ARM GNU
 toolchain's libc directory for ARM32, and `/usr/aarch64-linux-gnu` for
 AArch64. For non-native glibc targets, set the matching linker using either
@@ -177,7 +191,6 @@ them across runs (nextest does not clean between runs):
   oracle-or-shim) combination.
 - `target/libc-runtime-matrix/<libc>-<arch>/<fixture>/` -- runtime matrix
   translated Rust, the C oracle object/executable, the Cargo batch crate, and
-  run output, one directory per (libc, arch, fixture) combination.
 - `target/test-cache/<mangled-project-path>/` -- the Cargo `--target-dir` used
   by every generated-crate build across the test suites, including the
   runtime matrix's per-fixture Cargo projects (`test_target_dir_for_project`

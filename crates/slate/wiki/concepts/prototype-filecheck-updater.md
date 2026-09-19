@@ -86,7 +86,7 @@ profile that are absent from the selected profile. Profiles without annotations
 are omitted instead of receiving full-output checks.
 
 Generated patterns treat compiler-assigned identities as anonymous FileCheck
-regexes. CIR values such as `_v17`, ABI coercion records such as
+regexes. CIR values such as `__v17`, ABI coercion records such as
 `anon_struct_i32_i32`, anonymous records such as `anon_2`, source-location
 record names, alloca frames, and structured-CFG state/dispatch names are not
 pinned to their current number. Temporary-shaped text inside Rust string

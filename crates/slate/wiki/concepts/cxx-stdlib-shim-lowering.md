@@ -88,7 +88,7 @@ they're all just "a call CIR names, wrapped."
 ## Exceptions crossing the shim boundary
 
 Reuses the ABI-flip mechanism already established for `setjmp`/`longjmp`
-(`wiki/concepts/setjmp-longjmp-lowering.md`) and for C++ exceptions proper
+(`../historical/setjmp-longjmp-lowering.md`) and for C++ exceptions proper
 (`cxx-exceptions-lowering.md`): if a shimmed call can throw, either
 
 - the wrapper catches internally and returns an error-code/`Result`-shaped

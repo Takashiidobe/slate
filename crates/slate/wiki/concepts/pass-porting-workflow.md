@@ -8,20 +8,21 @@ per-session workflow on top of that.
 
 ## Picking which pass to port next
 
-Don't re-derive this from the epic + all its children + both long design
-docs. Two files are enough:
+Use the current registry and current differential failures as the source of
+truth. The old timing list below is a historical prioritization aid, not a
+statement that those passes are still missing.
 
 1. `src/backend/engine/rules/mod.rs`'s `registry()` — what's already ported.
-2. The per-pass cost table in `wiki/log/2026-08-27-13-38.md` (`SingletonScopes`
+2. The historical per-pass cost table in `wiki/log/2026-08-27-13-38.md` (`SingletonScopes`
    5.8s, `EarlyInlineTemps` 4.6s, `ZeroInit` 3.1s, `PtrLen` 2.7s
    interprocedural — see `rewrite-engine-v2.md`'s risks section, it's a
    separate phase — `LateInlineTemps` 2.0s, `RemoveMut` 1.7s, `DeadLocals`
    1.5s).
 
-Pick whichever's heaviest and not yet in the registry, or the natural
-sibling of whatever was just ported (e.g. `LateInlineTemps` right after
-`EarlyInlineTemps` — the old query engine implemented both as one shared
-`apply(case, binding, phase)` function, so the pairing is already known).
+Pick a rule that is absent from the current registry and has a failing
+differential case or a clearly bounded port plan. Prefer a natural sibling of
+whatever was just ported when the old implementation provides useful shared
+precondition logic.
 
 `wiki/historical/salsa-migration.md` is **not** needed for this — it
 documents a different, already-superseded migration (query engine -> salsa,
@@ -72,7 +73,7 @@ not salsa -> worklist engine) and is pure historical record now.
   instrumentation; the new engine has no equivalent env var. Wrap the binary
   invocation in wall-clock timing yourself (`date +%s.%N` before/after,
   3 runs, eyeball the spread).
-- `translate-project --lib` needs `--compile-commands <file>
+- `translate-project` needs `--compile-commands <file>
 <project_dir> <crate_dir>` — check `slate translate-project --help`
   rather than guessing flags (`--out` is not one of them).
 - To isolate one pass's marginal cost: build twice (with/without the new

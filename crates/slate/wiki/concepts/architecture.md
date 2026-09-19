@@ -132,7 +132,7 @@ so the differential harness can compile and link the C side consistently. Shim
 and header work is exercised by the `libc` nextest profile — see
 [libc-shim.md](libc-shim.md).
 
-## Directive translate (`#if`/`#cfg` reconstruction)
+## Target-conditional translation (`#if`/`#cfg` reconstruction)
 
 Preprocessing is its own producer, kept separate from lowering. `src/frontend/
 preprocess.rs` records the translation unit's directive structure — `#if` /
@@ -140,11 +140,12 @@ preprocess.rs` records the translation unit's directive structure — `#if` /
 `CondChain` records, and maps each condition to a Rust `Cfg`
 (`src/backend/rust_ast.rs`). Active `#error`/`#warning` on the selected config
 become `compile_error!` items so the failure survives translation. The
-experimental `translate-directives` command
-(`src/frontend/directive_translate.rs`) uses these records to reconstruct **one
-Rust source carrying multiple `#[cfg]` configurations** instead of collapsing to
-the single config clang happened to preprocess. High-level for now; the checks
-run under `DIRECTIVES` FileCheck prefixes.
+`translate` uses these records to reconstruct **one Rust source carrying
+multiple `#[cfg]` configurations** instead of collapsing to the single config
+clang happened to preprocess. `translate --targets=<t1>,<t2>,...` can compare
+target variants explicitly; project translation gets target variants from the
+supplied compilation databases. The checks run under `DIRECTIVES` FileCheck
+prefixes.
 
 ## Lowering (CIR + AST → baseline Rust AST)
 
@@ -179,7 +180,7 @@ Lowerer                     translation-unit state: globals, records, enums,
 
 Key mechanics a fix usually touches: **op dispatch** (`lower_op` routes each
 `Op::*` to a handler; a new op = a new arm + handler), the **SSA value map**
-(`materialize_expr` decides `let _vN = ..` vs a hoisted `let mut`), **place
+(`materialize_expr` decides `let __vN = ..` vs a hoisted `let mut`), **place
 inlining** (`get_member`/`get_element` are stashed as `member_ptr`/`element_ptr`
 and expanded at each use rather than bound), **goto dispatch** (`lower_dispatch`
 turns flattened blocks into a `loop { match state }`, with `cross_block_live_
@@ -209,9 +210,11 @@ engine::apply(program):
        build an Arena of nodes ─▶ run_worklist:
          pop node ▸ RuleRegistry.candidates(kind) ▸ rule.apply ▸ reschedule
          neighbors/parents; EDIT_BUDGET guards oscillation
-       rules: inline_temps (early/late), zero_init, raw_ptr_alias,
-              singleton_scopes (loop/scope unwrap), libc_call table
+       rules: structure_dispatch/goto, loop recovery, inline_temps,
+              zero_init, raw_ptr_alias, singleton_scopes, libc_call table
   3. prelude::inject  — add helper preludes the rewrites referenced
+  4. printf_format::rewrite — convert safe decimal printf calls and add
+     stdout flush barriers around writers left in libc
 ```
 
 The interproc **lattices** are the cross-function part: `pointer_lattice`

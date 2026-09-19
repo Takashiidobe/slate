@@ -1,5 +1,23 @@
 # libc-shim
 
+## Function identity and generated C shims
+
+The translator keeps libc identity separate from declaration trust. The
+catalog in `src/function_identity.rs` is the single source for known C
+symbols, their owning headers, reverse lookup, and rewrite identity. A direct
+declaration may also carry trusted header provenance without being a cataloged
+rewrite target. This prevents a user declaration from being rewritten merely
+because it has a libc-like name, while still preserving the real prototype for
+ABI-sensitive bridges.
+
+`src/frontend/c_shim.rs` derives bridge includes from that identity and uses
+one typed-shim builder for direct programs and project translation. Known
+functions contribute their owning headers; uncatalogued trusted declarations
+contribute their provenance headers; internal `bits/` implementation headers
+are not emitted as public includes. When a trusted declaration is available,
+the bridge preserves it instead of reconstructing a prototype from lowered
+Rust types, with Rust-type reconstruction as the fallback.
+
 Slate has a dir that implements a libc surface of declarations only that
 we call while compiling (clang is compiled with -nostdlibinc and points
 to our include dir). We used to compile with clang's provided libc

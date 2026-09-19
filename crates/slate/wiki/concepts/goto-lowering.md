@@ -1,6 +1,6 @@
 # Goto Lowering
 
-_created 2026-09-06_
+_updated 2026-09-19_
 
 How C `goto`/labels turn into Rust, end to end: three phases across two
 sides of the pipeline. Phase 1 (CIR) decides whether a function needs
@@ -10,8 +10,10 @@ tries to structure that dispatch loop back down into ordinary Rust control
 flow — `if`/`else`, labeled loops, `break`/`continue` — wherever the CFG
 shape allows it.
 
-This is a sketch: accurate as of 2026-09, but the rewrite-engine stages
-(structure_goto) are an active epic (slate-04q.85) and may grow more stages.
+The implementation now has four `structure_goto` stages: dispatch
+normalization, acyclic collapse, natural-loop recovery, and irreducible-SCC
+scoping. Computed and indirect gotos still remain in the whole-function
+dispatch form because their state assignments are not statically known.
 See [Rewrite engine v2](rewrite-engine-v2.md) for how `NodeRule`s and the
 worklist fit together, and [switch-lowering.md](switch-lowering.md) for the
 sibling `cir.switch`/Duff's-device path, which shares the same dispatch
