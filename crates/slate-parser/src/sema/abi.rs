@@ -178,8 +178,6 @@ impl<'a> AbiClassifier<'a> {
         }
     }
 
-    // sizes are the target's baseline ISA: -mavx and friends widen what x86
-    // passes in registers, and this crate has no ISA feature flags
     fn vector_abi(
         &self,
         ty: &Type,
@@ -192,6 +190,10 @@ impl<'a> AbiClassifier<'a> {
         let layout = self.types.storage(ty.clone())?;
         let size = layout.size_bytes;
         let align = layout.alignment_bytes;
+        let register_bytes = self
+            .target
+            .x86_isa
+            .map_or(16, |isa| isa.vector_register_bytes());
         let pass = match convention {
             AbiConvention::Win64 => AbiPass::Direct,
             AbiConvention::SysV64 if size < 8 => {
@@ -208,7 +210,7 @@ impl<'a> AbiClassifier<'a> {
             AbiConvention::SysV64 if size == 8 => {
                 AbiPass::Coerce(vec![AbiChunk::Float(FloatType::F64)])
             }
-            AbiConvention::SysV64 if size > 16 && !result => AbiPass::ByValue { align },
+            AbiConvention::SysV64 if size > register_bytes && !result => AbiPass::ByValue { align },
             AbiConvention::SysV64 => AbiPass::Direct,
             // an eight-byte vector of narrow integer lanes is an MMX type, which
             // i386 passes as an integer to keep MMX registers out of the ABI

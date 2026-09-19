@@ -1,0 +1,10 @@
+// SLATE-FILECHECK-DEFINES ERROR
+// SLATE-FILECHECK-ERROR ERROR
+// SLATE-FILECHECK-FLAVOR msvc
+// SLATE-FILECHECK-ARGS -mavx
+
+int value;
+
+// SLATE-FILECHECK-BEGIN ERROR
+// ERROR: Error:   × all rules failed: MSVC stack alignment options: MSVC does not support
+// SLATE-FILECHECK-END ERROR

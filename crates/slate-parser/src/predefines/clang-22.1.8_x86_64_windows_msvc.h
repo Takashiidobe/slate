@@ -94,7 +94,6 @@
 #define __FPCLASS_POSZERO 0x0040
 #define __FPCLASS_QNAN 0x0002
 #define __FPCLASS_SNAN 0x0001
-#define __FXSR__ 1
 #define __GCC_ASM_FLAG_OUTPUTS__ 1
 #define __GCC_CONSTRUCTIVE_SIZE 64
 #define __GCC_DESTRUCTIVE_SIZE 64
@@ -206,7 +205,6 @@
 #define __MEMORY_SCOPE_SYSTEM 0
 #define __MEMORY_SCOPE_WRKGRP 2
 #define __MEMORY_SCOPE_WVFRNT 3
-#define __MMX__ 1
 #define __NO_INLINE__ 1
 #define __NO_MATH_INLINES 1
 #define __OBJC_BOOL_IS_BOOL 0
@@ -254,10 +252,6 @@
 #define __SIZE_MAX__ 18446744073709551615ULL
 #define __SIZE_TYPE__ long long unsigned int
 #define __SIZE_WIDTH__ 64
-#define __SSE2_MATH__ 1
-#define __SSE2__ 1
-#define __SSE_MATH__ 1
-#define __SSE__ 1
 #define __STDC_EMBED_EMPTY__ 2
 #define __STDC_EMBED_FOUND__ 1
 #define __STDC_EMBED_NOT_FOUND__ 0
@@ -381,12 +375,9 @@
 #define __clang_version__ "22.1.8 "
 #define __clang_wide_literal_encoding__ "UTF-16"
 #define __code_model_small__ 1
-#define __k8 1
-#define __k8__ 1
 #define __llvm__ 1
 #define __pic__ 2
 #define __seg_fs __attribute__((address_space(257)))
 #define __seg_gs __attribute__((address_space(256)))
-#define __tune_k8__ 1
 #define __x86_64 1
 #define __x86_64__ 1

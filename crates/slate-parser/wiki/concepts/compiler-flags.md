@@ -35,7 +35,7 @@ Prefer one owning configuration with separate groups over a flat
 | Category                | Inputs                                                                                             | Resolved effects                                                                 |
 | ----------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Operation semantics     | `-fwrapv`, `-ftrapv`, `-fno-strict-overflow`, `-fno-delete-null-pointer-checks`, `-frounding-math` | Required behavior on relevant operations                                         |
-| Type meaning and layout | `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`, `-mlong-double-*`            | Effective `TargetInfo`, concrete types, layouts, and calling contracts           |
+| Type meaning and layout | `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`, `-mlong-double-*`, `-m<isa>` | Effective `TargetInfo`, concrete types, layouts, and calling contracts           |
 | Language                | `-std`, `-fms-extensions`, `-fdollars-in-identifiers`, `-fgnu89-inline`                            | Parsing and declaration meaning, including emitted definitions                   |
 | Linkage                 | `-fcommon`/`-fno-common`, `-fvisibility`                                                           | Definition kinds and symbol visibility                                           |
 | Codegen settings        | `-O`, `-g`, `-fstack-protector`                                                                    | Applicable predefines and configuration provenance within this translation scope |
@@ -321,6 +321,21 @@ user `-D` definitions. The option is rejected for the supported AArch64 and
 ARM32 Linux targets. Sema parses the original literal directly at the
 selected precision. f80 has 80 value bits with 16-byte storage on x86_64 and
 12-byte storage on x86.
+x86 ISA options (`-m<feature>`, `-mno-<feature>`, `-march=x86-64[-v2|-v3|-v4]`)
+resolve to `TargetInfo.x86_isa` (`src/target/x86_isa.rs`). The predefine
+headers do not carry ISA or CPU macros (`__SSE2__`, `__MMX__`, `__FXSR__`,
+`__k8`, `__pentium4`, ...); `Preprocessor::configure` generates them from the
+resolved ISA, and the `sysv64` vector ABI reads the same value, so macros and
+register passing can't disagree. Resolution matches clang 22: `-march` sets
+the base, then the `-m` flags apply in order, where enabling a feature enables
+what it implies (`-mavx2` → AVX → SSE4.2 → ...) and disabling one disables
+everything that implies it. POPCNT and CRC32 follow SSE4.2, and XSAVE follows
+AVX, unless explicitly disabled. i686 always defines `__LAHF_SAHF__` and never
+`__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16`. GCC flavor also sets
+`__BIGGEST_ALIGNMENT__` to the widest vector register (16/32/64); clang keeps
+16. Disabling SSE or SSE2 is rejected, since it would change the float ABI and
+`_Float16` availability. The options are rejected on non-x86 targets and for
+MSVC flavor, which uses `/arch:`. Only x86 is modeled.
 The target layout is selected by the supported target triple and is printed in
 the IR module header. GCC's `-mpreferred-stack-boundary` and Clang's
 `-mstack-alignment` update the target's stack ABI policy after validating their

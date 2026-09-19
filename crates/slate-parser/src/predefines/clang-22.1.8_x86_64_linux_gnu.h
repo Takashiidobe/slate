@@ -93,7 +93,6 @@
 #define __FPCLASS_POSZERO 0x0040
 #define __FPCLASS_QNAN 0x0002
 #define __FPCLASS_SNAN 0x0001
-#define __FXSR__ 1
 #define __GCC_ASM_FLAG_OUTPUTS__ 1
 #define __GCC_ATOMIC_BOOL_LOCK_FREE 2
 #define __GCC_ATOMIC_CHAR16_T_LOCK_FREE 2
@@ -197,8 +196,6 @@
 #define __INTPTR_TYPE__ long int
 #define __INTPTR_WIDTH__ 64
 #define __INT_WIDTH__ 32
-#define __k8 1
-#define __k8__ 1
 #define __LDBL_DECIMAL_DIG__ 21
 #define __LDBL_DENORM_MIN__ 3.64519953188247460253e-4951L
 #define __LDBL_DIG__ 18
@@ -230,7 +227,6 @@
 #define __MEMORY_SCOPE_SYSTEM 0
 #define __MEMORY_SCOPE_WRKGRP 2
 #define __MEMORY_SCOPE_WVFRNT 3
-#define __MMX__ 1
 #define __NO_INLINE__ 1
 #define __NO_MATH_INLINES 1
 #define __OBJC_BOOL_IS_BOOL 0
@@ -284,10 +280,6 @@
 #define __SIZEOF_WINT_T__ 4
 #define __SIZE_TYPE__ long unsigned int
 #define __SIZE_WIDTH__ 64
-#define __SSE__ 1
-#define __SSE2__ 1
-#define __SSE2_MATH__ 1
-#define __SSE_MATH__ 1
 #define __SSP_STRONG__ 2
 #define __STDC__ 1
 #define __STDC_EMBED_EMPTY__ 2
@@ -297,7 +289,6 @@
 #define __STDC_UTF_16__ 1
 #define __STDC_UTF_32__ 1
 #define __STDC_VERSION__ 201710L
-#define __tune_k8__ 1
 #define __UINT16_C(c) c
 #define __UINT16_C_SUFFIX__ 
 #define __UINT16_FMTo__ "ho"

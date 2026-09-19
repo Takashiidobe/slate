@@ -404,7 +404,11 @@ impl<'a> Preprocessor<'a> {
         {
             Vec::new()
         } else {
-            target.long_double.predefines()
+            let mut defines = target.long_double.predefines();
+            if let Some(isa) = target.x86_isa {
+                defines.extend(isa.predefines(target.family, flavor));
+            }
+            defines
         };
         if flavor == CompilerFlavor::Gcc
             && options.operations.floating.rounding == crate::ir::Rounding::Environment

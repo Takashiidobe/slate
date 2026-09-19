@@ -738,11 +738,14 @@ lanes cannot be recovered from `sizeof` alone.
 
 Vector arguments and results are classified per convention. `AbiPass::Direct`
 is a vector passed in registers as its own type, distinct from `scalar` and
-from `native_c`. The classification is the target's **baseline** ISA, which is
-what clang assumes without `-mavx` and friends; a wider ISA would keep more of
-these in registers, and clang says so with `-Wpsabi`. slate-parser has no flag
-for that yet, and the predefine headers are baseline captures to match, so the
-preprocessor and the ABI agree on what the target can do (`slate-parser-qiy`).
+from `native_c`. The classification follows the effective x86 ISA
+(`TargetInfo.x86_isa`), the same value that generates the ISA feature
+predefines, so the preprocessor and the ABI always agree on what the target can
+do. On `sysv64` the "> 16 bytes" column below is really "wider than the widest
+vector register": 16 bytes at baseline, 32 with AVX (`-mavx`,
+`-march=x86-64-v3`), 64 with AVX-512F. A vector no wider than that is `direct`;
+wider ones are `byval` (clang's `-Wpsabi` case). The other conventions do not
+depend on the ISA.
 
 | Convention           | < 8 bytes     | 8 bytes                      | 16 bytes | > 16 bytes                      |
 | -------------------- | ------------- | ---------------------------- | -------- | ------------------------------- |
@@ -758,7 +761,8 @@ one-lane `double` vector is passed in memory on `sysv64` (`vector<f64, 1>` is
 `byval<align=8>`, though its result is `direct`), and an eight-byte vector of
 integer lanes narrower than 64 bits is an MMX type that `x86_cdecl` passes as
 `i64`, while `vector<i64, 1>` and float-lane vectors of that size pass
-directly. `tests/fixtures/sema/ir_vector_abi.c` pins `sysv64` including the
+directly. `tests/fixtures/sema/ir_vector_abi.c` pins baseline `sysv64`
+(`ir_vector_abi_avx.c` and `ir_vector_abi_avx512f.c` pin the wider ISAs) including the
 indirect and variadic call sites, and the `abi_target.c` fixture in each
 target directory pins the rest; all of them were diffed against clang's IR
 signatures for that target.

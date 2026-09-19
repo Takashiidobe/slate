@@ -1,4 +1,5 @@
 use crate::ir::{FloatType, NumericType, ShiftFill, Type};
+use crate::target::x86_isa::{X86Isa, X86IsaRequest};
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,6 +22,7 @@ pub struct TargetInfo {
     pub family: TargetFamily,
     pub os: TargetOs,
     pub environment: TargetEnvironment,
+    pub x86_isa: Option<X86Isa>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -77,6 +79,7 @@ impl Default for TargetInfo {
             family: TargetFamily::X86_64,
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
+            x86_isa: Some(X86Isa::baseline(TargetFamily::X86_64)),
         }
     }
 }
@@ -268,6 +271,7 @@ impl TargetInfo {
             os: TargetOs::Windows,
             environment: TargetEnvironment::Msvc,
             family,
+            x86_isa: (family == TargetFamily::X86_64).then(|| X86Isa::baseline(family)),
             long_width: 32,
             long_double: LongDoubleFormat::Binary64,
             wchar_signed: false,
@@ -303,6 +307,7 @@ impl TargetInfo {
             family: TargetFamily::X86,
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
+            x86_isa: Some(X86Isa::baseline(TargetFamily::X86)),
         }
     }
 
@@ -332,6 +337,7 @@ impl TargetInfo {
             family: TargetFamily::AArch64,
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
+            x86_isa: None,
         }
     }
 
@@ -365,6 +371,7 @@ impl TargetInfo {
             } else {
                 TargetEnvironment::GnuEabi
             },
+            x86_isa: None,
         }
     }
 
@@ -467,6 +474,13 @@ impl TargetInfo {
 
     pub fn with_long_double(mut self, format: LongDoubleFormat) -> Self {
         self.long_double = format;
+        self
+    }
+
+    pub fn with_x86_isa(mut self, request: X86IsaRequest) -> Self {
+        if self.x86_isa.is_some() {
+            self.x86_isa = Some(X86Isa::resolve(self.family, request));
+        }
         self
     }
 

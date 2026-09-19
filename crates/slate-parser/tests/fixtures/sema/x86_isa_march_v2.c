@@ -1,0 +1,144 @@
+// SLATE-FILECHECK-DEFINES CHECK
+// SLATE-FILECHECK-ARGS --dump-ir -march=x86-64-v2
+
+
+#ifdef __MMX__
+int has__MMX__;
+#endif
+#ifdef __SSE__
+int has__SSE__;
+#endif
+#ifdef __SSE2__
+int has__SSE2__;
+#endif
+#ifdef __SSE3__
+int has__SSE3__;
+#endif
+#ifdef __SSSE3__
+int has__SSSE3__;
+#endif
+#ifdef __SSE4_1__
+int has__SSE4_1__;
+#endif
+#ifdef __SSE4_2__
+int has__SSE4_2__;
+#endif
+#ifdef __POPCNT__
+int has__POPCNT__;
+#endif
+#ifdef __CRC32__
+int has__CRC32__;
+#endif
+#ifdef __XSAVE__
+int has__XSAVE__;
+#endif
+#ifdef __FXSR__
+int has__FXSR__;
+#endif
+#ifdef __LAHF_SAHF__
+int has__LAHF_SAHF__;
+#endif
+#ifdef __GCC_HAVE_SYNC_COMPARE_AND_SWAP_16
+int has__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16;
+#endif
+#ifdef __AVX__
+int has__AVX__;
+#endif
+#ifdef __AVX2__
+int has__AVX2__;
+#endif
+#ifdef __FMA__
+int has__FMA__;
+#endif
+#ifdef __F16C__
+int has__F16C__;
+#endif
+#ifdef __AVX512F__
+int has__AVX512F__;
+#endif
+#ifdef __AVX512BW__
+int has__AVX512BW__;
+#endif
+#ifdef __AVX512CD__
+int has__AVX512CD__;
+#endif
+#ifdef __AVX512DQ__
+int has__AVX512DQ__;
+#endif
+#ifdef __AVX512VL__
+int has__AVX512VL__;
+#endif
+#ifdef __BMI__
+int has__BMI__;
+#endif
+#ifdef __BMI2__
+int has__BMI2__;
+#endif
+#ifdef __LZCNT__
+int has__LZCNT__;
+#endif
+#ifdef __MOVBE__
+int has__MOVBE__;
+#endif
+#ifdef __SSE_MATH__
+int has__SSE_MATH__;
+#endif
+#ifdef __SSE2_MATH__
+int has__SSE2_MATH__;
+#endif
+#ifdef __k8
+int has__k8;
+#endif
+#ifdef __k8__
+int has__k8__;
+#endif
+#ifdef __tune_k8__
+int has__tune_k8__;
+#endif
+#ifdef __pentium4
+int has__pentium4;
+#endif
+#ifdef __pentium4__
+int has__pentium4__;
+#endif
+#ifdef __tune_pentium4__
+int has__tune_pentium4__;
+#endif
+int biggest[__BIGGEST_ALIGNMENT__];
+
+// SLATE-FILECHECK-BEGIN CHECK
+// CHECK: module {
+// CHECK-NEXT:     target "x86_64-unknown-linux-gnu" {
+// CHECK-NEXT:         endian = little;
+// CHECK-NEXT:         pointer [size=8, align=8];
+// CHECK-NEXT:         stack_alignment = 16;
+// CHECK-NEXT:         long_double = f80;
+// CHECK-NEXT:         storage bool [size=1, align=1];
+// CHECK-NEXT:         storage i8, u8 [size=1, align=1];
+// CHECK-NEXT:         storage i16, u16 [size=2, align=2];
+// CHECK-NEXT:         storage i32, u32 [size=4, align=4];
+// CHECK-NEXT:         storage i64, u64 [size=8, align=8];
+// CHECK-NEXT:         storage i128, u128 [size=16, align=16];
+// CHECK-NEXT:         storage f16 [size=2, align=2];
+// CHECK-NEXT:         storage f32 [size=4, align=4];
+// CHECK-NEXT:         storage f64 [size=8, align=8];
+// CHECK-NEXT:         storage f80 [size=16, align=16];
+// CHECK-NEXT:         storage f128 [size=16, align=16];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     global %0 has__MMX__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %1 has__SSE__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %2 has__SSE2__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %3 has__SSE3__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %4 has__SSSE3__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %5 has__SSE4_1__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %6 has__SSE4_2__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %7 has__POPCNT__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %8 has__CRC32__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %9 has__FXSR__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %10 has__LAHF_SAHF__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %11 has__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %12 has__SSE_MATH__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %13 has__SSE2_MATH__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %14 biggest: array<i32, 16> [storage=static] [linkage=external];
+// CHECK-NEXT: }
+// SLATE-FILECHECK-END CHECK
