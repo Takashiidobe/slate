@@ -1328,6 +1328,34 @@ impl Lowerer {
                 let (_, offset) = self.types.offsetof_member(ty.clone(), member)?;
                 Ok(self.layout_constant(e, offset, "offset_of", format!("{ty}.{member}")))
             }
+            ExprKind::BitCast { ty, value } => {
+                let ty = self
+                    .types
+                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .ty
+                    .ok_or(ResolveError::Invalid("bit cast to void"))?;
+                if matches!(ty, Type::Array { .. } | Type::VariableArray { .. }) {
+                    return Err(ResolveError::Invalid("bit cast to an array type"));
+                }
+                let value = self.expr(value)?;
+                if self.types.storage(ty.clone())?.size_bytes
+                    != self.types.storage(value.ty.clone())?.size_bytes
+                {
+                    return Err(ResolveError::Invalid(
+                        "bit cast between types of different sizes",
+                    ));
+                }
+                Ok(self.value(
+                    e,
+                    ty,
+                    ValueKind::Convert {
+                        kind: ConversionKind::BitCast,
+                        operand: Box::new(value),
+                        reason: ConversionReason::Explicit,
+                        semantics: ConversionSema::Exact,
+                    },
+                ))
+            }
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
                 if list.ty != Type::VaList {

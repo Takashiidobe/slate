@@ -890,6 +890,7 @@ Each conversion node does exactly one thing; the reason is metadata.
 | `truncate<i8>(x)`                                                        | keep low bits                                            | `fits=always\|unknown`                                         |
 | `reinterpret<u32>(x)`                                                    | same width, sign change                                  | `fits=always\|unknown`                                         |
 | `from_bool<i32>(b)`                                                      | 0-1 (truth conversion is `ne(x, 0)`, not a node)         |                                                                |
+| `bit_cast<T>(x)`                                                         | `__builtin_bit_cast`: same object representation         | `reason=explicit`; sizes checked equal, `T` not an array       |
 | `float_widen<f64>(x)` / `float_narrow<f32>(x)` / `float_convert<d64>(x)` |                                                          |                                                                |
 | `int_to_float<f64>(x)`                                                   |                                                          | `exact=true\|false`                                            |
 | `float_to_int<i32>(x)`                                                   |                                                          | `out_of_range=ub`                                              |

@@ -321,7 +321,7 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 ### Operations
 
 ```ebnf
-conversion = "widen" | "truncate" | "reinterpret" | "from_bool"
+conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "int_to_float" | "float_widen" | "float_narrow" | "float_convert"
            | "float_to_int" | "pointer_cast" | "ptr_to_int" | "int_to_ptr"
            | "enum_to_int" | "int_to_enum"
