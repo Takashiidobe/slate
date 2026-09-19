@@ -128,7 +128,7 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ```ebnf
 global       = ( "global" | "extern" ) variable linkage symbol_attrs [ "[align=" int "]" ]
                [ "[common]" ] { metadata } ";" ;
-variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ] [ "[constexpr]" ]
+variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
                [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;

@@ -34,11 +34,11 @@ int local(void) {
 // IR-NEXT:         storage f80 [size=16, align=16];
 // IR-NEXT:         storage f128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 inferred: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
+// IR-NEXT:     global %0 inferred: array<i8, 3> [storage=static] [const] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
 // IR-NEXT:     global %1 padded: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 98, 0, 0, 0]) [linkage=external];
 // IR-NEXT:     global %2 exact: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 98]) [linkage=external];
 // IR-NEXT:     global %3 bytes: array<u8, 2> [storage=static] = code_units<array<u8, 2>>([255, 0]) [linkage=external];
-// IR-NEXT:     global %4 utf16: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([97, 0]) [linkage=external];
+// IR-NEXT:     global %4 utf16: array<u16, 2> [storage=static] [const] = code_units<array<u16, 2>>([97, 0]) [linkage=external];
 // IR-NEXT:     fn %5 @local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %6 buf: array<i8, 4> [storage=automatic] = code_units<array<i8, 4>>([120, 121, 122, 0]);
 // IR-NEXT:         let %7 wide: array<i8, 6> [storage=automatic] = code_units<array<i8, 6>>([120, 121, 0, 0, 0, 0]);

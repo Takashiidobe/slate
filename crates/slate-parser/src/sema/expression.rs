@@ -904,6 +904,7 @@ impl Lowerer {
                         ty: ty.clone(),
                         storage: StorageDuration::Static,
                         restrict: false,
+                        is_const: false,
                         constexpr: false,
                         initializer: Some(initializer),
                     },

@@ -144,6 +144,9 @@ impl DisplayModule<'_> {
         if variable.restrict {
             f.write_str(" [restrict]")?;
         }
+        if variable.is_const {
+            f.write_str(" [const]")?;
+        }
         if variable.constexpr {
             f.write_str(" [constexpr]")?;
         }

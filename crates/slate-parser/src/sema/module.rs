@@ -711,6 +711,7 @@ impl Lowerer {
                 ty,
                 storage,
                 restrict: qualifiers.is_restrict,
+                is_const: qualifiers.is_const,
                 constexpr: item.specifiers.is_constexpr,
                 initializer,
             };

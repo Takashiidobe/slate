@@ -34,8 +34,8 @@ int read_constant(void) {
 // DEFAULT-NEXT:         storage f80 [size=16, align=16];
 // DEFAULT-NEXT:         storage f128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 constant: i32 [storage=static] [constexpr] = const<i32>(5) [linkage=internal] [c="const int"] [c_const="true"];
-// DEFAULT-NEXT:     global %6 null_pointer: ptr<i32> [storage=static] [constexpr] = null<ptr<i32>> [linkage=internal] [c="int *const"] [c_const="true"];
+// DEFAULT-NEXT:     global %5 constant: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal] [c="const int"] [c_const="true"];
+// DEFAULT-NEXT:     global %6 null_pointer: ptr<i32> [storage=static] [const] [constexpr] = null<ptr<i32>> [linkage=internal] [c="int *const"] [c_const="true"];
 // DEFAULT-NEXT:     fn %0 @stop() -> void [linkage=external] [noreturn] [fallthrough=ub] [c="void(void)"] {
 // DEFAULT-NEXT:         for %9
 // DEFAULT-NEXT:             init:
@@ -53,7 +53,7 @@ int read_constant(void) {
 // DEFAULT-NEXT:         return read<i32>(%4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %7 @read_constant() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// DEFAULT-NEXT:         let %8 local: i32 [storage=automatic] [constexpr] = const<i32>(3) [c="const int"] [c_const="true"];
+// DEFAULT-NEXT:         let %8 local: i32 [storage=automatic] [const] [constexpr] = const<i32>(3) [c="const int"] [c_const="true"];
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%5), read<i32>(%8));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

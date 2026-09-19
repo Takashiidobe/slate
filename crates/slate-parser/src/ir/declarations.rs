@@ -125,6 +125,7 @@ pub struct Variable {
     pub ty: Type,
     pub storage: StorageDuration,
     pub restrict: bool,
+    pub is_const: bool,
     pub constexpr: bool,
     pub initializer: Option<Value>,
 }

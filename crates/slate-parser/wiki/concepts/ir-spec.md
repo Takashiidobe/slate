@@ -1220,6 +1220,12 @@ on the type:
   adjusted pointer's own; `const` there is `[const]` on the parameter,
   while a `const` on the element type stays in the pointee
   (`const int a[3]` is `ptr<const i32>`).
+- A top-level `const` on an object is `[const]` on its `let` or `global`
+  (`int *const q` is `ptr<i32> [const]`), which is what distinguishes an
+  immutable binding: `Type::Pointer::is_const` is the pointee's. It follows
+  the declarator's outermost qualifiers, so `const int a[2]` (element const,
+  and therefore an unmodifiable object) and C23 `constexpr` objects (which
+  are const) also carry it; `const int *p` does not.
 - Qualifiers inherited through a typedef, and the `_Atomic(T)` specifier,
   count the same as written qualifiers.
 - An array parameter adjusts to a pointer, but the brackets it was written
