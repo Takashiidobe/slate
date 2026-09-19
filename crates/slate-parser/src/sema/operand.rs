@@ -171,9 +171,7 @@ impl TypeResolver {
     ) -> Operand {
         let operand = self.enum_operand(operand);
         let c = self.ctypes.unqualified(c);
-        if let CTypeKind::Enum(id) = self.ctypes.canonical_kind(c)
-            && let Some(underlying) = self.enum_underlying.get(id).copied()
-        {
+        if let Some(underlying) = self.ctypes.enum_underlying(c) {
             let value =
                 context.emit_arithmetic_conversion(operand.value, self.ir_type(underlying), reason);
             let node = value.node.clone();
@@ -404,10 +402,7 @@ impl TypeResolver {
     }
 
     pub(super) fn enum_operand(&self, operand: Operand) -> Operand {
-        let CTypeKind::Enum(id) = self.ctypes.canonical_kind(operand.c) else {
-            return operand;
-        };
-        let Some(c) = self.enum_underlying.get(id).copied() else {
+        let Some(c) = self.ctypes.enum_underlying(operand.c) else {
             return operand;
         };
         let node = operand.value.node.clone();

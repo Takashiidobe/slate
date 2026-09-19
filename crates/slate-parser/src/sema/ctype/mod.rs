@@ -1,4 +1,6 @@
 pub(super) mod arith;
+pub(super) mod compat;
+pub(super) mod convert;
 mod layout;
 mod render;
 
@@ -205,9 +207,21 @@ struct Entry {
 pub struct CTypes {
     entries: Vec<Entry>,
     ids: HashMap<CTypeKind, CTypeId>,
+    enum_underlying: HashMap<TypeId, QualType>,
 }
 
 impl CTypes {
+    pub fn set_enum_underlying(&mut self, id: TypeId, underlying: QualType) {
+        self.enum_underlying.insert(id, underlying);
+    }
+
+    pub fn enum_underlying(&self, q: QualType) -> Option<QualType> {
+        match self.canonical_kind(q) {
+            CTypeKind::Enum(id) => self.enum_underlying.get(id).copied(),
+            _ => None,
+        }
+    }
+
     pub fn kind(&self, id: CTypeId) -> &CTypeKind {
         &self.entries[id.0 as usize].kind
     }

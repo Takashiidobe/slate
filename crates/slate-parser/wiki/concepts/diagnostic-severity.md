@@ -47,10 +47,24 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
 | `pointer-sign`                | on        | yes      | an implicit pointer conversion (assign/init, argument, return) whose integer pointees differ only in signedness            |
 | `incompatible-pointer-types-discards-qualifiers` | on | yes | the same conversions dropping pointee `const`/`volatile`, or differing in qualifiers below the first pointer level |
+| `incompatible-pointer-types`  | on        | no       | an implicit pointer conversion whose pointees have no composite type (`unsigned * → long *`, `struct A * → struct B *`), or which drops `_Atomic` from the pointee |
+| `int-conversion`              | on        | no       | an implicit conversion between an integer and a pointer across an assignment, argument, return or initializer                                                  |
+| `pointer-integer-compare`     | on        | no       | a comparison between a pointer and an integer that is not a null pointer constant                                                                               |
+| `compare-distinct-pointer-types` | on     | no       | a comparison between pointers whose pointees have no composite type and neither is `void`                                                                       |
 | `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
 
-The two pointer warnings are clang `ExtWarn`s and need resolved types, so
-they come from IR lowering rather than `TranslationUnit::analyze`. So does
+`incompatible-pointer-types` and `int-conversion` cover cases clang 22 and gcc
+16 both reject. They are warnings here because MSVC 14.51 only warns on every
+one of them (C4047, C4057, C4133), and the project's rule is to reject only
+where all three compilers agree. They are default-on but not pedantic, since
+they report genuinely incompatible C rather than an extension. The same rule
+resolves slate-parser-hdt in the opposite direction from its original note:
+dropping `_Atomic` from a pointee is a warning, not an error, because MSVC
+accepts it silently.
+
+The two qualifier/sign pointer warnings are clang `ExtWarn`s and need resolved
+types, so they come from IR lowering rather than `TranslationUnit::analyze`.
+So do the four above. So does
 `conflicting-types`, which has no clang counterpart (clang errors) and is
 named after clang's "conflicting types" error. `Lowerer`
 collects them in `diagnostics` through `Lowerer::warn`, `resolve_module`

@@ -82,9 +82,44 @@ Clang 22.1.8's emitted LLVM IR confirms that `_Float16` stays `half` in a
 variadic call; `float` and `__fp16` promote to `double`. The earlier 9ve.2
 design note claiming `_Float16` promotes to `double` was incorrect.
 
+## Compatibility, composite types and conversions
+
+`src/sema/ctype/compat.rs` transcribes 6.2.7: `compatible` (qualifiers must
+match at each level), `compatible_unqualified`, and `composite`. Typedefs are
+transparent because comparison is on canonical types; an enum is compatible
+with its underlying integer type; arrays are compatible when their elements
+are and their sizes are equal or either is unknown, which makes a VLA
+compatible with any array of compatible element (6.7.6.2p6); functions compare
+return types, and an unprototyped declaration is compatible with a
+non-variadic prototype whose parameters are unchanged by the default argument
+promotions. `merge_pointer` builds the conditional operator's result: the
+composite of the two pointees carrying the union of both qualifier sets, with
+`void` winning.
+
+`src/sema/ctype/convert.rs` holds `classify_conversion`, which is the single
+decision point for whether any conversion is legal. It takes the two C types,
+a `ConversionContext` and whether the source is a null pointer constant, and
+returns a `CastKind` plus an optional warning, or a `ResolveError`. Lowering
+emits the kind and nothing else, so an unhandled case is now a rejection
+rather than a silent `pointer_cast`. `ConversionContext` has no `Init` arm:
+initialization reaches lowering as `ConversionReason::Assign` and the two
+obey the same constraints, so a separate arm would be unreachable.
+
+The layout-approximation helpers this replaces — `pointer_conversion_warning`,
+`differ_only_in_sign`, `differ_only_in_nested_qualifiers` and
+`compatible_ignoring_qualifiers` — are gone. Because signedness is now
+compared on C types rather than IR widths, plain `char` is distinct from
+`signed char` (slate-parser-4o9) and nested pointer levels are compared as
+carefully as the first.
+
+Two transitional pieces remain. `types::compatible` over `ir::Type` still
+backs function-redeclaration conflicts in `src/sema/module.rs`, because
+`Function` stores IR types; it moves with 9ve.4. Taking the address of a
+`register` variable is still accepted, since no storage class is recorded per
+binding (slate-parser-zm8).
+
 ## Remaining phases
 
-Conversion legality and redeclaration merging still contain layout-based
-decisions. The typed conversion entry points deliberately retain those
-decisions for 9ve.3 and 9ve.4; this phase establishes the C-type data flow
-they need without broadening the set of rejected programs.
+Redeclaration merging still decides type identity on layout. 9ve.4 moves it
+onto `compatible`/`composite`; 9ve.5 moves compiler personality into
+`layout()`.

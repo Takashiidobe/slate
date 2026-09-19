@@ -1,3 +1,4 @@
+use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, QualType};
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
@@ -58,11 +59,7 @@ impl Lowerer {
         to: QualType,
         reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
-        let c = self.types.ctypes.unqualified(to);
-        Ok(Operand {
-            value: self.emit_convert(value.value, self.types.ir_type(c), reason)?,
-            c,
-        })
+        self.convert_classified(None, value, to, reason)
     }
 
     pub(super) fn convert_expr(
@@ -72,11 +69,186 @@ impl Lowerer {
         to: QualType,
         reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
+        self.convert_classified(Some(e), value, to, reason)
+    }
+
+    fn convert_classified(
+        &mut self,
+        e: Option<&Expr>,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.unqualified(to);
+        let null = self.is_null_pointer_constant(e, &value);
+        let conversion =
+            self.types
+                .ctypes
+                .classify_conversion(value.c, c, conversion_context(reason), null)?;
+        if let Some((warning, message)) = conversion.warning {
+            self.warn(warning, message, &value.value.node);
+        }
         Ok(Operand {
-            value: self.emit_convert_expr(e, value.value, self.types.ir_type(c), reason)?,
+            value: self.emit_cast(conversion.kind, value, c, reason)?,
             c,
         })
+    }
+
+    fn warn_comparison(
+        &mut self,
+        e: &Expr,
+        left_expr: &Expr,
+        left: &Operand,
+        right_expr: &Expr,
+        right: &Operand,
+    ) {
+        let pointers = (
+            self.types.ctypes.is_pointer(left.c),
+            self.types.ctypes.is_pointer(right.c),
+        );
+        match pointers {
+            (true, true) => {
+                let (a, b) = (left.c, right.c);
+                if self.types.ctypes.is_void(a) || self.types.ctypes.is_void(b) {
+                    return;
+                }
+                if self.types.ctypes.merge_pointer(a, b).is_none() {
+                    self.warn(
+                        Warning::CompareDistinctPointerTypes,
+                        "comparison of distinct pointer types",
+                        e,
+                    );
+                }
+            }
+            (true, false) | (false, true) => {
+                let (other_expr, other) = if pointers.0 {
+                    (right_expr, right)
+                } else {
+                    (left_expr, left)
+                };
+                if !self.is_null_pointer_constant(Some(other_expr), other) {
+                    self.warn(
+                        Warning::PointerIntegerCompare,
+                        "comparison between pointer and integer",
+                        e,
+                    );
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn is_null_pointer_constant(&self, e: Option<&Expr>, value: &Operand) -> bool {
+        if matches!(value.value.node.value, ValueKind::Null) {
+            return true;
+        }
+        if !self.types.ctypes.is_integer(value.c) {
+            return false;
+        }
+        if matches!(&value.value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
+        {
+            return true;
+        }
+        e.is_some_and(|e| {
+            crate::const_expr::Parser::evaluate_ast(e).is_ok_and(|number| number == 0)
+        })
+    }
+
+    fn emit_cast(
+        &mut self,
+        kind: CastKind,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Value, ResolveError> {
+        let ty = self.types.ir_type(to);
+        let value = value.value;
+        match kind {
+            CastKind::Identity => self.emit_convert_to(value, to, reason),
+            CastKind::RecordCopy => {
+                let node = value.node.clone();
+                Ok(self.value(
+                    &node,
+                    ty,
+                    ValueKind::Copy {
+                        operand: Box::new(value),
+                        reason,
+                    },
+                ))
+            }
+            CastKind::Arithmetic => {
+                if ty == Type::Bool {
+                    return self.condition(value, Some(reason));
+                }
+                Ok(self.context.emit_arithmetic_conversion(value, ty, reason))
+            }
+            CastKind::Vector => self.context.vector_convert(value, ty, reason),
+            CastKind::EnumToInt => {
+                let integer = self.enum_integer(value);
+                let c = self
+                    .types
+                    .ctypes
+                    .enum_underlying(to)
+                    .unwrap_or(self.types.ctypes.int());
+                let operand = Operand { value: integer, c };
+                self.convert(operand, to, reason)
+                    .map(|operand| operand.value)
+            }
+            CastKind::IntToEnum => {
+                let underlying = self
+                    .types
+                    .ctypes
+                    .enum_underlying(to)
+                    .ok_or(ResolveError::Unsupported("enum without an underlying type"))?;
+                let value = self.emit_convert_to(value, underlying, reason)?;
+                let node = value.node.clone();
+                Ok(self.value(
+                    &node,
+                    ty,
+                    ValueKind::Convert {
+                        kind: ConversionKind::IntToEnum,
+                        operand: Box::new(value),
+                        reason,
+                        semantics: ConversionSema::Exact,
+                    },
+                ))
+            }
+            CastKind::NullPointer => Ok(self.value(&value.node, ty, ValueKind::Null)),
+            CastKind::Pointer | CastKind::PtrToInt | CastKind::IntToPtr => {
+                let kind = match kind {
+                    CastKind::PtrToInt => ConversionKind::PtrToInt,
+                    CastKind::IntToPtr => ConversionKind::IntToPtr,
+                    _ => ConversionKind::PointerCast,
+                };
+                let node = value.node.clone();
+                Ok(self.value(
+                    &node,
+                    ty,
+                    ValueKind::Convert {
+                        kind,
+                        operand: Box::new(value),
+                        reason,
+                        semantics: ConversionSema::Exact,
+                    },
+                ))
+            }
+        }
+    }
+
+    fn emit_convert_to(
+        &mut self,
+        value: Value,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Value, ResolveError> {
+        let ty = self.types.ir_type(to);
+        if value.ty == ty {
+            return Ok(value);
+        }
+        if ty == Type::Bool {
+            return self.condition(value, Some(reason));
+        }
+        Ok(self.context.emit_arithmetic_conversion(value, ty, reason))
     }
 
     pub(super) fn promote(&mut self, value: Operand) -> Operand {
@@ -96,17 +268,6 @@ impl Lowerer {
             node.provenance,
             node.expansion,
         ));
-    }
-
-    fn is_record(&self, ty: &Type) -> bool {
-        match ty {
-            Type::Defined(_) => match self.kind(ty) {
-                Some(TypeDefinitionKind::Record { .. }) => true,
-                Some(TypeDefinitionKind::Alias(inner)) => self.is_record(inner),
-                _ => false,
-            },
-            _ => false,
-        }
     }
 
     pub fn fresh(&mut self) -> BindingId {
@@ -262,143 +423,6 @@ impl Lowerer {
             );
         }
         value
-    }
-
-    pub fn emit_convert(
-        &mut self,
-        value: Value,
-        to: Type,
-        reason: ConversionReason,
-    ) -> Result<Value, ResolveError> {
-        if value.ty == to {
-            if self.is_record(&to)
-                && matches!(
-                    reason,
-                    ConversionReason::Assign | ConversionReason::Arg | ConversionReason::Return
-                )
-            {
-                let node = value.node.clone();
-                return Ok(self.value(
-                    &node,
-                    to,
-                    ValueKind::Copy {
-                        operand: Box::new(value),
-                        reason,
-                    },
-                ));
-            }
-            return Ok(value);
-        }
-        if self.enum_underlying(&value.ty).is_some() {
-            return self.emit_convert(self.enum_integer(value), to, reason);
-        }
-        if let Some(underlying) = self.enum_underlying(&to) {
-            let value = self.emit_convert(value, underlying, reason)?;
-            let node = value.node.clone();
-            return Ok(self.value(
-                &node,
-                to,
-                ValueKind::Convert {
-                    kind: ConversionKind::IntToEnum,
-                    operand: Box::new(value),
-                    reason,
-                    semantics: ConversionSema::Exact,
-                },
-            ));
-        }
-        if to == Type::Bool {
-            return self.condition(value, Some(reason));
-        }
-        if matches!(to, Type::Vector { .. }) || matches!(value.ty, Type::Vector { .. }) {
-            return self.context.vector_convert(value, to, reason);
-        }
-        if matches!(to, Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_))
-            && matches!(
-                value.ty,
-                Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_) | Type::Bool
-            )
-        {
-            return Ok(self.context.emit_arithmetic_conversion(value, to, reason));
-        }
-        if self.pointee(&to).is_ok() {
-            if matches!(&value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
-                || matches!(value.node.value, ValueKind::Null)
-            {
-                return Ok(self.value(&value.node, to, ValueKind::Null));
-            }
-            if let (Ok(a), Ok(b)) = (self.pointee(&value.ty), self.pointee(&to))
-                && (super::types::compatible(&a, &b)
-                    || differ_only_in_sign(&a, &b)
-                    || differ_only_in_nested_qualifiers(&a, &b)
-                    || a == Type::Void
-                    || b == Type::Void
-                    || reason == ConversionReason::Explicit)
-            {
-                if matches!(
-                    reason,
-                    ConversionReason::Assign | ConversionReason::Arg | ConversionReason::Return
-                ) && let Some((warning, message)) = pointer_conversion_warning(&value.ty, &to)
-                {
-                    self.warn(warning, message, &value.node);
-                }
-                let node = value.node.clone();
-                return Ok(self.value(
-                    &node,
-                    to,
-                    ValueKind::Convert {
-                        kind: ConversionKind::PointerCast,
-                        operand: Box::new(value),
-                        reason,
-                        semantics: ConversionSema::Exact,
-                    },
-                ));
-            }
-        }
-        if self.pointee(&value.ty).is_ok() && matches!(to, Type::Numeric(_)) {
-            let node = value.node.clone();
-            return Ok(self.value(
-                &node,
-                to,
-                ValueKind::Convert {
-                    kind: ConversionKind::PtrToInt,
-                    operand: Box::new(value),
-                    reason,
-                    semantics: ConversionSema::Exact,
-                },
-            ));
-        }
-        if matches!(value.ty, Type::Numeric(_)) && self.pointee(&to).is_ok() {
-            let node = value.node.clone();
-            return Ok(self.value(
-                &node,
-                to,
-                ValueKind::Convert {
-                    kind: ConversionKind::IntToPtr,
-                    operand: Box::new(value),
-                    reason,
-                    semantics: ConversionSema::Exact,
-                },
-            ));
-        }
-        Err(ResolveError::Unsupported(
-            "incompatible or unsupported conversion",
-        ))
-    }
-
-    pub fn emit_convert_expr(
-        &mut self,
-        expression: &Expr,
-        value: Value,
-        to: Type,
-        reason: ConversionReason,
-    ) -> Result<Value, ResolveError> {
-        if self.pointee(&to).is_ok()
-            && matches!(value.ty, Type::Numeric(NumericType::Integer { .. }))
-            && crate::const_expr::Parser::evaluate_ast(expression).is_ok_and(|number| number == 0)
-        {
-            return Ok(self.value(expression, to, ValueKind::Null));
-        }
-        self.emit_convert(value, to, reason)
     }
 
     pub(super) fn place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
@@ -803,6 +827,7 @@ impl Lowerer {
         postfix: bool,
     ) -> Result<Operand, ResolveError> {
         let place = self.place(target)?;
+        self.types.require_modifiable_lvalue(place.c)?;
         let c = self.types.ctypes.unqualified(place.c);
         let old = self.operand(target, c, ValueKind::OldValue);
         let bits = match &place.kind {
@@ -1175,6 +1200,7 @@ impl Lowerer {
                     } else {
                         right.c
                     };
+                    self.warn_comparison(e, left_expr, &left, right_expr, &right);
                     let left =
                         self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
                     let right =
@@ -1203,6 +1229,7 @@ impl Lowerer {
                 ) && (self.pointee(&left.ty).is_ok() && self.pointee(&right.ty).is_ok())
                 {
                     let ty = left.c;
+                    self.warn_comparison(e, left_expr, &left, right_expr, &right);
                     let left =
                         self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
                     let right =
@@ -1230,6 +1257,7 @@ impl Lowerer {
                 let value = self.expr(value)?;
                 if *op == AssignOp::Assign {
                     let place = self.place(target)?;
+                    self.types.require_modifiable_lvalue(place.c)?;
                     let value =
                         self.convert_expr(value_expr, value, place.c, ConversionReason::Assign)?;
                     let c = value.c;
@@ -1280,10 +1308,28 @@ impl Lowerer {
                     Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
                 ) {
                     (left, right) = self.types.arithmetic_operands(&self.context, left, right)?;
-                } else if self.pointee(&left.ty).is_ok() {
+                } else if self.types.ctypes.is_pointer(left.c)
+                    && self.types.ctypes.is_pointer(right.c)
+                {
+                    let merged = if self.is_null_pointer_constant(Some(else_value), &right) {
+                        left.c
+                    } else if self.is_null_pointer_constant(Some(then_value), &left) {
+                        right.c
+                    } else {
+                        self.types.ctypes.merge_pointer(left.c, right.c).ok_or(
+                            ResolveError::Invalid(
+                                "conditional operands are pointers to incompatible types",
+                            ),
+                        )?
+                    };
+                    left =
+                        self.convert_expr(then_value, left, merged, ConversionReason::UsualArith)?;
+                    right =
+                        self.convert_expr(else_value, right, merged, ConversionReason::UsualArith)?;
+                } else if self.types.ctypes.is_pointer(left.c) {
                     right =
                         self.convert_expr(else_value, right, left.c, ConversionReason::UsualArith)?;
-                } else if self.pointee(&right.ty).is_ok() {
+                } else if self.types.ctypes.is_pointer(right.c) {
                     left =
                         self.convert_expr(then_value, left, right.c, ConversionReason::UsualArith)?;
                 }
@@ -1564,73 +1610,14 @@ pub(super) enum VaBuiltin {
     Copy,
 }
 
-fn pointer_conversion_warning(from: &Type, to: &Type) -> Option<(Warning, &'static str)> {
-    let (
-        Type::Pointer {
-            pointee: from_pointee,
-            is_const: from_const,
-            access: from_access,
-        },
-        Type::Pointer {
-            pointee: to_pointee,
-            is_const: to_const,
-            access: to_access,
-        },
-    ) = (from, to)
-    else {
-        return None;
-    };
-    if differ_only_in_sign(from_pointee, to_pointee) {
-        return Some((
-            Warning::PointerSign,
-            "conversion between pointers to integer types with different sign",
-        ));
-    }
-    if (*from_const && !to_const) || (from_access.volatile && !to_access.volatile) {
-        return Some((
-            Warning::IncompatiblePointerTypesDiscardsQualifiers,
-            "pointer conversion discards qualifiers",
-        ));
-    }
-    if differ_only_in_nested_qualifiers(from_pointee, to_pointee) {
-        return Some((
-            Warning::IncompatiblePointerTypesDiscardsQualifiers,
-            "pointer conversion discards qualifiers in nested pointer types",
-        ));
-    }
-    None
-}
-
-fn differ_only_in_nested_qualifiers(a: &Type, b: &Type) -> bool {
-    matches!((a, b), (Type::Pointer { .. }, Type::Pointer { .. }))
-        && !super::types::compatible(a, b)
-        && compatible_ignoring_qualifiers(a, b)
-}
-
-fn compatible_ignoring_qualifiers(a: &Type, b: &Type) -> bool {
-    match (a, b) {
-        (Type::Pointer { pointee: a, .. }, Type::Pointer { pointee: b, .. }) => {
-            compatible_ignoring_qualifiers(a, b)
+fn conversion_context(reason: ConversionReason) -> ConversionContext {
+    match reason {
+        ConversionReason::Assign => ConversionContext::Assign,
+        ConversionReason::Arg | ConversionReason::Vararg => ConversionContext::Arg,
+        ConversionReason::Return => ConversionContext::Return,
+        ConversionReason::Explicit | ConversionReason::Promotion | ConversionReason::UsualArith => {
+            ConversionContext::Cast
         }
-        _ => super::types::compatible(a, b),
-    }
-}
-
-fn differ_only_in_sign(a: &Type, b: &Type) -> bool {
-    match (a, b) {
-        (
-            Type::Numeric(NumericType::Integer {
-                width: a_width,
-                signed: a_signed,
-                bit_precise: a_bit_precise,
-            }),
-            Type::Numeric(NumericType::Integer {
-                width: b_width,
-                signed: b_signed,
-                bit_precise: b_bit_precise,
-            }),
-        ) => a_width == b_width && a_bit_precise == b_bit_precise && a_signed != b_signed,
-        _ => false,
     }
 }
 

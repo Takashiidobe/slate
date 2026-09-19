@@ -10,17 +10,25 @@ pub enum Warning {
     C23Extensions,
     PointerSign,
     IncompatiblePointerTypesDiscardsQualifiers,
+    IncompatiblePointerTypes,
+    IntConversion,
+    PointerIntegerCompare,
+    CompareDistinctPointerTypes,
     ConflictingTypes,
 }
 
 impl Warning {
-    pub const ALL: [Self; 7] = [
+    pub const ALL: [Self; 11] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
         Self::C23Extensions,
         Self::PointerSign,
         Self::IncompatiblePointerTypesDiscardsQualifiers,
+        Self::IncompatiblePointerTypes,
+        Self::IntConversion,
+        Self::PointerIntegerCompare,
+        Self::CompareDistinctPointerTypes,
         Self::ConflictingTypes,
     ];
 
@@ -34,6 +42,10 @@ impl Warning {
             Self::IncompatiblePointerTypesDiscardsQualifiers => {
                 "incompatible-pointer-types-discards-qualifiers"
             }
+            Self::IncompatiblePointerTypes => "incompatible-pointer-types",
+            Self::IntConversion => "int-conversion",
+            Self::PointerIntegerCompare => "pointer-integer-compare",
+            Self::CompareDistinctPointerTypes => "compare-distinct-pointer-types",
             Self::ConflictingTypes => "conflicting-types",
         }
     }
@@ -60,6 +72,10 @@ impl Warning {
             | Self::C23Extensions
             | Self::PointerSign
             | Self::IncompatiblePointerTypesDiscardsQualifiers
+            | Self::IncompatiblePointerTypes
+            | Self::IntConversion
+            | Self::PointerIntegerCompare
+            | Self::CompareDistinctPointerTypes
             | Self::ConflictingTypes => true,
         }
     }

@@ -1111,6 +1111,52 @@ width first (in source signedness), then reinterpret.
 `fits` is only filled in when trivially known during lowering (constants);
 range-based facts belong to the analysis pass.
 
+Which conversions are legal is decided entirely by
+`CTypes::classify_conversion` (`src/sema/ctype/convert.rs`) over C types, not
+over IR types. It answers with a `CastKind` plus an optional warning, and
+`Lowerer::emit_cast` (`src/sema/expression.rs`) only emits the kind it is
+given, so no conversion is accepted merely because nothing rejected it. The
+context — `Assign`, `Arg`, `Return` or `Cast` — is what separates the
+assignment constraints of 6.5.16.1 from the cast constraints of 6.5.4: a cast
+is silent where an assignment warns. Because classification is on C types
+while emission is on layout, `CastKind::Identity` still emits an arithmetic
+conversion when the two layouts differ (a `_Bool`-valued comparison whose C
+type is `int`, for example).
+
+Rejected outright: conversion to or from `void`, to a function or array type,
+between a struct/union and an unrelated type, and between a pointer and a
+floating type.
+
+### Modifiable lvalues
+
+6.3.2.1p1 is enforced on simple assignment, compound assignment and `++`/`--`
+by `TypeResolver::require_modifiable_lvalue` (`src/sema/types.rs`), which runs
+on the C type of the place. An array, a `const`-qualified lvalue, or a
+struct/union with a (recursively) `const`-qualified member is
+`ResolveError::Invalid`. All three compilers reject these, so they are errors
+rather than warnings. Fixture:
+`tests/fixtures/sema/ir_modifiable_lvalue.c`.
+
+### Pointer comparisons
+
+`==`/`!=` and the relational operators accept a pointer against a null pointer
+constant, and a `void *` against any object pointer, silently. Comparing
+pointers whose pointees have no composite type warns
+`compare-distinct-pointer-types`; comparing a pointer against an integer that
+is not a null pointer constant warns `pointer-integer-compare`. Both are
+warnings in clang, gcc and MSVC alike. Fixture:
+`tests/fixtures/sema/ir_pointer_comparison.c`.
+
+### Conditional operator
+
+6.5.15p3-6, in order: two arithmetic operands go through the usual arithmetic
+conversions; if one operand is a null pointer constant the result is the other
+operand's type; otherwise two pointers merge into a pointer to the composite
+type carrying the union of both pointee qualifier sets, with `void *` winning
+over an object pointer. `(void *)0` is a null pointer constant, so
+`c ? (int *)0 : (void *)0` is `int *`, not `void *` — verified against clang
+22 and gcc 16. Fixture: `tests/fixtures/sema/ir_conditional_composite.c`.
+
 ### Promotions
 
 ```c
@@ -1228,15 +1274,39 @@ Types and policies are elided below; the grammar has the full forms.
 | `unsigned* → int*`       | `pointer_cast<ptr<i32>>(p)`                      |
 | `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<ptr<T>>(n)`   |
 
-An implicit conversion between pointers whose pointees are integers differing
-only in signedness (clang's `-Wpointer-sign`, e.g. `const char *p = u8"a"` in
-C23) is accepted as a `pointer_cast`, as is one whose pointees are pointers
-differing only in qualifiers (`const int ** → int **`). Both are reported as
-warnings (see [`diagnostic-severity.md`](diagnostic-severity.md)). Only the
-immediate pointee's signedness is checked, so `unsigned ** → int **` and
-`unsigned * → long *` stay errors, as in clang 22. Fixtures:
-`tests/fixtures/sema/ir_pointer_sign.c`,
-`tests/fixtures/sema/ir_pointer_conversion_warnings.c`.
+Every implicit conversion between object pointers is accepted as a
+`pointer_cast` and reported as a warning; none is an error. This follows the
+consensus rule: MSVC only warns (C4047/C4057/C4133/C5292) on every case clang
+22 and gcc 16 reject, so `unsigned ** → int **`, `unsigned * → long *` and
+`struct A * → struct B *` are warnings rather than the errors earlier versions
+of this document specified. `classify_conversion` (`src/sema/ctype/convert.rs`)
+picks the warning, in this order:
+
+| pointees                                    | warning                                     |
+| ------------------------------------------- | ------------------------------------------- |
+| compatible, `to` drops no qualifier          | none                                        |
+| either is `void`                             | none                                        |
+| compatible, `to` drops `_Atomic`             | `incompatible-pointer-types`                |
+| compatible, `to` drops `const`/`volatile`    | `incompatible-pointer-types-discards-qualifiers` |
+| integers differing only in signedness        | `pointer-sign`                              |
+| compatible apart from nested qualifiers      | `incompatible-pointer-types-discards-qualifiers` |
+| anything else                                | `incompatible-pointer-types`                |
+
+Plain `char` is a distinct type from `signed char` and `unsigned char`, so
+`char * → signed char *` warns `pointer-sign` in either direction. Unlike the
+old layout-based check, signedness is compared at every pointer level, so
+`unsigned ** → int **` warns `pointer-sign` too.
+
+Integer/pointer conversions across an assignment, argument, return or
+initializer warn `int-conversion` and still emit `int_to_ptr`/`ptr_to_int`; an
+explicit cast is silent. A null pointer constant (an integer constant
+expression 0, or such an expression cast to `void *`) becomes `null<ptr<T>>`
+rather than a converted integer, so it never warns.
+
+Fixtures: `tests/fixtures/sema/ir_pointer_sign.c`,
+`tests/fixtures/sema/ir_pointer_conversion_warnings.c`,
+`tests/fixtures/sema/ir_conversion_rules.c`,
+`tests/fixtures/sema/ir_atomic_pointee.c`.
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`

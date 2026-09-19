@@ -35,7 +35,6 @@ pub struct TypeResolver {
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
-    pub(super) enum_underlying: HashMap<TypeId, QualType>,
     prototype_scope: bool,
 }
 
@@ -68,7 +67,6 @@ impl TypeResolver {
             typeof_operands: HashMap::new(),
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
-            enum_underlying: HashMap::new(),
             prototype_scope: false,
         }
     }
@@ -470,6 +468,39 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn require_modifiable_lvalue(&self, q: QualType) -> Result<(), ResolveError> {
+        if self.ctypes.is_array(q) {
+            return Err(ResolveError::Invalid("cannot assign to an array type"));
+        }
+        if self.ctypes.quals(q).is_const {
+            return Err(ResolveError::Invalid(
+                "cannot assign to a const-qualified lvalue",
+            ));
+        }
+        if self.has_const_member(q, &mut Vec::new()) {
+            return Err(ResolveError::Invalid(
+                "cannot assign to a variable with a const-qualified member",
+            ));
+        }
+        Ok(())
+    }
+
+    fn has_const_member(&self, q: QualType, seen: &mut Vec<TypeId>) -> bool {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(q) else {
+            return false;
+        };
+        let id = *id;
+        if seen.contains(&id) {
+            return false;
+        }
+        seen.push(id);
+        self.record_fields.get(&id).is_some_and(|fields| {
+            fields.iter().any(|field| {
+                self.ctypes.quals(*field).is_const || self.has_const_member(*field, seen)
+            })
+        })
+    }
+
     pub(super) fn compatible_c(&self, a: QualType, b: QualType) -> bool {
         let a = self.ctypes.canonical(a);
         let b = self.ctypes.canonical(b);
@@ -707,7 +738,7 @@ impl TypeResolver {
                     let underlying_ty =
                         self.object_type(underlying, "void enum underlying type")?;
                     let layout = self.storage(underlying_ty.clone())?;
-                    self.enum_underlying.insert(id, underlying);
+                    self.ctypes.set_enum_underlying(id, underlying);
                     self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
                         underlying: Some(underlying_ty),
                         enumerators: None,
@@ -1102,7 +1133,7 @@ impl TypeResolver {
                     self.ctypes.qual(CTypeKind::Int { rank, signed })
                 };
                 let underlying = self.object_type(underlying_c, "void enum underlying type")?;
-                self.enum_underlying.insert(id, underlying_c);
+                self.ctypes.set_enum_underlying(id, underlying_c);
                 let enumerator_c = if !is_fixed && fits_int {
                     self.ctypes.int()
                 } else if self.features.enumerators_have_enum_type {
@@ -1201,12 +1232,9 @@ impl TypeResolver {
     }
 
     fn enum_matches(&self, tag: QualType, other: QualType) -> bool {
-        let CTypeKind::Enum(id) = self.ctypes.canonical_kind(tag) else {
-            return false;
-        };
-        self.enum_underlying
-            .get(id)
-            .is_some_and(|underlying| self.ctypes.same(*underlying, other))
+        self.ctypes
+            .enum_underlying(tag)
+            .is_some_and(|underlying| self.ctypes.same(underlying, other))
     }
 
     pub(super) fn require_complete(&self, ty: &Type) -> Result<(), ResolveError> {
