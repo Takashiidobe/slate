@@ -379,7 +379,11 @@ fn ice_shape(types: &mut TypeResolver, expr: &Expr) -> bool {
         | ExprKind::AlignOf { .. }
         | ExprKind::SizeOfExpr(_)
         | ExprKind::AlignOfExpr(_)
-        | ExprKind::OffsetOf { .. } => true,
+        | ExprKind::OffsetOf { .. }
+        | ExprKind::TypesCompatible { .. } => true,
+        ExprKind::Call { callee, arguments } => {
+            super::expression::constant_p_operand(callee, arguments).is_some()
+        }
         ExprKind::Paren(expr) => ice_shape(types, expr),
         ExprKind::Unary { op, operand } => {
             matches!(

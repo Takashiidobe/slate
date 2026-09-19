@@ -1253,6 +1253,13 @@ queries do not resolve yet.
   distinct C integer types that share an IR type (`long`/`long long`,
   `char`/`signed char`) are incompatible; an enum is compatible with its
   underlying integer type. It also folds in `static_assert` conditions.
+- `__builtin_constant_p(x)` → `const<i32>(0|1)` with
+  `c_builtin="__builtin_constant_p"` metadata; the operand is not evaluated.
+  It is 1 when the lowered operand folds (enumerators, literals, `sizeof`,
+  arithmetic on those) and 0 otherwise, which is clang's `-O0` answer: a
+  GCC or optimized build may say 1 for an object whose value inlining makes
+  known. It is an integer constant expression, so it folds in
+  `static_assert` conditions and array bounds too.
 - String literals: an internal `.strN` global holding `code_units<array<i8, N>>(..)`,
   used through `array_decay<ptr<i8>, length=Some(N)>`.
 - Tentative definitions and `extern` declarations merge into one global with linkage; an incomplete tentative array completes to one element.

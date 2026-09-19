@@ -305,6 +305,18 @@ impl TypeResolver {
                     u8::from(self.types_compatible(left_ty, right_ty)?.0).into(),
                 )),
             ),
+            ExprKind::Call { callee, arguments }
+                if super::expression::constant_p_operand(callee, arguments).is_some() =>
+            {
+                let operand = super::expression::constant_p_operand(callee, arguments)
+                    .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
+                (
+                    Type::integer(self.target.int_width, true),
+                    ValueKind::Constant(Number::SignedInteger(
+                        u8::from(self.is_constant(operand)).into(),
+                    )),
+                )
+            }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
                 let atomic = resolved.c.qualifiers.is_atomic;
@@ -393,6 +405,10 @@ impl TypeResolver {
             ty,
             node: e.clone().with_value(kind),
         })
+    }
+
+    pub(super) fn is_constant(&mut self, e: &crate::ast::Expr) -> bool {
+        self.constant_value(e).is_ok_and(|value| is_folded(&value))
     }
 
     pub(super) fn generic_selection<'e>(
@@ -1501,17 +1517,19 @@ impl TypeResolver {
                 };
                 let mut entries = Vec::new();
                 for (item, enumerator, value) in values {
+                    let value = Value {
+                        ty: enumerator_type.clone(),
+                        node: item.clone().with_value(ValueKind::Constant(if value < 0 {
+                            Number::SignedInteger(BigInt::from(value))
+                        } else {
+                            Number::Integer(BigUint::from(value as u64))
+                        })),
+                    };
+                    self.declare(&enumerator.name, Ordinary::Constant(value.clone()));
                     entries.push(item.clone().with_value(Enumerator {
                         id: BindingId(entries.len() as u32),
                         name: enumerator.name.clone(),
-                        value: Value {
-                            ty: enumerator_type.clone(),
-                            node: item.clone().with_value(ValueKind::Constant(if value < 0 {
-                                Number::SignedInteger(BigInt::from(value))
-                            } else {
-                                Number::Integer(BigUint::from(value as u64))
-                            })),
-                        },
+                        value,
                     }));
                 }
                 TypeDefinitionKind::Enum {
@@ -2326,6 +2344,15 @@ pub(super) fn string_literal_type(
     Type::Array {
         element: Box::new(Type::integer(width, signed)),
         length: Some(literal.execution_units(target.wchar_width).len() as u64 + 1),
+    }
+}
+
+pub(super) fn is_folded(value: &Value) -> bool {
+    match value.ty {
+        Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
+            super::fold::integer(value).is_some()
+        }
+        _ => matches!(value.node.value, ValueKind::Constant(_)),
     }
 }
 

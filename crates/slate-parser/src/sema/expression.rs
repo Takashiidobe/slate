@@ -1216,6 +1216,23 @@ impl Lowerer {
                     .ok_or(ResolveError::Unsupported("atomic builtin"))?;
                 self.atomic_builtin(e, builtin, atomic, arguments)
             }
+            ExprKind::Call { callee, arguments }
+                if constant_p_operand(callee, arguments).is_some() =>
+            {
+                let operand = constant_p_operand(callee, arguments)
+                    .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
+                let constant = super::types::is_folded(&self.expr(operand)?);
+                self.module
+                    .metadata
+                    .entry(e.id)
+                    .or_default()
+                    .push(("c_builtin".into(), "__builtin_constant_p".into()));
+                Ok(self.value(
+                    e,
+                    self.context.int_type(),
+                    ValueKind::Constant(Number::SignedInteger(u8::from(constant).into())),
+                ))
+            }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
                 let builtin = va_builtin(callee).ok_or(ResolveError::Unsupported("va builtin"))?;
                 self.va_builtin(e, builtin, arguments)
@@ -1414,6 +1431,13 @@ pub(super) enum VaBuiltin {
     Start,
     End,
     Copy,
+}
+
+pub(super) fn constant_p_operand<'e>(callee: &Expr, arguments: &'e [Expr]) -> Option<&'e Expr> {
+    match (&callee.value, arguments) {
+        (ExprKind::Identifier(name), [operand]) if name == "__builtin_constant_p" => Some(operand),
+        _ => None,
+    }
 }
 
 pub(super) fn va_builtin(callee: &Expr) -> Option<VaBuiltin> {

@@ -349,6 +349,7 @@ impl Resolver {
             ExprKind::Call { callee, arguments } => {
                 if super::expression::va_builtin(callee).is_none()
                     && super::atomic::atomic_builtin(callee).is_none()
+                    && super::expression::constant_p_operand(callee, arguments).is_none()
                 {
                     self.expr(callee)?;
                 }
