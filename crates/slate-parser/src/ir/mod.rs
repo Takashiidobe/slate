@@ -583,6 +583,9 @@ impl Value {
                 reason,
             } => {
                 write!(f, "{op}<{}", left.ty)?;
+                if let Type::Vector { .. } = self.ty {
+                    write!(f, ", result={}", self.ty)?;
+                }
                 if let Some(reason) = reason.filter(|_| !compact) {
                     write!(f, ", reason={reason}")?;
                 }
@@ -637,6 +640,9 @@ impl Value {
         write!(f, "<{}", self.ty)?;
         if compact {
             return f.write_str(">");
+        }
+        if let Type::Vector { .. } = self.ty {
+            f.write_str(", elementwise=true")?;
         }
         match semantics {
             ArithSema::Integer { overflow } => format_overflow(f, overflow)?,

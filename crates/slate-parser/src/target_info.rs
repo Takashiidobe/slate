@@ -390,6 +390,20 @@ impl TargetInfo {
                 alignment_bytes: component.alignment_bytes,
             });
         }
+        if let Type::Vector { element, lanes } = &ty {
+            let element = self.storage_of(Type::Numeric(*element))?;
+            let bytes = element
+                .size_bytes
+                .checked_mul(u64::from(*lanes))
+                .ok_or(LayoutError::UnsupportedScalar(ty.clone()))?;
+            let rounded = bytes.next_power_of_two();
+            let alignment =
+                u32::try_from(rounded).map_err(|_| LayoutError::UnsupportedScalar(ty.clone()))?;
+            return Ok(StorageLayout {
+                size_bytes: rounded,
+                alignment_bytes: alignment,
+            });
+        }
         let key = match ty {
             Type::Bool => ScalarKey::Bool,
             Type::Numeric(NumericType::Integer {
@@ -411,6 +425,7 @@ impl TargetInfo {
             Type::Pointer { .. } => return Ok(self.pointer),
             Type::VaList => return Ok(self.va_list_storage()),
             Type::Complex(_)
+            | Type::Vector { .. }
             | Type::Defined(_)
             | Type::Array { .. }
             | Type::VariableArray { .. }

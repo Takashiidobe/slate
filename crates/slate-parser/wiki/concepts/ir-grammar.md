@@ -69,6 +69,7 @@ A `storage` line is printed only for types the target supports.
 type          = "void" | "bool" | "va_list" | numeric
               | "complex<" numeric ">"
               | "imaginary<" float_type ">"
+              | "vector<" numeric ", " int ">"
               | "ptr<" [ "const " ] [ access_prefix ] type ">"
               | "array<" type ", " ( int | "incomplete" ) ">"
               | "vla<" type ", " ( binding | "*" ) ">"
@@ -86,6 +87,8 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 - `b` marks a bit-precise integer (`_BitInt(N)`), distinct from the standard
   integer of the same width: `i128b` is not `i128`.
 - `d32`/`d64`/`d128` are decimal floating types, never converted to binary.
+- `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` type with
+  `N` lanes of the scalar `T`; both source forms print the same way.
 - `ptr<const T>` records pointee constness; `volatile`/`atomic` on a pointee
   are what make accesses through the pointer volatile or atomic.
 - `vla<T, %n>` has a runtime extent held in synthetic binding `%n`, captured
@@ -290,8 +293,8 @@ core       = "const<" type ">(" constant ")"
            | conversion "<" type ", reason=" reason conversion_policy ">(" value ")"
            | arith_op "<" type arith_policy ">(" value ", " value ")"
            | unary_op "<" type arith_policy ">(" value ")"
-           | compare_op "<" type [ ", reason=" reason ] [ ", exceptions=" exceptions ]
-             ">(" value ", " value ")"
+           | compare_op "<" type [ ", result=" type ] [ ", reason=" reason ]
+             [ ", exceptions=" exceptions ] ">(" value ", " value ")"
            | logical_op "<" type ">(" value ", " value ")" ;
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
 member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
@@ -301,8 +304,9 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 ```
 
 - The type after `<` is the result type, except in `read`/`write` and
-  `compare_exchange` (result `bool`), where it is the place type, and in `compare_op`, where it is the operand type (the
-  result is always `bool`).
+  `compare_exchange` (result `bool`), where it is the place type, and in `compare_op`, where it is the operand type. A
+  scalar comparison results in `bool`; a vector comparison prints its
+  `result=vector<iN, lanes>` lane-mask type instead.
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
   prints as `bits=0x...` to keep its payload. Decimal floats keep their digit
   spelling.
@@ -333,7 +337,8 @@ conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "real_to_complex" | "complex_to_real" | "complex_to_imag"
            | "complex_convert"
            | "real_to_imaginary" | "imaginary_to_real" | "imaginary_to_complex"
-           | "complex_to_imaginary" | "imaginary_convert" ;
+           | "complex_to_imaginary" | "imaginary_convert"
+           | "vector_splat" | "vector_bit_cast" ;
 arith_op   = "add" | "sub" | "mul" | "div" | "rem"
            | "and" | "or" | "xor" | "shl" | "shr" ;
 unary_op   = "neg" | "not" ;
@@ -349,7 +354,8 @@ conversion_policy = (* exact: nothing *)
                   | ", exact=" bool floating
                   | floating
                   | ", out_of_range=ub, exceptions=" exceptions ;
-arith_policy      = (* exact: nothing *)
+arith_policy      = [ ", elementwise=true" ] arith_contract ;
+arith_contract    = (* exact: nothing *)
                   | overflow
                   | ", by_zero=ub" [ ", min_by_neg_one=ub" ]
                   | overflow ", amount_out_of_range=ub" [ ", negative_left=ub" ]

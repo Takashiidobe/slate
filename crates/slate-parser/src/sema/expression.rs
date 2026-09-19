@@ -238,6 +238,9 @@ impl Lowerer {
         if to == Type::Bool {
             return self.condition(value, Some(reason));
         }
+        if matches!(to, Type::Vector { .. }) || matches!(value.ty, Type::Vector { .. }) {
+            return self.context.vector_convert(value, to, reason);
+        }
         if matches!(to, Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_))
             && matches!(
                 value.ty,

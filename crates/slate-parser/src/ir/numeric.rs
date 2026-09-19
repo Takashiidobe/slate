@@ -8,6 +8,10 @@ pub enum Type {
     Numeric(NumericType),
     Complex(NumericType),
     Imaginary(FloatType),
+    Vector {
+        element: NumericType,
+        lanes: u32,
+    },
     VaList,
     Defined(super::TypeId),
     Pointer {
@@ -41,6 +45,7 @@ impl fmt::Display for Type {
             Self::Numeric(ty) => write!(f, "{ty}"),
             Self::Complex(ty) => write!(f, "complex<{ty}>"),
             Self::Imaginary(ty) => write!(f, "imaginary<{ty}>"),
+            Self::Vector { element, lanes } => write!(f, "vector<{element}, {lanes}>"),
             Self::Pointer {
                 pointee,
                 is_const,
@@ -399,6 +404,8 @@ pub enum ConversionKind {
     ImaginaryToComplex,
     ComplexToImaginary,
     ImaginaryConvert,
+    VectorSplat,
+    VectorBitCast,
     EnumToInt,
     IntToEnum,
     PtrToInt,
@@ -427,6 +434,8 @@ impl fmt::Display for ConversionKind {
             Self::ImaginaryToReal => "imaginary_to_real",
             Self::ImaginaryToComplex => "imaginary_to_complex",
             Self::ComplexToImaginary => "complex_to_imaginary",
+            Self::VectorSplat => "vector_splat",
+            Self::VectorBitCast => "vector_bit_cast",
             Self::ImaginaryConvert => "imaginary_convert",
             Self::EnumToInt => "enum_to_int",
             Self::IntToEnum => "int_to_enum",

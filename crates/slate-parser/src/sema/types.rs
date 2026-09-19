@@ -188,6 +188,18 @@ impl TypeResolver {
             .map(|tag| tag.value.clone())
     }
 
+    fn vector_count(
+        &mut self,
+        expression: &crate::ast::Expr,
+        invalid: &'static str,
+    ) -> Result<u64, ResolveError> {
+        let value = self.constant_integer(expression)?;
+        match u64::try_from(value) {
+            Ok(count) if count != 0 => Ok(count),
+            _ => Err(ResolveError::Invalid(invalid)),
+        }
+    }
+
     pub(super) fn constant_integer(
         &mut self,
         e: &crate::ast::Expr,
@@ -833,6 +845,52 @@ impl TypeResolver {
                 };
                 (Type::Numeric(NumericType::Float(kind)), spelling.into())
             }
+            TypeSpecifier::Vector(vector) => {
+                let ResolvedType { ty: element, c } = self.base(&vector.element)?;
+                let element = match element {
+                    Some(Type::Numeric(
+                        element @ NumericType::Integer {
+                            bit_precise: false, ..
+                        },
+                    )) => element,
+                    Some(Type::Numeric(element @ NumericType::Float(format)))
+                        if !format.is_decimal() =>
+                    {
+                        element
+                    }
+                    _ => {
+                        return Err(ResolveError::Invalid(
+                            "vector element must be an integer or real floating type",
+                        ));
+                    }
+                };
+                let element_bytes = self.storage(Type::Numeric(element))?.size_bytes;
+                let (requested, lanes) = match &vector.size {
+                    crate::ast::VectorSize::Bytes(expression) => {
+                        let bytes = self
+                            .vector_count(expression, "vector_size must be a positive constant")?;
+                        if bytes % element_bytes != 0 {
+                            return Err(ResolveError::Invalid(
+                                "vector_size must be a multiple of the element size",
+                            ));
+                        }
+                        (bytes, bytes / element_bytes)
+                    }
+                    crate::ast::VectorSize::Lanes(expression) => {
+                        let lanes = self.vector_count(
+                            expression,
+                            "ext_vector_type must be a positive constant",
+                        )?;
+                        (lanes * element_bytes, lanes)
+                    }
+                };
+                let lanes = u32::try_from(lanes)
+                    .map_err(|_| ResolveError::Invalid("vector lane count is too large"))?;
+                return Ok(ResolvedType {
+                    ty: Some(Type::Vector { element, lanes }),
+                    c: CTypeMetadata::plain(vector_spelling(&c.spelling, requested)),
+                });
+            }
             TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => {
                 (Type::VaList, "__builtin_va_list".into())
             }
@@ -875,6 +933,10 @@ impl TypeResolver {
             Type::Imaginary(format) => CTypeMetadata::plain(format!(
                 "_Imaginary {}",
                 self.numeric_spelling(NumericType::Float(*format))?
+            )),
+            Type::Vector { element, lanes } => CTypeMetadata::plain(vector_spelling(
+                &self.numeric_spelling(*element)?,
+                self.storage(Type::Numeric(*element))?.size_bytes * u64::from(*lanes),
             )),
             Type::Defined(id) => {
                 let definition = self
@@ -1719,6 +1781,10 @@ fn incomplete_tag(kind: TagKind) -> TypeDefinitionKind {
             layout: None,
         },
     }
+}
+
+fn vector_spelling(element: &str, bytes: u64) -> String {
+    format!("{element} __attribute__((vector_size({bytes})))")
 }
 
 fn tag_spelling(kind: TagKind, name: Option<&str>) -> String {

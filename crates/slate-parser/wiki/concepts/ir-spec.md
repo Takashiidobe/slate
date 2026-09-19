@@ -723,21 +723,56 @@ constant expressions, so `#if 3i` and array bounds reject them.
 `tests/fixtures/sema/ir_imaginary.c` and `ir_imaginary_invalid.c` pin these
 forms.
 
-**Out of scope for current IR lowering:** vector and fixed-point types remain
-unrepresented. Their separate implementation work is tracked by
-the corresponding children of `slate-parser-lh7.2.17`:
+**Implemented for vectors:** `Type::Vector { element, lanes }` prints as
+`vector<i32, 4>`. Both source forms collapse into it: `vector_size(N)`
+divides `N` by the element's target storage size, rejecting a size that is
+not a positive multiple of it, and `ext_vector_type(N)` is the lane count
+directly. Only integer (including `_BitInt`) and binary floating elements are
+accepted; `_Bool` and decimal elements are rejected, matching clang.
+
+Target storage is `next_power_of_two(lanes * element_size)` for both size and
+alignment, so a 3-lane `int` vector is 16 bytes aligned to 16, and a 3-lane
+`short` vector is 8 aligned to 8. That rounding is clang's, and it is why
+lanes cannot be recovered from `sizeof` alone. Arguments and results pass as
+`native_c`: the register-level classification of vectors is target- and
+ISA-extension-dependent, so it is left explicitly unclassified rather than
+guessed (`slate-parser-lh7.2.17.6`).
+
+Arithmetic is per-lane. An operation whose result type is a vector prints
+`elementwise=true` and otherwise carries the element's scalar contract, with
+one difference: integer lanes wrap on overflow regardless of signedness,
+because clang emits no `nsw` for vector arithmetic. `%` and the bitwise and
+shift operators require integer elements. Comparisons yield a lane mask, not
+a `bool`: a signed integer vector whose element has the same storage size as
+the operand element (`vector<f64, 2>` compares to `vector<i64, 2>`, `f80`
+lanes to `i128`), printed as `result=` on the comparison. A vector is not a
+scalar condition, so `if (v)`, `!v`, `&&`, and `||` are rejected.
+
+Mixed operands follow clang's lax vector conversions: the **left** operand
+fixes the result type, a vector operand of the same total size is
+reinterpreted with `vector_bit_cast`, and a scalar operand is converted to
+the element type and then `vector_splat`. The same lax rule applies to
+assignment, argument passing, return, and casts; a conversion between vectors
+of different sizes is an error. Clang additionally rejects a splat whose
+scalar type would truncate (`v4si + double`); we accept it and record the
+element conversion in the IR instead, since sema is a debugging aid for input
+that already compiles. Braced initializers fill lanes like array elements,
+with omitted lanes zero-filled. Lane subscripting (`v[i]`) and `ext_vector`
+swizzles are not lowered yet (`slate-parser-lh7.2.17.7`).
+`tests/fixtures/sema/ir_vector.c` and `ir_vector_invalid.c` pin these forms.
+
+**Out of scope for current IR lowering:** fixed-point types remain
+unrepresented, tracked by `slate-parser-lh7.2.17.4`:
 
 | Family      | Reason lowering remains out of scope                                                                                                                                              |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Vector      | Byte-sized and lane-sized AST forms need validated target-dependent lane counts and alignment; vector arithmetic and comparisons require per-lane result and operation contracts. |
 | Fixed-point | The AST currently loses signedness, and target-specific widths, scale, overflow, saturation, and rounding are not modeled.                                                        |
 
 `ArithSema` needs a distinct saturating fixed-point case rather than treating
-saturation as integer overflow. Vector operations need an explicit per-lane
-contract; complex and imaginary operations carry their own result-family
-rules. No numeric operation should silently accept one of these types until its contract and conversions are pinned by FileCheck
+saturation as integer overflow. No numeric operation should silently accept a
+fixed-point type until its contract and conversions are pinned by FileCheck
 fixtures. Declaration-only support also requires target storage and ABI
-rules, so adding bare `Type` variants alone would not make headers lower.
+rules, so adding a bare `Type` variant alone would not make headers lower.
 
 ### Records
 

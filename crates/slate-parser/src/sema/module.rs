@@ -167,6 +167,13 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
     }
 }
 
+fn is_vector_attribute(attribute: &ast::Attribute) -> bool {
+    matches!(
+        attribute,
+        ast::Attribute::VectorSize(_) | ast::Attribute::ExtVectorType(_)
+    )
+}
+
 fn symbol_attributes<'a>(
     attributes: impl IntoIterator<Item = &'a ast::Attribute>,
     asm_label: Option<&Span<ast::AsmLabel>>,
@@ -420,7 +427,12 @@ impl Lowerer {
             ));
         }
         if item.declarators.is_empty() {
-            if !item.specifiers.attributes.is_empty() {
+            if item
+                .specifiers
+                .attributes
+                .iter()
+                .any(|attribute| !is_vector_attribute(attribute))
+            {
                 return Err(ResolveError::Unsupported("declaration attributes"));
             }
             self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
@@ -433,7 +445,9 @@ impl Lowerer {
                 .attributes
                 .iter()
                 .chain(&declarator.attributes);
-            let has_attributes = attributes.clone().next().is_some();
+            let has_attributes = attributes
+                .clone()
+                .any(|attribute| !is_vector_attribute(attribute));
             if storage_class == StorageClass::Typedef
                 && (has_attributes || declarator.asm_label.is_some())
             {

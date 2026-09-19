@@ -9,7 +9,11 @@ enum Shape {
     Scalar,
     Struct(Vec<Field>),
     Union(Vec<Field>),
-    Array { element: Type, length: Option<u64> },
+    Array {
+        element: Type,
+        length: Option<u64>,
+        vector: bool,
+    },
 }
 
 enum Entry {
@@ -167,7 +171,11 @@ impl Builder {
                 (self.ty.clone(), covered - flexible < required)
             }
             Shape::Union(_) => (self.ty.clone(), false),
-            Shape::Array { element, length } => {
+            Shape::Array {
+                element,
+                length,
+                vector,
+            } => {
                 let length = match length {
                     Some(length) => *length,
                     None => self
@@ -178,13 +186,15 @@ impl Builder {
                             "empty initializer for array of unknown length",
                         ))?,
                 };
-                (
+                let ty = if *vector {
+                    self.ty.clone()
+                } else {
                     Type::Array {
                         element: Box::new(element.clone()),
                         length: Some(length),
-                    },
-                    covered < length,
-                )
+                    }
+                };
+                (ty, covered < length)
             }
             Shape::Scalar => return Err(ResolveError::Unsupported("initializer list for scalar")),
         };
@@ -243,6 +253,14 @@ impl TypeResolver {
             return Ok(Shape::Array {
                 element: (**element).clone(),
                 length: *length,
+                vector: false,
+            });
+        }
+        if let Type::Vector { element, lanes } = &ty {
+            return Ok(Shape::Array {
+                element: Type::Numeric(*element),
+                length: Some(u64::from(*lanes)),
+                vector: true,
             });
         }
         match self.kind(&ty) {
@@ -307,7 +325,9 @@ impl TypeResolver {
         };
         let children: Vec<Type> = match self.shape(ty)? {
             Shape::Scalar => return Ok(index + 1),
-            Shape::Array { element, length } => {
+            Shape::Array {
+                element, length, ..
+            } => {
                 if matches!(expr.value, ExprKind::StringLiteral(_))
                     && matches!(element, Type::Numeric(NumericType::Integer { .. }))
                 {
@@ -568,11 +588,21 @@ impl Lowerer {
             (Shape::Struct(fields) | Shape::Union(fields), Designator::Field(name)) => self
                 .field_path(fields, &name.value)
                 .ok_or(ResolveError::Unsupported("unknown field designator")),
-            (Shape::Array { element, length }, Designator::Array(index)) => {
+            (
+                Shape::Array {
+                    element, length, ..
+                },
+                Designator::Array(index),
+            ) => {
                 let index = array_index(index, *length)?;
                 Ok(vec![(AggregateTarget::Index(index), sized(element)?)])
             }
-            (Shape::Array { element, length }, Designator::ArrayRange { start, end }) => {
+            (
+                Shape::Array {
+                    element, length, ..
+                },
+                Designator::ArrayRange { start, end },
+            ) => {
                 let start = array_index(start, *length)?;
                 let end = array_index(end, *length)?;
                 if end < start {

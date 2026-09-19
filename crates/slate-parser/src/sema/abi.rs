@@ -130,6 +130,7 @@ impl<'a> AbiClassifier<'a> {
             | Type::Pointer { .. }
             | Type::VaList => Ok(AbiPass::Scalar),
             Type::Complex(component) => self.complex_abi(*component, result, convention),
+            Type::Vector { .. } => Ok(AbiPass::NativeC),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.abi_pass(inner, result, convention),
                 TypeDefinitionKind::Enum { .. } => Ok(AbiPass::Scalar),

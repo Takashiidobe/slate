@@ -222,6 +222,9 @@ impl Context {
         right: Value,
     ) -> Result<Resolved, ResolveError> {
         let operator = <&'static str>::from(op);
+        if matches!(left.ty, Type::Vector { .. }) || matches!(right.ty, Type::Vector { .. }) {
+            return self.vector_binary(op, left, right);
+        }
         let arith = match op {
             BinaryOp::Add => ArithOp::Add,
             BinaryOp::Sub => ArithOp::Sub,
@@ -337,6 +340,29 @@ impl Context {
             UnaryOp::Minus => UnaryArithOp::Neg,
             _ => UnaryArithOp::Not,
         };
+        if let Type::Vector { element, .. } = operand.ty {
+            if arith == UnaryArithOp::Not && matches!(element, NumericType::Float(_)) {
+                return Err(ResolveError::Invalid(
+                    "bitwise complement of a floating vector",
+                ));
+            }
+            let semantics = match (element, arith) {
+                (NumericType::Float(_), _) | (NumericType::Integer { .. }, UnaryArithOp::Not) => {
+                    ArithSema::Exact
+                }
+                (NumericType::Integer { .. }, UnaryArithOp::Neg) => ArithSema::Integer {
+                    overflow: Overflow::Wrap,
+                },
+            };
+            return Ok((
+                operand.ty.clone(),
+                ValueKind::Unary {
+                    op: arith,
+                    operand: Box::new(operand),
+                    semantics,
+                },
+            ));
+        }
         if let Type::Imaginary(_) = operand.ty {
             if arith != UnaryArithOp::Neg {
                 return Err(ResolveError::Invalid(
@@ -401,6 +427,176 @@ impl Context {
                 semantics,
             },
         ))
+    }
+
+    fn vector_binary(
+        &self,
+        op: BinaryOp,
+        left: Value,
+        right: Value,
+    ) -> Result<Resolved, ResolveError> {
+        let (left, right) = self.vector_operands(left, right)?;
+        let Type::Vector { element, lanes } = left.ty else {
+            return Err(ResolveError::Unsupported("vector arithmetic conversion"));
+        };
+        let compare = match op {
+            BinaryOp::Equal => Some(CompareOp::Eq),
+            BinaryOp::NotEqual => Some(CompareOp::Ne),
+            BinaryOp::Less => Some(CompareOp::Lt),
+            BinaryOp::LessEqual => Some(CompareOp::Le),
+            BinaryOp::Greater => Some(CompareOp::Gt),
+            BinaryOp::GreaterEqual => Some(CompareOp::Ge),
+            _ => None,
+        };
+        if let Some(compare) = compare {
+            let width = self.element_bits(element)?;
+            return Ok((
+                Type::Vector {
+                    element: NumericType::integer(width, true),
+                    lanes,
+                },
+                ValueKind::Compare {
+                    op: compare,
+                    left: Box::new(left),
+                    right: Box::new(right),
+                    exceptions: matches!(element, NumericType::Float(_))
+                        .then_some(self.floating.exceptions),
+                    reason: None,
+                },
+            ));
+        }
+        let arith = match op {
+            BinaryOp::Add => ArithOp::Add,
+            BinaryOp::Sub => ArithOp::Sub,
+            BinaryOp::Mul => ArithOp::Mul,
+            BinaryOp::Div => ArithOp::Div,
+            BinaryOp::Rem => ArithOp::Rem,
+            BinaryOp::BitAnd => ArithOp::And,
+            BinaryOp::BitOr => ArithOp::Or,
+            BinaryOp::BitXor => ArithOp::Xor,
+            BinaryOp::ShiftLeft => ArithOp::Shl,
+            BinaryOp::ShiftRight => ArithOp::Shr,
+            _ => return Err(ResolveError::Unsupported("vector operator")),
+        };
+        // clang emits no nsw for vector arithmetic, so signed lanes wrap
+        let semantics = match (element, arith) {
+            (NumericType::Float(_), ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div) => {
+                ArithSema::Floating(self.floating)
+            }
+            (NumericType::Float(_), _) => {
+                return Err(ResolveError::Invalid(
+                    "operator requires integer vector elements",
+                ));
+            }
+            (NumericType::Integer { .. }, ArithOp::Add | ArithOp::Sub | ArithOp::Mul) => {
+                ArithSema::Integer {
+                    overflow: Overflow::Wrap,
+                }
+            }
+            (NumericType::Integer { signed, .. }, ArithOp::Div | ArithOp::Rem) => {
+                ArithSema::Division {
+                    by_zero: UbPolicy::Undefined,
+                    min_by_neg_one: signed.then_some(UbPolicy::Undefined),
+                }
+            }
+            (NumericType::Integer { signed, .. }, ArithOp::Shl) => ArithSema::ShiftLeft {
+                overflow: Overflow::Wrap,
+                amount_out_of_range: UbPolicy::Undefined,
+                negative_left: signed.then_some(UbPolicy::Undefined),
+            },
+            (NumericType::Integer { signed, .. }, ArithOp::Shr) => ArithSema::ShiftRight {
+                fill: if signed {
+                    self.target.signed_right_shift
+                } else {
+                    ShiftFill::ZeroExtend
+                },
+                amount_out_of_range: UbPolicy::Undefined,
+            },
+            (NumericType::Integer { .. }, ArithOp::And | ArithOp::Or | ArithOp::Xor) => {
+                ArithSema::Exact
+            }
+        };
+        Ok((
+            left.ty.clone(),
+            ValueKind::Arith {
+                op: arith,
+                left: Box::new(left),
+                right: Box::new(right),
+                semantics,
+            },
+        ))
+    }
+
+    // clang's lax vector conversions: the left operand fixes the result type and
+    // the right operand is reinterpreted or splatted into it
+    fn vector_operands(&self, left: Value, right: Value) -> Result<(Value, Value), ResolveError> {
+        match (&left.ty, &right.ty) {
+            (Type::Vector { .. }, Type::Vector { .. }) => {
+                let ty = left.ty.clone();
+                let right = self.vector_convert(right, ty, ConversionReason::UsualArith)?;
+                Ok((left, right))
+            }
+            (Type::Vector { .. }, _) => {
+                let ty = left.ty.clone();
+                let right = self.splat(right, ty)?;
+                Ok((left, right))
+            }
+            (_, Type::Vector { .. }) => {
+                let ty = right.ty.clone();
+                let left = self.splat(left, ty)?;
+                Ok((left, right))
+            }
+            _ => Err(ResolveError::Unsupported("vector arithmetic conversion")),
+        }
+    }
+
+    fn splat(&self, value: Value, to: Type) -> Result<Value, ResolveError> {
+        let Type::Vector { element, .. } = to else {
+            return Err(ResolveError::Unsupported("vector arithmetic conversion"));
+        };
+        if !matches!(value.ty, Type::Numeric(_) | Type::Bool) {
+            return Err(ResolveError::Invalid(
+                "vector operand must be a vector or a scalar",
+            ));
+        }
+        let value = self.convert(value, Type::Numeric(element), ConversionReason::UsualArith);
+        Ok(conversion(
+            value,
+            to,
+            ConversionKind::VectorSplat,
+            ConversionReason::UsualArith,
+            ConversionSema::Exact,
+        ))
+    }
+
+    pub(super) fn vector_convert(
+        &self,
+        value: Value,
+        to: Type,
+        reason: ConversionReason,
+    ) -> Result<Value, ResolveError> {
+        if value.ty == to {
+            return Ok(value);
+        }
+        let from_bytes = self.target.storage_of(value.ty.clone())?.size_bytes;
+        let to_bytes = self.target.storage_of(to.clone())?.size_bytes;
+        if from_bytes != to_bytes {
+            return Err(ResolveError::Invalid(
+                "conversion between vector types of different size",
+            ));
+        }
+        Ok(conversion(
+            value,
+            to,
+            ConversionKind::VectorBitCast,
+            reason,
+            ConversionSema::Exact,
+        ))
+    }
+
+    fn element_bits(&self, element: NumericType) -> Result<u32, ResolveError> {
+        let bytes = self.target.storage_of(Type::Numeric(element))?.size_bytes;
+        u32::try_from(bytes * 8).map_err(|_| ResolveError::Unsupported("vector element width"))
     }
 
     fn compare(&self, op: CompareOp, left: Value, right: Value) -> Result<Resolved, ResolveError> {
@@ -1018,6 +1214,7 @@ fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
         Type::Defined(_)
         | Type::Complex(_)
         | Type::Imaginary(_)
+        | Type::Vector { .. }
         | Type::Pointer { .. }
         | Type::VaList
         | Type::Array { .. }
