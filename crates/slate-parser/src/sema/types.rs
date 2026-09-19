@@ -5,18 +5,18 @@ use crate::ast::{
     FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, TagBody, TagDefinition,
     TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
-use crate::const_expr::Encoding;
 use crate::ir::{
-    Access, BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
+    Access, BindingId, BitFieldUnit, Enumerator, Field, Number, NumericType, RecordKind,
     RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
 };
-use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
+use crate::target_info::{StorageLayout, TargetInfo};
 use num_bigint::{BigInt, BigUint};
 
 use super::ctype::{
     CTypeKind, CTypeMetadata, CTypes, Extent, FloatKind, IntRank, QualType, Qualifiers,
 };
 use super::numeric::ResolveError;
+use super::operand::Operand;
 use crate::standard_features::StandardFeatures;
 
 pub struct TypeResolver {
@@ -31,10 +31,9 @@ pub struct TypeResolver {
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
-    pub(super) bindings: HashMap<BindingId, Type>,
-    pub(super) access: HashMap<BindingId, Access>,
+    pub(super) bindings: HashMap<BindingId, QualType>,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
-    pub(super) enumerators: HashMap<crate::ast::NodeId, Value>,
+    pub(super) enumerators: HashMap<crate::ast::NodeId, Operand>,
     pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
     pub(super) enum_underlying: HashMap<TypeId, QualType>,
     prototype_scope: bool,
@@ -43,11 +42,15 @@ pub struct TypeResolver {
 pub(super) enum Ordinary {
     Declared,
     Alias(QualType),
-    Constant(Value),
+    Constant(Operand),
     Object(QualType),
 }
 
 impl TypeResolver {
+    pub(super) fn target_info(&self) -> &TargetInfo {
+        &self.target
+    }
+
     pub fn new(target: TargetInfo) -> Self {
         Self {
             target,
@@ -62,7 +65,6 @@ impl TypeResolver {
             extents: HashMap::new(),
             references: HashMap::new(),
             bindings: HashMap::new(),
-            access: HashMap::new(),
             typeof_operands: HashMap::new(),
             enumerators: HashMap::new(),
             record_fields: HashMap::new(),
@@ -173,12 +175,20 @@ impl TypeResolver {
             .copied()
     }
 
-    pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Value, ResolveError> {
-        use crate::ast::ExprKind;
+    pub(super) fn constant_value(&mut self, e: &crate::ast::Expr) -> Result<Operand, ResolveError> {
         let context =
             super::numeric::Context::new(self.target.clone()).with_features(self.features);
+        self.constant_value_with_context(&context, e)
+    }
+
+    pub(super) fn constant_value_with_context(
+        &mut self,
+        context: &super::numeric::Context,
+        e: &crate::ast::Expr,
+    ) -> Result<Operand, ResolveError> {
+        use crate::ast::ExprKind;
         let (ty, kind) = match &e.value {
-            ExprKind::Paren(inner) => return self.constant_value(inner),
+            ExprKind::Paren(inner) => return self.constant_value_with_context(context, inner),
             ExprKind::Identifier(name) => {
                 return match self.lookup(name) {
                     Some(Ordinary::Constant(value)) => Ok(value.clone()),
@@ -188,19 +198,20 @@ impl TypeResolver {
                 };
             }
             ExprKind::CharLiteral(literal) => {
-                let (ty, number) = character_constant(literal, &self.target)?;
+                let (ty, number) = self.character_constant(literal)?;
                 (ty, ValueKind::Constant(number))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let (ty, access) = self.assertion_operand_type(operand)?;
-                let layout = self.qualified_storage(ty, access.atomic)?;
+                let ty = self.assertion_operand_type(operand)?;
+                let layout =
+                    self.qualified_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)?;
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
                     u64::from(layout.alignment_bytes)
                 };
                 (
-                    Type::integer(self.target.pointer_width, false),
+                    self.ctypes.size_type(&self.target),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -209,25 +220,24 @@ impl TypeResolver {
                 then_value,
                 else_value,
             } => {
-                let condition = self.constant_value(condition)?;
+                let condition = self.constant_value_with_context(context, condition)?;
                 let left = match then_value {
-                    Some(left) => self.constant_value(left)?,
+                    Some(left) => self.constant_value_with_context(context, left)?,
                     None => condition.clone(),
                 };
-                let right = self.constant_value(else_value)?;
-                let (left, right) =
-                    context.usual_arithmetic(context.promote(left), context.promote(right));
+                let right = self.constant_value_with_context(context, else_value)?;
+                let (left, right) = self.arithmetic_operands(context, left, right)?;
                 (
-                    left.ty.clone(),
+                    left.c,
                     ValueKind::Conditional {
-                        condition: Box::new(context.condition(condition)),
-                        then_value: Box::new(left),
-                        else_value: Box::new(right),
+                        condition: Box::new(context.condition(condition.value)),
+                        then_value: Box::new(left.value),
+                        else_value: Box::new(right.value),
                     },
                 )
             }
             ExprKind::TypesCompatible { left_ty, right_ty } => (
-                Type::integer(self.target.int_width, true),
+                self.ctypes.int(),
                 ValueKind::Constant(Number::SignedInteger(
                     u8::from(self.types_compatible(left_ty, right_ty)?.0).into(),
                 )),
@@ -238,7 +248,7 @@ impl TypeResolver {
                 let operand = super::expression::constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
                 (
-                    Type::integer(self.target.int_width, true),
+                    self.ctypes.int(),
                     ValueKind::Constant(Number::SignedInteger(
                         u8::from(self.is_constant(operand)).into(),
                     )),
@@ -255,7 +265,7 @@ impl TypeResolver {
                     u64::from(layout.alignment_bytes)
                 };
                 (
-                    Type::integer(self.target.pointer_width, false),
+                    self.ctypes.size_type(&self.target),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
@@ -264,28 +274,27 @@ impl TypeResolver {
                 let ty = self.object_type(ty, "void offsetof")?;
                 let (_, n) = self.offsetof_member(ty, member)?;
                 (
-                    Type::integer(self.target.pointer_width, false),
+                    self.ctypes.size_type(&self.target),
                     ValueKind::Constant(Number::Integer(n.into())),
                 )
             }
             ExprKind::Binary { op, left, right } => {
-                let left = self.constant_value(left)?;
-                let right = self.constant_value(right)?;
-                context.resolve_binary(*op, left, right)?
+                let left = self.constant_value_with_context(context, left)?;
+                let right = self.constant_value_with_context(context, right)?;
+                return self.binary_operand(context, e, *op, left, right);
             }
             ExprKind::Unary { op, operand } => {
                 use crate::const_expr::UnaryOp;
-                let operand = self.constant_value(operand)?;
+                let operand = self.constant_value_with_context(context, operand)?;
                 match op {
-                    UnaryOp::Plus => return Ok(context.promote(operand)),
-                    UnaryOp::Minus | UnaryOp::BitNot => {
-                        context.resolve_unary_arith(*op, operand)?
+                    UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot => {
+                        return self.unary_operand(context, e, *op, operand);
                     }
                     UnaryOp::Not => (
-                        Type::Bool,
+                        self.ctypes.int(),
                         ValueKind::Unary {
                             op: crate::ir::UnaryArithOp::Not,
-                            operand: Box::new(context.condition(operand)),
+                            operand: Box::new(context.condition(operand.value)),
                             semantics: crate::ir::ArithSema::Exact,
                         },
                     ),
@@ -293,13 +302,13 @@ impl TypeResolver {
                 }
             }
             ExprKind::Comma { left, right } => {
-                let left = self.constant_value(left)?;
-                let right = self.constant_value(right)?;
+                let left = self.constant_value_with_context(context, left)?;
+                let right = self.constant_value_with_context(context, right)?;
                 (
-                    right.ty.clone(),
+                    right.c,
                     ValueKind::Sequence {
-                        left: Box::new(left),
-                        right: Box::new(right),
+                        left: Box::new(left.value),
+                        right: Box::new(right.value),
                     },
                 )
             }
@@ -308,30 +317,40 @@ impl TypeResolver {
                 associations,
             } => {
                 let selected = self.generic_selection(controlling, associations)?;
-                return self.constant_value(selected);
+                return self.constant_value_with_context(context, selected);
             }
             ExprKind::Cast { ty, value } => {
                 let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
-                let ty = self.object_type(ty, "void constant cast")?;
-                let value = context.convert(
-                    self.constant_value(value)?,
+                self.object_type(ty, "void constant cast")?;
+                let value = self.constant_value_with_context(context, value)?;
+                let mut operand = self.arithmetic_conversion(
+                    context,
+                    value,
                     ty,
                     crate::ir::ConversionReason::Explicit,
                 );
-                (value.ty, value.node.value)
+                operand.value.node = e.derive(operand.value.node.value);
+                return Ok(operand);
             }
-            _ => return context.resolve(e),
+            _ => return self.literal(context, e),
         };
-        Ok(Value {
-            ty,
-            node: e.derive(kind),
-        })
+        let truth = matches!(
+            kind,
+            ValueKind::Unary {
+                op: crate::ir::UnaryArithOp::Not,
+                ..
+            }
+        );
+        let mut operand = self.operand(e, ty, kind);
+        if truth {
+            operand.value.ty = Type::Bool;
+        }
+        Ok(operand)
     }
 
-    fn object(&self, e: &crate::ast::Expr) -> Option<(Type, Access)> {
+    fn object(&self, e: &crate::ast::Expr) -> Option<QualType> {
         let id = self.references.get(&e.id)?;
-        let ty = self.bindings.get(id)?.clone();
-        Some((ty, self.access.get(id).copied().unwrap_or_default()))
+        self.bindings.get(id).copied()
     }
 
     pub(super) fn is_constant(&mut self, e: &crate::ast::Expr) -> bool {
@@ -347,9 +366,10 @@ impl TypeResolver {
         let controlling = match controlling {
             GenericControl::Type { ty } => {
                 let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
-                self.object_type(ty, "void generic controlling type")?
+                self.object_type(ty, "void generic controlling type")?;
+                ty
             }
-            GenericControl::Expr(expr) => self.assertion_operand_type(expr)?.0,
+            GenericControl::Expr(expr) => self.assertion_operand_type(expr)?,
         };
         self.select_association(controlling, associations)
     }
@@ -357,23 +377,11 @@ impl TypeResolver {
     // The controlling operand is lvalue-converted, so array and function associations never match.
     pub(super) fn select_association<'e>(
         &mut self,
-        controlling: Type,
+        controlling: QualType,
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e crate::ast::Expr, ResolveError> {
         use crate::ast::GenericAssociation;
-        let controlling = match controlling {
-            Type::Array { element, .. } => Type::Pointer {
-                pointee: element,
-                is_const: false,
-                access: Access::default(),
-            },
-            ty @ Type::Function { .. } => Type::Pointer {
-                pointee: Box::new(ty),
-                is_const: false,
-                access: Access::default(),
-            },
-            ty => ty,
-        };
+        let controlling = self.ctypes.lvalue_conversion(controlling);
         let mut selected = None;
         let mut fallback = None;
         for association in associations {
@@ -381,10 +389,10 @@ impl TypeResolver {
                 GenericAssociation::Default(value) => fallback = Some(value),
                 GenericAssociation::Type { ty, value } => {
                     let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
-                    let ty = self.object_type(ty, "void generic association type")?;
-                    if ty == controlling {
+                    self.object_type(ty, "void generic association type")?;
+                    if self.compatible_c(ty, controlling) {
                         if selected.is_some() {
-                            return Err(ResolveError::Unsupported("ambiguous generic selection"));
+                            return Err(ResolveError::Invalid("ambiguous generic selection"));
                         }
                         selected = Some(value);
                     }
@@ -399,7 +407,7 @@ impl TypeResolver {
     pub(super) fn assertion_operand_type(
         &mut self,
         e: &crate::ast::Expr,
-    ) -> Result<(Type, Access), ResolveError> {
+    ) -> Result<QualType, ResolveError> {
         use crate::ast::ExprKind;
         match &e.value {
             ExprKind::Paren(inner) => self.assertion_operand_type(inner),
@@ -411,73 +419,105 @@ impl TypeResolver {
                 self.assertion_operand_type(selected)
             }
             ExprKind::Call { callee, .. } => match &callee.value {
-                ExprKind::Identifier(name) => builtin_result_type(name),
-                _ => None,
-            }
-            .ok_or(ResolveError::Unsupported("nonconstant call expression"))
-            .map(|ty| (ty, Access::default())),
+                ExprKind::Identifier(name) if builtin_result_type(name).is_some() => {
+                    Ok(self.ctypes.qual(CTypeKind::Bool))
+                }
+                _ => Err(ResolveError::Unsupported("nonconstant call expression")),
+            },
             ExprKind::Identifier(_) if self.object(e).is_some() => self
                 .object(e)
                 .ok_or(ResolveError::Unsupported("untyped binding")),
             ExprKind::Identifier(name) => match self.lookup(name) {
-                Some(Ordinary::Object(q)) => Ok((self.ir_type(*q), self.access_of(*q))),
-                Some(Ordinary::Constant(value)) => Ok((value.ty.clone(), Access::default())),
+                Some(Ordinary::Object(q)) => Ok(*q),
+                Some(Ordinary::Constant(value)) => Ok(value.c),
                 _ => Err(ResolveError::Unsupported(
                     "unknown or unsupported sizeof operand type",
                 )),
             },
-            ExprKind::StringLiteral(literal) => Ok((
-                string_literal_type(literal, &self.target, self.features),
-                Access::default(),
-            )),
+            ExprKind::StringLiteral(literal) => Ok(self.string_type(literal)),
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
-                let literal_access = self.access_of(resolved);
-                let declared = self.object_type(resolved, "void compound literal")?;
-                match declared {
-                    Type::Array {
+                if let Some((element, Extent::Incomplete)) = self.ctypes.element(resolved) {
+                    let length = self.inferred_array_length(&self.ir_type(element), initializer)?;
+                    Ok(self.ctypes.qual(CTypeKind::Array {
                         element,
-                        length: None,
-                    } => {
-                        let length = self.inferred_array_length(&element, initializer)?;
-                        Ok((
-                            Type::Array {
-                                element,
-                                length: Some(length),
-                            },
-                            literal_access,
-                        ))
-                    }
-                    declared => Ok((declared, literal_access)),
+                        extent: Extent::Fixed(length),
+                    }))
+                } else {
+                    Ok(resolved)
                 }
             }
             ExprKind::Unary {
                 op: crate::const_expr::UnaryOp::Deref,
                 operand,
-            } => match self.assertion_operand_type(operand)? {
-                (
-                    Type::Pointer {
-                        pointee, access, ..
-                    },
-                    _,
-                ) => Ok((*pointee, access)),
-                _ => Err(ResolveError::Unsupported(
-                    "sizeof dereference of nonpointer",
-                )),
-            },
-            ExprKind::Index { base, .. } => match self.assertion_operand_type(base)? {
-                (Type::Array { element, .. }, access) => Ok((*element, access)),
-                (
-                    Type::Pointer {
-                        pointee, access, ..
-                    },
-                    _,
-                ) => Ok((*pointee, access)),
-                _ => Err(ResolveError::Unsupported("sizeof index of nonarray")),
-            },
-            _ => self
-                .constant_value(e)
-                .map(|value| (value.ty, Access::default())),
+            } => {
+                let pointer = self.assertion_operand_type(operand)?;
+                self.ctypes
+                    .pointee(pointer)
+                    .ok_or(ResolveError::Unsupported(
+                        "sizeof dereference of nonpointer",
+                    ))
+            }
+            ExprKind::Index { base, .. } => {
+                let base = self.assertion_operand_type(base)?;
+                self.ctypes
+                    .element(base)
+                    .map(|(element, _)| element)
+                    .or_else(|| self.ctypes.pointee(base))
+                    .ok_or(ResolveError::Unsupported("sizeof index of nonarray"))
+            }
+            _ => self.constant_value(e).map(|value| value.c),
+        }
+    }
+
+    pub(super) fn compatible_c(&self, a: QualType, b: QualType) -> bool {
+        let a = self.ctypes.canonical(a);
+        let b = self.ctypes.canonical(b);
+        if a.quals != b.quals {
+            return false;
+        }
+        if a == b || self.enum_matches(a, b) || self.enum_matches(b, a) {
+            return true;
+        }
+        match (self.ctypes.kind(a.ty), self.ctypes.kind(b.ty)) {
+            (CTypeKind::Pointer(a), CTypeKind::Pointer(b)) => self.compatible_c(*a, *b),
+            (
+                CTypeKind::Array {
+                    element: a,
+                    extent: ae,
+                },
+                CTypeKind::Array {
+                    element: b,
+                    extent: be,
+                },
+            ) => {
+                self.compatible_c(*a, *b)
+                    && match (ae, be) {
+                        (Extent::Fixed(a), Extent::Fixed(b)) => a == b,
+                        _ => true,
+                    }
+            }
+            (
+                CTypeKind::Function {
+                    ret: ar,
+                    params: ap,
+                    variadic: av,
+                    prototyped: aproto,
+                },
+                CTypeKind::Function {
+                    ret: br,
+                    params: bp,
+                    variadic: bv,
+                    prototyped: bproto,
+                },
+            ) => {
+                self.compatible_c(*ar, *br)
+                    && av == bv
+                    && aproto == bproto
+                    && ap.len() == bp.len()
+                    && ap.iter().zip(bp).all(|(a, b)| self.compatible_c(*a, *b))
+            }
+            _ => false,
         }
     }
 
@@ -798,153 +838,9 @@ impl TypeResolver {
                 if let Some(resolved) = self.typeof_operands.get(&expr.id) {
                     return Ok(*resolved);
                 }
-                let (ty, access) = self.assertion_operand_type(expr)?;
-                let resolved = self.reverse_layout(&ty)?;
-                Ok(resolved.with(Qualifiers {
-                    is_volatile: access.volatile,
-                    is_atomic: access.atomic,
-                    ..Qualifiers::NONE
-                }))
+                self.assertion_operand_type(expr)
             }
         }
-    }
-
-    pub(super) fn reverse_layout(&mut self, ty: &Type) -> Result<QualType, ResolveError> {
-        let kind = match ty {
-            Type::Void => CTypeKind::Void,
-            Type::Bool => CTypeKind::Bool,
-            Type::VaList => CTypeKind::VaList,
-            Type::Numeric(numeric) => self.numeric_kind(*numeric)?,
-            Type::Complex(numeric) => {
-                let component = self.numeric_kind(*numeric)?;
-                CTypeKind::Complex(self.ctypes.intern(component))
-            }
-            Type::Imaginary(format) => match self.numeric_kind(NumericType::Float(*format))? {
-                CTypeKind::Float(kind) => CTypeKind::Imaginary(kind),
-                _ => return Err(ResolveError::Unsupported("imaginary component")),
-            },
-            Type::Vector { element, lanes } => {
-                let bytes = self.storage(Type::Numeric(*element))?.size_bytes * u64::from(*lanes);
-                let element = self.numeric_kind(*element)?;
-                CTypeKind::Vector {
-                    element: self.ctypes.qual(element),
-                    lanes: *lanes,
-                    bytes,
-                }
-            }
-            Type::Defined(id) => {
-                let definition = self
-                    .definitions
-                    .get(id.0 as usize)
-                    .ok_or(ResolveError::Unsupported("unknown type definition"))?;
-                match &definition.kind {
-                    TypeDefinitionKind::Alias(inner) => {
-                        let name = definition
-                            .name
-                            .clone()
-                            .ok_or(ResolveError::Unsupported("unnamed typedef"))?;
-                        let inner = inner.clone();
-                        let underlying = self.reverse_layout(&inner)?;
-                        CTypeKind::Typedef { name, underlying }
-                    }
-                    TypeDefinitionKind::Record { kind, .. } => CTypeKind::Record {
-                        id: *id,
-                        union: matches!(kind, RecordKind::Union),
-                    },
-                    TypeDefinitionKind::Enum { .. } => CTypeKind::Enum(*id),
-                }
-            }
-            Type::Pointer {
-                pointee,
-                is_const,
-                access,
-            } => {
-                let pointee = self.reverse_layout(pointee)?.with(Qualifiers {
-                    is_const: *is_const,
-                    is_volatile: access.volatile,
-                    is_atomic: access.atomic,
-                    is_restrict: false,
-                });
-                CTypeKind::Pointer(pointee)
-            }
-            Type::Array { element, length } => CTypeKind::Array {
-                element: self.reverse_layout(element)?,
-                extent: length.map_or(Extent::Incomplete, Extent::Fixed),
-            },
-            Type::VariableArray { element, extent } => CTypeKind::Array {
-                element: self.reverse_layout(element)?,
-                extent: Extent::Variable(match extent {
-                    crate::ir::VariableExtent::Captured(binding) => Some(*binding),
-                    crate::ir::VariableExtent::Unspecified => None,
-                }),
-            },
-            Type::Function {
-                return_type,
-                parameters,
-                variadic,
-                prototyped,
-            } => {
-                let ret = match return_type {
-                    Some(ty) => self.reverse_layout(ty)?,
-                    None => self.ctypes.qual(CTypeKind::Void),
-                };
-                let params = parameters
-                    .iter()
-                    .map(|parameter| self.reverse_layout(parameter))
-                    .collect::<Result<Vec<_>, _>>()?;
-                CTypeKind::Function {
-                    ret,
-                    params,
-                    variadic: *variadic,
-                    prototyped: *prototyped,
-                }
-            }
-        };
-        Ok(self.ctypes.qual(kind))
-    }
-
-    fn numeric_kind(&self, numeric: NumericType) -> Result<CTypeKind, ResolveError> {
-        let (width, signed) = match numeric {
-            NumericType::Integer {
-                width,
-                signed,
-                bit_precise: true,
-            } => return Ok(CTypeKind::BitInt { width, signed }),
-            NumericType::Integer { width, signed, .. } => (width, signed),
-            NumericType::Float(format) => {
-                return Ok(CTypeKind::Float(match format {
-                    FloatType::F16 => FloatKind::Float16,
-                    FloatType::F32 => FloatKind::Float,
-                    FloatType::F64 => FloatKind::Double,
-                    FloatType::F80 => FloatKind::LongDouble,
-                    FloatType::F128 if self.target.long_double == LongDoubleFormat::Binary128 => {
-                        FloatKind::LongDouble
-                    }
-                    FloatType::F128 => FloatKind::Float128,
-                    FloatType::D32 => FloatKind::Decimal32,
-                    FloatType::D64 => FloatKind::Decimal64,
-                    FloatType::D128 => FloatKind::Decimal128,
-                }));
-            }
-        };
-        if width == 8 {
-            return Ok(match signed {
-                _ if signed == self.target.char_signed => CTypeKind::Char,
-                true => CTypeKind::SChar,
-                false => CTypeKind::UChar,
-            });
-        }
-        let rank = [
-            (self.target.int_width, IntRank::Int),
-            (self.target.long_width, IntRank::Long),
-            (self.target.long_long_width, IntRank::LongLong),
-            (self.target.short_width, IntRank::Short),
-            (128, IntRank::Int128),
-        ]
-        .into_iter()
-        .find_map(|(candidate, rank)| (candidate == width).then_some(rank))
-        .ok_or(ResolveError::Unsupported("C spelling of integer width"))?;
-        Ok(CTypeKind::Int { rank, signed })
     }
 
     fn derive(&mut self, declarator: &Declarator, q: QualType) -> Result<QualType, ResolveError> {
@@ -1207,13 +1103,14 @@ impl TypeResolver {
                 };
                 let underlying = self.object_type(underlying_c, "void enum underlying type")?;
                 self.enum_underlying.insert(id, underlying_c);
-                let enumerator_type = if !is_fixed && fits_int {
-                    Type::integer(self.target.int_width, true)
+                let enumerator_c = if !is_fixed && fits_int {
+                    self.ctypes.int()
                 } else if self.features.enumerators_have_enum_type {
-                    Type::Defined(id)
+                    self.ctypes.qual(CTypeKind::Enum(id))
                 } else {
-                    underlying.clone()
+                    underlying_c
                 };
+                let enumerator_type = self.ir_type(enumerator_c);
                 let mut entries = Vec::new();
                 for (item, enumerator, value) in values {
                     let value = Value {
@@ -1224,8 +1121,20 @@ impl TypeResolver {
                             Number::Integer(BigUint::from(value as u64))
                         })),
                     };
-                    self.declare(&enumerator.name, Ordinary::Constant(value.clone()));
-                    self.enumerators.insert(item.id, value.clone());
+                    self.declare(
+                        &enumerator.name,
+                        Ordinary::Constant(Operand {
+                            value: value.clone(),
+                            c: enumerator_c,
+                        }),
+                    );
+                    self.enumerators.insert(
+                        item.id,
+                        Operand {
+                            value: value.clone(),
+                            c: enumerator_c,
+                        },
+                    );
                     entries.push(item.derive(Enumerator {
                         id: BindingId(entries.len() as u32),
                         name: enumerator.name.clone(),
@@ -1953,44 +1862,6 @@ fn resolve_parameters(
         fixed,
         variadic: signature.is_variadic(),
     })
-}
-
-pub(super) fn character_constant(
-    literal: &crate::const_expr::CharLiteral,
-    target: &TargetInfo,
-) -> Result<(Type, Number), ResolveError> {
-    let value = literal.value(target)?;
-    let ty = if literal.encoding == Encoding::Plain {
-        Type::integer(target.int_width, true)
-    } else {
-        Type::integer(
-            literal.encoding.unit_width(target.wchar_width),
-            literal.char_type_is_signed(target),
-        )
-    };
-    let number = match u64::try_from(value) {
-        Ok(value) => Number::Integer(BigUint::from(value)),
-        Err(_) => Number::SignedInteger(BigInt::from(value)),
-    };
-    Ok((ty, number))
-}
-
-pub(super) fn string_literal_type(
-    literal: &crate::const_expr::StringLiteral,
-    target: &TargetInfo,
-    features: StandardFeatures,
-) -> Type {
-    let width = literal.unit_width(target.wchar_width);
-    let signed = match literal.encoding {
-        Encoding::Plain => target.char_signed,
-        Encoding::Wide => target.wchar_signed,
-        Encoding::Utf8 => !features.u8_literals_are_unsigned && target.char_signed,
-        Encoding::Utf16 | Encoding::Utf32 => false,
-    };
-    Type::Array {
-        element: Box::new(Type::integer(width, signed)),
-        length: Some(literal.execution_units(target.wchar_width).len() as u64 + 1),
-    }
 }
 
 pub(super) fn is_folded(value: &Value) -> bool {

@@ -1,5 +1,5 @@
 use super::validate::{fits_rank, integer_rank_width, select_integer_candidate};
-use crate::ast::{Declarator, Expr, ExprKind, FloatingType, IntegerType, TypeName, TypeSpecifier};
+use crate::ast::{Expr, ExprKind};
 use crate::const_expr::{
     BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat, UnaryOp,
     resolve_float,
@@ -43,7 +43,6 @@ pub enum ResolveError {
 }
 
 const UNSUPPORTED_EXPRESSION: &str = "expression (expected a number or arithmetic operator)";
-const UNSUPPORTED_INCREMENT: &str = "increment and decrement (requires place lowering)";
 
 pub struct Context {
     pub target: TargetInfo,
@@ -81,7 +80,7 @@ impl Context {
         }
     }
 
-    pub fn resolve(&self, expression: &Expr) -> Result<Value, ResolveError> {
+    pub(super) fn resolve_literal(&self, expression: &Expr) -> Result<Value, ResolveError> {
         let (ty, kind) = match &expression.value {
             ExprKind::IntegerLiteral(literal) => {
                 if literal.suffix.size == IntegerSizeSuffix::BitInt {
@@ -140,63 +139,6 @@ impl Context {
                 }
             }
             ExprKind::BoolLiteral(value) => (Type::Bool, ValueKind::Constant(Number::Bool(*value))),
-            ExprKind::SizeOfType { ty } => {
-                let value = self.storage_of(ty)?.size_bytes;
-                (
-                    self.size_type(),
-                    ValueKind::Constant(Number::Integer(BigUint::from(value))),
-                )
-            }
-            ExprKind::AlignOf { ty } => {
-                let value = self.storage_of(ty)?.alignment_bytes;
-                (
-                    self.size_type(),
-                    ValueKind::Constant(Number::Integer(BigUint::from(value))),
-                )
-            }
-            ExprKind::Cast { ty, value } => {
-                let converted = self.convert(
-                    self.resolve(value)?,
-                    self.cast_type(ty)?,
-                    ConversionReason::Explicit,
-                );
-                (converted.ty, converted.node.value)
-            }
-            ExprKind::Paren(inner) => return self.resolve(inner),
-            ExprKind::Binary { op, left, right } => {
-                let left = self.resolve(left)?;
-                let right = self.resolve(right)?;
-                self.resolve_binary(*op, left, right)?
-            }
-            ExprKind::Unary { op, operand } => match op {
-                UnaryOp::Plus => {
-                    let operand = self.promote(self.resolve(operand)?);
-                    return Ok(operand);
-                }
-                UnaryOp::Not => (
-                    Type::Bool,
-                    ValueKind::Unary {
-                        op: UnaryArithOp::Not,
-                        operand: Box::new(self.condition(self.resolve(operand)?)),
-                        semantics: ArithSema::Exact,
-                    },
-                ),
-                UnaryOp::Minus | UnaryOp::BitNot => {
-                    self.resolve_unary_arith(*op, self.resolve(operand)?)?
-                }
-                UnaryOp::PreIncrement | UnaryOp::PreDecrement => {
-                    return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
-                }
-                _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
-            },
-            ExprKind::Postfix { .. } => {
-                return Err(ResolveError::Unsupported(UNSUPPORTED_INCREMENT));
-            }
-            ExprKind::Assign { .. } => {
-                return Err(ResolveError::Unsupported(
-                    "assignment (requires place lowering)",
-                ));
-            }
             _ => return Err(ResolveError::Unsupported(UNSUPPORTED_EXPRESSION)),
         };
         Ok(Value {
@@ -205,7 +147,7 @@ impl Context {
         })
     }
 
-    pub(super) fn resolve_binary(
+    pub(super) fn emit_binary(
         &self,
         op: BinaryOp,
         left: Value,
@@ -243,8 +185,6 @@ impl Context {
             BinaryOp::And => return Ok(self.logical(LogicalOp::And, left, right)),
             BinaryOp::Or => return Ok(self.logical(LogicalOp::Or, left, right)),
         };
-        let left = self.promote(left);
-        let right = self.promote(right);
         if has_imaginary(&left, &right) {
             return self.imaginary_binary(op, left, right);
         }
@@ -252,12 +192,6 @@ impl Context {
             return self.complex_binary(op, left, right);
         }
         reject_mixed_decimal(operator, &left, &right)?;
-        let is_shift = matches!(arith, ArithOp::Shl | ArithOp::Shr);
-        let (left, right) = if is_shift {
-            (left, right)
-        } else {
-            self.usual_arithmetic(left, right)
-        };
         let left_ty = numeric(&left)?;
         let right_ty = numeric(&right)?;
         let invalid = ResolveError::InvalidOperands {
@@ -320,12 +254,11 @@ impl Context {
         ))
     }
 
-    pub(super) fn resolve_unary_arith(
+    pub(super) fn emit_unary_arith(
         &self,
         op: UnaryOp,
         operand: Value,
     ) -> Result<Resolved, ResolveError> {
-        let operand = self.promote(operand);
         let arith = match op {
             UnaryOp::Minus => UnaryArithOp::Neg,
             _ => UnaryArithOp::Not,
@@ -549,7 +482,11 @@ impl Context {
                 "vector operand must be a vector or a scalar",
             ));
         }
-        let value = self.convert(value, Type::Numeric(element), ConversionReason::UsualArith);
+        let value = self.emit_arithmetic_conversion(
+            value,
+            Type::Numeric(element),
+            ConversionReason::UsualArith,
+        );
         Ok(conversion(
             value,
             to,
@@ -595,8 +532,6 @@ impl Context {
                 "relational comparison requires real operands",
             ));
         }
-        let left = self.promote(left);
-        let right = self.promote(right);
         let operator = match op {
             CompareOp::Eq => "==",
             CompareOp::Ne => "!=",
@@ -606,7 +541,6 @@ impl Context {
             CompareOp::Ge => ">=",
         };
         reject_mixed_decimal(operator, &left, &right)?;
-        let (left, right) = self.usual_arithmetic(left, right);
         let left_ty = numeric(&left)?;
         Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
     }
@@ -620,7 +554,12 @@ impl Context {
         let component = match (&left.ty, &right.ty) {
             (Type::Complex(a), Type::Complex(b))
             | (Type::Complex(a), Type::Numeric(b))
-            | (Type::Numeric(a), Type::Complex(b)) => wider_component(*a, *b),
+            | (Type::Numeric(a), Type::Complex(b)) => {
+                if a != b {
+                    return Err(ResolveError::Unsupported("unconverted complex components"));
+                }
+                *a
+            }
             _ => return Err(ResolveError::Unsupported("complex arithmetic conversion")),
         };
         let result_ty = Type::Complex(component);
@@ -634,8 +573,8 @@ impl Context {
         } else {
             Type::Numeric(component)
         };
-        let left = self.convert(left, left_to, ConversionReason::UsualArith);
-        let right = self.convert(right, right_to, ConversionReason::UsualArith);
+        let left = self.emit_arithmetic_conversion(left, left_to, ConversionReason::UsualArith);
+        let right = self.emit_arithmetic_conversion(right, right_to, ConversionReason::UsualArith);
         if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
             return Ok((
                 Type::Bool,
@@ -696,7 +635,12 @@ impl Context {
         let (Some(a), Some(b)) = (component(&left.ty), component(&right.ty)) else {
             return Err(ResolveError::Unsupported("imaginary arithmetic conversion"));
         };
-        let NumericType::Float(format) = wider_component(a, b) else {
+        if a != b {
+            return Err(ResolveError::Unsupported(
+                "unconverted imaginary components",
+            ));
+        }
+        let NumericType::Float(format) = a else {
             return Err(ResolveError::Unsupported("imaginary arithmetic conversion"));
         };
         if [a, b]
@@ -713,7 +657,7 @@ impl Context {
                 Type::Imaginary(_) => Type::Imaginary(format),
                 _ => Type::Complex(NumericType::Float(format)),
             };
-            self.convert(value, to, ConversionReason::UsualArith)
+            self.emit_arithmetic_conversion(value, to, ConversionReason::UsualArith)
         };
         let left = domain(left);
         let right = domain(right);
@@ -794,142 +738,16 @@ impl Context {
         )
     }
 
-    pub(super) fn cast_type(&self, ty: &TypeName) -> Result<Type, ResolveError> {
-        let mut declarator = &ty.declarator;
-        while let Declarator::Grouped(inner) = declarator {
-            declarator = inner;
-        }
-        if !matches!(declarator, Declarator::Abstract) {
-            return Err(ResolveError::Unsupported("non-scalar cast type"));
-        }
-        let numeric = match &ty.specifiers.ty {
-            TypeSpecifier::Bool => return Ok(Type::Bool),
-            TypeSpecifier::Complex(inner) => {
-                let mut component = ty.clone();
-                component.specifiers.ty = (**inner).clone();
-                let Type::Numeric(component) = self.cast_type(&component)? else {
-                    return Err(ResolveError::Unsupported("complex cast component"));
-                };
-                return Ok(Type::Complex(component));
-            }
-            TypeSpecifier::Imaginary(inner) => {
-                let mut component = ty.clone();
-                component.specifiers.ty = (**inner).clone();
-                return match self.cast_type(&component)? {
-                    Type::Numeric(NumericType::Float(format)) if !format.is_decimal() => {
-                        Ok(Type::Imaginary(format))
-                    }
-                    _ => Err(ResolveError::Invalid(
-                        "imaginary component must be a real floating type",
-                    )),
-                };
-            }
-            TypeSpecifier::Integer(IntegerType::Char { signed }) => {
-                NumericType::integer(8, signed.unwrap_or(self.target.char_signed))
-            }
-            TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
-                NumericType::integer(integer_rank_width(*rank, &self.target), *signed)
-            }
-            TypeSpecifier::Floating(ty) => NumericType::Float(match ty {
-                FloatingType::Float16 | FloatingType::Fp16 => FloatType::F16,
-                FloatingType::Float => FloatType::F32,
-                FloatingType::Double => FloatType::F64,
-                FloatingType::Float128 | FloatingType::Float128Ext => FloatType::F128,
-                FloatingType::LongDouble => match self.target.long_double {
-                    crate::target_info::LongDoubleFormat::Binary64 => FloatType::F64,
-                    crate::target_info::LongDoubleFormat::X87 => FloatType::F80,
-                    crate::target_info::LongDoubleFormat::Binary128 => FloatType::F128,
-                },
-                FloatingType::Decimal32 => FloatType::D32,
-                FloatingType::Decimal64 => FloatType::D64,
-                FloatingType::Decimal128 => FloatType::D128,
-                _ => return Err(ResolveError::Unsupported("floating cast type")),
-            }),
-            _ => return Err(ResolveError::Unsupported("cast type")),
-        };
-        Ok(Type::Numeric(numeric))
-    }
-
-    fn storage_of(&self, ty: &TypeName) -> Result<crate::target_info::StorageLayout, ResolveError> {
-        Ok(self.target.storage_of(self.cast_type(ty)?)?)
-    }
-
-    fn size_type(&self) -> Type {
-        Type::integer(self.target.long_width, false)
-    }
-
-    // C23 6.3.1.1: bit-precise integers are exempt from the integer promotions
-    pub(super) fn promote(&self, value: Value) -> Value {
-        match value.ty {
-            Type::Bool => self.convert(value, self.int_type(), ConversionReason::Promotion),
-            Type::Numeric(NumericType::Integer {
-                width,
-                bit_precise: false,
-                ..
-            }) if width < self.target.int_width => {
-                self.convert(value, self.int_type(), ConversionReason::Promotion)
-            }
-            _ => value,
-        }
-    }
-
-    pub(super) fn usual_arithmetic(&self, left: Value, right: Value) -> (Value, Value) {
-        let ty = match (left.ty.clone(), right.ty.clone()) {
-            (Type::Imaginary(a), Type::Imaginary(b)) => Type::Imaginary(a.max(b)),
-            (Type::Imaginary(a), Type::Numeric(b) | Type::Complex(b))
-            | (Type::Numeric(b) | Type::Complex(b), Type::Imaginary(a)) => {
-                Type::Complex(wider_component(NumericType::Float(a), b))
-            }
-            (Type::Complex(a), Type::Complex(b)) => Type::Complex(wider_component(a, b)),
-            (Type::Complex(a), Type::Numeric(b)) | (Type::Numeric(b), Type::Complex(a)) => {
-                Type::Complex(wider_component(a, b))
-            }
-            (Type::Numeric(NumericType::Float(a)), Type::Numeric(NumericType::Float(b))) => {
-                Type::Numeric(NumericType::Float(a.max(b)))
-            }
-            (ty @ Type::Numeric(NumericType::Float(_)), _)
-            | (_, ty @ Type::Numeric(NumericType::Float(_))) => ty,
-            (
-                Type::Numeric(NumericType::Integer {
-                    width: a,
-                    signed: sa,
-                    bit_precise: pa,
-                }),
-                Type::Numeric(NumericType::Integer {
-                    width: b,
-                    signed: sb,
-                    bit_precise: pb,
-                }),
-            ) => Type::Numeric(NumericType::Integer {
-                width: a.max(b),
-                signed: if a == b {
-                    sa && sb
-                } else if a > b {
-                    sa
-                } else {
-                    sb
-                },
-                bit_precise: if a == b {
-                    pa && pb
-                } else if a > b {
-                    pa
-                } else {
-                    pb
-                },
-            }),
-            _ => return (left, right),
-        };
-        (
-            self.convert(left, ty.clone(), ConversionReason::UsualArith),
-            self.convert(right, ty, ConversionReason::UsualArith),
-        )
-    }
-
     pub(super) fn int_type(&self) -> Type {
         Type::integer(self.target.int_width, true)
     }
 
-    pub(super) fn convert(&self, value: Value, to: Type, reason: ConversionReason) -> Value {
+    pub(super) fn emit_arithmetic_conversion(
+        &self,
+        value: Value,
+        to: Type,
+        reason: ConversionReason,
+    ) -> Value {
         if value.ty == to {
             return value;
         }
@@ -953,7 +771,7 @@ impl Context {
                 reason,
                 ConversionSema::Exact,
             );
-            return self.convert(value, to, reason);
+            return self.emit_arithmetic_conversion(value, to, reason);
         }
         match (value.ty.clone(), to.clone()) {
             (Type::Imaginary(from), Type::Imaginary(target)) => {
@@ -992,14 +810,18 @@ impl Context {
                     reason,
                     ConversionSema::Exact,
                 );
-                self.convert(value, to, reason)
+                self.emit_arithmetic_conversion(value, to, reason)
             }
             (Type::Complex(source), Type::Imaginary(target)) => {
                 let format = match source {
                     NumericType::Float(format) => format,
                     NumericType::Integer { .. } => target,
                 };
-                let value = self.convert(value, Type::Complex(NumericType::Float(format)), reason);
+                let value = self.emit_arithmetic_conversion(
+                    value,
+                    Type::Complex(NumericType::Float(format)),
+                    reason,
+                );
                 let value = conversion(
                     value,
                     Type::Imaginary(format),
@@ -1007,10 +829,11 @@ impl Context {
                     reason,
                     ConversionSema::Exact,
                 );
-                self.convert(value, to, reason)
+                self.emit_arithmetic_conversion(value, to, reason)
             }
             (Type::Numeric(_), Type::Complex(component)) => {
-                let value = self.convert(value, Type::Numeric(component), reason);
+                let value =
+                    self.emit_arithmetic_conversion(value, Type::Numeric(component), reason);
                 conversion(
                     value,
                     to,
@@ -1027,7 +850,7 @@ impl Context {
                     reason,
                     ConversionSema::Exact,
                 );
-                self.convert(value, to, reason)
+                self.emit_arithmetic_conversion(value, to, reason)
             }
             (Type::Complex(from), Type::Complex(target)) => {
                 let semantics = match (from, target) {
@@ -1237,7 +1060,7 @@ fn has_imaginary(left: &Value, right: &Value) -> bool {
     matches!(left.ty, Type::Imaginary(_)) || matches!(right.ty, Type::Imaginary(_))
 }
 
-fn reject_mixed_decimal(
+pub(super) fn reject_mixed_decimal(
     operator: &'static str,
     left: &Value,
     right: &Value,
@@ -1255,41 +1078,6 @@ fn reject_mixed_decimal(
             right: numeric(right)?,
         }),
         _ => Ok(()),
-    }
-}
-
-fn wider_component(a: NumericType, b: NumericType) -> NumericType {
-    match (a, b) {
-        (NumericType::Float(a), NumericType::Float(b)) => NumericType::Float(a.max(b)),
-        (ty @ NumericType::Float(_), _) | (_, ty @ NumericType::Float(_)) => ty,
-        (
-            NumericType::Integer {
-                width: a,
-                signed: sa,
-                bit_precise: pa,
-            },
-            NumericType::Integer {
-                width: b,
-                signed: sb,
-                bit_precise: pb,
-            },
-        ) => NumericType::Integer {
-            width: a.max(b),
-            signed: if a == b {
-                sa && sb
-            } else if a > b {
-                sa
-            } else {
-                sb
-            },
-            bit_precise: if a == b {
-                pa && pb
-            } else if a > b {
-                pa
-            } else {
-                pb
-            },
-        },
     }
 }
 

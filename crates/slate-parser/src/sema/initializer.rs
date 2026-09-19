@@ -1,5 +1,7 @@
+use super::ctype::{CTypeKind, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
+use super::operand::Operand;
 use super::types::TypeResolver;
 use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, Span};
 use crate::const_expr::{Encoding, Parser};
@@ -22,6 +24,7 @@ enum Entry {
 }
 
 struct Builder {
+    c: QualType,
     ty: Type,
     shape: Shape,
     members: Vec<(AggregateTarget, Entry)>,
@@ -31,7 +34,7 @@ struct Builder {
 struct Cursor<'a> {
     items: &'a [InitializerItem],
     index: usize,
-    pending: Option<Value>,
+    pending: Option<Operand>,
 }
 
 type Step = (AggregateTarget, Type);
@@ -342,8 +345,8 @@ impl TypeResolver {
                 let (Shape::Struct(fields) | Shape::Union(fields)) = &shape else {
                     return Ok(index + 1);
                 };
-                let (value, _) = self.assertion_operand_type(expr)?;
-                if self.unaliased(&value) == self.unaliased(ty) {
+                let value = self.assertion_operand_type(expr)?;
+                if self.unaliased(&self.ir_type(value)) == self.unaliased(ty) {
                     return Ok(index + 1);
                 }
                 let fields = fields.iter().filter(|field| initializable(field));
@@ -367,24 +370,52 @@ impl TypeResolver {
 }
 
 impl Lowerer {
+    fn subobject_type(
+        &self,
+        c: QualType,
+        target: AggregateTarget,
+    ) -> Result<QualType, ResolveError> {
+        match (self.types.ctypes.canonical_kind(c), target) {
+            (CTypeKind::Record { id, .. }, AggregateTarget::Field(index)) => self
+                .types
+                .record_fields
+                .get(id)
+                .and_then(|fields| fields.get(index))
+                .copied()
+                .ok_or(ResolveError::Unsupported("missing initializer field type")),
+            (CTypeKind::Vector { element, .. }, _) => Ok(*element),
+            (_, AggregateTarget::Index(_) | AggregateTarget::Range { .. }) => self
+                .types
+                .ctypes
+                .element(c)
+                .map(|(element, _)| element)
+                .ok_or(ResolveError::Unsupported(
+                    "missing initializer element type",
+                )),
+            _ => Err(ResolveError::Unsupported("invalid initializer subobject")),
+        }
+    }
+
     pub(super) fn initializer_value(
         &mut self,
-        ty: &Type,
+        c: QualType,
         initializer: &Initializer,
         anchor: &Span<()>,
     ) -> Result<Value, ResolveError> {
-        match self.init_initializer(ty, initializer)? {
+        match self.init_initializer(c, initializer)? {
             Entry::Leaf(value) => Ok(value),
             Entry::Sub(builder) => builder.finish(anchor),
         }
     }
 
-    fn builder(&self, ty: &Type) -> Result<Builder, ResolveError> {
-        match self.types.shape(ty)? {
+    fn builder(&self, c: QualType) -> Result<Builder, ResolveError> {
+        let ty = self.types.ir_type(c);
+        match self.types.shape(&ty)? {
             Shape::Scalar => Err(ResolveError::Unsupported(
                 "braced initializer or designator for scalar",
             )),
             shape => Ok(Builder {
+                c,
                 ty: ty.clone(),
                 shape,
                 members: Vec::new(),
@@ -393,23 +424,28 @@ impl Lowerer {
         }
     }
 
-    fn init_initializer(&mut self, ty: &Type, value: &Initializer) -> Result<Entry, ResolveError> {
+    fn init_initializer(
+        &mut self,
+        c: QualType,
+        value: &Initializer,
+    ) -> Result<Entry, ResolveError> {
         match value {
-            Initializer::Expr(expr) => self.init_expr(ty, expr, None),
-            Initializer::List(items) => self.braced(ty, items),
+            Initializer::Expr(expr) => self.init_expr(c, expr, None),
+            Initializer::List(items) => self.braced(c, items),
         }
     }
 
-    fn braced(&mut self, ty: &Type, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
+    fn braced(&mut self, c: QualType, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
+        let ty = &self.types.ir_type(c);
         let shape = self.types.shape(ty)?;
-        if let (Type::Complex(component), [real, imaginary]) = (self.types.unaliased(ty), items)
+        if let (Type::Complex(_component), [real, imaginary]) = (self.types.unaliased(ty), items)
             && real.designators.is_empty()
             && imaginary.designators.is_empty()
         {
-            let component = Type::Numeric(component);
+            let component = self.types.ctypes.arithmetic_component(c);
             let mut members = Vec::new();
             for (index, item) in [real, imaginary].into_iter().enumerate() {
-                let Entry::Leaf(value) = self.init_initializer(&component, &item.value)? else {
+                let Entry::Leaf(value) = self.init_initializer(component, &item.value)? else {
                     return Err(ResolveError::Unsupported(
                         "braced initializer for complex component",
                     ));
@@ -430,7 +466,7 @@ impl Lowerer {
         }
         if matches!(shape, Shape::Scalar) {
             return match items {
-                [item] if item.designators.is_empty() => self.init_initializer(ty, &item.value),
+                [item] if item.designators.is_empty() => self.init_initializer(c, &item.value),
                 _ => Err(ResolveError::Unsupported(
                     "scalar initializer list must hold exactly one element",
                 )),
@@ -451,16 +487,16 @@ impl Lowerer {
             return Ok(Entry::Leaf(value));
         }
         let mut cursor = Cursor::new(items);
-        Ok(Entry::Sub(self.fill(ty, &mut cursor, true)?))
+        Ok(Entry::Sub(self.fill(c, &mut cursor, true)?))
     }
 
     fn fill(
         &mut self,
-        ty: &Type,
+        c: QualType,
         cursor: &mut Cursor<'_>,
         braced: bool,
     ) -> Result<Builder, ResolveError> {
-        let mut builder = self.builder(ty)?;
+        let mut builder = self.builder(c)?;
         let items = cursor.items;
         while cursor.index < items.len() {
             let item = &items[cursor.index];
@@ -477,8 +513,9 @@ impl Lowerer {
                 }
                 break;
             }
-            let (target, element) = builder.next_target()?;
-            let entry = self.init_subobject(&element, cursor)?;
+            let (target, _) = builder.next_target()?;
+            let element = self.subobject_type(builder.c, target)?;
+            let entry = self.init_subobject(element, cursor)?;
             builder.insert(target, entry)?;
             builder.advance(target);
         }
@@ -487,25 +524,26 @@ impl Lowerer {
 
     fn init_subobject(
         &mut self,
-        ty: &Type,
+        c: QualType,
         cursor: &mut Cursor<'_>,
     ) -> Result<Entry, ResolveError> {
         let items = cursor.items;
         match &items[cursor.index].value {
             Initializer::List(inner) => {
                 cursor.index += 1;
-                self.braced(ty, inner)
+                self.braced(c, inner)
             }
-            Initializer::Expr(expr) => self.init_expr(ty, expr, Some(cursor)),
+            Initializer::Expr(expr) => self.init_expr(c, expr, Some(cursor)),
         }
     }
 
     fn init_expr(
         &mut self,
-        ty: &Type,
+        c: QualType,
         expr: &Expr,
         mut cursor: Option<&mut Cursor<'_>>,
     ) -> Result<Entry, ResolveError> {
+        let ty = &self.types.ir_type(c);
         let shape = self.types.shape(ty)?;
         if matches!(shape, Shape::Array { .. })
             && let Some((_, value)) = self.string_array_initializer(expr, ty)?
@@ -529,14 +567,14 @@ impl Lowerer {
         };
         if whole {
             consume(&mut cursor);
-            let value = self.convert_expr(expr, value, ty.clone(), ConversionReason::Assign)?;
-            return Ok(Entry::Leaf(value));
+            let value = self.convert_expr(expr, value, c, ConversionReason::Assign)?;
+            return Ok(Entry::Leaf(value.value));
         }
         let cursor = cursor.ok_or(ResolveError::Unsupported(
             "aggregate initialized without braces",
         ))?;
         cursor.pending = Some(value);
-        Ok(Entry::Sub(self.fill(ty, cursor, false)?))
+        Ok(Entry::Sub(self.fill(c, cursor, false)?))
     }
 
     fn designated(
@@ -559,16 +597,18 @@ impl Lowerer {
         rest: &[Designator],
         cursor: &mut Cursor<'_>,
     ) -> Result<(), ResolveError> {
-        let Some(((target, ty), tail)) = steps.split_first() else {
+        let Some(((target, _ty), tail)) = steps.split_first() else {
             return Err(ResolveError::Unsupported("empty designator path"));
         };
         if tail.is_empty() && rest.is_empty() {
-            let entry = self.init_subobject(ty, cursor)?;
+            let c = self.subobject_type(builder.c, *target)?;
+            let entry = self.init_subobject(c, cursor)?;
             builder.insert(*target, entry)?;
             builder.advance(*target);
             return Ok(());
         }
-        let fresh = self.builder(ty)?;
+        let c = self.subobject_type(builder.c, *target)?;
+        let fresh = self.builder(c)?;
         let sub = builder.sub(*target, fresh)?;
         if tail.is_empty() {
             self.designated(sub, rest, cursor)?;
@@ -657,8 +697,8 @@ impl Lowerer {
         else {
             return Ok(None);
         };
-        let literal_ty =
-            super::types::string_literal_type(literal, &self.context.target, self.types.features);
+        let literal_c = self.types.string_type(literal);
+        let literal_ty = self.types.ir_type(literal_c);
         let Type::Array {
             element: literal_element,
             ..

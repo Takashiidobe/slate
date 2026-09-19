@@ -1,5 +1,7 @@
+use super::ctype::{CTypeKind, QualType, Qualifiers};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
+use super::operand::{Lvalue, Operand};
 use crate::ast::{Expr, ExprKind, Span};
 use crate::ir::*;
 use num_bigint::BigInt;
@@ -185,7 +187,7 @@ impl Lowerer {
         callee: &Expr,
         builtin: AtomicBuiltin,
         arguments: &[Expr],
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         let mut metadata = Vec::new();
         if let ExprKind::Identifier(name) = &callee.value {
             metadata.push(("c_builtin".into(), name.clone()));
@@ -211,7 +213,7 @@ impl Lowerer {
         e: &Expr,
         builtin: AtomicBuiltin,
         arguments: &[Expr],
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         match (builtin, arguments) {
             (AtomicBuiltin::Init, [object, desired]) => {
                 let place = self.atomic_object(object)?;
@@ -290,7 +292,7 @@ impl Lowerer {
                 let weak = match constant_integer(&weak) {
                     Some(value) if value == BigInt::from(0) => Weakness::Strong,
                     Some(_) => Weakness::Weak,
-                    None => Weakness::Dynamic(Box::new(weak)),
+                    None => Weakness::Dynamic(Box::new(weak.value)),
                 };
                 self.compare_exchange(
                     e,
@@ -318,20 +320,20 @@ impl Lowerer {
             (AtomicBuiltin::LockFree(query), arguments) => self.lock_free(e, query, arguments),
             (AtomicBuiltin::TestAndSet, [object, order]) => {
                 let place = self.flag_object(object)?;
-                let set = self.flag_constant(object, place.ty.clone(), 1);
+                let set = self.flag_constant(object, place.c, 1);
                 let ordering = self.memory_order(order)?;
                 let old = self.atomic_update(e, place, set, true, ordering);
                 if old.ty == Type::Bool {
                     return Ok(old);
                 }
-                let zero = self.flag_constant(object, old.ty.clone(), 0);
-                Ok(self.value(
+                let zero = self.flag_constant(object, old.c, 0);
+                Ok(self.builtin_operand(
                     e,
-                    Type::Bool,
+                    CTypeKind::Bool,
                     ValueKind::Compare {
                         op: CompareOp::Ne,
-                        left: Box::new(old),
-                        right: Box::new(zero),
+                        left: Box::new(old.value),
+                        right: Box::new(zero.value),
                         exceptions: None,
                         reason: None,
                     },
@@ -339,20 +341,20 @@ impl Lowerer {
             }
             (AtomicBuiltin::Clear, [object, order]) => {
                 let place = self.flag_object(object)?;
-                let clear = self.flag_constant(object, place.ty.clone(), 0);
+                let clear = self.flag_constant(object, place.c, 0);
                 let ordering = self.memory_order(order)?;
                 let store = self.store(e, place, clear, Some(ordering));
                 Ok(self.discarded(e, store))
             }
             (AtomicBuiltin::Fence(scope), [order]) => {
                 let ordering = self.memory_order(order)?;
-                Ok(self.value(e, Type::Void, ValueKind::Fence { ordering, scope }))
+                Ok(self.builtin_operand(e, CTypeKind::Void, ValueKind::Fence { ordering, scope }))
             }
             _ => Err(ResolveError::Unsupported("atomic builtin argument count")),
         }
     }
 
-    fn atomic_object(&mut self, object: &Expr) -> Result<Place, ResolveError> {
+    fn atomic_object(&mut self, object: &Expr) -> Result<Lvalue, ResolveError> {
         let pointer = self.expr(object)?;
         let place = self.deref(pointer)?;
         if matches!(place.ty, Type::Void | Type::Function { .. }) {
@@ -363,35 +365,36 @@ impl Lowerer {
         Ok(place)
     }
 
-    fn flag_object(&mut self, object: &Expr) -> Result<Place, ResolveError> {
+    fn flag_object(&mut self, object: &Expr) -> Result<Lvalue, ResolveError> {
         let pointer = self.expr(object)?;
         let mut place = self.deref(pointer)?;
         if place.ty == Type::Void {
-            place.ty = Type::integer(8, false);
+            place.c = self.types.ctypes.qual(CTypeKind::UChar);
+            place.place.ty = self.types.ir_type(place.c);
         }
         Ok(place)
     }
 
-    fn flag_constant(&self, e: &Expr, ty: Type, value: u8) -> Value {
-        let number = if ty == Type::Bool {
+    fn flag_constant(&mut self, e: &Expr, ty: QualType, value: u8) -> Operand {
+        let number = if matches!(self.types.ctypes.canonical_kind(ty), CTypeKind::Bool) {
             Number::Bool(value != 0)
         } else {
             Number::Integer(value.into())
         };
-        self.value(e, ty, ValueKind::Constant(number))
+        self.operand(e, ty, ValueKind::Constant(number))
     }
 
-    fn atomic_operand(&mut self, operand: &Expr, place: &Place) -> Result<Value, ResolveError> {
+    fn atomic_operand(&mut self, operand: &Expr, place: &Lvalue) -> Result<Operand, ResolveError> {
         let value = self.expr(operand)?;
-        self.convert_expr(operand, value, place.ty.clone(), ConversionReason::Arg)
+        self.convert_expr(operand, value, place.c, ConversionReason::Arg)
     }
 
     fn desired(
         &mut self,
         desired: &Expr,
-        place: &Place,
+        place: &Lvalue,
         generic: bool,
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         if !generic {
             return self.atomic_operand(desired, place);
         }
@@ -400,48 +403,61 @@ impl Lowerer {
         Ok(self.atomic_read(desired, source, ordering))
     }
 
-    fn atomic_read(&self, e: &Expr, place: Place, ordering: Option<MemoryOrder>) -> Value {
-        self.value(e, place.ty.clone(), ValueKind::Read { place, ordering })
-    }
-
-    fn store(&self, e: &Expr, place: Place, value: Value, ordering: Option<MemoryOrder>) -> Value {
-        self.value(
+    fn atomic_read(&mut self, e: &Expr, place: Lvalue, ordering: Option<MemoryOrder>) -> Operand {
+        self.operand(
             e,
-            place.ty.clone(),
-            ValueKind::Store {
-                place,
-                value: Box::new(value),
+            place.c,
+            ValueKind::Read {
+                place: place.place,
                 ordering,
             },
         )
     }
 
-    fn discarded(&self, e: &Expr, value: Value) -> Value {
-        let void = self.value(e, Type::Void, ValueKind::Void);
-        self.value(
+    fn store(
+        &mut self,
+        e: &Expr,
+        place: Lvalue,
+        value: Operand,
+        ordering: Option<MemoryOrder>,
+    ) -> Operand {
+        self.operand(
             e,
-            Type::Void,
+            place.c,
+            ValueKind::Store {
+                place: place.place,
+                value: Box::new(value.value),
+                ordering,
+            },
+        )
+    }
+
+    fn discarded(&mut self, e: &Expr, value: Operand) -> Operand {
+        let void = self.builtin_operand(e, CTypeKind::Void, ValueKind::Void);
+        self.builtin_operand(
+            e,
+            CTypeKind::Void,
             ValueKind::Sequence {
-                left: Box::new(value),
-                right: Box::new(void),
+                left: Box::new(value.value),
+                right: Box::new(void.value),
             },
         )
     }
 
     fn atomic_update(
-        &self,
+        &mut self,
         e: &Expr,
-        place: Place,
-        computation: Value,
+        place: Lvalue,
+        computation: Operand,
         postfix: bool,
         ordering: MemoryOrder,
-    ) -> Value {
-        self.value(
+    ) -> Operand {
+        self.operand(
             e,
-            place.ty.clone(),
+            place.c,
             ValueKind::Update {
-                place,
-                computation: Box::new(computation),
+                place: place.place,
+                computation: Box::new(computation.value),
                 postfix,
                 ordering: Some(ordering),
             },
@@ -451,12 +467,12 @@ impl Lowerer {
     fn compare_exchange(
         &mut self,
         e: &Expr,
-        place: Place,
-        [expected, desired]: [Value; 2],
+        place: Lvalue,
+        [expected, desired]: [Operand; 2],
         [success, failure]: [&Expr; 2],
         weak: Weakness,
         form: CompareExchangeForm,
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         let success = self.memory_order(success)?;
         let failure = self.memory_order(failure)?;
         Ok(self.exchange_node(
@@ -470,25 +486,27 @@ impl Lowerer {
     }
 
     fn exchange_node(
-        &self,
+        &mut self,
         e: &Expr,
-        place: Place,
-        [expected, desired]: [Value; 2],
+        place: Lvalue,
+        [expected, desired]: [Operand; 2],
         [success, failure]: [MemoryOrder; 2],
         weak: Weakness,
         form: CompareExchangeForm,
-    ) -> Value {
+    ) -> Operand {
         let ty = match form {
-            CompareExchangeForm::WriteBack | CompareExchangeForm::Success => Type::Bool,
-            CompareExchangeForm::Old => place.ty.clone(),
+            CompareExchangeForm::WriteBack | CompareExchangeForm::Success => {
+                self.types.ctypes.qual(CTypeKind::Bool)
+            }
+            CompareExchangeForm::Old => place.c,
         };
-        self.value(
+        self.operand(
             e,
             ty,
             ValueKind::CompareExchange {
-                place,
-                expected: Box::new(expected),
-                desired: Box::new(desired),
+                place: place.place,
+                expected: Box::new(expected.value),
+                desired: Box::new(desired.value),
                 success,
                 failure,
                 weak,
@@ -502,7 +520,7 @@ impl Lowerer {
         e: &Expr,
         builtin: SyncBuiltin,
         arguments: &[Expr],
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         match (builtin, arguments) {
             (SyncBuiltin::Fetch { op, postfix }, [object, operand, ..]) => {
                 let place = self.atomic_object(object)?;
@@ -535,13 +553,13 @@ impl Lowerer {
             }
             (SyncBuiltin::LockRelease, [object, ..]) => {
                 let place = self.atomic_object(object)?;
-                let zero = self.flag_constant(object, place.ty.clone(), 0);
+                let zero = self.flag_constant(object, place.c, 0);
                 let store = self.store(e, place, zero, Some(MemoryOrder::Release));
                 Ok(self.discarded(e, store))
             }
-            (SyncBuiltin::Synchronize, _) => Ok(self.value(
+            (SyncBuiltin::Synchronize, _) => Ok(self.builtin_operand(
                 e,
-                Type::Void,
+                CTypeKind::Void,
                 ValueKind::Fence {
                     ordering: MemoryOrder::SeqCst,
                     scope: FenceScope::Thread,
@@ -557,7 +575,7 @@ impl Lowerer {
         e: &Expr,
         query: LockFreeQuery,
         arguments: &[Expr],
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         let (size, pointer) = match (query, arguments) {
             (LockFreeQuery::C11, [size]) => (size, None),
             (LockFreeQuery::Always | LockFreeQuery::Runtime, [size, pointer]) => {
@@ -579,38 +597,43 @@ impl Lowerer {
                         .is_none_or(|pointer| self.lock_free_pointer(pointer, size))
             });
         if known || matches!(query, LockFreeQuery::Always) {
-            return Ok(self.value(e, Type::Bool, ValueKind::Constant(Number::Bool(known))));
+            return Ok(self.builtin_operand(
+                e,
+                CTypeKind::Bool,
+                ValueKind::Constant(Number::Bool(known)),
+            ));
         }
-        let size_type = Type::integer(self.context.target.pointer_width, false);
-        let size = self.convert(size, size_type.clone(), ConversionReason::Arg)?;
-        let void_pointer = self.qualified_pointer(
-            Type::Void,
-            true,
-            Access {
-                volatile: true,
-                atomic: false,
-            },
-        );
+        let size_type = self.types.ctypes.size_type(&self.context.target);
+        let size = self.convert(size, size_type, ConversionReason::Arg)?;
+        let void = self.types.ctypes.qual(CTypeKind::Void).with(Qualifiers {
+            is_const: true,
+            is_volatile: true,
+            ..Qualifiers::NONE
+        });
+        let void_pointer = self.types.ctypes.pointer(void);
         let pointer = match pointer {
-            Some(pointer) => self.convert(pointer, void_pointer.clone(), ConversionReason::Arg)?,
-            None => self.value(e, void_pointer.clone(), ValueKind::Null),
+            Some(pointer) => self.convert(pointer, void_pointer, ConversionReason::Arg)?,
+            None => self.operand(e, void_pointer, ValueKind::Null),
         };
         let signature = Type::Function {
             return_type: Some(Box::new(Type::Bool)),
-            parameters: vec![size_type, void_pointer],
+            parameters: vec![
+                self.types.ir_type(size_type),
+                self.types.ir_type(void_pointer),
+            ],
             variadic: false,
             prototyped: true,
         };
         let callee = self.libatomic_is_lock_free(e, &signature)?;
         let abi = self.abi_signature(&signature, None)?;
-        Ok(self.value(
+        Ok(self.builtin_operand(
             e,
-            Type::Bool,
+            CTypeKind::Bool,
             ValueKind::Call {
                 callee: Callee::Direct(callee),
                 signature,
                 abi,
-                arguments: vec![size, pointer],
+                arguments: vec![size.value, pointer.value],
             },
         ))
     }
@@ -685,13 +708,13 @@ impl Lowerer {
 
     fn fetch_computation(
         &mut self,
-        place: &Place,
+        place: &Lvalue,
         op: FetchOp,
         e: &Expr,
         byte_offsets: bool,
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         let operand = self.expr(e)?;
-        let old = self.value(e, place.ty.clone(), ValueKind::OldValue);
+        let old = self.operand(e, place.c, ValueKind::OldValue);
         if let Type::Pointer { pointee, .. } = &place.ty {
             let subtract = match op {
                 FetchOp::Add => false,
@@ -713,12 +736,12 @@ impl Lowerer {
                 self.types.storage((**pointee).clone())?;
                 (**pointee).clone()
             };
-            return Ok(self.value(
+            return Ok(self.operand(
                 e,
-                place.ty.clone(),
+                place.c,
                 ValueKind::PointerOffset {
-                    pointer: Box::new(old),
-                    amount: Box::new(operand),
+                    pointer: Box::new(old.value),
+                    amount: Box::new(operand.value),
                     subtract,
                     element,
                     overflow: Overflow::Wrap,
@@ -736,15 +759,15 @@ impl Lowerer {
                 ));
             }
         };
-        let operand = self.convert(operand, place.ty.clone(), ConversionReason::Arg)?;
-        let arith = |this: &Self, op, left, right, semantics| {
-            this.value(
+        let operand = self.convert(operand, place.c, ConversionReason::Arg)?;
+        let arith = |this: &mut Self, op, left: Operand, right: Operand, semantics| {
+            this.operand(
                 e,
-                place.ty.clone(),
+                place.c,
                 ValueKind::Arith {
                     op,
-                    left: Box::new(left),
-                    right: Box::new(right),
+                    left: Box::new(left.value),
+                    right: Box::new(right.value),
                     semantics,
                 },
             )
@@ -764,12 +787,12 @@ impl Lowerer {
             FetchOp::Xor => arith(self, ArithOp::Xor, old, operand, ArithSema::Exact),
             FetchOp::Nand => {
                 let and = arith(self, ArithOp::And, old, operand, ArithSema::Exact);
-                self.value(
+                self.operand(
                     e,
-                    place.ty.clone(),
+                    place.c,
                     ValueKind::Unary {
                         op: UnaryArithOp::Not,
-                        operand: Box::new(and),
+                        operand: Box::new(and.value),
                         semantics: ArithSema::Exact,
                     },
                 )
@@ -779,41 +802,39 @@ impl Lowerer {
                     (
                         Some(signed),
                         Type::Numeric(NumericType::Integer {
-                            width,
-                            signed: declared,
-                            ..
+                            signed: declared, ..
                         }),
                     ) if signed != *declared => {
-                        let compared = Type::integer(*width, signed);
+                        let compared = self.types.ctypes.integer_signedness(place.c, signed)?;
                         (
-                            self.convert(old.clone(), compared.clone(), ConversionReason::Arg)?,
+                            self.convert(old.clone(), compared, ConversionReason::Arg)?,
                             self.convert(operand.clone(), compared, ConversionReason::Arg)?,
                         )
                     }
                     _ => (old.clone(), operand.clone()),
                 };
-                let keep_old = self.value(
+                let keep_old = self.builtin_operand(
                     e,
-                    Type::Bool,
+                    CTypeKind::Bool,
                     ValueKind::Compare {
                         op: if matches!(op, FetchOp::Min { .. }) {
                             CompareOp::Lt
                         } else {
                             CompareOp::Gt
                         },
-                        left: Box::new(left),
-                        right: Box::new(right),
+                        left: Box::new(left.value),
+                        right: Box::new(right.value),
                         exceptions: None,
                         reason: None,
                     },
                 );
-                self.value(
+                self.operand(
                     e,
-                    place.ty.clone(),
+                    place.c,
                     ValueKind::Conditional {
-                        condition: Box::new(keep_old),
-                        then_value: Box::new(old),
-                        else_value: Box::new(operand),
+                        condition: Box::new(keep_old.value),
+                        then_value: Box::new(old.value),
+                        else_value: Box::new(operand.value),
                     },
                 )
             }
@@ -828,7 +849,9 @@ impl Lowerer {
         {
             return Ok(ordering);
         }
-        Ok(MemoryOrder::Dynamic(Box::new(self.enum_integer(value))))
+        Ok(MemoryOrder::Dynamic(Box::new(
+            self.enum_integer(value.value),
+        )))
     }
 }
 

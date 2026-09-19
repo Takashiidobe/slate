@@ -1,3 +1,4 @@
+pub(super) mod arith;
 mod layout;
 mod render;
 

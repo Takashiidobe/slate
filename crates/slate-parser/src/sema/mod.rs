@@ -12,6 +12,7 @@ mod initializer;
 mod module;
 pub mod names;
 pub mod numeric;
+mod operand;
 mod type_of;
 pub mod types;
 mod validate;
@@ -30,6 +31,7 @@ pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, Re
             unit.standard,
         ));
     let mut expressions: Vec<&Expr> = Vec::new();
+    let mut types = types::TypeResolver::with_tags(context.target.clone(), unit);
     for declaration in &unit.decls {
         match &declaration.value {
             DeclKind::Comment(_) => {}
@@ -49,6 +51,10 @@ pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, Re
     }
     expressions
         .into_iter()
-        .map(|expr| context.resolve(expr))
+        .map(|expr| {
+            types
+                .constant_value_with_context(&context, expr)
+                .map(|operand| operand.value)
+        })
         .collect()
 }

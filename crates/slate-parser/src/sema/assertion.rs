@@ -115,7 +115,10 @@ impl Checker<'_> {
         };
         let length = match initializer {
             Some(Initializer::Expr(expr)) => match self.types.assertion_operand_type(expr) {
-                Ok((Type::Array { length, .. }, _)) => length,
+                Ok(c) => match self.types.ctypes.element(c) {
+                    Some((_, super::ctype::Extent::Fixed(length))) => Some(length),
+                    _ => None,
+                },
                 _ => None,
             },
             Some(Initializer::List(items)) => {
@@ -169,11 +172,10 @@ impl Checker<'_> {
             fixed_type,
         } = &tag.body
         {
-            let int_ty = Type::integer(self.unit.target.int_width, true);
+            let int_ty = self.types.ctypes.int();
             let fixed = fixed_type
                 .as_ref()
-                .and_then(|ty| self.types.resolve(&ty.specifiers, &ty.declarator).ok())
-                .and_then(|resolved| self.types.layout(resolved));
+                .and_then(|ty| self.types.resolve(&ty.specifiers, &ty.declarator).ok());
             let mut previous: Option<BigInt> = Some((-1).into());
             for item in enumerators {
                 let EnumItemKind::Enumerator(enumerator) = &item.value else {
@@ -189,7 +191,8 @@ impl Checker<'_> {
                 self.types.declare(&enumerator.name, Ordinary::Declared);
                 previous = value.clone();
                 if let Some(value) = value {
-                    let ty = fixed.clone().unwrap_or_else(|| int_ty.clone());
+                    let c = fixed.unwrap_or(int_ty);
+                    let ty = self.types.ir_type(c);
                     let Type::Numeric(NumericType::Integer { width, signed, .. }) = ty else {
                         continue;
                     };
@@ -200,11 +203,14 @@ impl Checker<'_> {
                     }
                     self.types.declare(
                         &enumerator.name,
-                        Ordinary::Constant(Value {
-                            ty,
-                            node: item
-                                .clone()
-                                .derive(ValueKind::Constant(Number::SignedInteger(value))),
+                        Ordinary::Constant(super::operand::Operand {
+                            c,
+                            value: Value {
+                                ty,
+                                node: item
+                                    .clone()
+                                    .derive(ValueKind::Constant(Number::SignedInteger(value))),
+                            },
                         }),
                     );
                 }

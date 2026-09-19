@@ -5,7 +5,6 @@
 // SLATE-FILECHECK-DEFINES FLOAT_BITNOT FLOAT_BITNOT
 // SLATE-FILECHECK-DEFINES PRE_INCREMENT PRE_INCREMENT
 // SLATE-FILECHECK-DEFINES POST_DECREMENT POST_DECREMENT
-// SLATE-FILECHECK-DEFINES OPERATOR OPERATOR
 // SLATE-FILECHECK-DEFINES BITINT BITINT
 // SLATE-FILECHECK-DEFINES EXTENDED EXTENDED
 // SLATE-FILECHECK-ERROR EXTENDED
@@ -16,7 +15,6 @@
 // SLATE-FILECHECK-ERROR FLOAT_BITNOT
 // SLATE-FILECHECK-ERROR PRE_INCREMENT
 // SLATE-FILECHECK-ERROR POST_DECREMENT
-// SLATE-FILECHECK-ERROR OPERATOR
 // SLATE-FILECHECK-ERROR BITINT
 // SLATE-FILECHECK-ARGS --dump-ir-expressions
 
@@ -32,9 +30,6 @@ void unsupported(void) {
 #endif
 #ifdef FLOAT_BITNOT
     ~1.0;
-#endif
-#ifdef OPERATOR
-    1, 2;
 #endif
 #ifdef BITINT
     1wb;
@@ -75,20 +70,17 @@ void post_decrement(int x) {
 // FLOAT_SHIFT: Error:   × invalid operands to binary expression: i32 << f64
 // SLATE-FILECHECK-END FLOAT_SHIFT
 // SLATE-FILECHECK-BEGIN COMPOUND_ASSIGN
-// COMPOUND_ASSIGN: Error:   × unsupported in numeric IR lowering: assignment (requires place lowering)
+// COMPOUND_ASSIGN: Error:   × unsupported in numeric IR lowering: nonliteral numeric expression
 // SLATE-FILECHECK-END COMPOUND_ASSIGN
 // SLATE-FILECHECK-BEGIN FLOAT_BITNOT
 // FLOAT_BITNOT: Error:   × invalid argument type to unary expression: ~f64
 // SLATE-FILECHECK-END FLOAT_BITNOT
 // SLATE-FILECHECK-BEGIN PRE_INCREMENT
-// PRE_INCREMENT: Error:   × unsupported in numeric IR lowering: increment and decrement (requires
+// PRE_INCREMENT: Error:   × unsupported in numeric IR lowering: nonconstant or unknown identifier
 // SLATE-FILECHECK-END PRE_INCREMENT
 // SLATE-FILECHECK-BEGIN POST_DECREMENT
-// POST_DECREMENT: Error:   × unsupported in numeric IR lowering: increment and decrement (requires
+// POST_DECREMENT: Error:   × unsupported in numeric IR lowering: nonliteral numeric expression
 // SLATE-FILECHECK-END POST_DECREMENT
-// SLATE-FILECHECK-BEGIN OPERATOR
-// OPERATOR: Error:   × unsupported in numeric IR lowering: expression (expected a number or
-// SLATE-FILECHECK-END OPERATOR
 // SLATE-FILECHECK-BEGIN BITINT
 // BITINT: Error:   × unsupported in numeric IR lowering: bit-precise integer literals
 // SLATE-FILECHECK-END BITINT

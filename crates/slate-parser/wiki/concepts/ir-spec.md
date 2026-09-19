@@ -118,6 +118,11 @@ or string-literal globals its lowering would have created. A selection is also a
 place when the selected expression is one, which is what makes `_Generic(...) = v`
 and `&_Generic(...)` lower.
 
+Selection uses C types after lvalue conversion, preserving distinctions such
+as `char` versus `signed char`, `long` versus `long long` on LP64, and
+`int` versus `long` on LLP64. These distinctions are carried by sema operands
+and places and erased only when emitting IR. See [C type layer](c-type-layer.md).
+
 `typeof` and `typeof_unqual` resolve in sema for both type names and expression
 operands. Expression operands retain array and function types without decay;
 typing them emits no runtime effects and rolls back temporary binding IDs and
@@ -398,9 +403,12 @@ so it prints no metadata: `neg<f64>(..)`. `not` prints no metadata and rejects
 floating operands. `ArithSema::Exact` marks operations with no overflow,
 rounding, or exception behavior (`and`/`or`/`xor`/`not`, floating `neg`).
 Unary `+` retains only integer promotion; bool promotes to target `int`,
-and integer types narrower than `int` widen before arithmetic.
+and standard integers of rank at most `int` promote to `int` when representable,
+otherwise `unsigned int`. Usual arithmetic conversions compare C integer ranks,
+including when two ranks have the same width.
 Comparisons, `!`, `&&`, and `||` produce `ir::Type::Bool`, a type separate
-from `NumericType`. Comparisons lower to `ValueKind::Compare` keyed by
+from `NumericType`, while their sema C type remains `int` for `_Generic`,
+`typeof`, and `sizeof`. Comparisons lower to `ValueKind::Compare` keyed by
 `CompareOp` (`eq`/`ne`/`lt`/`le`/`gt`/`ge`); the printed type is the operand
 type (`lt<i32>(..)`), the result is always `bool`. Mixed-type comparisons
 use the usual arithmetic conversions. Floating comparisons print only

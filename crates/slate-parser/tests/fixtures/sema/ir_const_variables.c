@@ -47,7 +47,7 @@ int g(void) {
 // IR-NEXT:         let %7 table: array<i32, 2> [storage=automatic] [const] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2));
 // IR-NEXT:         let %8 t: i32 [storage=automatic] [const] = const<i32>(7);
 // IR-NEXT:         let %9 c: i32 [storage=automatic] [const] [constexpr] = const<i32>(5);
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%5))), read<i32>(deref(read<ptr<const i32>>(%6)))), read<i32>(%3)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%7), const<i32>(1))))), read<i32>(%8)), read<i32>(%9)), read<i32>(%10)), read<i32>(%0));
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%5))), read<i32>(deref(read<ptr<const i32>>(%6)))), read<i32>(%3)), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(2)>(%7), const<i32>(1))))), read<i32>(%8)), read<i32>(%9)), read<i32>(%10)), read<i32>(%0));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

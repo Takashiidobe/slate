@@ -1,4 +1,5 @@
 use super::SemaError;
+use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
@@ -33,7 +34,6 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
         module: Module::new(context.target.clone()),
         context,
         names,
-        c_types: HashMap::new(),
         function_declarations: HashMap::new(),
         type_spans: HashMap::new(),
         object_requests: HashMap::new(),
@@ -66,10 +66,14 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     .ok_or(ResolveError::Unsupported("unnamed function"))?;
                 let id = lower.declaration_id(declaration.id, name)?;
                 lower.record_function(id, &function.specifiers, &attributes, true, true)?;
-                let return_c = lower.resolve_type(&function.specifiers, &Declarator::Abstract)?;
-                let c_return = lower.types.render(return_c).spelling;
                 let start = lower.types.definitions.len();
                 let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
+                let (return_c, ..) = lower
+                    .types
+                    .ctypes
+                    .function_parts(resolved)
+                    .ok_or(ResolveError::Unsupported("function definition declarator"))?;
+                let c_return = lower.types.render(return_c).spelling;
                 for definition in &lower.types.definitions[start..] {
                     lower
                         .type_spans
@@ -81,8 +85,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 let abi = lower.abi_signature(&ty, None)?;
-                lower.types.bindings.insert(id, ty);
-                lower.c_types.insert(id, resolved);
+                lower.types.bindings.insert(id, resolved);
                 let mut metadata = vec![
                     (
                         "c_storage".into(),
@@ -97,11 +100,12 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
                 let mut prologue = Vec::new();
                 lower.in_function = true;
-                lower.return_type = return_type.clone();
+                lower.return_type = return_type.as_ref().map(|_| return_c);
                 let parameters = lower.parameters(params, Some(&mut prologue));
                 let body = parameters.and_then(|parameters| {
-                    let body = lower
-                        .scoped(|lower| lower.statements(&function.body, return_type.clone()))?;
+                    let body = lower.scoped(|lower| {
+                        lower.statements(&function.body, return_type.as_ref().map(|_| return_c))
+                    })?;
                     prologue.extend(body);
                     Ok((parameters, prologue))
                 });
@@ -158,7 +162,13 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
     }
     lower.resolve_object_requests(unit)?;
     lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
-    super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.types.access)?;
+    let access = lower
+        .types
+        .bindings
+        .iter()
+        .map(|(id, c)| (*id, lower.types.access_of(*c)))
+        .collect();
+    super::effects_statements::normalize(&mut lower.module, lower.next_id, access)?;
     Ok((lower.module, lower.diagnostics))
 }
 
@@ -363,9 +373,19 @@ impl Lowerer {
         if let Some(ty) = ty {
             existing.variable.ty = ty;
         }
-        self.types
-            .bindings
-            .insert(existing.variable.id, existing.variable.ty.clone());
+        if let Some(c) = self.types.bindings.get(&existing.variable.id).copied()
+            && let Some((element, super::ctype::Extent::Incomplete)) = self.types.ctypes.element(c)
+            && let Type::Array {
+                length: Some(length),
+                ..
+            } = existing.variable.ty
+        {
+            let completed = self.types.ctypes.qual(super::ctype::CTypeKind::Array {
+                element,
+                extent: super::ctype::Extent::Fixed(length),
+            });
+            self.types.bindings.insert(existing.variable.id, completed);
+        }
         if global.variable.initializer.is_some() {
             if existing.variable.initializer.is_some() {
                 return Err(ResolveError::Unsupported("multiple global initializers"));
@@ -462,10 +482,7 @@ impl Lowerer {
                 (true, Some(name)) => self.declaration_id(parameter.id, name)?,
                 _ => self.fresh(),
             };
-            self.types.bindings.insert(id, ty.clone());
-            self.c_types.insert(id, adjusted);
-            let access = self.types.access_of(adjusted);
-            self.types.access.insert(id, access);
+            self.types.bindings.insert(id, adjusted);
             for definition in &self.types.definitions[start..] {
                 self.type_spans
                     .insert(definition.id, parameter.derive(definition.clone()));
@@ -566,10 +583,7 @@ impl Lowerer {
             }
             let ty = self.types.object_type(resolved, "void object")?;
             let id = self.declaration_id(declarator.id, name)?;
-            self.types.bindings.insert(id, ty.clone());
-            self.c_types.insert(id, resolved);
-            let access = self.types.access_of(resolved);
-            self.types.access.insert(id, access);
+            self.types.bindings.insert(id, resolved);
             if let Type::Function {
                 return_type,
                 parameters: parameter_types,
@@ -692,14 +706,13 @@ impl Lowerer {
                 }
                 Some(initializer) => {
                     let anchor = declarator.derive(());
-                    let value = self.initializer_value(&ty, initializer, &anchor)?;
+                    let value = self.initializer_value(resolved, initializer, &anchor)?;
                     let ty = match ty {
                         Type::Array { length: None, .. } => value.ty.clone(),
                         ty => ty,
                     };
-                    self.types.bindings.insert(id, ty.clone());
                     let completed = self.with_length(resolved, &ty);
-                    self.c_types.insert(id, completed);
+                    self.types.bindings.insert(id, completed);
                     (ty, Some(value))
                 }
             };
@@ -803,13 +816,13 @@ impl Lowerer {
                 if self.types.constant_integer(expr).is_ok() {
                     return Ok(());
                 }
-                let extent_type = Type::integer(self.context.target.pointer_width, false);
+                let extent_type = self.types.ctypes.size_type(&self.context.target);
                 let count = self.expr(expr)?;
-                let count = self.convert(count, extent_type.clone(), ConversionReason::Assign)?;
+                let count = self.convert(count, extent_type, ConversionReason::Assign)?;
                 let id = self.fresh();
                 self.types.bindings.insert(id, extent_type);
                 self.types.extents.insert(expr.id, id);
-                out.push((id, count));
+                out.push((id, count.value));
                 Ok(())
             }
         }
@@ -825,19 +838,23 @@ impl Lowerer {
         result
     }
 
-    fn case_value(&mut self, expr: &ast::Expr, ty: Type) -> Result<Value, ResolveError> {
+    fn case_value(&mut self, expr: &ast::Expr, ty: QualType) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
-        let value = self.convert(value, ty.clone(), ConversionReason::Promotion)?;
+        let value = self.convert(value, ty, ConversionReason::Promotion)?;
         let number = super::fold::integer(&value)
             .ok_or(ResolveError::Unsupported("nonconstant case expression"))?;
-        Ok(self.value(expr, ty, ValueKind::Constant(Number::SignedInteger(number))))
+        Ok(self.value(
+            expr,
+            self.types.ir_type(ty),
+            ValueKind::Constant(Number::SignedInteger(number)),
+        ))
     }
 
     fn loop_body(
         &mut self,
         id: BindingId,
         body: &Stmt,
-        return_type: Option<Type>,
+        return_type: Option<QualType>,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         self.break_targets.push(id);
         self.continue_targets.push(id);
@@ -850,7 +867,7 @@ impl Lowerer {
     pub(super) fn statements(
         &mut self,
         body: &[Stmt],
-        return_type: Option<Type>,
+        return_type: Option<QualType>,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         let mut result = Vec::new();
         for statement in body {
@@ -861,18 +878,15 @@ impl Lowerer {
                     result.extend(self.declaration(item, false)?);
                     continue;
                 }
-                StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?),
+                StmtKind::Expr(expr) => Statement::Expression(self.expr(expr)?.value),
                 StmtKind::Return(expr) => {
                     let ty = return_type
-                        .clone()
                         .ok_or(ResolveError::Unsupported("value return from void function"))?;
                     let value = self.expr(expr)?;
-                    Statement::Return(Some(self.convert_expr(
-                        expr,
-                        value,
-                        ty,
-                        ConversionReason::Return,
-                    )?))
+                    Statement::Return(Some(
+                        self.convert_expr(expr, value, ty, ConversionReason::Return)?
+                            .value,
+                    ))
                 }
                 StmtKind::ReturnVoid if return_type.is_none() => Statement::Return(None),
                 StmtKind::If {
@@ -882,16 +896,15 @@ impl Lowerer {
                 } => {
                     let value = self.expr(condition)?;
                     Statement::If {
-                        condition: self.condition(value, None)?,
+                        condition: self.condition(value.value, None)?,
                         then_body: self.scoped(|lower| {
-                            lower.statements(std::slice::from_ref(then_branch), return_type.clone())
+                            lower.statements(std::slice::from_ref(then_branch), return_type)
                         })?,
                         else_body: else_branch
                             .as_ref()
                             .map(|body| {
                                 self.scoped(|lower| {
-                                    lower
-                                        .statements(std::slice::from_ref(body), return_type.clone())
+                                    lower.statements(std::slice::from_ref(body), return_type)
                                 })
                             })
                             .transpose()?,
@@ -900,8 +913,8 @@ impl Lowerer {
                 StmtKind::While { condition, body } => {
                     let id = self.fresh();
                     let value = self.expr(condition)?;
-                    let condition = self.condition(value, None)?;
-                    let body = self.loop_body(id, body, return_type.clone())?;
+                    let condition = self.condition(value.value, None)?;
+                    let body = self.loop_body(id, body, return_type)?;
                     Statement::While {
                         id,
                         condition: condition.into(),
@@ -910,12 +923,12 @@ impl Lowerer {
                 }
                 StmtKind::DoWhile { body, condition } => {
                     let id = self.fresh();
-                    let body = self.loop_body(id, body, return_type.clone())?;
+                    let body = self.loop_body(id, body, return_type)?;
                     let value = self.expr(condition)?;
                     Statement::DoWhile {
                         id,
                         body,
-                        condition: self.condition(value, None)?.into(),
+                        condition: self.condition(value.value, None)?.into(),
                     }
                 }
                 StmtKind::For {
@@ -926,28 +939,26 @@ impl Lowerer {
                 } => self.scoped(|lower| {
                     let id = lower.fresh();
                     let init = match init {
-                        Some(init) => {
-                            lower.statements(std::slice::from_ref(init), return_type.clone())?
-                        }
+                        Some(init) => lower.statements(std::slice::from_ref(init), return_type)?,
                         None => Vec::new(),
                     };
                     let condition = condition
                         .as_ref()
                         .map(|expr| {
                             let value = lower.expr(expr)?;
-                            lower.condition(value, None)
+                            lower.condition(value.value, None)
                         })
                         .transpose()?;
                     let increment = increment
                         .as_ref()
                         .map(|expr| lower.expr(expr))
                         .transpose()?;
-                    let body = lower.loop_body(id, body, return_type.clone())?;
+                    let body = lower.loop_body(id, body, return_type)?;
                     Ok(Statement::For {
                         id,
                         init,
                         condition: condition.map(Into::into),
-                        increment: increment.map(Into::into),
+                        increment: increment.map(|value| value.value.into()),
                         body,
                     })
                 })?,
@@ -965,21 +976,20 @@ impl Lowerer {
                 ),
                 StmtKind::Switch { discriminant, body } => {
                     let value = self.expr(discriminant)?;
-                    let discriminant = self.context.promote(self.enum_integer(value));
+                    let discriminant = self.promote(value);
                     if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                         return Err(ResolveError::Unsupported("noninteger switch discriminant"));
                     }
                     let id = self.fresh();
                     self.break_targets.push(id);
-                    self.switches.push((id, discriminant.ty.clone()));
-                    let body = self.scoped(|lower| {
-                        lower.statements(std::slice::from_ref(body), return_type.clone())
-                    });
+                    self.switches.push((id, discriminant.c));
+                    let body = self
+                        .scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
                     self.switches.pop();
                     self.break_targets.pop();
                     Statement::Switch {
                         id,
-                        discriminant,
+                        discriminant: discriminant.value,
                         body: body?,
                     }
                 }
@@ -992,22 +1002,19 @@ impl Lowerer {
                     match label {
                         ast::SwitchLabel::Default => Statement::Default {
                             switch,
-                            body: self
-                                .statements(std::slice::from_ref(body), return_type.clone())?,
+                            body: self.statements(std::slice::from_ref(body), return_type)?,
                         },
                         ast::SwitchLabel::Case(start) => Statement::Case {
                             switch,
                             start: self.case_value(start, ty)?,
                             end: None,
-                            body: self
-                                .statements(std::slice::from_ref(body), return_type.clone())?,
+                            body: self.statements(std::slice::from_ref(body), return_type)?,
                         },
                         ast::SwitchLabel::CaseRange { start, end } => Statement::Case {
                             switch,
-                            start: self.case_value(start, ty.clone())?,
+                            start: self.case_value(start, ty)?,
                             end: Some(self.case_value(end, ty)?),
-                            body: self
-                                .statements(std::slice::from_ref(body), return_type.clone())?,
+                            body: self.statements(std::slice::from_ref(body), return_type)?,
                         },
                     }
                 }
@@ -1029,7 +1036,7 @@ impl Lowerer {
                     if !matches!(value.ty, Type::Pointer { .. }) {
                         return Err(ResolveError::Unsupported("nonpointer computed goto"));
                     }
-                    Statement::ComputedGoto(value)
+                    Statement::ComputedGoto(value.value)
                 }
                 StmtKind::Goto(label) => Statement::Goto(
                     self.names
@@ -1046,11 +1053,11 @@ impl Lowerer {
                         .get(&label.id)
                         .ok_or(ResolveError::Unsupported("missing label binding"))?,
                     name: label.value.clone(),
-                    body: self.statements(std::slice::from_ref(body), return_type.clone())?,
+                    body: self.statements(std::slice::from_ref(body), return_type)?,
                 },
-                StmtKind::Block(body) => Statement::Block(
-                    self.scoped(|lower| lower.statements(body, return_type.clone()))?,
-                ),
+                StmtKind::Block(body) => {
+                    Statement::Block(self.scoped(|lower| lower.statements(body, return_type))?)
+                }
                 _ => return Err(ResolveError::Unsupported("module statement")),
             };
             let lowered = statement.derive(kind);

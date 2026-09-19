@@ -1,4 +1,6 @@
+use super::ctype::{CTypeKind, QualType};
 use super::numeric::{Context, ResolveError};
+use super::operand::{Lvalue, Operand};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::compiler_args::LanguageStandard;
@@ -12,22 +14,80 @@ pub(super) struct Lowerer {
     pub types: TypeResolver,
     pub module: Module,
     pub names: NameResolution,
-    pub c_types: HashMap<BindingId, super::ctype::QualType>,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub object_requests: HashMap<BindingId, super::module::ObjectRequest>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
-    pub switches: Vec<(BindingId, Type)>,
+    pub switches: Vec<(BindingId, QualType)>,
     pub in_function: bool,
-    pub return_type: Option<Type>,
+    pub return_type: Option<QualType>,
     pub diagnostic_options: DiagnosticOptions,
     pub standard: LanguageStandard,
     pub diagnostics: Vec<super::SemaError>,
 }
 
 impl Lowerer {
+    pub(super) fn builtin_operand(
+        &mut self,
+        e: &Expr,
+        kind: CTypeKind,
+        value: ValueKind,
+    ) -> Operand {
+        let c = self.types.ctypes.qual(kind);
+        self.operand(e, c, value)
+    }
+    pub(super) fn operand<T: Clone>(&self, e: &Span<T>, c: QualType, kind: ValueKind) -> Operand {
+        Operand {
+            value: self.value(e, self.types.ir_type(c), kind),
+            c,
+        }
+    }
+
+    pub(super) fn truth(&mut self, e: &Expr, kind: ValueKind) -> Operand {
+        Operand {
+            value: self.value(e, Type::Bool, kind),
+            c: self.types.ctypes.int(),
+        }
+    }
+
+    pub(super) fn convert(
+        &mut self,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Operand, ResolveError> {
+        let c = self.types.ctypes.unqualified(to);
+        Ok(Operand {
+            value: self.emit_convert(value.value, self.types.ir_type(c), reason)?,
+            c,
+        })
+    }
+
+    pub(super) fn convert_expr(
+        &mut self,
+        e: &Expr,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Operand, ResolveError> {
+        let c = self.types.ctypes.unqualified(to);
+        Ok(Operand {
+            value: self.emit_convert_expr(e, value.value, self.types.ir_type(c), reason)?,
+            c,
+        })
+    }
+
+    pub(super) fn promote(&mut self, value: Operand) -> Operand {
+        let value = self.enum_operand(value);
+        self.types.promote_operand(&self.context, value, None)
+    }
+
+    pub(super) fn enum_operand(&self, operand: Operand) -> Operand {
+        self.types.enum_operand(operand)
+    }
+
     pub(super) fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
         self.diagnostics.extend(warning.diagnose(
             message,
@@ -80,18 +140,6 @@ impl Lowerer {
         self.types.kind(ty)
     }
 
-    pub fn pointer(&mut self, pointee: Type, is_const: bool) -> Type {
-        self.qualified_pointer(pointee, is_const, Access::default())
-    }
-
-    pub fn qualified_pointer(&mut self, pointee: Type, is_const: bool, access: Access) -> Type {
-        Type::Pointer {
-            pointee: Box::new(pointee),
-            is_const,
-            access,
-        }
-    }
-
     pub(super) fn pointee(&self, ty: &Type) -> Result<Type, ResolveError> {
         match ty {
             Type::Pointer { pointee, .. } => Ok((**pointee).clone()),
@@ -99,17 +147,25 @@ impl Lowerer {
         }
     }
 
-    pub(super) fn deref(&self, pointer: Value) -> Result<Place, ResolveError> {
+    pub(super) fn deref(&self, pointer: Operand) -> Result<Lvalue, ResolveError> {
         let Type::Pointer {
             pointee, access, ..
         } = &pointer.ty
         else {
             return Err(ResolveError::Unsupported("expected pointer"));
         };
-        Ok(Place {
-            ty: (**pointee).clone(),
-            access: *access,
-            kind: PlaceKind::Deref(Box::new(pointer)),
+        let c = self
+            .types
+            .ctypes
+            .pointee(pointer.c)
+            .ok_or(ResolveError::Unsupported("expected C pointer"))?;
+        Ok(Lvalue {
+            c,
+            place: Place {
+                ty: (**pointee).clone(),
+                access: *access,
+                kind: PlaceKind::Deref(Box::new(pointer.value)),
+            },
         })
     }
 
@@ -141,9 +197,11 @@ impl Lowerer {
                         NumericType::Float(format) => Number::float_zero(format),
                     }),
                 );
-                let zero =
-                    self.context
-                        .convert(zero, value.ty.clone(), ConversionReason::UsualArith);
+                let zero = self.context.emit_arithmetic_conversion(
+                    zero,
+                    value.ty.clone(),
+                    ConversionReason::UsualArith,
+                );
                 let node = value.node.clone();
                 self.value(
                     &node,
@@ -206,7 +264,7 @@ impl Lowerer {
         value
     }
 
-    pub fn convert(
+    pub fn emit_convert(
         &mut self,
         value: Value,
         to: Type,
@@ -232,10 +290,10 @@ impl Lowerer {
             return Ok(value);
         }
         if self.enum_underlying(&value.ty).is_some() {
-            return self.convert(self.enum_integer(value), to, reason);
+            return self.emit_convert(self.enum_integer(value), to, reason);
         }
         if let Some(underlying) = self.enum_underlying(&to) {
-            let value = self.convert(value, underlying, reason)?;
+            let value = self.emit_convert(value, underlying, reason)?;
             let node = value.node.clone();
             return Ok(self.value(
                 &node,
@@ -260,7 +318,7 @@ impl Lowerer {
                 Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_) | Type::Bool
             )
         {
-            return Ok(self.context.convert(value, to, reason));
+            return Ok(self.context.emit_arithmetic_conversion(value, to, reason));
         }
         if self.pointee(&to).is_ok() {
             if matches!(&value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
@@ -327,7 +385,7 @@ impl Lowerer {
         ))
     }
 
-    pub fn convert_expr(
+    pub fn emit_convert_expr(
         &mut self,
         expression: &Expr,
         value: Value,
@@ -340,10 +398,10 @@ impl Lowerer {
         {
             return Ok(self.value(expression, to, ValueKind::Null));
         }
-        self.convert(value, to, reason)
+        self.emit_convert(value, to, reason)
     }
 
-    pub(super) fn place(&mut self, e: &Expr) -> Result<Place, ResolveError> {
+    pub(super) fn place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
             ExprKind::Generic {
@@ -355,44 +413,50 @@ impl Lowerer {
             }
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
-                let ty = self
+                let ty = *self
                     .types
                     .bindings
                     .get(&id)
-                    .ok_or(ResolveError::Unsupported("untyped binding"))?
-                    .clone();
-                Ok(Place {
-                    ty,
-                    kind: PlaceKind::Binding(id),
-                    access: self.types.access.get(&id).copied().unwrap_or_default(),
+                    .ok_or(ResolveError::Unsupported("untyped binding"))?;
+                Ok(Lvalue {
+                    c: ty,
+                    place: Place {
+                        ty: self.types.ir_type(ty),
+                        kind: PlaceKind::Binding(id),
+                        access: self.types.access_of(ty),
+                    },
                 })
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve_type_name(ty)?;
                 let access = self.types.access_of(resolved);
-                let declared = self.types.object_type(resolved, "void compound literal")?;
+                let _declared = self.types.object_type(resolved, "void compound literal")?;
                 let anchor = e.derive(());
                 let value = self.initializer_value(
-                    &declared,
+                    resolved,
                     &Initializer::List(initializer.clone()),
                     &anchor,
                 )?;
                 let object = self.fresh();
                 let ty = value.ty.clone();
-                self.types.bindings.insert(object, ty.clone());
+                let c = self.with_length(resolved, &ty);
+                self.types.bindings.insert(object, c);
                 let storage = if self.in_function {
                     StorageDuration::Automatic
                 } else {
                     StorageDuration::Static
                 };
-                Ok(Place {
-                    ty,
-                    kind: PlaceKind::CompoundLiteral {
-                        object,
-                        storage,
-                        initializer: Box::new(value),
+                Ok(Lvalue {
+                    c,
+                    place: Place {
+                        ty,
+                        kind: PlaceKind::CompoundLiteral {
+                            object,
+                            storage,
+                            initializer: Box::new(value),
+                        },
+                        access,
                     },
-                    access,
                 })
             }
             ExprKind::Unary {
@@ -412,26 +476,34 @@ impl Lowerer {
                         "complex component of non-complex place",
                     ));
                 };
-                Ok(Place {
-                    ty: Type::Numeric(component),
-                    access: base.access,
-                    kind: PlaceKind::ComplexPart {
-                        base: Box::new(base),
-                        imaginary: matches!(
-                            &e.value,
-                            ExprKind::Unary {
-                                op: UnaryOp::Imag,
-                                ..
-                            }
-                        ),
+                let c = self
+                    .types
+                    .ctypes
+                    .arithmetic_component(base.c)
+                    .with(self.types.ctypes.quals(base.c));
+                Ok(Lvalue {
+                    c,
+                    place: Place {
+                        ty: Type::Numeric(component),
+                        access: base.access,
+                        kind: PlaceKind::ComplexPart {
+                            base: Box::new(base.place),
+                            imaginary: matches!(
+                                &e.value,
+                                ExprKind::Unary {
+                                    op: UnaryOp::Imag,
+                                    ..
+                                }
+                            ),
+                        },
                     },
                 })
             }
             ExprKind::Index { base, index } => {
                 let base = self.expr(base)?;
                 let index = self.expr(index)?;
-                let (pointer_ty, kind) = self.binary(BinaryOp::Add, base, index)?;
-                self.deref(self.value(e, pointer_ty, kind))
+                let pointer = self.binary(e, BinaryOp::Add, base, index)?;
+                self.deref(pointer)
             }
             ExprKind::Member { base, field, arrow } => {
                 let base = if *arrow {
@@ -466,11 +538,11 @@ impl Lowerer {
 
     fn field_place(
         &self,
-        base: Place,
+        base: Lvalue,
         index: usize,
         field: &Field,
         layout: Option<&RecordLayout>,
-    ) -> Result<Place, ResolveError> {
+    ) -> Result<Lvalue, ResolveError> {
         let bits = match field.bit_width {
             Some(width) if width != 0 => {
                 let layout =
@@ -503,18 +575,32 @@ impl Lowerer {
             Some(_) => return Err(ResolveError::Unsupported("zero-width bit-field access")),
             None => None,
         };
-        Ok(Place {
-            ty: field.ty.clone(),
-            access: base.access.union(field.access),
-            kind: PlaceKind::Field {
-                base: Box::new(base),
-                index,
-                bits,
+        let CTypeKind::Record { id, .. } = self.types.ctypes.canonical_kind(base.c) else {
+            return Err(ResolveError::Unsupported("field of non-record C type"));
+        };
+        let c = self
+            .types
+            .record_fields
+            .get(id)
+            .and_then(|fields| fields.get(index))
+            .copied()
+            .ok_or(ResolveError::Unsupported("missing field C type"))?
+            .with(self.types.ctypes.quals(base.c));
+        Ok(Lvalue {
+            c,
+            place: Place {
+                ty: field.ty.clone(),
+                access: base.access.union(field.access),
+                kind: PlaceKind::Field {
+                    base: Box::new(base.place),
+                    index,
+                    bits,
+                },
             },
         })
     }
 
-    fn project(&self, base: Place, name: &str) -> Result<Option<Place>, ResolveError> {
+    fn project(&self, base: Lvalue, name: &str) -> Result<Option<Lvalue>, ResolveError> {
         let Some((fields, layout)) = self.record_body(&base.ty) else {
             return Err(ResolveError::Unsupported(
                 "member of incomplete or non-record",
@@ -550,7 +636,8 @@ impl Lowerer {
             crate::ast::GenericControl::Type { ty } => {
                 let resolved = self.resolve_type_name(ty)?;
                 self.types
-                    .object_type(resolved, "void generic controlling type")?
+                    .object_type(resolved, "void generic controlling type")?;
+                resolved
             }
             crate::ast::GenericControl::Expr(expr) => self.unevaluated(expr)?,
         };
@@ -562,30 +649,27 @@ impl Lowerer {
         self.types.select_association(controlling, associations)
     }
 
-    // _Generic's controlling operand is never evaluated, so keep only the type it lowered to.
-    fn unevaluated(&mut self, e: &Expr) -> Result<Type, ResolveError> {
+    fn unevaluated(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         let next_id = self.next_id;
         let globals = self.module.globals.len();
-        // lvalue conversion keeps a bit-field's declared type; integer promotion does not apply here
-        let ty = match self.place(e) {
-            Ok(
-                place @ Place {
-                    kind: PlaceKind::Field { bits: Some(_), .. },
-                    ..
-                },
-            ) => Ok(place.ty),
-            _ => self.expr(e).map(|value| value.ty),
+        let result = match self.place(e) {
+            Ok(place) => Ok(self.types.ctypes.lvalue_conversion(place.c)),
+            Err(_) => self.expr(e).map(|value| value.c),
         };
         self.next_id = next_id;
         self.module.globals.truncate(globals);
-        ty
+        self.types.bindings.retain(|id, _| id.0 < next_id);
+        result
     }
 
-    // A function designator decays to a pointer, so both call forms arrive here as one.
-    fn callee(&mut self, e: &Expr) -> Result<(Callee, Type), ResolveError> {
+    fn callee(&mut self, e: &Expr) -> Result<(Callee, QualType), ResolveError> {
         let value = self.expr(e)?;
-        let signature = self.pointee(&value.ty)?;
-        if !matches!(signature, Type::Function { .. }) {
+        let signature = self
+            .types
+            .ctypes
+            .pointee(value.c)
+            .ok_or(ResolveError::Unsupported("non-function callee"))?;
+        if !self.types.ctypes.is_function(signature) {
             return Err(ResolveError::Unsupported("non-function callee"));
         }
         if let ValueKind::FunctionDecay {
@@ -598,105 +682,107 @@ impl Lowerer {
         {
             return Ok((Callee::Direct(*id), signature));
         }
-        Ok((Callee::Indirect(Box::new(value)), signature))
+        Ok((Callee::Indirect(Box::new(value.value)), signature))
     }
 
-    fn read(&mut self, e: &Expr, place: Place) -> Result<Value, ResolveError> {
-        if let Type::Array { element, length } = &place.ty {
-            let ty = self.qualified_pointer((**element).clone(), false, place.access);
-            let length = *length;
-            return Ok(self.value(e, ty, ValueKind::ArrayDecay { place, length }));
-        }
-        if let Type::VariableArray { element, .. } = &place.ty {
-            let ty = self.qualified_pointer((**element).clone(), false, place.access);
-            return Ok(self.value(
-                e,
-                ty,
-                ValueKind::ArrayDecay {
-                    place,
-                    length: None,
-                },
-            ));
-        }
-        if matches!(place.ty, Type::Function { .. }) {
-            // C makes *f on a function designator the same designator, so both spell one value.
-            if let PlaceKind::Deref(pointer) = place.kind {
-                return Ok(self.value(e, pointer.ty.clone(), pointer.node.value));
+    fn read(&mut self, e: &Expr, lvalue: Lvalue) -> Result<Operand, ResolveError> {
+        let c = self.types.ctypes.lvalue_conversion(lvalue.c);
+        let place = lvalue.place;
+        let kind = match &place.ty {
+            Type::Array { length, .. } => ValueKind::ArrayDecay {
+                length: *length,
+                place,
+            },
+            Type::VariableArray { .. } => ValueKind::ArrayDecay {
+                length: None,
+                place,
+            },
+            Type::Function { .. } => {
+                if let PlaceKind::Deref(pointer) = place.kind {
+                    return Ok(Operand { value: *pointer, c });
+                }
+                ValueKind::FunctionDecay { place }
             }
-            let ty = self.pointer(place.ty.clone(), false);
-            return Ok(self.value(e, ty, ValueKind::FunctionDecay { place }));
-        }
-        let promote = self.promotes_by_width(&place);
-        let ordering = place.implicit_ordering();
-        let value = self.value(e, place.ty.clone(), ValueKind::Read { place, ordering });
-        Ok(if promote {
-            self.context
-                .convert(value, self.context.int_type(), ConversionReason::Promotion)
-        } else {
-            value
-        })
-    }
-
-    // a bit-field rvalue promotes by its declared width, not by its storage type
-    fn promotes_by_width(&self, place: &Place) -> bool {
-        matches!(
-            &place.kind,
-            PlaceKind::Field { bits: Some(bits), .. } if bits.width < self.context.target.int_width
-        )
+            _ => {
+                let bits = match &place.kind {
+                    PlaceKind::Field {
+                        bits: Some(bits), ..
+                    } => Some(bits.width),
+                    _ => None,
+                };
+                let ordering = place.implicit_ordering();
+                let value = self.operand(e, c, ValueKind::Read { place, ordering });
+                return Ok(if bits.is_some() {
+                    self.types.promote_operand(&self.context, value, bits)
+                } else {
+                    value
+                });
+            }
+        };
+        Ok(self.operand(e, c, kind))
     }
 
     fn binary(
-        &self,
+        &mut self,
+        e: &Expr,
         op: BinaryOp,
-        left: Value,
-        right: Value,
-    ) -> Result<(Type, ValueKind), ResolveError> {
-        let left_element = self.pointee(&left.ty).ok();
-        let right_element = self.pointee(&right.ty).ok();
-        match (op, left_element, right_element) {
+        left: Operand,
+        right: Operand,
+    ) -> Result<Operand, ResolveError> {
+        let lp = self.types.ctypes.pointee(left.c);
+        let rp = self.types.ctypes.pointee(right.c);
+        match (op, lp, rp) {
             (BinaryOp::Sub, Some(element), Some(other)) => {
-                if !super::types::compatible(&element, &other) {
+                let a = self.types.ctypes.canonical(element).local_unqualified();
+                let b = self.types.ctypes.canonical(other).local_unqualified();
+                if !self.types.compatible_c(a, b) {
                     return Err(ResolveError::Unsupported(
                         "incompatible pointer subtraction",
                     ));
                 }
+                let element = self.types.ir_type(element);
                 self.types.require_complete(&element)?;
-                Ok((
-                    Type::integer(self.context.target.pointer_width, true),
+                let c = self.types.ctypes.ptrdiff_type(&self.context.target);
+                Ok(self.operand(
+                    e,
+                    c,
                     ValueKind::PointerDifference {
-                        left: Box::new(left),
-                        right: Box::new(right),
+                        left: Box::new(left.value),
+                        right: Box::new(right.value),
                         element,
                     },
                 ))
             }
             (BinaryOp::Add | BinaryOp::Sub, Some(element), None) => {
-                self.pointer_offset(left, right, element, op == BinaryOp::Sub)
+                self.pointer_offset(e, left, right, element, op == BinaryOp::Sub)
             }
             (BinaryOp::Add, None, Some(element)) => {
-                self.pointer_offset(right, left, element, false)
+                self.pointer_offset(e, right, left, element, false)
             }
-            _ => self.context.resolve_binary(op, left, right),
+            _ => self.types.binary_operand(&self.context, e, op, left, right),
         }
     }
 
     fn pointer_offset(
-        &self,
-        pointer: Value,
-        amount: Value,
-        element: Type,
+        &mut self,
+        e: &Expr,
+        pointer: Operand,
+        amount: Operand,
+        element: QualType,
         subtract: bool,
-    ) -> Result<(Type, ValueKind), ResolveError> {
+    ) -> Result<Operand, ResolveError> {
+        let element = self.types.ir_type(element);
         self.types.require_complete(&element)?;
-        let amount = self.context.promote(amount);
+        let amount = self.promote(amount);
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
             return Err(ResolveError::Unsupported("noninteger pointer offset"));
         }
-        Ok((
-            pointer.ty.clone(),
+        Ok(self.operand(
+            e,
+            pointer.c,
             ValueKind::PointerOffset {
-                pointer: Box::new(pointer),
-                amount: Box::new(amount),
+                pointer: Box::new(pointer.value),
+                amount: Box::new(amount.value),
                 subtract,
                 element,
                 overflow: if self.context.pointer_wrap {
@@ -713,61 +799,63 @@ impl Lowerer {
         e: &Expr,
         target: &Expr,
         op: BinaryOp,
-        rhs: Value,
+        rhs: Operand,
         postfix: bool,
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         let place = self.place(target)?;
-        let old = self.value(target, place.ty.clone(), ValueKind::OldValue);
-        let old = if self.promotes_by_width(&place) {
-            self.context
-                .convert(old, self.context.int_type(), ConversionReason::Promotion)
+        let c = self.types.ctypes.unqualified(place.c);
+        let old = self.operand(target, c, ValueKind::OldValue);
+        let bits = match &place.kind {
+            PlaceKind::Field {
+                bits: Some(bits), ..
+            } => Some(bits.width),
+            _ => None,
+        };
+        let old = if bits.is_some() {
+            self.types.promote_operand(&self.context, old, bits)
         } else {
             old
         };
-        let (ty, kind) = self.binary(op, old, rhs)?;
-        let computation = self.convert(
-            self.value(e, ty, kind),
-            place.ty.clone(),
-            ConversionReason::Assign,
-        )?;
-        Ok(self.value(
+        let computation = self.binary(e, op, old, rhs)?;
+        let computation = self.convert(computation, c, ConversionReason::Assign)?;
+        Ok(self.operand(
             e,
-            place.ty.clone(),
+            c,
             ValueKind::Update {
                 ordering: place.implicit_ordering(),
-                place,
-                computation: Box::new(computation),
+                place: place.place,
+                computation: Box::new(computation.value),
                 postfix,
             },
         ))
     }
 
-    fn unevaluated_type(&mut self, operand: &Expr) -> Result<(Type, Access), ResolveError> {
+    fn unevaluated_type(&mut self, operand: &Expr) -> Result<QualType, ResolveError> {
         if let ExprKind::Paren(inner) = &operand.value {
             return self.unevaluated_type(inner);
         }
         if let ExprKind::StringLiteral(lit) = &operand.value {
-            return Ok((
-                super::types::string_literal_type(lit, &self.context.target, self.types.features),
-                Access::default(),
-            ));
+            return Ok(self.types.string_type(lit));
         }
         let globals = self.module.globals.len();
         let next_id = self.next_id;
         let result = match self.place(operand) {
-            Ok(Place {
-                kind: PlaceKind::Field { bits: Some(_), .. },
+            Ok(Lvalue {
+                place:
+                    Place {
+                        kind: PlaceKind::Field { bits: Some(_), .. },
+                        ..
+                    },
                 ..
             }) => Err(ResolveError::Invalid(
                 "application of sizeof or alignof to a bit-field",
             )),
-            Ok(place) => Ok((place.ty, place.access)),
-            Err(_) => self
-                .expr(operand)
-                .map(|value| (value.ty, Access::default())),
+            Ok(place) => Ok(place.c),
+            Err(_) => self.expr(operand).map(|value| value.c),
         };
         self.module.globals.truncate(globals);
         self.next_id = next_id;
+        self.types.bindings.retain(|id, _| id.0 < next_id);
         result
     }
 
@@ -782,32 +870,34 @@ impl Lowerer {
         Ok(extents)
     }
 
-    fn with_extents(&mut self, e: &Expr, extents: Vec<(BindingId, Value)>, value: Value) -> Value {
+    fn with_extents(
+        &mut self,
+        e: &Expr,
+        extents: Vec<(BindingId, Value)>,
+        value: Operand,
+    ) -> Operand {
         extents
             .into_iter()
             .rev()
             .fold(value, |value, (id, extent)| {
-                self.value(
+                self.operand(
                     e,
-                    value.ty.clone(),
+                    value.c,
                     ValueKind::Capture {
                         id,
                         extent: Box::new(extent),
-                        value: Box::new(value),
+                        value: Box::new(value.value),
                     },
                 )
             })
     }
 
-    fn runtime_size(&mut self, e: &Expr, ty: &Type) -> Result<Value, ResolveError> {
-        let size_type = Type::integer(self.context.target.pointer_width, false);
+    fn runtime_size(&mut self, e: &Expr, ty: &Type) -> Result<Operand, ResolveError> {
+        let c = self.types.ctypes.size_type(&self.context.target);
+        let size_type = self.types.ir_type(c);
         let Type::VariableArray { element, extent } = ty else {
             let size = self.types.storage(ty.clone())?.size_bytes;
-            return Ok(self.value(
-                e,
-                size_type,
-                ValueKind::Constant(Number::Integer(size.into())),
-            ));
+            return Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(size.into()))));
         };
         let VariableExtent::Captured(extent) = *extent else {
             return Err(ResolveError::Invalid(
@@ -819,27 +909,26 @@ impl Lowerer {
             kind: PlaceKind::Binding(extent),
             access: Access::default(),
         };
-        let count = self.value(
+        let count = self.operand(
             e,
-            size_type,
+            c,
             ValueKind::Read {
                 place,
                 ordering: None,
             },
         );
         let element = self.runtime_size(e, element)?;
-        let (ty, kind) = self.binary(BinaryOp::Mul, count, element)?;
-        Ok(self.value(e, ty, kind))
+        self.binary(e, BinaryOp::Mul, count, element)
     }
 
-    fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Value {
-        let ty = Type::integer(self.context.target.pointer_width, false);
-        let value = self.value(e, ty, ValueKind::Constant(Number::Integer(amount.into())));
+    fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Operand {
+        let c = self.types.ctypes.size_type(&self.context.target);
+        let value = self.operand(e, c, ValueKind::Constant(Number::Integer(amount.into())));
         self.module.annotate(&value.node, [(key.into(), detail)]);
         value
     }
 
-    pub fn expr(&mut self, e: &Expr) -> Result<Value, ResolveError> {
+    pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.expr(inner),
             ExprKind::Identifier(_)
@@ -863,7 +952,7 @@ impl Lowerer {
                     .get(&node)
                     .cloned()
                     .ok_or(ResolveError::Unsupported("unresolved enumerator constant"))?;
-                Ok(self.value(e, value.ty, value.node.value))
+                Ok(self.operand(e, value.c, value.value.node.value))
             }
             ExprKind::Identifier(_)
             | ExprKind::Member { .. }
@@ -876,8 +965,8 @@ impl Lowerer {
                 self.read(e, place)
             }
             ExprKind::CharLiteral(lit) => {
-                let (ty, number) = super::types::character_constant(lit, &self.context.target)?;
-                Ok(self.value(e, ty, ValueKind::Constant(number)))
+                let (ty, number) = self.types.character_constant(lit)?;
+                Ok(self.operand(e, ty, ValueKind::Constant(number)))
             }
             ExprKind::LabelAddress(label) => {
                 let id = self
@@ -887,21 +976,20 @@ impl Lowerer {
                     .find(|r| r.id == label.id)
                     .map(|r| r.binding)
                     .ok_or(ResolveError::Unsupported("missing label address binding"))?;
-                let ty = self.pointer(Type::Void, false);
-                Ok(self.value(e, ty, ValueKind::LabelAddress(id)))
+                let void = self.types.ctypes.qual(CTypeKind::Void);
+                let ty = self.types.ctypes.pointer(void);
+                Ok(self.operand(e, ty, ValueKind::LabelAddress(id)))
             }
             ExprKind::NullPtrLiteral => {
-                let ty = self.pointer(Type::Void, false);
-                Ok(self.value(e, ty, ValueKind::Null))
+                let void = self.types.ctypes.qual(CTypeKind::Void);
+                let ty = self.types.ctypes.pointer(void);
+                Ok(self.operand(e, ty, ValueKind::Null))
             }
             ExprKind::StringLiteral(lit) => {
                 let mut units = lit.execution_units(self.context.target.wchar_width);
                 units.push(0);
-                let ty = super::types::string_literal_type(
-                    lit,
-                    &self.context.target,
-                    self.types.features,
-                );
+                let c = self.types.string_type(lit);
+                let ty = self.types.ir_type(c);
                 let id = self.fresh();
                 let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
                 self.module.globals.push(e.derive(Global {
@@ -923,27 +1011,30 @@ impl Lowerer {
                 }));
                 self.read(
                     e,
-                    Place {
-                        ty,
-                        kind: PlaceKind::Binding(id),
-                        access: Access::default(),
+                    Lvalue {
+                        c,
+                        place: Place {
+                            ty,
+                            kind: PlaceKind::Binding(id),
+                            access: Access::default(),
+                        },
                     },
                 )
             }
             ExprKind::Cast { ty, value } => {
                 let extents = self.type_name_extents(ty)?;
                 let to = self.resolve_type_name(ty)?;
-                let to = self.types.layout(to);
+                let is_void = self.types.ctypes.is_void(to);
                 let value = self.expr(value)?;
-                let cast = if let Some(to) = to {
+                let cast = if !is_void {
                     self.convert(value, to, ConversionReason::Explicit)?
                 } else {
                     let end = self.value(e, Type::Void, ValueKind::Void);
-                    self.value(
+                    self.operand(
                         e,
-                        Type::Void,
+                        to,
                         ValueKind::Sequence {
-                            left: Box::new(value),
+                            left: Box::new(value.value),
                             right: Box::new(end),
                         },
                     )
@@ -958,8 +1049,8 @@ impl Lowerer {
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
                     return Err(ResolveError::Invalid("address of a bit-field"));
                 }
-                let ty = self.qualified_pointer(place.ty.clone(), false, place.access);
-                Ok(self.value(e, ty, ValueKind::AddressOf(place)))
+                let ty = self.types.ctypes.pointer(place.c);
+                Ok(self.operand(e, ty, ValueKind::AddressOf(place.place)))
             }
             ExprKind::Unary {
                 op: UnaryOp::PreIncrement | UnaryOp::PreDecrement,
@@ -976,11 +1067,8 @@ impl Lowerer {
                         ..
                     }
                 );
-                let rhs = self.value(
-                    e,
-                    self.context.int_type(),
-                    ValueKind::Constant(Number::Integer(1u32.into())),
-                );
+                let c = self.types.ctypes.int();
+                let rhs = self.operand(e, c, ValueKind::Constant(Number::Integer(1u32.into())));
                 self.update(
                     e,
                     operand,
@@ -1001,14 +1089,15 @@ impl Lowerer {
                     return self.read(e, place);
                 }
                 let value = self.expr(operand)?;
-                let Type::Complex(component) = value.ty else {
+                let Type::Complex(_component) = value.ty else {
                     return Err(ResolveError::Unsupported(
                         "complex component of non-complex value",
                     ));
                 };
-                Ok(self.value(
+                let c = self.types.ctypes.arithmetic_component(value.c);
+                Ok(self.operand(
                     e,
-                    Type::Numeric(component),
+                    c,
                     ValueKind::Convert {
                         kind: if matches!(
                             &e.value,
@@ -1021,7 +1110,7 @@ impl Lowerer {
                         } else {
                             ConversionKind::ComplexToImag
                         },
-                        operand: Box::new(value),
+                        operand: Box::new(value.value),
                         reason: ConversionReason::Explicit,
                         semantics: ConversionSema::Exact,
                     },
@@ -1029,7 +1118,7 @@ impl Lowerer {
             }
             ExprKind::Unary { op, operand } => {
                 let value = self.expr(operand)?;
-                let value = self.enum_integer(value);
+                let value = self.enum_operand(value);
                 match op {
                     UnaryOp::Plus => {
                         if !matches!(
@@ -1038,13 +1127,12 @@ impl Lowerer {
                         ) {
                             return Err(ResolveError::Unsupported("non-numeric unary plus"));
                         }
-                        Ok(self.context.promote(value))
+                        Ok(self.promote(value))
                     }
                     UnaryOp::Not => {
-                        let value = self.condition(value, None)?;
-                        Ok(self.value(
+                        let value = self.condition(value.value, None)?;
+                        Ok(self.truth(
                             e,
-                            Type::Bool,
                             ValueKind::Unary {
                                 op: UnaryArithOp::Not,
                                 operand: Box::new(value),
@@ -1053,8 +1141,7 @@ impl Lowerer {
                         ))
                     }
                     UnaryOp::Minus | UnaryOp::BitNot => {
-                        let (ty, kind) = self.context.resolve_unary_arith(*op, value)?;
-                        Ok(self.value(e, ty, kind))
+                        self.types.unary_operand(&self.context, e, *op, value)
                     }
                     _ => Err(ResolveError::Unsupported("advanced unary operator")),
                 }
@@ -1063,21 +1150,20 @@ impl Lowerer {
                 let left_expr = left;
                 let right_expr = right;
                 let left = self.expr(left)?;
-                let left = self.enum_integer(left);
+                let left = self.enum_operand(left);
                 let right = self.expr(right)?;
-                let right = self.enum_integer(right);
+                let right = self.enum_operand(right);
                 if matches!(op, BinaryOp::And | BinaryOp::Or) {
-                    return Ok(self.value(
+                    return Ok(self.truth(
                         e,
-                        Type::Bool,
                         ValueKind::Logical {
                             op: if *op == BinaryOp::And {
                                 LogicalOp::And
                             } else {
                                 LogicalOp::Or
                             },
-                            left: Box::new(self.condition(left, None)?),
-                            right: Box::new(self.condition(right, None)?),
+                            left: Box::new(self.condition(left.value, None)?),
+                            right: Box::new(self.condition(right.value, None)?),
                         },
                     ));
                 }
@@ -1085,29 +1171,24 @@ impl Lowerer {
                     && (self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok())
                 {
                     let ty = if self.pointee(&left.ty).is_ok() {
-                        left.ty.clone()
+                        left.c
                     } else {
-                        right.ty.clone()
+                        right.c
                     };
-                    let left = self.convert_expr(
-                        left_expr,
-                        left,
-                        ty.clone(),
-                        ConversionReason::UsualArith,
-                    )?;
+                    let left =
+                        self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
                     let right =
                         self.convert_expr(right_expr, right, ty, ConversionReason::UsualArith)?;
-                    return Ok(self.value(
+                    return Ok(self.truth(
                         e,
-                        Type::Bool,
                         ValueKind::Compare {
                             op: if *op == BinaryOp::Equal {
                                 CompareOp::Eq
                             } else {
                                 CompareOp::Ne
                             },
-                            left: Box::new(left),
-                            right: Box::new(right),
+                            left: Box::new(left.value),
+                            right: Box::new(right.value),
                             exceptions: None,
                             reason: None,
                         },
@@ -1121,18 +1202,13 @@ impl Lowerer {
                         | BinaryOp::GreaterEqual
                 ) && (self.pointee(&left.ty).is_ok() && self.pointee(&right.ty).is_ok())
                 {
-                    let ty = left.ty.clone();
-                    let left = self.convert_expr(
-                        left_expr,
-                        left,
-                        ty.clone(),
-                        ConversionReason::UsualArith,
-                    )?;
+                    let ty = left.c;
+                    let left =
+                        self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
                     let right =
                         self.convert_expr(right_expr, right, ty, ConversionReason::UsualArith)?;
-                    return Ok(self.value(
+                    return Ok(self.truth(
                         e,
-                        Type::Bool,
                         ValueKind::Compare {
                             op: match op {
                                 BinaryOp::Less => CompareOp::Lt,
@@ -1140,34 +1216,30 @@ impl Lowerer {
                                 BinaryOp::Greater => CompareOp::Gt,
                                 _ => CompareOp::Ge,
                             },
-                            left: Box::new(left),
-                            right: Box::new(right),
+                            left: Box::new(left.value),
+                            right: Box::new(right.value),
                             exceptions: None,
                             reason: None,
                         },
                     ));
                 }
-                let (ty, kind) = self.binary(*op, left, right)?;
-                Ok(self.value(e, ty, kind))
+                self.binary(e, *op, left, right)
             }
             ExprKind::Assign { op, target, value } => {
                 let value_expr = value;
                 let value = self.expr(value)?;
                 if *op == AssignOp::Assign {
                     let place = self.place(target)?;
-                    let value = self.convert_expr(
-                        value_expr,
-                        value,
-                        place.ty.clone(),
-                        ConversionReason::Assign,
-                    )?;
-                    return Ok(self.value(
+                    let value =
+                        self.convert_expr(value_expr, value, place.c, ConversionReason::Assign)?;
+                    let c = value.c;
+                    return Ok(self.operand(
                         e,
-                        place.ty.clone(),
+                        c,
                         ValueKind::Store {
                             ordering: place.implicit_ordering(),
-                            place,
-                            value: Box::new(value),
+                            place: place.place,
+                            value: Box::new(value.value),
                         },
                     ));
                 }
@@ -1176,14 +1248,17 @@ impl Lowerer {
             ExprKind::Comma { left, right } => {
                 let left = self.expr(left)?;
                 let right = self.expr(right)?;
-                Ok(self.value(
-                    e,
-                    right.ty.clone(),
-                    ValueKind::Sequence {
-                        left: Box::new(left),
-                        right: Box::new(right),
-                    },
-                ))
+                Ok(Operand {
+                    c: right.c,
+                    value: self.value(
+                        e,
+                        right.ty.clone(),
+                        ValueKind::Sequence {
+                            left: Box::new(left.value),
+                            right: Box::new(right.value),
+                        },
+                    ),
+                })
             }
             ExprKind::Conditional {
                 condition,
@@ -1194,7 +1269,7 @@ impl Lowerer {
                     return Err(ResolveError::Unsupported("GNU omitted conditional operand"));
                 };
                 let condition = self.expr(condition)?;
-                let condition = self.condition(condition, None)?;
+                let condition = self.condition(condition.value, None)?;
                 let mut left = self.expr(then_value)?;
                 let mut right = self.expr(else_value)?;
                 if matches!(
@@ -1204,36 +1279,26 @@ impl Lowerer {
                     right.ty,
                     Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
                 ) {
-                    (left, right) = self
-                        .context
-                        .usual_arithmetic(self.context.promote(left), self.context.promote(right));
+                    (left, right) = self.types.arithmetic_operands(&self.context, left, right)?;
                 } else if self.pointee(&left.ty).is_ok() {
-                    right = self.convert_expr(
-                        else_value,
-                        right,
-                        left.ty.clone(),
-                        ConversionReason::UsualArith,
-                    )?;
+                    right =
+                        self.convert_expr(else_value, right, left.c, ConversionReason::UsualArith)?;
                 } else if self.pointee(&right.ty).is_ok() {
-                    left = self.convert_expr(
-                        then_value,
-                        left,
-                        right.ty.clone(),
-                        ConversionReason::UsualArith,
-                    )?;
+                    left =
+                        self.convert_expr(then_value, left, right.c, ConversionReason::UsualArith)?;
                 }
                 if left.ty != right.ty {
                     return Err(ResolveError::Unsupported(
                         "incompatible conditional operands",
                     ));
                 }
-                Ok(self.value(
+                Ok(self.operand(
                     e,
-                    left.ty.clone(),
+                    left.c,
                     ValueKind::Conditional {
                         condition: Box::new(condition),
-                        then_value: Box::new(left),
-                        else_value: Box::new(right),
+                        then_value: Box::new(left.value),
+                        else_value: Box::new(right.value),
                     },
                 ))
             }
@@ -1257,10 +1322,11 @@ impl Lowerer {
             {
                 let operand = constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
-                let constant = super::types::is_folded(&self.expr(operand)?);
-                let value = self.value(
+                let constant = super::types::is_folded(&self.expr(operand)?.value);
+                let c = self.types.ctypes.int();
+                let value = self.operand(
                     e,
-                    self.context.int_type(),
+                    c,
                     ValueKind::Constant(Number::SignedInteger(u8::from(constant).into())),
                 );
                 self.module.annotate(
@@ -1274,9 +1340,16 @@ impl Lowerer {
                 self.va_builtin(e, builtin, arguments)
             }
             ExprKind::Call { callee, arguments } => {
-                let (callee, ty) = self.callee(callee)?;
+                let (callee, signature) = self.callee(callee)?;
+                let (returned, params, _, _) = self
+                    .types
+                    .ctypes
+                    .function_parts(signature)
+                    .ok_or(ResolveError::Unsupported("non-function callee"))?;
+                let params = params.to_vec();
+                let ty = self.types.ir_type(signature);
                 let Type::Function {
-                    return_type,
+                    return_type: _,
                     parameters,
                     variadic,
                     prototyped,
@@ -1293,29 +1366,30 @@ impl Lowerer {
                 let mut lowered = Vec::new();
                 for (index, argument) in arguments.iter().enumerate() {
                     let value = self.expr(argument)?;
-                    let value = if let Some(to) = parameters.get(index).filter(|_| *prototyped) {
-                        self.convert_expr(argument, value, to.clone(), ConversionReason::Arg)?
+                    let value = if index < params.len() && *prototyped {
+                        value
                     } else {
-                        let to = match &value.ty {
-                            Type::Numeric(NumericType::Float(FloatType::F32)) => {
-                                Type::Numeric(NumericType::Float(FloatType::F64))
-                            }
-                            Type::Bool => self.context.int_type(),
-                            Type::Numeric(NumericType::Integer {
-                                width,
-                                bit_precise: false,
-                                ..
-                            }) if *width < self.context.target.int_width => self.context.int_type(),
-                            _ => value.ty.clone(),
-                        };
-                        self.convert(value, to, ConversionReason::Vararg)?
+                        self.enum_operand(value)
                     };
-                    lowered.push(value);
+                    let to = if let Some(to) = params.get(index).filter(|_| *prototyped) {
+                        self.types.ctypes.adjust_parameter(*to)
+                    } else {
+                        self.types
+                            .ctypes
+                            .default_promotion(value.c, &self.context.target)
+                    };
+                    let reason = if index < params.len() && *prototyped {
+                        ConversionReason::Arg
+                    } else {
+                        ConversionReason::Vararg
+                    };
+                    let value = self.convert_expr(argument, value, to, reason)?;
+                    lowered.push(value.value);
                 }
                 let abi = self.abi_signature(&ty, Some(&lowered))?;
-                Ok(self.value(
+                Ok(self.operand(
                     e,
-                    return_type.as_ref().map_or(Type::Void, |ty| (**ty).clone()),
+                    returned,
                     ValueKind::Call {
                         callee,
                         signature: ty,
@@ -1325,7 +1399,7 @@ impl Lowerer {
                 ))
             }
             ExprKind::IntegerLiteral(_) | ExprKind::FloatLiteral(_) | ExprKind::BoolLiteral(_) => {
-                self.context.resolve(e)
+                self.types.literal(&self.context, e)
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let extents = self.type_name_extents(ty)?;
@@ -1354,7 +1428,9 @@ impl Lowerer {
                 Ok(self.layout_constant(e, value, key, ty.to_string()))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let (ty, access) = self.unevaluated_type(operand)?;
+                let c = self.unevaluated_type(operand)?;
+                let ty = self.types.ir_type(c);
+                let access = self.types.access_of(c);
                 if matches!(e.value, ExprKind::SizeOfExpr(_))
                     && matches!(ty, Type::VariableArray { .. })
                 {
@@ -1377,9 +1453,10 @@ impl Lowerer {
             }
             ExprKind::TypesCompatible { left_ty, right_ty } => {
                 let (compatible, compared) = self.types.types_compatible(left_ty, right_ty)?;
-                let value = self.value(
+                let c = self.types.ctypes.int();
+                let value = self.operand(
                     e,
-                    self.context.int_type(),
+                    c,
                     ValueKind::Constant(Number::SignedInteger(u8::from(compatible).into())),
                 );
                 self.module
@@ -1409,12 +1486,12 @@ impl Lowerer {
                         "bit cast between types of different sizes",
                     ));
                 }
-                Ok(self.value(
+                Ok(self.operand(
                     e,
-                    ty,
+                    resolved,
                     ValueKind::Convert {
                         kind: ConversionKind::BitCast,
-                        operand: Box::new(value),
+                        operand: Box::new(value.value),
                         reason: ConversionReason::Explicit,
                         semantics: ConversionSema::Exact,
                     },
@@ -1437,18 +1514,27 @@ impl Lowerer {
                     None => (&body[..], None),
                 };
                 let (statements, value) = self.scoped(|lower| {
-                    let statements = lower.statements(leading, lower.return_type.clone())?;
+                    let statements = lower.statements(leading, lower.return_type)?;
                     let value = match result {
                         Some(result) => lower.expr(result)?,
-                        None => lower.value(e, Type::Void, ValueKind::Void),
+                        None => {
+                            let c = lower.types.ctypes.qual(CTypeKind::Void);
+                            lower.operand(e, c, ValueKind::Void)
+                        }
                     };
                     Ok((statements, value))
                 })?;
-                Ok(self.value(
-                    e,
-                    value.ty.clone(),
-                    ValueKind::StatementExpression(Box::new(Evaluation { statements, value })),
-                ))
+                Ok(Operand {
+                    c: value.c,
+                    value: self.value(
+                        e,
+                        value.ty.clone(),
+                        ValueKind::StatementExpression(Box::new(Evaluation {
+                            statements,
+                            value: value.value,
+                        })),
+                    ),
+                })
             }
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
@@ -1458,7 +1544,7 @@ impl Lowerer {
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "va_arg of void")?;
                 self.types.storage(ty.clone())?;
-                Ok(self.value(e, ty, ValueKind::VaArg { list }))
+                Ok(self.operand(e, resolved, ValueKind::VaArg { list: list.place }))
             }
         }
     }
@@ -1573,7 +1659,7 @@ impl Lowerer {
         if place.ty != Type::VaList {
             return Err(ResolveError::Unsupported("va builtin on non-va_list"));
         }
-        Ok(place)
+        Ok(place.place)
     }
 
     fn va_builtin(
@@ -1581,7 +1667,7 @@ impl Lowerer {
         e: &Expr,
         builtin: VaBuiltin,
         arguments: &[Expr],
-    ) -> Result<Value, ResolveError> {
+    ) -> Result<Operand, ResolveError> {
         let kind = match (builtin, arguments) {
             (VaBuiltin::Start, [list] | [list, _]) => ValueKind::VaStart {
                 list: self.va_list_place(list)?,
@@ -1595,7 +1681,8 @@ impl Lowerer {
             },
             _ => return Err(ResolveError::Unsupported("va builtin argument count")),
         };
-        Ok(self.value(e, Type::Void, kind))
+        let c = self.types.ctypes.qual(CTypeKind::Void);
+        Ok(self.operand(e, c, kind))
     }
 }
 
