@@ -1184,6 +1184,12 @@ on the type:
   one byte. The qualifier is never on an array type, so an array of atomic
   elements promotes each element, not the whole array. Sizes and alignments
   reaching the IR are already promoted; nothing in the dump re-derives them.
+  This is clang's rule and is applied under every flavor today. gcc does not
+  promote atomic aggregates at all (3/1 where clang says 4/4) and routes the
+  resulting non-lock-free accesses through libatomic, and the two also
+  disagree on how an atomic aggregate argument is passed. Both halves of
+  that personality split are `slate-parser-lh7.2.29` and
+  `slate-parser-lh7.2.30`.
 
 `tests/fixtures/sema/ir_qualified_access.c`,
 `tests/fixtures/sema/ir_array_parameter.c` and
