@@ -80,8 +80,9 @@ impl Checker<'_> {
             if let Some(name) = parameter.declarator.name() {
                 self.types.declare(name, Ordinary::Declared);
                 if let Ok(resolved) = resolved
-                    && let Some(ty) = resolved.ty
+                    && let Some(ty) = resolved.ty.clone()
                 {
+                    let access = crate::sema::types::access(resolved.c.qualifiers);
                     let ty = match ty {
                         Type::Array { element, .. } => Type::Pointer {
                             pointee: element,
@@ -95,7 +96,7 @@ impl Checker<'_> {
                         },
                         ty => ty,
                     };
-                    self.types.declare(name, Ordinary::Object(ty));
+                    self.types.declare(name, Ordinary::Object(ty, access));
                 }
             }
         }
@@ -124,9 +125,12 @@ impl Checker<'_> {
                     {
                         match &declarator.initializer {
                             Some(Initializer::Expr(expr)) => {
-                                if let Ok(Type::Array {
-                                    length: inferred, ..
-                                }) = self.types.assertion_operand_type(expr)
+                                if let Ok((
+                                    Type::Array {
+                                        length: inferred, ..
+                                    },
+                                    _,
+                                )) = self.types.assertion_operand_type(expr)
                                 {
                                     *length = inferred;
                                 }
@@ -137,7 +141,10 @@ impl Checker<'_> {
                             None => {}
                         }
                     }
-                    self.types.declare(name, Ordinary::Object(ty));
+                    self.types.declare(
+                        name,
+                        Ordinary::Object(ty, crate::sema::types::access(resolved.c.qualifiers)),
+                    );
                 }
             }
             if let Some(initializer) = &declarator.initializer {

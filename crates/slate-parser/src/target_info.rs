@@ -368,6 +368,32 @@ impl TargetInfo {
         }
     }
 
+    // clang's getMaxAtomicPromoteWidth: the widest object it will pad and
+    // over-align so an atomic access can be lock-free
+    pub fn max_atomic_promote_bytes(&self) -> u64 {
+        match self.family {
+            TargetFamily::X86_64 | TargetFamily::AArch64 => 16,
+            TargetFamily::X86 | TargetFamily::Arm32 => 8,
+        }
+    }
+
+    pub fn atomic_storage(&self, layout: StorageLayout) -> StorageLayout {
+        let size = layout.size_bytes.max(1);
+        if size > self.max_atomic_promote_bytes() {
+            return StorageLayout {
+                size_bytes: size,
+                ..layout
+            };
+        }
+        let promoted = size.next_power_of_two();
+        StorageLayout {
+            size_bytes: promoted,
+            alignment_bytes: u32::try_from(promoted)
+                .unwrap_or(layout.alignment_bytes)
+                .max(layout.alignment_bytes),
+        }
+    }
+
     fn va_list_storage(&self) -> StorageLayout {
         match (self.family, self.os) {
             (TargetFamily::X86_64, TargetOs::Linux) => StorageLayout {

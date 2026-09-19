@@ -1175,9 +1175,19 @@ on the type:
   which also implies it is non-null. Plain `int a[]` adds nothing, since it
   is exactly the adjusted pointer.
 
-`tests/fixtures/sema/ir_qualified_access.c` and
-`tests/fixtures/sema/ir_array_parameter.c` cover these. `_Atomic` size and
-alignment that differ from the unqualified type are not modeled yet.
+- `_Atomic` changes layout as well as access. An `_Atomic`-qualified value
+  type is padded up to a power-of-two size and aligned to that size, so an
+  atomic access to it can be lock-free: `_Atomic struct { char a[3]; }` is
+  4 bytes aligned to 4. The promotion applies only up to the target's widest
+  promotable width (16 bytes on x86-64 and AArch64, 8 on i386 and ARM32);
+  wider objects keep their natural layout, and a zero-sized one still gets
+  one byte. The qualifier is never on an array type, so an array of atomic
+  elements promotes each element, not the whole array. Sizes and alignments
+  reaching the IR are already promoted; nothing in the dump re-derives them.
+
+`tests/fixtures/sema/ir_qualified_access.c`,
+`tests/fixtures/sema/ir_array_parameter.c` and
+`tests/fixtures/sema/ir_atomic_layout.c` cover these.
 
 ### Explicit atomic operations
 

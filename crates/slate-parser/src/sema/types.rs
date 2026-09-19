@@ -143,7 +143,7 @@ pub(super) enum Ordinary {
     Declared,
     Alias(ResolvedType),
     Constant(Value),
-    Object(Type),
+    Object(Type, Access),
 }
 
 impl TypeResolver {
@@ -265,8 +265,8 @@ impl TypeResolver {
                 (ty, ValueKind::Constant(number))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let ty = self.assertion_operand_type(operand)?;
-                let layout = self.storage(ty)?;
+                let (ty, access) = self.assertion_operand_type(operand)?;
+                let layout = self.qualified_storage(ty, access.atomic)?;
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -306,11 +306,12 @@ impl TypeResolver {
                 )),
             ),
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
-                let ty = self
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let atomic = resolved.c.qualifiers.is_atomic;
+                let ty = resolved
                     .ty
                     .ok_or(ResolveError::Unsupported("void layout"))?;
-                let layout = self.storage(ty)?;
+                let layout = self.qualified_storage(ty, atomic)?;
                 let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -405,7 +406,7 @@ impl TypeResolver {
                 .resolve(&ty.specifiers, &ty.declarator)?
                 .ty
                 .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
-            GenericControl::Expr(expr) => self.assertion_operand_type(expr)?,
+            GenericControl::Expr(expr) => self.assertion_operand_type(expr)?.0,
         };
         self.select_association(controlling, associations)
     }
@@ -457,7 +458,7 @@ impl TypeResolver {
     pub(super) fn assertion_operand_type(
         &mut self,
         e: &crate::ast::Expr,
-    ) -> Result<Type, ResolveError> {
+    ) -> Result<(Type, Access), ResolveError> {
         use crate::ast::ExprKind;
         match &e.value {
             ExprKind::Paren(inner) => self.assertion_operand_type(inner),
@@ -472,20 +473,23 @@ impl TypeResolver {
                 ExprKind::Identifier(name) => builtin_result_type(name),
                 _ => None,
             }
-            .ok_or(ResolveError::Unsupported("nonconstant call expression")),
+            .ok_or(ResolveError::Unsupported("nonconstant call expression"))
+            .map(|ty| (ty, Access::default())),
             ExprKind::Identifier(name) => match self.lookup(name) {
-                Some(Ordinary::Object(ty)) => Ok(ty.clone()),
-                Some(Ordinary::Constant(value)) => Ok(value.ty.clone()),
+                Some(Ordinary::Object(ty, access)) => Ok((ty.clone(), *access)),
+                Some(Ordinary::Constant(value)) => Ok((value.ty.clone(), Access::default())),
                 _ => Err(ResolveError::Unsupported(
                     "unknown or unsupported sizeof operand type",
                 )),
             },
-            ExprKind::StringLiteral(literal) => {
-                Ok(string_literal_type(literal, &self.target, self.features))
-            }
+            ExprKind::StringLiteral(literal) => Ok((
+                string_literal_type(literal, &self.target, self.features),
+                Access::default(),
+            )),
             ExprKind::CompoundLiteral { ty, initializer } => {
-                let declared = self
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let literal_access = access(resolved.c.qualifiers);
+                let declared = resolved
                     .ty
                     .ok_or(ResolveError::Unsupported("void compound literal"))?;
                 match declared {
@@ -494,29 +498,44 @@ impl TypeResolver {
                         length: None,
                     } => {
                         let length = self.inferred_array_length(&element, initializer)?;
-                        Ok(Type::Array {
-                            element,
-                            length: Some(length),
-                        })
+                        Ok((
+                            Type::Array {
+                                element,
+                                length: Some(length),
+                            },
+                            literal_access,
+                        ))
                     }
-                    declared => Ok(declared),
+                    declared => Ok((declared, literal_access)),
                 }
             }
             ExprKind::Unary {
                 op: crate::const_expr::UnaryOp::Deref,
                 operand,
             } => match self.assertion_operand_type(operand)? {
-                Type::Pointer { pointee, .. } => Ok(*pointee),
+                (
+                    Type::Pointer {
+                        pointee, access, ..
+                    },
+                    _,
+                ) => Ok((*pointee, access)),
                 _ => Err(ResolveError::Unsupported(
                     "sizeof dereference of nonpointer",
                 )),
             },
             ExprKind::Index { base, .. } => match self.assertion_operand_type(base)? {
-                Type::Array { element, .. } => Ok(*element),
-                Type::Pointer { pointee, .. } => Ok(*pointee),
+                (Type::Array { element, .. }, access) => Ok((*element, access)),
+                (
+                    Type::Pointer {
+                        pointee, access, ..
+                    },
+                    _,
+                ) => Ok((*pointee, access)),
                 _ => Err(ResolveError::Unsupported("sizeof index of nonarray")),
             },
-            _ => self.constant_value(e).map(|value| value.ty),
+            _ => self
+                .constant_value(e)
+                .map(|value| (value.ty, Access::default())),
         }
     }
 
@@ -909,7 +928,7 @@ impl TypeResolver {
                 if let Some(resolved) = self.typeof_operands.get(&expr.id) {
                     return Ok(resolved.clone());
                 }
-                let ty = self.assertion_operand_type(expr)?;
+                let (ty, _) = self.assertion_operand_type(expr)?;
                 Ok(ResolvedType {
                     c: self.c_type(Some(&ty))?,
                     ty: Some(ty),
@@ -1569,33 +1588,50 @@ impl TypeResolver {
     }
 
     pub(super) fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
+        self.qualified_storage(ty, false)
+    }
+
+    // _Atomic qualifies the element, never the array, so the flag rides
+    // through array layers down to the value type clang would promote
+    pub(super) fn qualified_storage(
+        &self,
+        ty: Type,
+        atomic: bool,
+    ) -> Result<StorageLayout, ResolveError> {
+        let promote = |layout| {
+            if atomic {
+                self.target.atomic_storage(layout)
+            } else {
+                layout
+            }
+        };
         match ty {
             Type::Defined(id) => match &self.definitions[id.0 as usize].kind {
-                TypeDefinitionKind::Alias(inner) => self.storage(inner.clone()),
+                TypeDefinitionKind::Alias(inner) => self.qualified_storage(inner.clone(), atomic),
                 TypeDefinitionKind::Record {
                     layout: Some(layout),
                     ..
-                } => Ok(StorageLayout {
+                } => Ok(promote(StorageLayout {
                     size_bytes: layout.size,
                     alignment_bytes: u32::try_from(layout.align)
                         .map_err(|_| ResolveError::Unsupported("record alignment overflow"))?,
-                }),
+                })),
                 TypeDefinitionKind::Enum {
                     layout: Some(layout),
                     ..
-                } => Ok(*layout),
+                } => Ok(promote(*layout)),
                 TypeDefinitionKind::Enum {
                     underlying: Some(underlying),
                     ..
-                } => self.storage(underlying.clone()),
+                } => self.qualified_storage(underlying.clone(), atomic),
                 _ => Err(ResolveError::Unsupported("incomplete field type")),
             },
-            Type::Pointer { .. } => Ok(self.target.pointer),
+            Type::Pointer { .. } => Ok(promote(self.target.pointer)),
             Type::Array {
                 element,
                 length: Some(length),
             } => {
-                let element = self.storage(*element)?;
+                let element = self.qualified_storage(*element, atomic)?;
                 Ok(StorageLayout {
                     size_bytes: align_up(element.size_bytes, u64::from(element.alignment_bytes))?
                         .checked_mul(length)
@@ -1606,7 +1642,7 @@ impl TypeResolver {
             Type::Array { length: None, .. } | Type::Function { .. } => {
                 Err(ResolveError::Unsupported("incomplete field type"))
             }
-            _ => Ok(self.target.storage_of(ty)?),
+            _ => Ok(promote(self.target.storage_of(ty)?)),
         }
     }
 
@@ -1631,9 +1667,11 @@ impl TypeResolver {
                     length: None,
                 } if kind == TagKind::Struct && position + 1 == fields.len() => StorageLayout {
                     size_bytes: 0,
-                    alignment_bytes: self.storage((**element).clone())?.alignment_bytes,
+                    alignment_bytes: self
+                        .qualified_storage((**element).clone(), field.access.atomic)?
+                        .alignment_bytes,
                 },
-                ty => self.storage(ty.clone())?,
+                ty => self.qualified_storage(ty.clone(), field.access.atomic)?,
             };
             let natural = u64::from(storage.alignment_bytes);
             let align =

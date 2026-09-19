@@ -720,15 +720,14 @@ impl Lowerer {
         ))
     }
 
-    fn unevaluated_type(&mut self, operand: &Expr) -> Result<Type, ResolveError> {
+    fn unevaluated_type(&mut self, operand: &Expr) -> Result<(Type, Access), ResolveError> {
         if let ExprKind::Paren(inner) = &operand.value {
             return self.unevaluated_type(inner);
         }
         if let ExprKind::StringLiteral(lit) = &operand.value {
-            return Ok(super::types::string_literal_type(
-                lit,
-                &self.context.target,
-                self.types.features,
+            return Ok((
+                super::types::string_literal_type(lit, &self.context.target, self.types.features),
+                Access::default(),
             ));
         }
         let globals = self.module.globals.len();
@@ -740,8 +739,10 @@ impl Lowerer {
             }) => Err(ResolveError::Invalid(
                 "application of sizeof or alignof to a bit-field",
             )),
-            Ok(place) => Ok(place.ty),
-            Err(_) => self.expr(operand).map(|value| value.ty),
+            Ok(place) => Ok((place.ty, place.access)),
+            Err(_) => self
+                .expr(operand)
+                .map(|value| (value.ty, Access::default())),
         };
         self.module.globals.truncate(globals);
         self.next_id = next_id;
@@ -1274,8 +1275,9 @@ impl Lowerer {
                 self.context.resolve(e)
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
-                let ty = self
-                    .resolve_type_name(ty)?
+                let resolved = self.resolve_type_name(ty)?;
+                let atomic = resolved.c.qualifiers.is_atomic;
+                let ty = resolved
                     .ty
                     .ok_or(ResolveError::Unsupported("void layout"))?;
                 if matches!(e.value, ExprKind::SizeOfType { .. })
@@ -1283,7 +1285,7 @@ impl Lowerer {
                 {
                     return self.runtime_size(e, &ty);
                 }
-                let layout = self.types.storage(ty.clone())?;
+                let layout = self.types.qualified_storage(ty.clone(), atomic)?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -1297,13 +1299,13 @@ impl Lowerer {
                 Ok(self.layout_constant(e, value, key, ty.to_string()))
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
-                let ty = self.unevaluated_type(operand)?;
+                let (ty, access) = self.unevaluated_type(operand)?;
                 if matches!(e.value, ExprKind::SizeOfExpr(_))
                     && matches!(ty, Type::VariableArray { .. })
                 {
                     return self.runtime_size(e, &ty);
                 }
-                let layout = self.types.storage(ty.clone())?;
+                let layout = self.types.qualified_storage(ty.clone(), access.atomic)?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {

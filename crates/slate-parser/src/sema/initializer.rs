@@ -342,7 +342,7 @@ impl TypeResolver {
                 let (Shape::Struct(fields) | Shape::Union(fields)) = &shape else {
                     return Ok(index + 1);
                 };
-                let value = self.assertion_operand_type(expr)?;
+                let (value, _) = self.assertion_operand_type(expr)?;
                 if self.unaliased(&value) == self.unaliased(ty) {
                     return Ok(index + 1);
                 }
