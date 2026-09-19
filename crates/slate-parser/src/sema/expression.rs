@@ -1436,11 +1436,14 @@ impl Lowerer {
                     },
                     None => (&body[..], None),
                 };
-                let statements = self.statements(leading, self.return_type.clone())?;
-                let value = match result {
-                    Some(result) => self.expr(result)?,
-                    None => self.value(e, Type::Void, ValueKind::Void),
-                };
+                let (statements, value) = self.scoped(|lower| {
+                    let statements = lower.statements(leading, lower.return_type.clone())?;
+                    let value = match result {
+                        Some(result) => lower.expr(result)?,
+                        None => lower.value(e, Type::Void, ValueKind::Void),
+                    };
+                    Ok((statements, value))
+                })?;
                 Ok(self.value(
                     e,
                     value.ty.clone(),

@@ -939,8 +939,7 @@ bindings still carry the captured extents. Pointer arithmetic and
 differences accept a VLA element, with the stride being its runtime size
 (`element=vla<i32, %m>`). VLA types are compatible with each other and with
 fixed arrays whose elements are compatible (C11 6.7.6.2p6), whatever their
-extents, so assigning between them is a `pointer_cast`. Not yet: VLA
-initializers (only C23 `{}` is valid) and `typedef` of VLA types. Fixture:
+extents, so assigning between them is a `pointer_cast`. Fixture:
 `sema/variable_length_array_parameters.c`.
 
 **Implemented for VLA type names in expressions (`lh7.2.24`):** a type name
@@ -956,6 +955,19 @@ a folded constant and does not evaluate `n`. `_Alignof` of a VLA type or
 object is its innermost fixed element's alignment and evaluates nothing.
 Casts capture every bound in the type, before the operand, as clang does.
 Fixture: `sema/variable_length_array_type_names.c`.
+
+**Implemented for block-scope typedefs and VLA `{}` (`lh7.2.25`):** block-scope
+`typedef` is accepted (block-scope tag definitions are still unsupported).
+Lowering pushes a `TypeResolver` scope for each function body, compound
+statement, selection/iteration statement and its substatements (C11 6.8.4p3,
+6.8.5p5), and statement expression, so an inner typedef shadows and then
+releases an outer one. `typedef int T[n];` captures `n` once at the typedef,
+like an object declarator, and every later `T` (objects, `sizeof(T)`) shares
+that extent even if `n` changes. Aliases stay in the module's flat type table
+(`type @typeN T = vla<i32, %e>;`), so a block-scope alias there can name a
+function-local extent binding. The only valid VLA initializer, C23 `{}`,
+lowers to `aggregate<vla<T, %e>, zero_fill=true>()`; any other VLA initializer
+is `Invalid`. Fixture: `sema/variable_length_array_typedefs.c`.
 
 **Implemented (`lh7.2.8`):** braced and string initializers lower to
 `ValueKind::Aggregate { members, zero_fill }` (`sema/initializer.rs`),

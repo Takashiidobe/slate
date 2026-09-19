@@ -101,7 +101,8 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 lower.return_type = return_type.clone();
                 let parameters = lower.parameters(params, Some(&mut prologue));
                 let body = parameters.and_then(|parameters| {
-                    let body = lower.statements(&function.body, return_type.clone())?;
+                    let body = lower
+                        .scoped(|lower| lower.statements(&function.body, return_type.clone()))?;
                     prologue.extend(body);
                     Ok((parameters, prologue))
                 });
@@ -491,15 +492,12 @@ impl Lowerer {
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         if !global
-            && (item.specifiers.storage == StorageClass::Typedef
-                || matches!(
-                    item.specifiers.ty,
-                    ast::TypeSpecifier::Tag(ast::TagSpecifier::Definition(_))
-                ))
+            && matches!(
+                item.specifiers.ty,
+                ast::TypeSpecifier::Tag(ast::TagSpecifier::Definition(_))
+            )
         {
-            return Err(ResolveError::Unsupported(
-                "block scoped typedef or tag definition",
-            ));
+            return Err(ResolveError::Unsupported("block scoped tag definition"));
         }
         if item.declarators.is_empty() {
             if item
@@ -679,13 +677,21 @@ impl Lowerer {
                 },
             };
             self.object_requests.entry(id).or_default().merge(request);
-            if matches!(ty, Type::VariableArray { .. }) && declarator.initializer.is_some() {
-                return Err(ResolveError::Unsupported(
-                    "variable length array initializer",
-                ));
-            }
             let (ty, initializer) = match &declarator.initializer {
                 None => (ty, None),
+                Some(initializer) if matches!(ty, Type::VariableArray { .. }) => {
+                    if !matches!(initializer, ast::Initializer::List(items) if items.is_empty()) {
+                        return Err(ResolveError::Invalid("variable length array initializer"));
+                    }
+                    let value = Value {
+                        ty: ty.clone(),
+                        node: declarator.clone().with_value(ValueKind::Aggregate {
+                            members: Vec::new(),
+                            zero_fill: true,
+                        }),
+                    };
+                    (ty, Some(value))
+                }
                 Some(initializer) => {
                     let anchor = declarator.clone().with_value(());
                     let value = self.initializer_value(&ty, initializer, &anchor)?;
@@ -806,6 +812,16 @@ impl Lowerer {
         }
     }
 
+    pub(super) fn scoped<T>(
+        &mut self,
+        lower: impl FnOnce(&mut Self) -> Result<T, ResolveError>,
+    ) -> Result<T, ResolveError> {
+        self.types.push_scope();
+        let result = lower(self);
+        self.types.pop_scope();
+        result
+    }
+
     fn case_value(&mut self, expr: &ast::Expr, ty: Type) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
         let value = self.convert(value, ty.clone(), ConversionReason::Promotion)?;
@@ -822,7 +838,7 @@ impl Lowerer {
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         self.break_targets.push(id);
         self.continue_targets.push(id);
-        let result = self.statements(std::slice::from_ref(body), return_type);
+        let result = self.scoped(|lower| lower.statements(std::slice::from_ref(body), return_type));
         self.continue_targets.pop();
         self.break_targets.pop();
         result
@@ -863,12 +879,16 @@ impl Lowerer {
                     let value = self.expr(condition)?;
                     Statement::If {
                         condition: self.condition(value, None)?,
-                        then_body: self
-                            .statements(std::slice::from_ref(then_branch), return_type.clone())?,
+                        then_body: self.scoped(|lower| {
+                            lower.statements(std::slice::from_ref(then_branch), return_type.clone())
+                        })?,
                         else_body: else_branch
                             .as_ref()
                             .map(|body| {
-                                self.statements(std::slice::from_ref(body), return_type.clone())
+                                self.scoped(|lower| {
+                                    lower
+                                        .statements(std::slice::from_ref(body), return_type.clone())
+                                })
                             })
                             .transpose()?,
                     }
@@ -899,31 +919,34 @@ impl Lowerer {
                     condition,
                     increment,
                     body,
-                } => {
-                    let id = self.fresh();
+                } => self.scoped(|lower| {
+                    let id = lower.fresh();
                     let init = match init {
                         Some(init) => {
-                            self.statements(std::slice::from_ref(init), return_type.clone())?
+                            lower.statements(std::slice::from_ref(init), return_type.clone())?
                         }
                         None => Vec::new(),
                     };
                     let condition = condition
                         .as_ref()
                         .map(|expr| {
-                            let value = self.expr(expr)?;
-                            self.condition(value, None)
+                            let value = lower.expr(expr)?;
+                            lower.condition(value, None)
                         })
                         .transpose()?;
-                    let increment = increment.as_ref().map(|expr| self.expr(expr)).transpose()?;
-                    let body = self.loop_body(id, body, return_type.clone())?;
-                    Statement::For {
+                    let increment = increment
+                        .as_ref()
+                        .map(|expr| lower.expr(expr))
+                        .transpose()?;
+                    let body = lower.loop_body(id, body, return_type.clone())?;
+                    Ok(Statement::For {
                         id,
                         init,
                         condition: condition.map(Into::into),
                         increment: increment.map(Into::into),
                         body,
-                    }
-                }
+                    })
+                })?,
                 StmtKind::Break => Statement::Break(
                     *self
                         .break_targets
@@ -945,7 +968,9 @@ impl Lowerer {
                     let id = self.fresh();
                     self.break_targets.push(id);
                     self.switches.push((id, discriminant.ty.clone()));
-                    let body = self.statements(std::slice::from_ref(body), return_type.clone());
+                    let body = self.scoped(|lower| {
+                        lower.statements(std::slice::from_ref(body), return_type.clone())
+                    });
                     self.switches.pop();
                     self.break_targets.pop();
                     Statement::Switch {
@@ -1023,9 +1048,9 @@ impl Lowerer {
                     name: label.value.clone(),
                     body: self.statements(std::slice::from_ref(body), return_type.clone())?,
                 },
-                StmtKind::Block(body) => {
-                    Statement::Block(self.statements(body, return_type.clone())?)
-                }
+                StmtKind::Block(body) => Statement::Block(
+                    self.scoped(|lower| lower.statements(body, return_type.clone()))?,
+                ),
                 _ => return Err(ResolveError::Unsupported("module statement")),
             };
             result.push(statement.clone().with_value(kind));
