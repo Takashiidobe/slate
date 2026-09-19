@@ -1178,7 +1178,14 @@ Types and policies are elided below; the grammar has the full forms.
 | `if (p)`, `!p`           | `ne(p, null)` / `not<bool>(ne(p, null))`         |
 | `char* → const char*`    | `pointer_cast<ptr<const i8>>(p)`                 |
 | `void* ↔ T*`             | `pointer_cast<ptr<T>>(p)`                        |
+| `unsigned* → int*`       | `pointer_cast<ptr<i32>>(p)`                      |
 | `(uintptr_t)p` / `(T*)n` | `ptr_to_int<u64>(p)` / `int_to_ptr<ptr<T>>(n)`   |
+
+An implicit conversion between pointers whose pointees are integers differing
+only in signedness (clang's `-Wpointer-sign`, e.g. `const char *p = u8"a"` in
+C23) is accepted as a `pointer_cast`. Only the immediate pointee is checked, so
+`unsigned ** → int **` and `unsigned * → long *` stay errors, as in clang 22.
+Fixture: `tests/fixtures/sema/ir_pointer_sign.c`.
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`

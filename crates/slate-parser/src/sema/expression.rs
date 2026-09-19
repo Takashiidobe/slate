@@ -255,6 +255,7 @@ impl Lowerer {
             }
             if let (Ok(a), Ok(b)) = (self.pointee(&value.ty), self.pointee(&to))
                 && (super::types::compatible(&a, &b)
+                    || differ_only_in_sign(&a, &b)
                     || a == Type::Void
                     || b == Type::Void
                     || reason == ConversionReason::Explicit)
@@ -1479,6 +1480,24 @@ pub(super) enum VaBuiltin {
     Start,
     End,
     Copy,
+}
+
+fn differ_only_in_sign(a: &Type, b: &Type) -> bool {
+    match (a, b) {
+        (
+            Type::Numeric(NumericType::Integer {
+                width: a_width,
+                signed: a_signed,
+                bit_precise: a_bit_precise,
+            }),
+            Type::Numeric(NumericType::Integer {
+                width: b_width,
+                signed: b_signed,
+                bit_precise: b_bit_precise,
+            }),
+        ) => a_width == b_width && a_bit_precise == b_bit_precise && a_signed != b_signed,
+        _ => false,
+    }
 }
 
 pub(super) fn constant_p_operand<'e>(callee: &Expr, arguments: &'e [Expr]) -> Option<&'e Expr> {
