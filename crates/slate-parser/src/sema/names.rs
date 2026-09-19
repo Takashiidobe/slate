@@ -99,6 +99,7 @@ impl Resolver {
                 if let Some(parameters) = function.declarator.function_parameters() {
                     for parameter in parameters.parameters() {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
+                        self.declarator(&parameter.declarator)?;
                         if let Some(name) = parameter.declarator.name() {
                             self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
                         }

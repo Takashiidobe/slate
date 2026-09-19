@@ -94,11 +94,16 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
-                let parameters = lower.parameters(params, true)?;
+                let mut prologue = Vec::new();
                 lower.in_function = true;
-                let body = lower.statements(&function.body, return_type.clone());
+                let parameters = lower.parameters(params, Some(&mut prologue));
+                let body = parameters.and_then(|parameters| {
+                    let body = lower.statements(&function.body, return_type.clone())?;
+                    prologue.extend(body);
+                    Ok((parameters, prologue))
+                });
                 lower.in_function = false;
-                let body = body?;
+                let (parameters, body) = body?;
                 let fallthrough = if name == "main"
                     && return_type == Some(lower.context.int_type())
                     && features.main_implicit_return_zero
@@ -318,7 +323,7 @@ impl Lowerer {
     fn parameters(
         &mut self,
         params: &ParameterList,
-        definition: bool,
+        mut prologue: Option<&mut Vec<Span<Statement>>>,
     ) -> Result<Parameters, ResolveError> {
         if matches!(params, ParameterList::Empty) && !self.types.features.empty_parens_are_prototype
         {
@@ -330,31 +335,35 @@ impl Lowerer {
             if !parameter.specifiers.attributes.is_empty() {
                 return Err(ResolveError::Unsupported("parameter attributes"));
             }
+            if let Some(prologue) = prologue.as_deref_mut() {
+                let anchor = parameter.clone().with_value(());
+                self.capture_extents(&parameter.declarator, &anchor, prologue)?;
+            }
             let start = self.types.definitions.len();
             let resolved = self
                 .types
-                .resolve(&parameter.specifiers, &parameter.declarator)?;
+                .resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
             let mut ty = resolved
                 .ty
                 .clone()
                 .ok_or(ResolveError::Unsupported("void parameter"))?;
             let element_access = super::types::access(resolved.c.qualifiers);
             let qualifiers = match ty {
-                Type::Array { .. } => parameter
+                Type::Array { .. } | Type::VariableArray { .. } => parameter
                     .declarator
                     .array_qualifiers()
                     .ok_or(ResolveError::Unsupported("array parameter declarator"))?,
                 _ => resolved.c.qualifiers,
             };
             ty = match ty {
-                Type::Array { element, .. } => {
+                Type::Array { element, .. } | Type::VariableArray { element, .. } => {
                     self.qualified_pointer(*element, false, element_access)
                 }
                 function @ Type::Function { .. } => self.pointer(function, false),
                 other => other,
             };
             let name = parameter.declarator.name();
-            let id = if definition {
+            let id = if prologue.is_some() {
                 self.declaration_id(
                     parameter.id,
                     name.ok_or(ResolveError::Unsupported("unnamed definition parameter"))?,
@@ -481,7 +490,7 @@ impl Lowerer {
                     .declarator
                     .function_parameters()
                     .ok_or(ResolveError::Unsupported("missing prototype"))?;
-                let parameters = self.parameters(params, false)?;
+                let parameters = self.parameters(params, None)?;
                 let abi = self.abi_signature(&ty, None)?;
                 self.declare_function(declarator.clone().with_value(Function {
                     id,

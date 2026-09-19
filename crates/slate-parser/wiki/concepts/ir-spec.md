@@ -311,6 +311,8 @@ Layout queries fold using target layout and retain `size_of`, `align_of`, or
 a concrete constant is required to resolve a type or layout, such as fixed
 array bounds, `_BitInt` widths, and constant `offsetof` array indices. This
 required evaluation must not rewrite the surrounding source expression tree.
+The one exception is `sizeof` of a variable-length array type: it is a
+runtime computation over the captured extents, never a folded constant.
 
 ### Numeric operations
 
@@ -785,10 +787,25 @@ its own extent, evaluated left to right; `int (*p)[m]` is
 `ptr<vla<i32, %m>>`. The object decays like an array
 (`array_decay<..., length=None>`). `sizeof` of a VLA-typed operand is a
 runtime `mul` of the captured extent and the element size, never a
-re-evaluation of the bound. Not yet: VLA initializers (only C23 `{}` is
-valid), VLA function parameters, `sizeof(int[n])` and casts to VLA types,
-indexing through a pointer to a VLA (runtime stride), `[*]`, and
-`typedef` of VLA types.
+re-evaluation of the bound.
+
+**Implemented for VLA parameters and `[*]` (`lh7.2.11`):** a function
+definition evaluates each non-constant parameter bound once at entry, as a
+synthetic temporary at the head of the body, in parameter order (C11
+6.9.1p10). The outermost bound is captured too, because it is evaluated even
+though the parameter adjusts it away (`int a[n]` becomes `ptr<i32>`), while
+`int a[n][m]` is `ptr<vla<i32, %m>>`. Prototype scope has no captured
+extents, so a `[*]` bound, or a non-constant bound in a function type or
+non-defining prototype, is `vla<T, *>`: `int f(int n, int a[*][n]);` gives
+`ptr<vla<i32, *>>`, and so does a definition's function type. Its parameter
+bindings still carry the captured extents. Pointer arithmetic and
+differences accept a VLA element, with the stride being its runtime size
+(`element=vla<i32, %m>`). VLA types are compatible with each other and with
+fixed arrays whose elements are compatible (C11 6.7.6.2p6), whatever their
+extents, so assigning between them is a `pointer_cast`. Not yet: VLA
+initializers (only C23 `{}` is valid), `sizeof(int[n])` and casts to VLA
+types, and `typedef` of VLA types. Fixture:
+`sema/variable_length_array_parameters.c`.
 
 **Implemented (`lh7.2.8`):** braced and string initializers lower to
 `ValueKind::Aggregate { members, zero_fill }` (`sema/initializer.rs`),

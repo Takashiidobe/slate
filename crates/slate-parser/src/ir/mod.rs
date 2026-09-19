@@ -24,7 +24,7 @@ use crate::ast::Span;
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ConversionKind, ConversionReason, ConversionSema, Exceptions,
     Fits, FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, Rounding,
-    ShiftFill, Type, UbPolicy, UnaryArithOp,
+    ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
 };
 use rustc_apfloat::{
     Float,

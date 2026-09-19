@@ -71,7 +71,7 @@ type          = "void" | "bool" | "va_list" | numeric
               | "imaginary<" float_type ">"
               | "ptr<" [ "const " ] [ access_prefix ] type ">"
               | "array<" type ", " ( int | "incomplete" ) ">"
-              | "vla<" type ", " binding ">"
+              | "vla<" type ", " ( binding | "*" ) ">"
               | fn_type
               | type_ref ;
 numeric       = int_type | float_type ;
@@ -89,7 +89,8 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 - `ptr<const T>` records pointee constness; `volatile`/`atomic` on a pointee
   are what make accesses through the pointer volatile or atomic.
 - `vla<T, %n>` has a runtime extent held in synthetic binding `%n`, captured
-  once at the declaration.
+  once at the declaration. `vla<T, *>` is a variable extent with no captured
+  value: `[*]`, or any non-constant bound in prototype scope.
 - Pointer, array and function types are structural and print inline. Records,
   enums and named aliases are `@typeN` references to a `type_def`.
 

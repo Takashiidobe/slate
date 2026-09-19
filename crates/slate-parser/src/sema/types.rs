@@ -9,6 +9,7 @@ use crate::const_expr::Encoding;
 use crate::ir::{
     Access, BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
     RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
+    VariableExtent,
 };
 use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
 use num_bigint::{BigInt, BigUint};
@@ -65,6 +66,7 @@ pub struct TypeResolver {
     pub definitions: Vec<TypeDefinition>,
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
+    prototype_scope: bool,
 }
 
 pub(super) enum Ordinary {
@@ -86,6 +88,7 @@ impl TypeResolver {
             definitions: Vec::new(),
             assertion_scope: false,
             extents: HashMap::new(),
+            prototype_scope: false,
         }
     }
 
@@ -760,23 +763,27 @@ impl TypeResolver {
                 enum Extent {
                     Unspecified,
                     Fixed(u64),
-                    Variable(BindingId),
+                    Variable(VariableExtent),
                 }
                 let mut lengths = Vec::new();
                 let mut core = declarator;
                 while let Declarator::Array { inner, size, .. } = core {
                     lengths.push(match size {
                         ArraySize::Unspecified => Extent::Unspecified,
-                        ArraySize::Star => {
-                            return Err(ResolveError::Unsupported("variable length array"));
-                        }
+                        ArraySize::Star => Extent::Variable(VariableExtent::Unspecified),
                         ArraySize::Expression(expr) => match self.extents.get(&expr.id) {
-                            Some(extent) => Extent::Variable(*extent),
-                            None => {
-                                Extent::Fixed(u64::try_from(self.constant_integer(expr)?).map_err(
-                                    |_| ResolveError::Unsupported("invalid array length"),
-                                )?)
-                            }
+                            Some(extent) => Extent::Variable(VariableExtent::Captured(*extent)),
+                            None => match self.constant_integer(expr) {
+                                Ok(length) => {
+                                    Extent::Fixed(u64::try_from(length).map_err(|_| {
+                                        ResolveError::Unsupported("invalid array length")
+                                    })?)
+                                }
+                                Err(_) if self.prototype_scope => {
+                                    Extent::Variable(VariableExtent::Unspecified)
+                                }
+                                Err(error) => return Err(error),
+                            },
                         },
                     });
                     core = inner;
@@ -819,16 +826,18 @@ impl TypeResolver {
                 let mut c_parameters = Vec::new();
                 for parameter in parameters.parameters() {
                     let parameter_type =
-                        self.resolve(&parameter.specifiers, &parameter.declarator)?;
+                        self.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
                     let mut ty = parameter_type
                         .ty
                         .ok_or(ResolveError::Unsupported("void parameter"))?;
                     ty = match ty {
-                        Type::Array { element, .. } => Type::Pointer {
-                            pointee: element,
-                            is_const: false,
-                            access: access(parameter_type.c.qualifiers),
-                        },
+                        Type::Array { element, .. } | Type::VariableArray { element, .. } => {
+                            Type::Pointer {
+                                pointee: element,
+                                is_const: false,
+                                access: access(parameter_type.c.qualifiers),
+                            }
+                        }
                         function @ Type::Function { .. } => Type::Pointer {
                             pointee: Box::new(function),
                             is_const: false,
@@ -864,6 +873,17 @@ impl TypeResolver {
                 self.derive(core, resolved)
             }
         }
+    }
+
+    pub(super) fn resolve_parameter(
+        &mut self,
+        specifiers: &DeclarationSpecifiers,
+        declarator: &Declarator,
+    ) -> Result<ResolvedType, ResolveError> {
+        let enclosing = std::mem::replace(&mut self.prototype_scope, true);
+        let resolved = self.resolve(specifiers, declarator);
+        self.prototype_scope = enclosing;
+        resolved
     }
 
     fn apply_pointer(qualifiers: Qualifiers, resolved: &mut ResolvedType) {
@@ -1094,6 +1114,13 @@ impl TypeResolver {
         };
         self.definitions[id.0 as usize].kind = kind;
         Ok(id)
+    }
+
+    pub(super) fn require_complete(&self, ty: &Type) -> Result<(), ResolveError> {
+        match ty {
+            Type::VariableArray { element, .. } => self.require_complete(element),
+            ty => self.storage(ty.clone()).map(|_| ()),
+        }
     }
 
     pub(super) fn storage(&self, ty: Type) -> Result<StorageLayout, ResolveError> {
@@ -1428,6 +1455,41 @@ fn substitute_enumerators(
     result
 }
 
+pub(super) fn compatible(a: &Type, b: &Type) -> bool {
+    match (a, b) {
+        (
+            Type::VariableArray { element: a, .. },
+            Type::VariableArray { element: b, .. } | Type::Array { element: b, .. },
+        )
+        | (Type::Array { element: a, .. }, Type::VariableArray { element: b, .. }) => {
+            compatible(a, b)
+        }
+        (
+            Type::Array {
+                element: a,
+                length: a_length,
+            },
+            Type::Array {
+                element: b,
+                length: b_length,
+            },
+        ) => a_length == b_length && compatible(a, b),
+        (
+            Type::Pointer {
+                pointee: a,
+                is_const: a_const,
+                access: a_access,
+            },
+            Type::Pointer {
+                pointee: b,
+                is_const: b_const,
+                access: b_access,
+            },
+        ) => a_const == b_const && a_access == b_access && compatible(a, b),
+        _ => a == b,
+    }
+}
+
 pub(super) fn access(qualifiers: Qualifiers) -> Access {
     Access {
         volatile: qualifiers.is_volatile,
@@ -1653,7 +1715,7 @@ fn resolve_parameters(
     let mut fixed = Vec::new();
     for parameter in signature.parameters() {
         let start = resolver.definitions.len();
-        let resolved = resolver.resolve(&parameter.specifiers, &parameter.declarator)?;
+        let resolved = resolver.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
         let restrict = resolved.c.qualifiers.is_restrict;
         let ty = resolved
             .ty

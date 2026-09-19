@@ -21,7 +21,7 @@ pub enum Type {
     },
     VariableArray {
         element: Box<Type>,
-        extent: super::BindingId,
+        extent: VariableExtent,
     },
     Function {
         return_type: Option<Box<Type>>,
@@ -55,9 +55,10 @@ impl fmt::Display for Type {
                 Some(length) => write!(f, "array<{element}, {length}>"),
                 None => write!(f, "array<{element}, incomplete>"),
             },
-            Self::VariableArray { element, extent } => {
-                write!(f, "vla<{element}, %{}>", extent.0)
-            }
+            Self::VariableArray { element, extent } => match extent {
+                VariableExtent::Captured(binding) => write!(f, "vla<{element}, %{}>", binding.0),
+                VariableExtent::Unspecified => write!(f, "vla<{element}, *>"),
+            },
             Self::Function {
                 return_type,
                 parameters,
@@ -92,6 +93,12 @@ impl fmt::Display for Type {
             }
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VariableExtent {
+    Captured(super::BindingId),
+    Unspecified,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

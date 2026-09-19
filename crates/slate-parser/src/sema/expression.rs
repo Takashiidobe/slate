@@ -250,7 +250,7 @@ impl Lowerer {
                 return Ok(self.value(&value.node, to, ValueKind::Null));
             }
             if let (Ok(a), Ok(b)) = (self.pointee(&value.ty), self.pointee(&to))
-                && (a == b
+                && (super::types::compatible(&a, &b)
                     || a == Type::Void
                     || b == Type::Void
                     || reason == ConversionReason::Explicit)
@@ -623,12 +623,12 @@ impl Lowerer {
         let right_element = self.pointee(&right.ty).ok();
         match (op, left_element, right_element) {
             (BinaryOp::Sub, Some(element), Some(other)) => {
-                if element != other {
+                if !super::types::compatible(&element, &other) {
                     return Err(ResolveError::Unsupported(
                         "incompatible pointer subtraction",
                     ));
                 }
-                self.types.storage(element.clone())?;
+                self.types.require_complete(&element)?;
                 Ok((
                     Type::integer(self.context.target.pointer_width, true),
                     ValueKind::PointerDifference {
@@ -655,7 +655,7 @@ impl Lowerer {
         element: Type,
         subtract: bool,
     ) -> Result<(Type, ValueKind), ResolveError> {
-        self.types.storage(element.clone())?;
+        self.types.require_complete(&element)?;
         let amount = self.context.promote(amount);
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
             return Err(ResolveError::Unsupported("noninteger pointer offset"));
@@ -748,9 +748,14 @@ impl Lowerer {
                 ValueKind::Constant(Number::Integer(size.into())),
             ));
         };
+        let VariableExtent::Captured(extent) = *extent else {
+            return Err(ResolveError::Invalid(
+                "size of an unspecified variable length array",
+            ));
+        };
         let place = Place {
             ty: size_type.clone(),
-            kind: PlaceKind::Binding(*extent),
+            kind: PlaceKind::Binding(extent),
             access: Access::default(),
         };
         let count = self.value(
