@@ -89,23 +89,12 @@ impl Checker<'_> {
             if let Some(name) = parameter.declarator.name() {
                 self.types.declare(name, Ordinary::Declared);
                 if let Ok(resolved) = resolved
-                    && let Some(ty) = resolved.ty.clone()
+                    && !self.types.ctypes.is_void(resolved)
                 {
-                    let access = crate::sema::types::access(resolved.c.qualifiers);
-                    let ty = match ty {
-                        Type::Array { element, .. } => Type::Pointer {
-                            pointee: element,
-                            is_const: false,
-                            access: crate::ir::Access::default(),
-                        },
-                        ty @ Type::Function { .. } => Type::Pointer {
-                            pointee: Box::new(ty),
-                            is_const: false,
-                            access: crate::ir::Access::default(),
-                        },
-                        ty => ty,
-                    };
-                    self.types.declare(name, Ordinary::Object(ty, access));
+                    let adjusted = self
+                        .types
+                        .adjusted_parameter(resolved, super::ctype::Qualifiers::NONE);
+                    self.types.declare(name, Ordinary::Object(adjusted));
                 }
             }
         }
@@ -113,6 +102,35 @@ impl Checker<'_> {
             self.statement(stmt);
         }
         self.types.pop_scope();
+    }
+
+    fn completed_array(
+        &mut self,
+        resolved: super::ctype::QualType,
+        initializer: Option<&Initializer>,
+    ) -> super::ctype::QualType {
+        let Some((element, super::ctype::Extent::Incomplete)) = self.types.ctypes.element(resolved)
+        else {
+            return resolved;
+        };
+        let length = match initializer {
+            Some(Initializer::Expr(expr)) => match self.types.assertion_operand_type(expr) {
+                Ok((Type::Array { length, .. }, _)) => length,
+                _ => None,
+            },
+            Some(Initializer::List(items)) => {
+                let element = self.types.ir_type(element);
+                self.types.inferred_array_length(&element, items).ok()
+            }
+            None => None,
+        };
+        match length {
+            Some(length) => self.types.ctypes.qual(super::ctype::CTypeKind::Array {
+                element,
+                extent: super::ctype::Extent::Fixed(length),
+            }),
+            None => resolved,
+        }
     }
 
     fn declaration(&mut self, declaration: &Declaration) {
@@ -125,35 +143,12 @@ impl Checker<'_> {
                 .types
                 .resolve(&declaration.specifiers, &declarator.declarator);
             self.types.declare(name, Ordinary::Declared);
-            if let Ok(mut resolved) = resolved {
+            if let Ok(resolved) = resolved {
                 if declaration.specifiers.storage == StorageClass::Typedef {
                     let _ = self.types.define_alias(name.to_owned(), resolved);
-                } else if let Some(mut ty) = resolved.ty.take() {
-                    if let Type::Array { element, length } = &mut ty
-                        && length.is_none()
-                    {
-                        match &declarator.initializer {
-                            Some(Initializer::Expr(expr)) => {
-                                if let Ok((
-                                    Type::Array {
-                                        length: inferred, ..
-                                    },
-                                    _,
-                                )) = self.types.assertion_operand_type(expr)
-                                {
-                                    *length = inferred;
-                                }
-                            }
-                            Some(Initializer::List(items)) => {
-                                *length = self.types.inferred_array_length(element, items).ok();
-                            }
-                            None => {}
-                        }
-                    }
-                    self.types.declare(
-                        name,
-                        Ordinary::Object(ty, crate::sema::types::access(resolved.c.qualifiers)),
-                    );
+                } else if !self.types.ctypes.is_void(resolved) {
+                    let completed = self.completed_array(resolved, declarator.initializer.as_ref());
+                    self.types.declare(name, Ordinary::Object(completed));
                 }
             }
             if let Some(initializer) = &declarator.initializer {
@@ -178,7 +173,7 @@ impl Checker<'_> {
             let fixed = fixed_type
                 .as_ref()
                 .and_then(|ty| self.types.resolve(&ty.specifiers, &ty.declarator).ok())
-                .and_then(|ty| ty.ty);
+                .and_then(|resolved| self.types.layout(resolved));
             let mut previous: Option<BigInt> = Some((-1).into());
             for item in enumerators {
                 let EnumItemKind::Enumerator(enumerator) = &item.value else {

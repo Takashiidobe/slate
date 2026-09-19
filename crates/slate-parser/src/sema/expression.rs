@@ -12,7 +12,7 @@ pub(super) struct Lowerer {
     pub types: TypeResolver,
     pub module: Module,
     pub names: NameResolution,
-    pub c_types: HashMap<BindingId, super::types::CTypeMetadata>,
+    pub c_types: HashMap<BindingId, super::ctype::QualType>,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub object_requests: HashMap<BindingId, super::module::ObjectRequest>,
@@ -369,10 +369,8 @@ impl Lowerer {
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve_type_name(ty)?;
-                let access = super::types::access(resolved.c.qualifiers);
-                let declared = resolved
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void compound literal"))?;
+                let access = self.types.access_of(resolved);
+                let declared = self.types.object_type(resolved, "void compound literal")?;
                 let anchor = e.derive(());
                 let value = self.initializer_value(
                     &declared,
@@ -549,10 +547,11 @@ impl Lowerer {
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e Expr, ResolveError> {
         let controlling = match controlling {
-            crate::ast::GenericControl::Type { ty } => self
-                .resolve_type_name(ty)?
-                .ty
-                .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
+            crate::ast::GenericControl::Type { ty } => {
+                let resolved = self.resolve_type_name(ty)?;
+                self.types
+                    .object_type(resolved, "void generic controlling type")?
+            }
             crate::ast::GenericControl::Expr(expr) => self.unevaluated(expr)?,
         };
         for association in associations {
@@ -933,7 +932,8 @@ impl Lowerer {
             }
             ExprKind::Cast { ty, value } => {
                 let extents = self.type_name_extents(ty)?;
-                let to = self.resolve_type_name(ty)?.ty;
+                let to = self.resolve_type_name(ty)?;
+                let to = self.types.layout(to);
                 let value = self.expr(value)?;
                 let cast = if let Some(to) = to {
                     self.convert(value, to, ConversionReason::Explicit)?
@@ -1330,10 +1330,8 @@ impl Lowerer {
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
-                let atomic = resolved.c.qualifiers.is_atomic;
-                let ty = resolved
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void layout"))?;
+                let atomic = self.types.ctypes.quals(resolved).is_atomic;
+                let ty = self.types.object_type(resolved, "void layout")?;
                 if matches!(e.value, ExprKind::SizeOfType { .. })
                     && matches!(ty, Type::VariableArray { .. })
                 {
@@ -1389,17 +1387,16 @@ impl Lowerer {
                 Ok(value)
             }
             ExprKind::OffsetOf { ty, member } => {
-                let ty = self
-                    .resolve_type_name(ty)?
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void offsetof"))?;
+                let resolved = self.resolve_type_name(ty)?;
+                let ty = self.types.object_type(resolved, "void offsetof")?;
                 let (_, offset) = self.types.offsetof_member(ty.clone(), member)?;
                 Ok(self.layout_constant(e, offset, "offset_of", format!("{ty}.{member}")))
             }
             ExprKind::BitCast { ty, value } => {
+                let resolved = self.resolve_type_name(ty)?;
                 let ty = self
-                    .resolve_type_name(ty)?
-                    .ty
+                    .types
+                    .layout(resolved)
                     .ok_or(ResolveError::Invalid("bit cast to void"))?;
                 if matches!(ty, Type::Array { .. } | Type::VariableArray { .. }) {
                     return Err(ResolveError::Invalid("bit cast to an array type"));
@@ -1458,10 +1455,8 @@ impl Lowerer {
                 if list.ty != Type::VaList {
                     return Err(ResolveError::Unsupported("va_arg of non-va_list"));
                 }
-                let ty = self
-                    .resolve_type_name(ty)?
-                    .ty
-                    .ok_or(ResolveError::Unsupported("va_arg of void"))?;
+                let resolved = self.resolve_type_name(ty)?;
+                let ty = self.types.object_type(resolved, "va_arg of void")?;
                 self.types.storage(ty.clone())?;
                 Ok(self.value(e, ty, ValueKind::VaArg { list }))
             }

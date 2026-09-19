@@ -1,6 +1,6 @@
+use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
-use super::types::{CTypeMetadata, ResolvedType, TypeResolver};
 use crate::ast::{
     DeclarationSpecifiers, Declarator, Expr, ExprKind, FieldItemKind, TagBody, TagSpecifier,
     TypeName, TypeOfOperand, TypeSpecifier,
@@ -13,7 +13,7 @@ impl Lowerer {
         &mut self,
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
-    ) -> Result<ResolvedType, ResolveError> {
+    ) -> Result<QualType, ResolveError> {
         self.prepare_typeof(specifiers, declarator)?;
         self.types.resolve(specifiers, declarator)
     }
@@ -22,15 +22,12 @@ impl Lowerer {
         &mut self,
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
-    ) -> Result<ResolvedType, ResolveError> {
+    ) -> Result<QualType, ResolveError> {
         self.prepare_typeof(specifiers, declarator)?;
         self.types.resolve_parameter(specifiers, declarator)
     }
 
-    pub(super) fn resolve_type_name(
-        &mut self,
-        ty: &TypeName,
-    ) -> Result<ResolvedType, ResolveError> {
+    pub(super) fn resolve_type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
         self.resolve_type(&ty.specifiers, &ty.declarator)
     }
 
@@ -113,7 +110,7 @@ impl Lowerer {
         }
     }
 
-    fn typeof_operand(&mut self, e: &Expr) -> Result<ResolvedType, ResolveError> {
+    fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         let next_id = self.next_id;
         let globals = self.module.globals.len();
         let resolved = self.operand_type(e);
@@ -125,7 +122,7 @@ impl Lowerer {
         resolved
     }
 
-    fn operand_type(&mut self, e: &Expr) -> Result<ResolvedType, ResolveError> {
+    fn operand_type(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => return self.operand_type(inner),
             ExprKind::Generic {
@@ -141,10 +138,7 @@ impl Lowerer {
                     &self.context.target,
                     self.types.features,
                 );
-                return Ok(ResolvedType {
-                    c: self.types.c_type(Some(&ty))?,
-                    ty: Some(ty),
-                });
+                return self.types.reverse_layout(&ty);
             }
             _ => {}
         }
@@ -152,15 +146,9 @@ impl Lowerer {
             if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
                 return Err(ResolveError::Invalid("typeof applied to a bit-field"));
             }
-            let c = self.place_c(e, &place)?;
-            return Ok(ResolvedType {
-                ty: Some(place.ty),
-                c,
-            });
+            return self.place_c(e, &place);
         }
-        let ty = self.value_type(e)?;
-        let c = self.value_c(e)?;
-        Ok(ResolvedType { ty, c })
+        self.value_c(e)
     }
 
     fn value_type(&mut self, e: &Expr) -> Result<Option<Type>, ResolveError> {
@@ -168,7 +156,7 @@ impl Lowerer {
         Ok((ty != Type::Void).then_some(ty))
     }
 
-    fn place_c(&mut self, e: &Expr, place: &Place) -> Result<CTypeMetadata, ResolveError> {
+    fn place_c(&mut self, e: &Expr, place: &Place) -> Result<QualType, ResolveError> {
         let c = match &e.value {
             ExprKind::Paren(inner) => return self.place_c(inner, place),
             ExprKind::Generic {
@@ -181,28 +169,33 @@ impl Lowerer {
             ExprKind::Identifier(_) => self
                 .reference(e)
                 .ok()
-                .and_then(|id| self.c_types.get(&id).cloned()),
+                .and_then(|id| self.c_types.get(&id).copied()),
             ExprKind::CompoundLiteral { ty, .. } => {
-                Some(with_length(self.resolve_type_name(ty)?.c, &place.ty))
+                let resolved = self.resolve_type_name(ty)?;
+                Some(self.with_length(resolved, &place.ty))
             }
             ExprKind::Unary {
                 op: UnaryOp::Deref,
                 operand,
-            } => self.value_c(operand)?.derived_from.map(|c| *c),
+            } => {
+                let pointer = self.value_c(operand)?;
+                self.types.ctypes.pointee(pointer)
+            }
             ExprKind::Index { base, index } => {
                 let pointer = if matches!(self.value_type(base)?, Some(Type::Pointer { .. })) {
                     base
                 } else {
                     index
                 };
-                self.value_c(pointer)?.derived_from.map(|c| *c)
+                let pointer = self.value_c(pointer)?;
+                self.types.ctypes.pointee(pointer)
             }
             ExprKind::Member { base, arrow, .. } => self.member_c(base, *arrow, place)?,
             _ => None,
         };
         match c {
             Some(c) => Ok(c),
-            None => self.types.c_type(Some(&place.ty)),
+            None => self.types.reverse_layout(&place.ty),
         }
     }
 
@@ -211,7 +204,7 @@ impl Lowerer {
         base: &Expr,
         arrow: bool,
         place: &Place,
-    ) -> Result<Option<CTypeMetadata>, ResolveError> {
+    ) -> Result<Option<QualType>, ResolveError> {
         let PlaceKind::Field {
             base: record,
             index,
@@ -222,19 +215,22 @@ impl Lowerer {
         };
         let Some(field) = self
             .record_id(&record.ty)
-            .and_then(|id| self.types.field_c.get(&id))
+            .and_then(|id| self.types.record_fields.get(&id))
             .and_then(|fields| fields.get(*index))
-            .cloned()
+            .copied()
         else {
             return Ok(None);
         };
         let object = if arrow {
-            self.value_c(base)?.derived_from.map(|c| *c)
+            let pointer = self.value_c(base)?;
+            self.types.ctypes.pointee(pointer)
         } else {
             Some(self.place_c(base, record)?)
         };
-        let qualifiers = object.map(|c| c.qualifiers).unwrap_or_default();
-        Ok(Some(field.qualified(qualifiers, Some(&place.ty))))
+        let qualifiers = object
+            .map(|object| self.types.ctypes.quals(object))
+            .unwrap_or_default();
+        Ok(Some(field.with(qualifiers)))
     }
 
     fn record_id(&self, ty: &Type) -> Option<TypeId> {
@@ -248,7 +244,7 @@ impl Lowerer {
         }
     }
 
-    fn value_c(&mut self, e: &Expr) -> Result<CTypeMetadata, ResolveError> {
+    fn value_c(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
         let ty = self.value_type(e)?;
         let c = match &e.value {
             ExprKind::Paren(inner) => return self.value_c(inner),
@@ -261,7 +257,8 @@ impl Lowerer {
             }
             ExprKind::Comma { right, .. } => return self.value_c(right),
             ExprKind::Cast { ty: name, .. } => {
-                Some(self.resolve_type_name(name)?.c.unqualified(ty.as_ref()))
+                let resolved = self.resolve_type_name(name)?;
+                Some(self.types.ctypes.unqualified(resolved))
             }
             ExprKind::Assign { target, .. }
             | ExprKind::Postfix {
@@ -272,19 +269,16 @@ impl Lowerer {
                 operand: target,
             } => {
                 let place = self.place(target)?;
-                Some(self.place_c(target, &place)?.unqualified(Some(&place.ty)))
+                let resolved = self.place_c(target, &place)?;
+                Some(self.types.ctypes.unqualified(resolved))
             }
             ExprKind::Unary {
                 op: UnaryOp::AddrOf,
                 operand,
             } => {
                 let place = self.place(operand)?;
-                let mut resolved = ResolvedType {
-                    c: self.place_c(operand, &place)?,
-                    ty: Some(place.ty),
-                };
-                TypeResolver::apply_pointer(Default::default(), &mut resolved);
-                Some(resolved.c)
+                let resolved = self.place_c(operand, &place)?;
+                Some(self.types.ctypes.pointer(resolved))
             }
             ExprKind::Unary {
                 op: UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot,
@@ -316,22 +310,28 @@ impl Lowerer {
                 ty.as_ref(),
                 &[then_value.as_ref().unwrap_or(condition), else_value],
             )?,
-            ExprKind::Call { callee, .. } => self
-                .value_c(callee)?
-                .derived_from
-                .and_then(|function| function.derived_from)
-                .map(|returned| returned.unqualified(ty.as_ref())),
+            ExprKind::Call { callee, .. } => {
+                let callee = self.value_c(callee)?;
+                let returned = self
+                    .types
+                    .ctypes
+                    .pointee(callee)
+                    .and_then(|function| self.types.ctypes.function_parts(function))
+                    .map(|(returned, ..)| returned);
+                returned.map(|returned| self.types.ctypes.unqualified(returned))
+            }
             _ => match self.place(e) {
                 Ok(place) => {
-                    let c = self.place_c(e, &place)?;
-                    Some(converted(c, place.ty))
+                    let resolved = self.place_c(e, &place)?;
+                    Some(self.types.ctypes.lvalue_conversion(resolved))
                 }
                 Err(_) => None,
             },
         };
-        match c {
-            Some(c) => Ok(c),
-            None => self.types.c_type(ty.as_ref()),
+        match (c, ty) {
+            (Some(c), _) => Ok(c),
+            (None, Some(ty)) => self.types.reverse_layout(&ty),
+            (None, None) => Ok(self.types.ctypes.qual(CTypeKind::Void)),
         }
     }
 
@@ -339,7 +339,7 @@ impl Lowerer {
         &mut self,
         ty: Option<&Type>,
         operands: &[&Expr],
-    ) -> Result<Option<CTypeMetadata>, ResolveError> {
+    ) -> Result<Option<QualType>, ResolveError> {
         for operand in operands {
             if self.value_type(operand)?.as_ref() == ty {
                 return self.value_c(operand).map(Some);
@@ -347,35 +347,21 @@ impl Lowerer {
         }
         Ok(None)
     }
-}
 
-fn converted(c: CTypeMetadata, ty: Type) -> CTypeMetadata {
-    let mut resolved = match ty {
-        Type::Array { element, .. } | Type::VariableArray { element, .. } => ResolvedType {
-            c: c.derived_from
-                .clone()
-                .map_or_else(|| c.clone(), |element_c| *element_c),
-            ty: Some(*element),
-        },
-        function @ Type::Function { .. } => ResolvedType {
-            c,
-            ty: Some(function),
-        },
-        ty => return c.unqualified(Some(&ty)),
-    };
-    TypeResolver::apply_pointer(Default::default(), &mut resolved);
-    resolved.c
-}
-
-pub(super) fn with_length(mut c: CTypeMetadata, ty: &Type) -> CTypeMetadata {
-    if let Type::Array {
-        length: Some(length),
-        ..
-    } = ty
-    {
-        let extent = format!("[{length}]");
-        c.spelling = c.spelling.replacen("[]", &extent, 1);
-        c.canonical = c.canonical.replacen("[]", &extent, 1);
+    pub(super) fn with_length(&mut self, resolved: QualType, ty: &Type) -> QualType {
+        let Type::Array {
+            length: Some(length),
+            ..
+        } = ty
+        else {
+            return resolved;
+        };
+        match self.types.ctypes.element(resolved) {
+            Some((element, Extent::Incomplete)) => self.types.ctypes.qual(CTypeKind::Array {
+                element,
+                extent: Extent::Fixed(*length),
+            }),
+            _ => resolved,
+        }
     }
-    c
 }

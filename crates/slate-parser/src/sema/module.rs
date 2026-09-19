@@ -66,10 +66,8 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     .ok_or(ResolveError::Unsupported("unnamed function"))?;
                 let id = lower.declaration_id(declaration.id, name)?;
                 lower.record_function(id, &function.specifiers, &attributes, true, true)?;
-                let c_return = lower
-                    .resolve_type(&function.specifiers, &Declarator::Abstract)?
-                    .c
-                    .spelling;
+                let return_c = lower.resolve_type(&function.specifiers, &Declarator::Abstract)?;
+                let c_return = lower.types.render(return_c).spelling;
                 let start = lower.types.definitions.len();
                 let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
                 for definition in &lower.types.definitions[start..] {
@@ -77,16 +75,14 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                         .type_spans
                         .insert(definition.id, declaration.derive(definition.clone()));
                 }
-                let ty = resolved
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void function type"))?;
+                let ty = lower.types.object_type(resolved, "void function type")?;
                 let Type::Function { return_type, .. } = &ty else {
                     return Err(ResolveError::Unsupported("function definition declarator"));
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 let abi = lower.abi_signature(&ty, None)?;
                 lower.types.bindings.insert(id, ty);
-                lower.c_types.insert(id, resolved.c.clone());
+                lower.c_types.insert(id, resolved);
                 let mut metadata = vec![
                     (
                         "c_storage".into(),
@@ -94,7 +90,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     ),
                     ("c_return".into(), c_return),
                 ];
-                metadata.extend(resolved.c.entries());
+                metadata.extend(lower.types.render(resolved).entries());
                 let params = function
                     .declarator
                     .function_parameters()
@@ -442,13 +438,9 @@ impl Lowerer {
             let start = self.types.definitions.len();
             let resolved =
                 self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
-            let mut ty = resolved
-                .ty
-                .clone()
-                .ok_or(ResolveError::Unsupported("void parameter"))?;
-            let element_access = super::types::access(resolved.c.qualifiers);
+            let written = self.types.object_type(resolved, "void parameter")?;
             let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
-            let array = match &ty {
+            let array = match &written {
                 Type::Array { length, .. } => Some(ArrayParameter {
                     extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
                     guaranteed: declared_array.is_static,
@@ -459,29 +451,21 @@ impl Lowerer {
                 }),
                 _ => None,
             };
-            let qualifiers = match ty {
-                Type::Array { .. } | Type::VariableArray { .. } => declared_array.qualifiers,
-                _ => resolved.c.qualifiers,
+            let qualifiers = match written {
+                Type::Array { .. } | Type::VariableArray { .. } => declared_array.qualifiers.into(),
+                _ => self.types.ctypes.quals(resolved),
             };
-            let element_const = resolved.c.qualifiers.is_const;
-            ty = match ty {
-                Type::Array { element, .. } | Type::VariableArray { element, .. } => {
-                    self.qualified_pointer(*element, element_const, element_access)
-                }
-                function @ Type::Function { .. } => self.pointer(function, false),
-                other => other,
-            };
+            let adjusted = self.types.adjusted_parameter(resolved, qualifiers);
+            let ty = self.types.ir_type(adjusted);
             let name = parameter.declarator.name();
             let id = match (prologue.is_some(), name) {
                 (true, Some(name)) => self.declaration_id(parameter.id, name)?,
                 _ => self.fresh(),
             };
             self.types.bindings.insert(id, ty.clone());
-            self.c_types
-                .insert(id, TypeResolver::parameter_c(&resolved, qualifiers));
-            self.types
-                .access
-                .insert(id, super::types::access(qualifiers));
+            self.c_types.insert(id, adjusted);
+            let access = self.types.access_of(adjusted);
+            self.types.access.insert(id, access);
             for definition in &self.types.definitions[start..] {
                 self.type_spans
                     .insert(definition.id, parameter.derive(definition.clone()));
@@ -494,7 +478,8 @@ impl Lowerer {
                 is_const: qualifiers.is_const,
                 array,
             });
-            self.module.annotate(&lowered, resolved.c.entries());
+            let c_entries = self.types.render(resolved).entries();
+            self.module.annotate(&lowered, c_entries);
             fixed.push(lowered);
         }
         Ok(Parameters::Prototype {
@@ -557,7 +542,7 @@ impl Lowerer {
             }
             let start = self.types.definitions.len();
             let resolved = self.resolve_type(&item.specifiers, &declarator.declarator)?;
-            let c_entries = resolved.c.entries();
+            let c_entries = self.types.render(resolved).entries();
             if item.specifiers.storage == StorageClass::Typedef {
                 self.types.define_alias(name.into(), resolved)?;
                 for definition in &self.types.definitions[start..] {
@@ -573,21 +558,18 @@ impl Lowerer {
                 self.type_spans
                     .insert(definition.id, declarator.derive(definition.clone()));
             }
-            let qualifiers = resolved.c.qualifiers;
+            let qualifiers = self.types.ctypes.quals(resolved);
             if item.specifiers.is_constexpr && declarator.initializer.is_none() {
                 return Err(ResolveError::Invalid(
                     "constexpr object requires an initializer",
                 ));
             }
-            let ty = resolved
-                .ty
-                .ok_or(ResolveError::Unsupported("void object"))?;
+            let ty = self.types.object_type(resolved, "void object")?;
             let id = self.declaration_id(declarator.id, name)?;
             self.types.bindings.insert(id, ty.clone());
-            self.c_types.insert(id, resolved.c.clone());
-            self.types
-                .access
-                .insert(id, super::types::access(qualifiers));
+            self.c_types.insert(id, resolved);
+            let access = self.types.access_of(resolved);
+            self.types.access.insert(id, access);
             if let Type::Function {
                 return_type,
                 parameters: parameter_types,
@@ -716,8 +698,8 @@ impl Lowerer {
                         ty => ty,
                     };
                     self.types.bindings.insert(id, ty.clone());
-                    self.c_types
-                        .insert(id, super::type_of::with_length(resolved.c.clone(), &ty));
+                    let completed = self.with_length(resolved, &ty);
+                    self.c_types.insert(id, completed);
                     (ty, Some(value))
                 }
             };

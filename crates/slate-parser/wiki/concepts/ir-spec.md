@@ -161,7 +161,13 @@ printed. The expression and name dump modes are separate diagnostic views.
 prints type aliases and function signatures without lowering function bodies.
 Each resolved declaration carries `c`,
 `c_canon` when different, and `typedef_chain` metadata; qualifiers are kept
-as `c_const`, `c_volatile`, `c_restrict`, and `c_atomic` metadata. The shown
+as `c_const`, `c_volatile`, `c_restrict`, and `c_atomic` metadata. All of these
+are rendered from the interned C type (`src/sema/ctype/`), never assembled
+from strings: `c` is the written spelling, `c_canon` desugars typedefs and
+`typeof` (keeping `_Atomic(T)`) and prints function types with adjusted
+parameters (`int(int, const volatile int *, int (*)(int))`), and a C23 `()`
+prints as `(void)`. Function types carry no qualifier metadata. See
+[c-type-layer](c-type-layer.md). The shown
 type is target concrete, so `size_t` and `unsigned long` both display as
 `u64` on x86_64 SysV while their C metadata remains distinct.
 Add `--compact-ir` to either module command for a typed view that hides

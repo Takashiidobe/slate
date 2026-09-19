@@ -2,131 +2,27 @@ use std::collections::HashMap;
 
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, DeclarationSpecifiers, Declarator, EnumItemKind,
-    FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, Qualifiers, TagBody,
-    TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand,
-    TypeSpecifier,
+    FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, TagBody, TagDefinition,
+    TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::const_expr::Encoding;
 use crate::ir::{
     Access, BindingId, BitFieldUnit, Enumerator, Field, FloatType, Number, NumericType, RecordKind,
     RecordLayout, Type, TypeDefinition, TypeDefinitionKind, TypeId, Value, ValueKind,
-    VariableExtent,
 };
 use crate::target_info::{LongDoubleFormat, StorageLayout, TargetInfo};
 use num_bigint::{BigInt, BigUint};
 
+use super::ctype::{
+    CTypeKind, CTypeMetadata, CTypes, Extent, FloatKind, IntRank, QualType, Qualifiers,
+};
 use super::numeric::ResolveError;
 use crate::standard_features::StandardFeatures;
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CTypeMetadata {
-    pub spelling: String,
-    pub canonical: String,
-    pub typedef_chain: Vec<String>,
-    pub qualifiers: Qualifiers,
-    pub derived_from: Option<Box<CTypeMetadata>>,
-}
-
-impl CTypeMetadata {
-    fn plain(spelling: String) -> Self {
-        Self {
-            canonical: spelling.clone(),
-            spelling,
-            typedef_chain: Vec::new(),
-            qualifiers: Qualifiers::default(),
-            derived_from: None,
-        }
-    }
-
-    pub(super) fn qualified(mut self, qualifiers: Qualifiers, ty: Option<&Type>) -> Self {
-        let words = qualifier_spelling(Qualifiers {
-            is_const: qualifiers.is_const && !self.qualifiers.is_const,
-            is_volatile: qualifiers.is_volatile && !self.qualifiers.is_volatile,
-            is_restrict: qualifiers.is_restrict && !self.qualifiers.is_restrict,
-            is_atomic: qualifiers.is_atomic && !self.qualifiers.is_atomic,
-        });
-        if words.is_empty() {
-            return self;
-        }
-        let pointer = matches!(ty, Some(Type::Pointer { .. }));
-        for spelling in [&mut self.spelling, &mut self.canonical] {
-            match top_pointer_star(spelling).filter(|_| pointer) {
-                Some(star) => {
-                    let words = if star + 1 == spelling.len() {
-                        words.trim_end()
-                    } else {
-                        &words
-                    };
-                    spelling.insert_str(star + 1, words);
-                }
-                None => spelling.insert_str(0, &words),
-            }
-        }
-        self.qualifiers = merge_qualifiers(self.qualifiers, qualifiers);
-        self
-    }
-
-    pub(super) fn unqualified(&self, ty: Option<&Type>) -> Self {
-        let pointer = matches!(ty, Some(Type::Pointer { .. }));
-        let derived_from = match ty {
-            Some(Type::Array { element, .. } | Type::VariableArray { element, .. }) => self
-                .derived_from
-                .as_ref()
-                .map(|element_c| Box::new(element_c.unqualified(Some(element)))),
-            _ => self.derived_from.clone(),
-        };
-        if self.qualifiers == Qualifiers::default() && derived_from == self.derived_from {
-            return self.clone();
-        }
-        let canonical = strip_qualifiers(&self.canonical, pointer);
-        let spelling = strip_qualifiers(&self.spelling, pointer);
-        let sugared = spelling != self.spelling;
-        Self {
-            spelling: if sugared { spelling } else { canonical.clone() },
-            canonical,
-            typedef_chain: if sugared {
-                self.typedef_chain.clone()
-            } else {
-                Vec::new()
-            },
-            qualifiers: Qualifiers::default(),
-            derived_from,
-        }
-    }
-
-    pub fn entries(&self) -> Vec<(String, String)> {
-        let mut entries = vec![("c".into(), self.spelling.clone())];
-        if self.canonical != self.spelling {
-            entries.push(("c_canon".into(), self.canonical.clone()));
-        }
-        if !self.typedef_chain.is_empty() {
-            entries.push(("typedef_chain".into(), self.typedef_chain.join(" -> ")));
-        }
-        if self.qualifiers.is_const {
-            entries.push(("c_const".into(), "true".into()));
-        }
-        if self.qualifiers.is_volatile {
-            entries.push(("c_volatile".into(), "true".into()));
-        }
-        if self.qualifiers.is_restrict {
-            entries.push(("c_restrict".into(), "true".into()));
-        }
-        if self.qualifiers.is_atomic {
-            entries.push(("c_atomic".into(), "true".into()));
-        }
-        entries
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ResolvedType {
-    pub ty: Option<Type>,
-    pub c: CTypeMetadata,
-}
 
 pub struct TypeResolver {
     target: TargetInfo,
     pub features: StandardFeatures,
+    pub ctypes: CTypes,
     tags: Vec<crate::ast::Span<TagDefinition>>,
     tag_ids: HashMap<TagId, TypeId>,
     ordinary: Vec<HashMap<String, Ordinary>>,
@@ -137,17 +33,18 @@ pub struct TypeResolver {
     pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
     pub(super) bindings: HashMap<BindingId, Type>,
     pub(super) access: HashMap<BindingId, Access>,
-    pub(super) typeof_operands: HashMap<crate::ast::NodeId, ResolvedType>,
+    pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) enumerators: HashMap<crate::ast::NodeId, Value>,
-    pub(super) field_c: HashMap<TypeId, Vec<CTypeMetadata>>,
+    pub(super) record_fields: HashMap<TypeId, Vec<QualType>>,
+    pub(super) enum_underlying: HashMap<TypeId, QualType>,
     prototype_scope: bool,
 }
 
 pub(super) enum Ordinary {
     Declared,
-    Alias(ResolvedType),
+    Alias(QualType),
     Constant(Value),
-    Object(Type, Access),
+    Object(QualType),
 }
 
 impl TypeResolver {
@@ -155,6 +52,7 @@ impl TypeResolver {
         Self {
             target,
             features: StandardFeatures::default(),
+            ctypes: CTypes::default(),
             tags: Vec::new(),
             tag_ids: HashMap::new(),
             ordinary: vec![HashMap::new()],
@@ -167,9 +65,30 @@ impl TypeResolver {
             access: HashMap::new(),
             typeof_operands: HashMap::new(),
             enumerators: HashMap::new(),
-            field_c: HashMap::new(),
+            record_fields: HashMap::new(),
+            enum_underlying: HashMap::new(),
             prototype_scope: false,
         }
+    }
+
+    pub fn ir_type(&self, q: QualType) -> Type {
+        self.ctypes.ir_type(q, &self.target)
+    }
+
+    pub fn layout(&self, q: QualType) -> Option<Type> {
+        (!self.ctypes.is_void(q)).then(|| self.ir_type(q))
+    }
+
+    pub fn object_type(&self, q: QualType, reason: &'static str) -> Result<Type, ResolveError> {
+        self.layout(q).ok_or(ResolveError::Unsupported(reason))
+    }
+
+    pub fn render(&self, q: QualType) -> CTypeMetadata {
+        self.ctypes.render(q, &self.definitions)
+    }
+
+    pub fn access_of(&self, q: QualType) -> Access {
+        self.ctypes.access(q)
     }
 
     pub fn with_tags(target: TargetInfo, unit: &TranslationUnit) -> Self {
@@ -327,10 +246,8 @@ impl TypeResolver {
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
-                let atomic = resolved.c.qualifiers.is_atomic;
-                let ty = resolved
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void layout"))?;
+                let atomic = self.ctypes.quals(resolved).is_atomic;
+                let ty = self.object_type(resolved, "void layout")?;
                 let layout = self.qualified_storage(ty, atomic)?;
                 let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
@@ -343,10 +260,8 @@ impl TypeResolver {
                 )
             }
             ExprKind::OffsetOf { ty, member } => {
-                let ty = self
-                    .resolve(&ty.specifiers, &ty.declarator)?
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void offsetof"))?;
+                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let ty = self.object_type(ty, "void offsetof")?;
                 let (_, n) = self.offsetof_member(ty, member)?;
                 (
                     Type::integer(self.target.pointer_width, false),
@@ -396,10 +311,8 @@ impl TypeResolver {
                 return self.constant_value(selected);
             }
             ExprKind::Cast { ty, value } => {
-                let ty = self
-                    .resolve(&ty.specifiers, &ty.declarator)?
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void constant cast"))?;
+                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let ty = self.object_type(ty, "void constant cast")?;
                 let value = context.convert(
                     self.constant_value(value)?,
                     ty,
@@ -432,10 +345,10 @@ impl TypeResolver {
     ) -> Result<&'e crate::ast::Expr, ResolveError> {
         use crate::ast::GenericControl;
         let controlling = match controlling {
-            GenericControl::Type { ty } => self
-                .resolve(&ty.specifiers, &ty.declarator)?
-                .ty
-                .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
+            GenericControl::Type { ty } => {
+                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                self.object_type(ty, "void generic controlling type")?
+            }
             GenericControl::Expr(expr) => self.assertion_operand_type(expr)?.0,
         };
         self.select_association(controlling, associations)
@@ -467,10 +380,8 @@ impl TypeResolver {
             match association {
                 GenericAssociation::Default(value) => fallback = Some(value),
                 GenericAssociation::Type { ty, value } => {
-                    let ty = self
-                        .resolve(&ty.specifiers, &ty.declarator)?
-                        .ty
-                        .ok_or(ResolveError::Unsupported("void generic association type"))?;
+                    let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                    let ty = self.object_type(ty, "void generic association type")?;
                     if ty == controlling {
                         if selected.is_some() {
                             return Err(ResolveError::Unsupported("ambiguous generic selection"));
@@ -509,7 +420,7 @@ impl TypeResolver {
                 .object(e)
                 .ok_or(ResolveError::Unsupported("untyped binding")),
             ExprKind::Identifier(name) => match self.lookup(name) {
-                Some(Ordinary::Object(ty, access)) => Ok((ty.clone(), *access)),
+                Some(Ordinary::Object(q)) => Ok((self.ir_type(*q), self.access_of(*q))),
                 Some(Ordinary::Constant(value)) => Ok((value.ty.clone(), Access::default())),
                 _ => Err(ResolveError::Unsupported(
                     "unknown or unsupported sizeof operand type",
@@ -521,10 +432,8 @@ impl TypeResolver {
             )),
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
-                let literal_access = access(resolved.c.qualifiers);
-                let declared = resolved
-                    .ty
-                    .ok_or(ResolveError::Unsupported("void compound literal"))?;
+                let literal_access = self.access_of(resolved);
+                let declared = self.object_type(resolved, "void compound literal")?;
                 match declared {
                     Type::Array {
                         element,
@@ -645,18 +554,15 @@ impl TypeResolver {
         Ok((field.ty.clone(), offset))
     }
 
-    pub fn define_alias(
-        &mut self,
-        name: String,
-        resolved: ResolvedType,
-    ) -> Result<(), ResolveError> {
-        let ty = resolved
-            .ty
-            .clone()
-            .ok_or(ResolveError::Unsupported("void typedef"))?;
+    pub fn define_alias(&mut self, name: String, resolved: QualType) -> Result<(), ResolveError> {
+        let ty = self.object_type(resolved, "void typedef")?;
         let id = self.push(TypeDefinitionKind::Alias(ty));
         self.definitions[id.0 as usize].name = Some(name.clone());
-        self.declare(&name, Ordinary::Alias(resolved));
+        let alias = self.ctypes.qual(CTypeKind::Typedef {
+            name: name.clone(),
+            underlying: resolved,
+        });
+        self.declare(&name, Ordinary::Alias(alias));
         Ok(())
     }
 
@@ -664,77 +570,51 @@ impl TypeResolver {
         &mut self,
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
-    ) -> Result<ResolvedType, ResolveError> {
-        let mut resolved = self.base(&specifiers.ty)?;
-        let prefix = qualifier_spelling(specifiers.qualifiers);
-        resolved.c.spelling.insert_str(0, &prefix);
-        resolved.c.canonical.insert_str(0, &prefix);
-        resolved.c.qualifiers = merge_qualifiers(resolved.c.qualifiers, specifiers.qualifiers);
-        self.derive(declarator, &mut resolved)?;
-        if specifiers.is_constexpr {
-            resolved.c = resolved.c.qualified(
-                Qualifiers {
-                    is_const: true,
-                    ..Qualifiers::default()
-                },
-                resolved.ty.as_ref(),
-            );
-        }
-        Ok(resolved)
+    ) -> Result<QualType, ResolveError> {
+        let base = self
+            .base(&specifiers.ty)?
+            .with(specifiers.qualifiers.into());
+        let resolved = self.derive(declarator, base)?;
+        Ok(if specifiers.is_constexpr {
+            resolved.with(Qualifiers::CONST)
+        } else {
+            resolved
+        })
     }
 
-    fn base(&mut self, specifier: &TypeSpecifier) -> Result<ResolvedType, ResolveError> {
-        let scalar = match specifier {
-            TypeSpecifier::Void => {
-                return Ok(ResolvedType {
-                    ty: None,
-                    c: CTypeMetadata::plain("void".into()),
-                });
-            }
+    fn base(&mut self, specifier: &TypeSpecifier) -> Result<QualType, ResolveError> {
+        let kind = match specifier {
+            TypeSpecifier::Void => CTypeKind::Void,
             TypeSpecifier::Atomic(inner) => {
                 let inner = self.resolve(&inner.specifiers, &inner.declarator)?;
-                return Ok(ResolvedType {
-                    ty: inner.ty,
-                    c: CTypeMetadata {
-                        spelling: format!("_Atomic({})", inner.c.spelling),
-                        canonical: format!("_Atomic({})", inner.c.canonical),
-                        typedef_chain: Vec::new(),
-                        qualifiers: Qualifiers {
-                            is_atomic: true,
-                            ..Qualifiers::default()
-                        },
-                        derived_from: inner.c.derived_from,
-                    },
-                });
+                CTypeKind::AtomicSpecifier(inner)
             }
             TypeSpecifier::TypeOf(operand) | TypeSpecifier::TypeOfUnqual(operand) => {
                 let unqualified = matches!(specifier, TypeSpecifier::TypeOfUnqual(_));
                 let resolved = self.typeof_operand(operand)?;
                 let spelling = match operand {
                     TypeOfOperand::Expression(expr) => expr.value.to_string(),
-                    TypeOfOperand::Type(_) => resolved.c.spelling.clone(),
-                };
-                let mut c = if unqualified {
-                    resolved.c.unqualified(resolved.ty.as_ref())
-                } else {
-                    resolved.c
+                    TypeOfOperand::Type(_) => self.ctypes.spelling(resolved, &self.definitions),
                 };
                 let keyword = if unqualified {
                     "typeof_unqual"
                 } else {
                     "typeof"
                 };
-                c.spelling = format!("{keyword}({spelling})");
-                return Ok(ResolvedType { ty: resolved.ty, c });
+                CTypeKind::TypeOf {
+                    spelling: format!("{keyword}({spelling})"),
+                    underlying: if unqualified {
+                        self.ctypes.unqualified(resolved)
+                    } else {
+                        resolved
+                    },
+                }
             }
             TypeSpecifier::Named(name) => {
                 let Some(Ordinary::Alias(alias)) = self.lookup(name) else {
                     return Err(ResolveError::Unsupported("unknown typedef"));
                 };
-                let mut resolved = alias.clone();
-                resolved.c.spelling = name.clone();
-                resolved.c.typedef_chain.insert(0, name.clone());
-                return Ok(resolved);
+                return Ok(*alias);
             }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
                 let tag = self
@@ -743,11 +623,8 @@ impl TypeResolver {
                     .find(|tag| tag.value.id == *id)
                     .cloned()
                     .ok_or(ResolveError::Unsupported("unknown tag definition"))?;
-                let ty = Type::Defined(self.define_tag(&tag.value)?);
-                return Ok(ResolvedType {
-                    ty: Some(ty),
-                    c: CTypeMetadata::plain(tag_spelling(tag.kind, tag.name.as_deref())),
-                });
+                let id = self.define_tag(&tag.value)?;
+                tag_kind(tag.kind, id)
             }
             TypeSpecifier::Tag(TagSpecifier::Reference {
                 kind,
@@ -785,139 +662,103 @@ impl TypeResolver {
                         }
                     )
                 {
-                    let underlying = self
-                        .resolve(&fixed_type.specifiers, &fixed_type.declarator)?
-                        .ty
-                        .ok_or(ResolveError::Unsupported("void enum underlying type"))?;
-                    let layout = self.storage(underlying.clone())?;
+                    let underlying =
+                        self.resolve(&fixed_type.specifiers, &fixed_type.declarator)?;
+                    let underlying_ty =
+                        self.object_type(underlying, "void enum underlying type")?;
+                    let layout = self.storage(underlying_ty.clone())?;
+                    self.enum_underlying.insert(id, underlying);
                     self.definitions[id.0 as usize].kind = TypeDefinitionKind::Enum {
-                        underlying: Some(underlying),
+                        underlying: Some(underlying_ty),
                         enumerators: None,
                         layout: Some(layout),
                     };
                 }
-                return Ok(ResolvedType {
-                    ty: Some(Type::Defined(id)),
-                    c: CTypeMetadata::plain(tag_spelling(*kind, Some(name))),
-                });
+                tag_kind(*kind, id)
             }
-            TypeSpecifier::Bool => (Type::Bool, "_Bool".into()),
+            TypeSpecifier::Bool => CTypeKind::Bool,
             TypeSpecifier::Complex(inner) => {
-                let ResolvedType { ty: component, c } = self.base(inner)?;
-                let Some(Type::Numeric(component)) = component else {
+                let component = self.base(inner)?;
+                let component = self.ctypes.canonical(component).ty;
+                if !matches!(
+                    self.ctypes.kind(component),
+                    CTypeKind::Char
+                        | CTypeKind::SChar
+                        | CTypeKind::UChar
+                        | CTypeKind::Int { .. }
+                        | CTypeKind::BitInt { .. }
+                        | CTypeKind::Float(_)
+                ) {
                     return Err(ResolveError::Unsupported("complex component type"));
-                };
-                return Ok(ResolvedType {
-                    ty: Some(Type::Complex(component)),
-                    c: CTypeMetadata {
-                        spelling: format!("_Complex {}", c.spelling),
-                        canonical: format!("_Complex {}", c.canonical),
-                        ..c
-                    },
-                });
+                }
+                CTypeKind::Complex(component)
             }
             TypeSpecifier::Imaginary(inner) => {
-                let ResolvedType { ty: component, c } = self.base(inner)?;
-                let Some(Type::Numeric(NumericType::Float(format))) = component else {
-                    return Err(ResolveError::Invalid(
-                        "imaginary component must be a real floating type",
-                    ));
-                };
-                if format.is_decimal() {
-                    return Err(ResolveError::Invalid(
-                        "imaginary component must be a real floating type",
-                    ));
+                let component = self.base(inner)?;
+                match self.ctypes.canonical_kind(component) {
+                    CTypeKind::Float(kind) if !kind.is_decimal() => CTypeKind::Imaginary(*kind),
+                    _ => {
+                        return Err(ResolveError::Invalid(
+                            "imaginary component must be a real floating type",
+                        ));
+                    }
                 }
-                return Ok(ResolvedType {
-                    ty: Some(Type::Imaginary(format)),
-                    c: CTypeMetadata {
-                        spelling: format!("_Imaginary {}", c.spelling),
-                        canonical: format!("_Imaginary {}", c.canonical),
-                        ..c
-                    },
-                });
             }
-            TypeSpecifier::Integer(IntegerType::Char { signed }) => {
-                let spelling = match signed {
-                    None => "char",
-                    Some(true) => "signed char",
-                    Some(false) => "unsigned char",
-                };
-                (
-                    Type::integer(8, signed.unwrap_or(self.target.char_signed)),
-                    spelling.into(),
-                )
-            }
-            TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => {
-                let (name, width) = match rank {
-                    IntegerRank::Short => ("short", self.target.short_width),
-                    IntegerRank::Int => ("int", self.target.int_width),
-                    IntegerRank::Long => ("long", self.target.long_width),
-                    IntegerRank::LongLong => ("long long", self.target.long_long_width),
-                    IntegerRank::Int128 => ("__int128", 128),
-                };
-                let spelling = if *signed {
-                    name.into()
-                } else {
-                    format!("unsigned {name}")
-                };
-                (Type::integer(width, *signed), spelling)
-            }
+            TypeSpecifier::Integer(IntegerType::Char { signed }) => match signed {
+                None => CTypeKind::Char,
+                Some(true) => CTypeKind::SChar,
+                Some(false) => CTypeKind::UChar,
+            },
+            TypeSpecifier::Integer(IntegerType::Ranked { rank, signed }) => CTypeKind::Int {
+                rank: match rank {
+                    IntegerRank::Short => IntRank::Short,
+                    IntegerRank::Int => IntRank::Int,
+                    IntegerRank::Long => IntRank::Long,
+                    IntegerRank::LongLong => IntRank::LongLong,
+                    IntegerRank::Int128 => IntRank::Int128,
+                },
+                signed: *signed,
+            },
             TypeSpecifier::Integer(IntegerType::BitInt { width, signed }) => {
                 let width = u32::try_from(self.constant_integer(width)?)
                     .map_err(|_| ResolveError::Unsupported("invalid _BitInt width"))?;
                 if width < if *signed { 2 } else { 1 } || width > 65535 {
                     return Err(ResolveError::Unsupported("invalid _BitInt width"));
                 }
-                (
-                    Type::bit_precise(width, *signed),
-                    format!("{}_BitInt({width})", if *signed { "" } else { "unsigned " }),
-                )
+                CTypeKind::BitInt {
+                    width,
+                    signed: *signed,
+                }
             }
-            TypeSpecifier::Floating(float) => {
-                let (kind, spelling) = match float {
-                    FloatingType::Float16 | FloatingType::Fp16 => (FloatType::F16, "_Float16"),
-                    FloatingType::Float => (FloatType::F32, "float"),
-                    FloatingType::Double => (FloatType::F64, "double"),
-                    FloatingType::LongDouble => (
-                        match self.target.long_double {
-                            LongDoubleFormat::Binary64 => FloatType::F64,
-                            LongDoubleFormat::X87 => FloatType::F80,
-                            LongDoubleFormat::Binary128 => FloatType::F128,
-                        },
-                        "long double",
-                    ),
-                    FloatingType::Float128 | FloatingType::Float128Ext => {
-                        (FloatType::F128, "__float128")
-                    }
-                    FloatingType::Decimal32 => (FloatType::D32, "_Decimal32"),
-                    FloatingType::Decimal64 => (FloatType::D64, "_Decimal64"),
-                    FloatingType::Decimal128 => (FloatType::D128, "_Decimal128"),
-                    _ => return Err(ResolveError::Unsupported("floating type")),
-                };
-                (Type::Numeric(NumericType::Float(kind)), spelling.into())
-            }
+            TypeSpecifier::Floating(float) => CTypeKind::Float(match float {
+                FloatingType::Float16 => FloatKind::Float16,
+                FloatingType::Fp16 => FloatKind::Fp16,
+                FloatingType::Float => FloatKind::Float,
+                FloatingType::Double => FloatKind::Double,
+                FloatingType::LongDouble => FloatKind::LongDouble,
+                FloatingType::Float128 | FloatingType::Float128Ext => FloatKind::Float128,
+                FloatingType::Decimal32 => FloatKind::Decimal32,
+                FloatingType::Decimal64 => FloatKind::Decimal64,
+                FloatingType::Decimal128 => FloatKind::Decimal128,
+                _ => return Err(ResolveError::Unsupported("floating type")),
+            }),
             TypeSpecifier::Vector(vector) => {
-                let ResolvedType { ty: element, c } = self.base(&vector.element)?;
-                let element = match element {
-                    Some(Type::Numeric(
-                        element @ NumericType::Integer {
-                            bit_precise: false, ..
-                        },
-                    )) => element,
-                    Some(Type::Numeric(element @ NumericType::Float(format)))
-                        if !format.is_decimal() =>
-                    {
-                        element
-                    }
-                    _ => {
-                        return Err(ResolveError::Invalid(
-                            "vector element must be an integer or real floating type",
-                        ));
-                    }
+                let element = self.base(&vector.element)?;
+                let valid = match self.ctypes.canonical_kind(element) {
+                    CTypeKind::Char
+                    | CTypeKind::SChar
+                    | CTypeKind::UChar
+                    | CTypeKind::Int { .. } => true,
+                    CTypeKind::Float(kind) => !kind.is_decimal(),
+                    _ => false,
                 };
-                let element_bytes = self.storage(Type::Numeric(element))?.size_bytes;
-                let (requested, lanes) = match &vector.size {
+                if !valid {
+                    return Err(ResolveError::Invalid(
+                        "vector element must be an integer or real floating type",
+                    ));
+                }
+                let element_bytes = self.storage(self.ir_type(element))?.size_bytes;
+                let (bytes, lanes) = match &vector.size {
                     crate::ast::VectorSize::Bytes(expression) => {
                         let bytes = self
                             .vector_count(expression, "vector_size must be a positive constant")?;
@@ -938,82 +779,79 @@ impl TypeResolver {
                 };
                 let lanes = u32::try_from(lanes)
                     .map_err(|_| ResolveError::Invalid("vector lane count is too large"))?;
-                return Ok(ResolvedType {
-                    ty: Some(Type::Vector { element, lanes }),
-                    c: CTypeMetadata::plain(vector_spelling(&c.spelling, requested)),
-                });
+                CTypeKind::Vector {
+                    element: self.ctypes.canonical(element).local_unqualified(),
+                    lanes,
+                    bytes,
+                }
             }
-            TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => {
-                (Type::VaList, "__builtin_va_list".into())
-            }
+            TypeSpecifier::TargetBuiltin(name) if name == "__builtin_va_list" => CTypeKind::VaList,
             _ => return Err(ResolveError::Unsupported("type specifier")),
         };
-        Ok(ResolvedType {
-            ty: Some(scalar.0),
-            c: CTypeMetadata::plain(scalar.1),
-        })
+        Ok(self.ctypes.qual(kind))
     }
 
-    fn typeof_operand(&mut self, operand: &TypeOfOperand) -> Result<ResolvedType, ResolveError> {
+    fn typeof_operand(&mut self, operand: &TypeOfOperand) -> Result<QualType, ResolveError> {
         match operand {
             TypeOfOperand::Type(ty) => self.resolve(&ty.specifiers, &ty.declarator),
             TypeOfOperand::Expression(expr) => {
                 if let Some(resolved) = self.typeof_operands.get(&expr.id) {
-                    return Ok(resolved.clone());
+                    return Ok(*resolved);
                 }
-                let (ty, _) = self.assertion_operand_type(expr)?;
-                Ok(ResolvedType {
-                    c: self.c_type(Some(&ty))?,
-                    ty: Some(ty),
-                })
+                let (ty, access) = self.assertion_operand_type(expr)?;
+                let resolved = self.reverse_layout(&ty)?;
+                Ok(resolved.with(Qualifiers {
+                    is_volatile: access.volatile,
+                    is_atomic: access.atomic,
+                    ..Qualifiers::NONE
+                }))
             }
         }
     }
 
-    pub(super) fn c_type(&self, ty: Option<&Type>) -> Result<CTypeMetadata, ResolveError> {
-        let Some(ty) = ty else {
-            return Ok(CTypeMetadata::plain("void".into()));
-        };
-        Ok(match ty {
-            Type::Void => CTypeMetadata::plain("void".into()),
-            Type::Bool => CTypeMetadata::plain("_Bool".into()),
-            Type::VaList => CTypeMetadata::plain("__builtin_va_list".into()),
-            Type::Numeric(numeric) => CTypeMetadata::plain(self.numeric_spelling(*numeric)?),
+    pub(super) fn reverse_layout(&mut self, ty: &Type) -> Result<QualType, ResolveError> {
+        let kind = match ty {
+            Type::Void => CTypeKind::Void,
+            Type::Bool => CTypeKind::Bool,
+            Type::VaList => CTypeKind::VaList,
+            Type::Numeric(numeric) => self.numeric_kind(*numeric)?,
             Type::Complex(numeric) => {
-                CTypeMetadata::plain(format!("_Complex {}", self.numeric_spelling(*numeric)?))
+                let component = self.numeric_kind(*numeric)?;
+                CTypeKind::Complex(self.ctypes.intern(component))
             }
-            Type::Imaginary(format) => CTypeMetadata::plain(format!(
-                "_Imaginary {}",
-                self.numeric_spelling(NumericType::Float(*format))?
-            )),
-            Type::Vector { element, lanes } => CTypeMetadata::plain(vector_spelling(
-                &self.numeric_spelling(*element)?,
-                self.storage(Type::Numeric(*element))?.size_bytes * u64::from(*lanes),
-            )),
+            Type::Imaginary(format) => match self.numeric_kind(NumericType::Float(*format))? {
+                CTypeKind::Float(kind) => CTypeKind::Imaginary(kind),
+                _ => return Err(ResolveError::Unsupported("imaginary component")),
+            },
+            Type::Vector { element, lanes } => {
+                let bytes = self.storage(Type::Numeric(*element))?.size_bytes * u64::from(*lanes);
+                let element = self.numeric_kind(*element)?;
+                CTypeKind::Vector {
+                    element: self.ctypes.qual(element),
+                    lanes: *lanes,
+                    bytes,
+                }
+            }
             Type::Defined(id) => {
                 let definition = self
                     .definitions
                     .get(id.0 as usize)
                     .ok_or(ResolveError::Unsupported("unknown type definition"))?;
-                let name = definition.name.as_deref();
                 match &definition.kind {
                     TypeDefinitionKind::Alias(inner) => {
-                        let name = name.ok_or(ResolveError::Unsupported("unnamed typedef"))?;
-                        let mut c = self.c_type(Some(inner))?;
-                        c.spelling = name.to_owned();
-                        c.typedef_chain.insert(0, name.to_owned());
-                        c
+                        let name = definition
+                            .name
+                            .clone()
+                            .ok_or(ResolveError::Unsupported("unnamed typedef"))?;
+                        let inner = inner.clone();
+                        let underlying = self.reverse_layout(&inner)?;
+                        CTypeKind::Typedef { name, underlying }
                     }
-                    TypeDefinitionKind::Record { kind, .. } => {
-                        let kind = match kind {
-                            RecordKind::Struct => TagKind::Struct,
-                            RecordKind::Union => TagKind::Union,
-                        };
-                        CTypeMetadata::plain(tag_spelling(kind, name))
-                    }
-                    TypeDefinitionKind::Enum { .. } => {
-                        CTypeMetadata::plain(tag_spelling(TagKind::Enum, name))
-                    }
+                    TypeDefinitionKind::Record { kind, .. } => CTypeKind::Record {
+                        id: *id,
+                        union: matches!(kind, RecordKind::Union),
+                    },
+                    TypeDefinitionKind::Enum { .. } => CTypeKind::Enum(*id),
                 }
             }
             Type::Pointer {
@@ -1021,281 +859,157 @@ impl TypeResolver {
                 is_const,
                 access,
             } => {
-                let qualifiers = Qualifiers {
+                let pointee = self.reverse_layout(pointee)?.with(Qualifiers {
                     is_const: *is_const,
                     is_volatile: access.volatile,
                     is_atomic: access.atomic,
                     is_restrict: false,
-                };
-                let mut resolved = ResolvedType {
-                    c: self
-                        .c_type(Some(pointee))?
-                        .qualified(qualifiers, Some(pointee)),
-                    ty: Some((**pointee).clone()),
-                };
-                Self::apply_pointer(Qualifiers::default(), &mut resolved);
-                resolved.c
+                });
+                CTypeKind::Pointer(pointee)
             }
-            Type::Array { .. } | Type::VariableArray { .. } => {
-                let mut extents = Vec::new();
-                let mut core = ty;
-                loop {
-                    match core {
-                        Type::Array { element, length } => {
-                            extents.push(length.map_or_else(|| "[]".into(), |n| format!("[{n}]")));
-                            core = element;
-                        }
-                        Type::VariableArray { element, .. } => {
-                            extents.push("[*]".to_owned());
-                            core = element;
-                        }
-                        _ => break,
-                    }
-                }
-                let base = self.c_type(Some(core))?;
-                let mut c = base.clone();
-                let mut suffix = String::new();
-                for extent in extents.iter().rev() {
-                    suffix.insert_str(0, extent);
-                    let element_c = std::mem::replace(
-                        &mut c,
-                        CTypeMetadata {
-                            spelling: format!("{}{suffix}", base.spelling),
-                            canonical: format!("{}{suffix}", base.canonical),
-                            typedef_chain: base.typedef_chain.clone(),
-                            qualifiers: base.qualifiers,
-                            derived_from: None,
-                        },
-                    );
-                    c.derived_from = Some(Box::new(element_c));
-                }
-                c
-            }
+            Type::Array { element, length } => CTypeKind::Array {
+                element: self.reverse_layout(element)?,
+                extent: length.map_or(Extent::Incomplete, Extent::Fixed),
+            },
+            Type::VariableArray { element, extent } => CTypeKind::Array {
+                element: self.reverse_layout(element)?,
+                extent: Extent::Variable(match extent {
+                    crate::ir::VariableExtent::Captured(binding) => Some(*binding),
+                    crate::ir::VariableExtent::Unspecified => None,
+                }),
+            },
             Type::Function {
                 return_type,
                 parameters,
                 variadic,
                 prototyped,
             } => {
-                let return_c = self.c_type(return_type.as_deref())?;
-                let mut spellings = parameters
-                    .iter()
-                    .map(|parameter| self.c_type(Some(parameter)).map(|c| c.spelling))
-                    .collect::<Result<Vec<_>, _>>()?;
-                let suffix = if !prototyped {
-                    "()".to_owned()
-                } else if spellings.is_empty() && !variadic {
-                    "(void)".to_owned()
-                } else {
-                    if *variadic {
-                        spellings.push("...".into());
-                    }
-                    format!("({})", spellings.join(", "))
+                let ret = match return_type {
+                    Some(ty) => self.reverse_layout(ty)?,
+                    None => self.ctypes.qual(CTypeKind::Void),
                 };
-                CTypeMetadata {
-                    spelling: format!("{}{suffix}", return_c.spelling),
-                    canonical: format!("{}{suffix}", return_c.canonical),
-                    typedef_chain: return_c.typedef_chain.clone(),
-                    qualifiers: return_c.qualifiers,
-                    derived_from: Some(Box::new(return_c)),
+                let params = parameters
+                    .iter()
+                    .map(|parameter| self.reverse_layout(parameter))
+                    .collect::<Result<Vec<_>, _>>()?;
+                CTypeKind::Function {
+                    ret,
+                    params,
+                    variadic: *variadic,
+                    prototyped: *prototyped,
                 }
             }
-        })
+        };
+        Ok(self.ctypes.qual(kind))
     }
 
-    fn numeric_spelling(&self, numeric: NumericType) -> Result<String, ResolveError> {
+    fn numeric_kind(&self, numeric: NumericType) -> Result<CTypeKind, ResolveError> {
         let (width, signed) = match numeric {
             NumericType::Integer {
                 width,
                 signed,
                 bit_precise: true,
-            } => {
-                let sign = if signed { "" } else { "unsigned " };
-                return Ok(format!("{sign}_BitInt({width})"));
-            }
+            } => return Ok(CTypeKind::BitInt { width, signed }),
             NumericType::Integer { width, signed, .. } => (width, signed),
             NumericType::Float(format) => {
-                return Ok(match format {
-                    FloatType::F16 => "_Float16",
-                    FloatType::F32 => "float",
-                    FloatType::F64 => "double",
-                    FloatType::F80 => "long double",
+                return Ok(CTypeKind::Float(match format {
+                    FloatType::F16 => FloatKind::Float16,
+                    FloatType::F32 => FloatKind::Float,
+                    FloatType::F64 => FloatKind::Double,
+                    FloatType::F80 => FloatKind::LongDouble,
                     FloatType::F128 if self.target.long_double == LongDoubleFormat::Binary128 => {
-                        "long double"
+                        FloatKind::LongDouble
                     }
-                    FloatType::F128 => "__float128",
-                    FloatType::D32 => "_Decimal32",
-                    FloatType::D64 => "_Decimal64",
-                    FloatType::D128 => "_Decimal128",
-                }
-                .into());
+                    FloatType::F128 => FloatKind::Float128,
+                    FloatType::D32 => FloatKind::Decimal32,
+                    FloatType::D64 => FloatKind::Decimal64,
+                    FloatType::D128 => FloatKind::Decimal128,
+                }));
             }
         };
         if width == 8 {
             return Ok(match signed {
-                _ if signed == self.target.char_signed => "char",
-                true => "signed char",
-                false => "unsigned char",
-            }
-            .into());
+                _ if signed == self.target.char_signed => CTypeKind::Char,
+                true => CTypeKind::SChar,
+                false => CTypeKind::UChar,
+            });
         }
-        let name = [
-            (self.target.int_width, "int"),
-            (self.target.long_width, "long"),
-            (self.target.long_long_width, "long long"),
-            (self.target.short_width, "short"),
-            (128, "__int128"),
+        let rank = [
+            (self.target.int_width, IntRank::Int),
+            (self.target.long_width, IntRank::Long),
+            (self.target.long_long_width, IntRank::LongLong),
+            (self.target.short_width, IntRank::Short),
+            (128, IntRank::Int128),
         ]
         .into_iter()
-        .find_map(|(candidate, name)| (candidate == width).then_some(name))
+        .find_map(|(candidate, rank)| (candidate == width).then_some(rank))
         .ok_or(ResolveError::Unsupported("C spelling of integer width"))?;
-        Ok(if signed {
-            name.into()
-        } else {
-            format!("unsigned {name}")
-        })
+        Ok(CTypeKind::Int { rank, signed })
     }
 
-    fn derive(
-        &mut self,
-        declarator: &Declarator,
-        resolved: &mut ResolvedType,
-    ) -> Result<(), ResolveError> {
+    fn derive(&mut self, declarator: &Declarator, q: QualType) -> Result<QualType, ResolveError> {
         match declarator {
-            Declarator::Name(_) | Declarator::Abstract => Ok(()),
+            Declarator::Name(_) | Declarator::Abstract => Ok(q),
             Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
-                self.derive(inner, resolved)
+                self.derive(inner, q)
             }
             Declarator::Pointer {
                 inner, qualifiers, ..
             } => {
-                Self::apply_pointer(*qualifiers, resolved);
-                self.derive(inner, resolved)
+                let q = self.ctypes.pointer(q).with((*qualifiers).into());
+                self.derive(inner, q)
             }
             Declarator::Array { .. } => {
-                enum Extent {
-                    Unspecified,
-                    Fixed(u64),
-                    Variable(VariableExtent),
-                }
-                let mut lengths = Vec::new();
+                let mut extents = Vec::new();
                 let mut core = declarator;
                 while let Declarator::Array { inner, size, .. } = core {
-                    lengths.push(match size {
-                        ArraySize::Unspecified => Extent::Unspecified,
-                        ArraySize::Star => Extent::Variable(VariableExtent::Unspecified),
+                    extents.push(match size {
+                        ArraySize::Unspecified => Extent::Incomplete,
+                        ArraySize::Star => Extent::Variable(None),
                         ArraySize::Expression(expr) => match self.extents.get(&expr.id) {
-                            Some(extent) => Extent::Variable(VariableExtent::Captured(*extent)),
+                            Some(extent) => Extent::Variable(Some(*extent)),
                             None => match self.constant_integer(expr) {
                                 Ok(length) => {
                                     Extent::Fixed(u64::try_from(length).map_err(|_| {
                                         ResolveError::Unsupported("invalid array length")
                                     })?)
                                 }
-                                Err(_) if self.prototype_scope => {
-                                    Extent::Variable(VariableExtent::Unspecified)
-                                }
+                                Err(_) if self.prototype_scope => Extent::Variable(None),
                                 Err(error) => return Err(error),
                             },
                         },
                     });
                     core = inner;
                 }
-                let core = Self::apply_pointers(core, resolved);
-                let base = resolved.c.clone();
-                let mut suffix = String::new();
-                for length in lengths {
-                    let element = Box::new(
-                        resolved
-                            .ty
-                            .take()
-                            .ok_or(ResolveError::Unsupported("void array element"))?,
-                    );
-                    suffix.insert_str(
-                        0,
-                        &match length {
-                            Extent::Unspecified => "[]".to_owned(),
-                            Extent::Fixed(length) => format!("[{length}]"),
-                            Extent::Variable(_) => "[*]".to_owned(),
-                        },
-                    );
-                    let element_c = std::mem::replace(
-                        &mut resolved.c,
-                        CTypeMetadata {
-                            spelling: format!("{}{suffix}", base.spelling),
-                            canonical: format!("{}{suffix}", base.canonical),
-                            typedef_chain: base.typedef_chain.clone(),
-                            qualifiers: base.qualifiers,
-                            derived_from: None,
-                        },
-                    );
-                    resolved.c.derived_from = Some(Box::new(element_c));
-                    resolved.ty = Some(match length {
-                        Extent::Unspecified => Type::Array {
-                            element,
-                            length: None,
-                        },
-                        Extent::Fixed(length) => Type::Array {
-                            element,
-                            length: Some(length),
-                        },
-                        Extent::Variable(extent) => Type::VariableArray { element, extent },
-                    });
+                let (core, mut q) = self.apply_pointers(core, q);
+                for extent in extents {
+                    if self.ctypes.is_void(q) {
+                        return Err(ResolveError::Unsupported("void array element"));
+                    }
+                    q = self.ctypes.qual(CTypeKind::Array { element: q, extent });
                 }
-                self.derive(core, resolved)
+                self.derive(core, q)
             }
             Declarator::Function { inner, parameters } => {
-                let mut types = Vec::new();
-                let mut c_parameters = Vec::new();
+                let mut params = Vec::new();
                 for parameter in parameters.parameters() {
-                    let parameter_type =
+                    let resolved =
                         self.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
-                    let mut ty = parameter_type
-                        .ty
-                        .ok_or(ResolveError::Unsupported("void parameter"))?;
-                    ty = match ty {
-                        Type::Array { element, .. } | Type::VariableArray { element, .. } => {
-                            Type::Pointer {
-                                pointee: element,
-                                is_const: false,
-                                access: access(parameter_type.c.qualifiers),
-                            }
-                        }
-                        function @ Type::Function { .. } => Type::Pointer {
-                            pointee: Box::new(function),
-                            is_const: false,
-                            access: Access::default(),
-                        },
-                        other => other,
-                    };
-                    types.push(ty);
-                    c_parameters.push(parameter_type.c.spelling);
+                    if self.ctypes.is_void(resolved) {
+                        return Err(ResolveError::Unsupported("void parameter"));
+                    }
+                    params.push(resolved);
                 }
-                let variadic = parameters.is_variadic();
                 let prototyped = self.features.empty_parens_are_prototype
                     || !matches!(parameters, ParameterList::Empty);
-                let suffix = if matches!(parameters, ParameterList::Empty) {
-                    "()".to_owned()
-                } else if matches!(parameters, ParameterList::Void) {
-                    "(void)".to_owned()
-                } else {
-                    if variadic {
-                        c_parameters.push("...".into());
-                    }
-                    format!("({})", c_parameters.join(", "))
-                };
-                let core = Self::apply_pointers(inner, resolved);
-                resolved.ty = Some(Type::Function {
-                    return_type: resolved.ty.take().map(Box::new),
-                    parameters: types,
-                    variadic,
+                let (core, ret) = self.apply_pointers(inner, q);
+                let q = self.ctypes.qual(CTypeKind::Function {
+                    ret,
+                    params,
+                    variadic: parameters.is_variadic(),
                     prototyped,
                 });
-                let return_c = resolved.c.clone();
-                resolved.c.spelling.push_str(&suffix);
-                resolved.c.canonical.push_str(&suffix);
-                resolved.c.derived_from = Some(Box::new(return_c));
-                self.derive(core, resolved)
+                self.derive(core, q)
             }
         }
     }
@@ -1304,62 +1018,36 @@ impl TypeResolver {
         &mut self,
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
-    ) -> Result<ResolvedType, ResolveError> {
+    ) -> Result<QualType, ResolveError> {
         let enclosing = std::mem::replace(&mut self.prototype_scope, true);
         let resolved = self.resolve(specifiers, declarator);
         self.prototype_scope = enclosing;
         resolved
     }
 
-    pub(super) fn apply_pointer(qualifiers: Qualifiers, resolved: &mut ResolvedType) {
-        let pointee = resolved.ty.take().unwrap_or(Type::Void);
-        let grouped = matches!(
-            pointee,
-            Type::Function { .. } | Type::Array { .. } | Type::VariableArray { .. }
-        );
-        resolved.ty = Some(Type::Pointer {
-            pointee: Box::new(pointee),
-            is_const: resolved.c.qualifiers.is_const,
-            access: access(resolved.c.qualifiers),
-        });
-        let pointee_c = resolved.c.clone();
-        resolved.c.spelling = pointer_spelling(&resolved.c.spelling, qualifiers, grouped);
-        resolved.c.canonical = pointer_spelling(&resolved.c.canonical, qualifiers, grouped);
-        resolved.c.qualifiers = qualifiers;
-        resolved.c.derived_from = Some(Box::new(pointee_c));
+    pub(super) fn adjusted_parameter(&mut self, q: QualType, array: Qualifiers) -> QualType {
+        if let Some((element, _)) = self.ctypes.element(q) {
+            return self.ctypes.pointer(element).with(array);
+        }
+        if self.ctypes.is_function(q) {
+            return self.ctypes.pointer(q);
+        }
+        q
     }
 
-    pub(super) fn parameter_c(resolved: &ResolvedType, array: Qualifiers) -> CTypeMetadata {
-        let mut adjusted = match (&resolved.ty, &resolved.c.derived_from) {
-            (
-                Some(Type::Array { element, .. } | Type::VariableArray { element, .. }),
-                Some(element_c),
-            ) => ResolvedType {
-                ty: Some((**element).clone()),
-                c: (**element_c).clone(),
-            },
-            (Some(Type::Function { .. }), _) => resolved.clone(),
-            _ => return resolved.c.clone(),
-        };
-        let qualifiers = if matches!(resolved.ty, Some(Type::Function { .. })) {
-            Qualifiers::default()
-        } else {
-            array
-        };
-        Self::apply_pointer(qualifiers, &mut adjusted);
-        adjusted.c
-    }
-
-    // pointers under an array or function node bind to its element or return type
-    fn apply_pointers<'d>(mut core: &'d Declarator, resolved: &mut ResolvedType) -> &'d Declarator {
+    fn apply_pointers<'d>(
+        &mut self,
+        mut core: &'d Declarator,
+        mut q: QualType,
+    ) -> (&'d Declarator, QualType) {
         while let Declarator::Pointer {
             inner, qualifiers, ..
         } = core
         {
-            Self::apply_pointer(*qualifiers, resolved);
+            q = self.ctypes.pointer(q).with((*qualifiers).into());
             core = inner;
         }
-        core
+        (core, q)
     }
 
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
@@ -1382,7 +1070,7 @@ impl TypeResolver {
         let kind = match &tag.body {
             TagBody::Record(items) => {
                 let mut fields = Vec::new();
-                let mut field_c = Vec::new();
+                let mut field_types = Vec::new();
                 let mut requests = Vec::new();
                 for item in items {
                     let FieldItemKind::Field(declaration) = &item.value else {
@@ -1404,17 +1092,13 @@ impl TypeResolver {
                         }
                         let resolved =
                             self.resolve(&declaration.specifiers, &Declarator::Abstract)?;
-                        let ty = resolved
-                            .ty
-                            .clone()
-                            .ok_or(ResolveError::Unsupported("void record field"))?;
                         fields.push(item.derive(Field {
                             name: None,
-                            ty,
-                            access: access(resolved.c.qualifiers),
+                            ty: self.object_type(resolved, "void record field")?,
+                            access: self.access_of(resolved),
                             bit_width: None,
                         }));
-                        field_c.push(resolved.c);
+                        field_types.push(resolved);
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
@@ -1424,10 +1108,7 @@ impl TypeResolver {
                     for declarator in &declaration.declarators {
                         let resolved =
                             self.resolve(&declaration.specifiers, &declarator.declarator)?;
-                        let ty = resolved
-                            .ty
-                            .clone()
-                            .ok_or(ResolveError::Unsupported("void record field"))?;
+                        let ty = self.object_type(resolved, "void record field")?;
                         let bit_width = declarator
                             .bit_width
                             .as_ref()
@@ -1441,10 +1122,10 @@ impl TypeResolver {
                         fields.push(declarator.derive(Field {
                             name: declarator.declarator.name().map(str::to_owned),
                             ty,
-                            access: access(resolved.c.qualifiers),
+                            access: self.access_of(resolved),
                             bit_width,
                         }));
-                        field_c.push(resolved.c);
+                        field_types.push(resolved);
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
@@ -1458,7 +1139,7 @@ impl TypeResolver {
                     .any(|attribute| matches!(attribute, Attribute::Packed));
                 let alignment = requested_alignment(self, &tag.attributes)?;
                 let layout = self.layout_record(tag.kind, &fields, &requests, packed, alignment)?;
-                self.field_c.insert(id, field_c);
+                self.record_fields.insert(id, field_types);
                 TypeDefinitionKind::Record {
                     kind: match tag.kind {
                         TagKind::Struct => RecordKind::Struct,
@@ -1473,13 +1154,10 @@ impl TypeResolver {
                 fixed_type,
                 enumerators,
             } => {
-                let fixed_underlying = if let Some(fixed_type) = fixed_type {
-                    self.resolve(&fixed_type.specifiers, &fixed_type.declarator)?
-                        .ty
-                        .ok_or(ResolveError::Unsupported("void enum underlying type"))?
-                } else {
-                    Type::Void
-                };
+                let fixed_underlying = fixed_type
+                    .as_ref()
+                    .map(|fixed_type| self.resolve(&fixed_type.specifiers, &fixed_type.declarator))
+                    .transpose()?;
                 let mut values = Vec::new();
                 let mut previous = -1i64;
                 let mut prior = HashMap::new();
@@ -1501,29 +1179,34 @@ impl TypeResolver {
                     prior.insert(enumerator.name.clone(), value);
                     values.push((item, enumerator, value));
                 }
-                let is_fixed = fixed_underlying != Type::Void;
+                let is_fixed = fixed_underlying.is_some();
                 let fits_int = values
                     .iter()
                     .all(|(_, _, value)| i32::try_from(*value).is_ok());
-                let underlying = if is_fixed {
+                let underlying_c = if let Some(fixed_underlying) = fixed_underlying {
                     fixed_underlying
-                } else if values.iter().any(|(_, _, value)| *value < 0) {
-                    Type::integer(
-                        if fits_int {
-                            self.target.int_width
-                        } else {
-                            self.target.long_width
-                        },
-                        true,
-                    )
-                } else if values
-                    .iter()
-                    .all(|(_, _, value)| u32::try_from(*value).is_ok())
-                {
-                    Type::integer(self.target.int_width, false)
                 } else {
-                    Type::integer(self.target.long_width, false)
+                    let (rank, signed) = if values.iter().any(|(_, _, value)| *value < 0) {
+                        (
+                            if fits_int {
+                                IntRank::Int
+                            } else {
+                                IntRank::Long
+                            },
+                            true,
+                        )
+                    } else if values
+                        .iter()
+                        .all(|(_, _, value)| u32::try_from(*value).is_ok())
+                    {
+                        (IntRank::Int, false)
+                    } else {
+                        (IntRank::Long, false)
+                    };
+                    self.ctypes.qual(CTypeKind::Int { rank, signed })
                 };
+                let underlying = self.object_type(underlying_c, "void enum underlying type")?;
+                self.enum_underlying.insert(id, underlying_c);
                 let enumerator_type = if !is_fixed && fits_int {
                     Type::integer(self.target.int_width, true)
                 } else if self.features.enumerators_have_enum_type {
@@ -1585,44 +1268,36 @@ impl TypeResolver {
         left: &TypeName,
         right: &TypeName,
     ) -> Result<(bool, String), ResolveError> {
-        let (left_ty, left_spelling) = self.unqualified(left)?;
-        let (right_ty, right_spelling) = self.unqualified(right)?;
-        let compared = format!("{left_spelling}, {right_spelling}");
-        if left_ty == right_ty && left_spelling == right_spelling {
-            return Ok((true, compared));
-        }
-        let compatible = match (&left_ty, &right_ty) {
-            (Some(Type::Defined(id)), Some(other @ Type::Numeric(_)))
-            | (Some(other @ Type::Numeric(_)), Some(Type::Defined(id))) => matches!(
-                &self.definitions[id.0 as usize].kind,
-                TypeDefinitionKind::Enum { underlying: Some(underlying), .. } if underlying == other
-            ),
-            _ => false,
-        };
+        let left = self.compared_type(left)?;
+        let right = self.compared_type(right)?;
+        let compared = format!(
+            "{}, {}",
+            self.render(left).canonical,
+            self.render(right).canonical
+        );
+        let compatible = self.ctypes.same(left, right)
+            || self.enum_matches(left, right)
+            || self.enum_matches(right, left);
         Ok((compatible, compared))
     }
 
-    fn unqualified(&mut self, name: &TypeName) -> Result<(Option<Type>, String), ResolveError> {
-        let mut name = name.clone();
-        let qualifiers = match name.declarator.pointer_qualifiers_mut() {
-            Some(qualifiers) => qualifiers,
-            None => &mut name.specifiers.qualifiers,
-        };
-        *qualifiers = Qualifiers {
-            is_atomic: qualifiers.is_atomic,
-            ..Qualifiers::default()
-        };
+    fn compared_type(&mut self, name: &TypeName) -> Result<QualType, ResolveError> {
         let resolved = self.resolve(&name.specifiers, &name.declarator)?;
-        let mut spelling = resolved.c.canonical.as_str();
-        if !matches!(resolved.ty, Some(Type::Pointer { .. })) {
-            while let Some(rest) = ["const ", "volatile ", "restrict "]
-                .iter()
-                .find_map(|word| spelling.strip_prefix(word))
-            {
-                spelling = rest;
-            }
-        }
-        Ok((resolved.ty, spelling.to_owned()))
+        let atomic = Qualifiers {
+            is_atomic: self.ctypes.quals(resolved).is_atomic,
+            ..Qualifiers::NONE
+        };
+        let unqualified = self.ctypes.unqualified(resolved);
+        Ok(self.ctypes.canonical(unqualified).with(atomic))
+    }
+
+    fn enum_matches(&self, tag: QualType, other: QualType) -> bool {
+        let CTypeKind::Enum(id) = self.ctypes.canonical_kind(tag) else {
+            return false;
+        };
+        self.enum_underlying
+            .get(id)
+            .is_some_and(|underlying| self.ctypes.same(*underlying, other))
     }
 
     pub(super) fn require_complete(&self, ty: &Type) -> Result<(), ResolveError> {
@@ -1918,19 +1593,6 @@ fn incomplete_tag(kind: TagKind) -> TypeDefinitionKind {
     }
 }
 
-fn vector_spelling(element: &str, bytes: u64) -> String {
-    format!("{element} __attribute__((vector_size({bytes})))")
-}
-
-fn tag_spelling(kind: TagKind, name: Option<&str>) -> String {
-    let prefix = match kind {
-        TagKind::Struct => "struct",
-        TagKind::Union => "union",
-        TagKind::Enum => "enum",
-    };
-    name.map_or_else(|| prefix.to_owned(), |name| format!("{prefix} {name}"))
-}
-
 fn align_up(value: u64, alignment: u64) -> Result<u64, ResolveError> {
     if alignment == 0 || !alignment.is_power_of_two() {
         return Err(ResolveError::Unsupported("invalid alignment"));
@@ -1956,11 +1618,7 @@ pub(super) fn requested_alignment<'a>(
                 let resolved = resolver.resolve(&ty.specifiers, &ty.declarator)?;
                 u64::from(
                     resolver
-                        .storage(
-                            resolved
-                                .ty
-                                .ok_or(ResolveError::Unsupported("void alignment type"))?,
-                        )?
+                        .storage(resolver.object_type(resolved, "void alignment type")?)?
                         .alignment_bytes,
                 )
             }
@@ -2074,94 +1732,14 @@ pub(super) fn compatible(a: &Type, b: &Type) -> bool {
     }
 }
 
-pub(super) fn access(qualifiers: Qualifiers) -> Access {
-    Access {
-        volatile: qualifiers.is_volatile,
-        atomic: qualifiers.is_atomic,
+fn tag_kind(kind: TagKind, id: TypeId) -> CTypeKind {
+    match kind {
+        TagKind::Enum => CTypeKind::Enum(id),
+        TagKind::Struct | TagKind::Union => CTypeKind::Record {
+            id,
+            union: kind == TagKind::Union,
+        },
     }
-}
-
-fn merge_qualifiers(a: Qualifiers, b: Qualifiers) -> Qualifiers {
-    Qualifiers {
-        is_const: a.is_const || b.is_const,
-        is_volatile: a.is_volatile || b.is_volatile,
-        is_restrict: a.is_restrict || b.is_restrict,
-        is_atomic: a.is_atomic || b.is_atomic,
-    }
-}
-
-fn qualifier_spelling(qualifiers: Qualifiers) -> String {
-    let mut words = Vec::new();
-    if qualifiers.is_const {
-        words.push("const");
-    }
-    if qualifiers.is_volatile {
-        words.push("volatile");
-    }
-    if qualifiers.is_restrict {
-        words.push("restrict");
-    }
-    if qualifiers.is_atomic {
-        words.push("_Atomic");
-    }
-    if words.is_empty() {
-        String::new()
-    } else {
-        format!("{} ", words.join(" "))
-    }
-}
-
-fn skip_qualifier_words(mut spelling: &str) -> &str {
-    loop {
-        let trimmed = spelling.trim_start();
-        let rest = ["const", "volatile", "restrict", "_Atomic"]
-            .iter()
-            .find_map(|word| {
-                trimmed
-                    .strip_prefix(word)
-                    .filter(|rest| rest.is_empty() || rest.starts_with([' ', ')']))
-            });
-        match rest {
-            Some(rest) => spelling = rest,
-            None => return trimmed,
-        }
-    }
-}
-
-fn top_pointer_star(spelling: &str) -> Option<usize> {
-    let last = spelling.rfind('*')?;
-    if skip_qualifier_words(&spelling[last + 1..]).is_empty() {
-        return Some(last);
-    }
-    spelling.find("(*").map(|open| open + 1)
-}
-
-fn strip_qualifiers(spelling: &str, pointer: bool) -> String {
-    if let Some(inner) = skip_qualifier_words(spelling)
-        .strip_prefix("_Atomic(")
-        .and_then(|s| s.strip_suffix(')'))
-    {
-        return inner.to_owned();
-    }
-    if pointer {
-        return match top_pointer_star(spelling) {
-            Some(star) => format!(
-                "{}{}",
-                &spelling[..=star],
-                skip_qualifier_words(&spelling[star + 1..])
-            ),
-            None => spelling.to_owned(),
-        };
-    }
-    skip_qualifier_words(spelling).to_owned()
-}
-
-fn pointer_spelling(base: &str, qualifiers: Qualifiers, grouped: bool) -> String {
-    let marker = format!("*{}", qualifier_spelling(qualifiers).trim_end());
-    if grouped && let Some(offset) = base.find(['(', '[']) {
-        return format!("{} ({marker}){}", &base[..offset], &base[offset..]);
-    }
-    format!("{base} {marker}")
 }
 
 pub fn resolve_type_module(
@@ -2193,7 +1771,7 @@ pub fn resolve_type_module(
                         .ok_or(ResolveError::Unsupported("anonymous typedef"))?
                         .to_owned();
                     let resolved = resolver.resolve(&item.specifiers, &declarator.declarator)?;
-                    let c_entries = resolved.c.entries();
+                    let c_entries = resolver.render(resolved).entries();
                     resolver.define_alias(name, resolved)?;
                     for definition in &resolver.definitions[start..] {
                         let span = declarator.derive(definition.clone());
@@ -2213,12 +1791,13 @@ pub fn resolve_type_module(
                     .declarator
                     .name()
                     .ok_or(ResolveError::Unsupported("function name"))?;
-                let return_type = resolver.resolve(&function.specifiers, &Declarator::Abstract)?;
+                let return_c = resolver.resolve(&function.specifiers, &Declarator::Abstract)?;
+                let return_type = resolver.layout(return_c);
                 let parameters =
                     resolve_parameters(&mut resolver, signature, &mut module, &mut next_binding)?;
                 let parameter_types = parameter_types(&parameters);
                 let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
-                    return_type.ty.as_ref(),
+                    return_type.as_ref(),
                     &parameter_types,
                     matches!(
                         &parameters,
@@ -2230,7 +1809,7 @@ pub fn resolve_type_module(
                     id: BindingId(next_binding),
                     name: name.into(),
                     parameters,
-                    return_type: return_type.ty,
+                    return_type,
                     abi,
                     linkage: if function.specifiers.storage == StorageClass::Static {
                         Linkage::Internal
@@ -2242,7 +1821,7 @@ pub fn resolve_type_module(
                     body: None,
                     fallthrough: None,
                 });
-                module.annotate(&lowered, return_type.c.entries());
+                module.annotate(&lowered, resolver.render(return_c).entries());
                 module.functions.push(lowered);
                 next_binding += 1;
             }
@@ -2255,7 +1834,8 @@ pub fn resolve_type_module(
                         .declarator
                         .name()
                         .ok_or(ResolveError::Unsupported("function name"))?;
-                    let return_type = resolver.resolve(&item.specifiers, &Declarator::Abstract)?;
+                    let return_c = resolver.resolve(&item.specifiers, &Declarator::Abstract)?;
+                    let return_type = resolver.layout(return_c);
                     let parameters = resolve_parameters(
                         &mut resolver,
                         signature,
@@ -2265,7 +1845,7 @@ pub fn resolve_type_module(
                     let parameter_types = parameter_types(&parameters);
                     let abi = super::abi::AbiClassifier::new(&resolver, &module.target)
                         .from_parts(
-                            return_type.ty.as_ref(),
+                            return_type.as_ref(),
                             &parameter_types,
                             matches!(
                                 &parameters,
@@ -2277,7 +1857,7 @@ pub fn resolve_type_module(
                         id: BindingId(next_binding),
                         name: name.into(),
                         parameters,
-                        return_type: return_type.ty,
+                        return_type,
                         abi,
                         linkage: if item.specifiers.storage == StorageClass::Static {
                             Linkage::Internal
@@ -2289,7 +1869,7 @@ pub fn resolve_type_module(
                         body: None,
                         fallthrough: None,
                     });
-                    module.annotate(&lowered, return_type.c.entries());
+                    module.annotate(&lowered, resolver.render(return_c).entries());
                     module.functions.push(lowered);
                     next_binding += 1;
                 }
@@ -2339,12 +1919,10 @@ fn resolve_parameters(
         let resolved = resolver.resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
         let declared_array = parameter.declarator.array_parameter();
         let qualifiers = match declared_array {
-            Some(array) => array.qualifiers,
-            None => resolved.c.qualifiers,
+            Some(array) => array.qualifiers.into(),
+            None => resolver.ctypes.quals(resolved),
         };
-        let ty = resolved
-            .ty
-            .ok_or(ResolveError::Unsupported("void parameter"))?;
+        let ty = resolver.object_type(resolved, "void parameter")?;
         let array = match &ty {
             Type::Array { length, .. } => Some(ArrayParameter {
                 extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
@@ -2367,7 +1945,7 @@ fn resolve_parameters(
             is_const: qualifiers.is_const,
             array,
         });
-        module.annotate(&lowered, resolved.c.entries());
+        module.annotate(&lowered, resolver.render(resolved).entries());
         fixed.push(lowered);
         *next_binding += 1;
     }
