@@ -1306,6 +1306,19 @@ impl Lowerer {
                 };
                 Ok(self.layout_constant(e, amount, key, ty.to_string()))
             }
+            ExprKind::TypesCompatible { left_ty, right_ty } => {
+                let (compatible, compared) = self.types.types_compatible(left_ty, right_ty)?;
+                self.module
+                    .metadata
+                    .entry(e.id)
+                    .or_default()
+                    .push(("types_compatible".into(), compared));
+                Ok(self.value(
+                    e,
+                    self.context.int_type(),
+                    ValueKind::Constant(Number::SignedInteger(u8::from(compatible).into())),
+                ))
+            }
             ExprKind::OffsetOf { ty, member } => {
                 let ty = self
                     .types

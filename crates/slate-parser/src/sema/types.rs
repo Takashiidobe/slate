@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, DeclarationSpecifiers, Declarator, EnumItemKind,
     FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, Qualifiers, TagBody,
-    TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeSpecifier,
+    TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeSpecifier,
 };
 use crate::const_expr::Encoding;
 use crate::ir::{
@@ -208,6 +208,12 @@ impl TypeResolver {
                     },
                 )
             }
+            ExprKind::TypesCompatible { left_ty, right_ty } => (
+                Type::integer(self.target.int_width, true),
+                ValueKind::Constant(Number::SignedInteger(
+                    u8::from(self.types_compatible(left_ty, right_ty)?.0).into(),
+                )),
+            ),
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let ty = self
                     .resolve(&ty.specifiers, &ty.declarator)?
@@ -1114,6 +1120,51 @@ impl TypeResolver {
         };
         self.definitions[id.0 as usize].kind = kind;
         Ok(id)
+    }
+
+    pub(super) fn types_compatible(
+        &mut self,
+        left: &TypeName,
+        right: &TypeName,
+    ) -> Result<(bool, String), ResolveError> {
+        let (left_ty, left_spelling) = self.unqualified(left)?;
+        let (right_ty, right_spelling) = self.unqualified(right)?;
+        let compared = format!("{left_spelling}, {right_spelling}");
+        if left_ty == right_ty && left_spelling == right_spelling {
+            return Ok((true, compared));
+        }
+        let compatible = match (&left_ty, &right_ty) {
+            (Some(Type::Defined(id)), Some(other @ Type::Numeric(_)))
+            | (Some(other @ Type::Numeric(_)), Some(Type::Defined(id))) => matches!(
+                &self.definitions[id.0 as usize].kind,
+                TypeDefinitionKind::Enum { underlying: Some(underlying), .. } if underlying == other
+            ),
+            _ => false,
+        };
+        Ok((compatible, compared))
+    }
+
+    fn unqualified(&mut self, name: &TypeName) -> Result<(Option<Type>, String), ResolveError> {
+        let mut name = name.clone();
+        let qualifiers = match name.declarator.pointer_qualifiers_mut() {
+            Some(qualifiers) => qualifiers,
+            None => &mut name.specifiers.qualifiers,
+        };
+        *qualifiers = Qualifiers {
+            is_atomic: qualifiers.is_atomic,
+            ..Qualifiers::default()
+        };
+        let resolved = self.resolve(&name.specifiers, &name.declarator)?;
+        let mut spelling = resolved.c.canonical.as_str();
+        if !matches!(resolved.ty, Some(Type::Pointer { .. })) {
+            while let Some(rest) = ["const ", "volatile ", "restrict "]
+                .iter()
+                .find_map(|word| spelling.strip_prefix(word))
+            {
+                spelling = rest;
+            }
+        }
+        Ok((resolved.ty, spelling.to_owned()))
     }
 
     pub(super) fn require_complete(&self, ty: &Type) -> Result<(), ResolveError> {

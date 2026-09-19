@@ -1106,6 +1106,12 @@ queries do not resolve yet.
 - A void function falling off the end → `fallthrough=ret_void`; a non-void function reached at the end has `fallthrough=ub_if_used`.
 - Constant `sizeof`/`_Alignof`/`offsetof` → folded value with `size_of=T`
   metadata; runtime array sizes use captured extents.
+- `__builtin_types_compatible_p(A, B)` → `const<i32>(0|1)` with
+  `types_compatible="A, B"` metadata naming the two unqualified canonical C
+  types. Top-level qualifiers (and array element qualifiers) are ignored;
+  distinct C integer types that share an IR type (`long`/`long long`,
+  `char`/`signed char`) are incompatible; an enum is compatible with its
+  underlying integer type. It also folds in `static_assert` conditions.
 - String literals: an internal `.strN` global holding `code_units<array<i8, N>>(..)`,
   used through `array_decay<ptr<i8>, length=Some(N)>`.
 - Tentative definitions and `extern` declarations merge into one global with linkage; an incomplete tentative array completes to one element.

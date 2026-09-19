@@ -1067,6 +1067,20 @@ impl Declarator {
     }
 
     pub fn function_parameters_mut(&mut self) -> Option<&mut ParameterList> {
+        match self.outermost_layer_mut()? {
+            Self::Function { parameters, .. } => Some(parameters),
+            _ => None,
+        }
+    }
+
+    pub fn pointer_qualifiers_mut(&mut self) -> Option<&mut Qualifiers> {
+        match self.outermost_layer_mut()? {
+            Self::Pointer { qualifiers, .. } => Some(qualifiers),
+            _ => None,
+        }
+    }
+
+    fn outermost_layer_mut(&mut self) -> Option<&mut Declarator> {
         let depth = self.outermost_derivation()?.depth;
         let mut layer = self;
         for _ in 0..depth {
@@ -1079,10 +1093,7 @@ impl Declarator {
                 Self::Name(_) | Self::Abstract => return None,
             };
         }
-        match layer {
-            Self::Function { parameters, .. } => Some(parameters),
-            _ => None,
-        }
+        Some(layer)
     }
 
     fn inner(&self) -> Option<&Declarator> {
