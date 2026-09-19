@@ -210,7 +210,7 @@ impl Builder {
             ty,
             node: anchor
                 .clone()
-                .with_value(ValueKind::Aggregate { members, zero_fill }),
+                .derive(ValueKind::Aggregate { members, zero_fill }),
         })
     }
 }
@@ -422,7 +422,7 @@ impl Lowerer {
             let node = members[0].value.node.clone();
             return Ok(Entry::Leaf(Value {
                 ty: ty.clone(),
-                node: node.with_value(ValueKind::Aggregate {
+                node: node.derive(ValueKind::Aggregate {
                     members,
                     zero_fill: false,
                 }),

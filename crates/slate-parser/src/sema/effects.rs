@@ -26,7 +26,7 @@ impl Hoister {
         let place = self.declare(&value, Some(value.clone()), out);
         Value {
             ty: value.ty,
-            node: value.node.with_value(ValueKind::Read {
+            node: value.node.derive(ValueKind::Read {
                 place,
                 ordering: None,
             }),
@@ -41,7 +41,7 @@ impl Hoister {
     ) -> Place {
         let id = BindingId(self.next_id);
         self.next_id += 1;
-        out.push(source.node.clone().with_value(Statement::Temporary {
+        out.push(source.node.derive(Statement::Temporary {
             id,
             ty: source.ty.clone(),
             initializer,
@@ -62,7 +62,7 @@ impl Hoister {
         let had_effects = effects(&value);
         let value = self.value(value, out)?;
         if !(had_effects && !effects(&value)) {
-            let span = span.unwrap_or_else(|| value.node.clone().with_value(()));
+            let span = span.unwrap_or_else(|| value.node.derive(()));
             out.push(span.with_value(Statement::Expression(value)));
         }
         Ok(())
@@ -192,7 +192,7 @@ impl Hoister {
             let mut body = Vec::new();
             if let Some(place) = &result {
                 let value = self.value(value, &mut body)?;
-                body.push(value.node.clone().with_value(Statement::Write {
+                body.push(value.node.derive(()).with_value(Statement::Write {
                     place: place.clone(),
                     value,
                     ordering: None,
@@ -204,7 +204,7 @@ impl Hoister {
         }
         let else_body = branches.pop();
         let then_body = branches.pop().unwrap_or_default();
-        out.push(source.node.clone().with_value(Statement::If {
+        out.push(source.node.derive(Statement::If {
             condition,
             then_body,
             else_body,
@@ -230,7 +230,7 @@ impl Hoister {
         let ty = value.ty.clone();
         let template = Value {
             ty: ty.clone(),
-            node: source.clone().with_value(ValueKind::Void),
+            node: source.derive(ValueKind::Void),
         };
         let kind = match value.node.value {
             ValueKind::Store {
@@ -257,7 +257,7 @@ impl Hoister {
                 let place = self.place(place, out)?;
                 self.old.push(Value {
                     ty: place.ty.clone(),
-                    node: source.clone().with_value(ValueKind::OldValue),
+                    node: source.derive(ValueKind::OldValue),
                 });
                 let computation = self.value(*computation, out);
                 self.old.pop();
@@ -316,7 +316,7 @@ impl Hoister {
                 );
                 return Ok(Value {
                     ty,
-                    node: source.with_value(ValueKind::Void),
+                    node: source.derive(ValueKind::Void),
                 });
             }
             ValueKind::Update {
@@ -328,7 +328,7 @@ impl Hoister {
                 let place = self.stable_place(place, out)?;
                 let old = Value {
                     ty: place.ty.clone(),
-                    node: source.clone().with_value(ValueKind::Read {
+                    node: source.derive(ValueKind::Read {
                         place: place.clone(),
                         ordering: None,
                     }),
@@ -351,7 +351,7 @@ impl Hoister {
                 match &result {
                     Some(place) => {
                         let value = self.value(evaluation.value, &mut body)?;
-                        body.push(value.node.clone().with_value(Statement::Write {
+                        body.push(value.node.derive(()).with_value(Statement::Write {
                             place: place.clone(),
                             value,
                             ordering: None,
@@ -360,7 +360,7 @@ impl Hoister {
                     None if matches!(evaluation.value.node.value, ValueKind::Void) => {}
                     None => self.discard(evaluation.value, None, &mut body)?,
                 }
-                out.push(source.clone().with_value(Statement::Block(body)));
+                out.push(source.derive(Statement::Block(body)));
                 return Ok(Value {
                     ty,
                     node: source.with_value(match result {
@@ -385,7 +385,7 @@ impl Hoister {
             }
             ValueKind::Capture { id, extent, value } => {
                 let extent = self.value(*extent, out)?;
-                out.push(source.with_value(Statement::Temporary {
+                out.push(source.derive(Statement::Temporary {
                     id,
                     ty: extent.ty.clone(),
                     initializer: Some(extent),
@@ -397,7 +397,7 @@ impl Hoister {
                 if effects(&right) {
                     let constant = Value {
                         ty: Type::Bool,
-                        node: source.with_value(ValueKind::Constant(Number::Bool(matches!(
+                        node: source.derive(ValueKind::Constant(Number::Bool(matches!(
                             op,
                             LogicalOp::Or
                         )))),

@@ -182,7 +182,7 @@ every qualifier from the source object.
 ## Variables and computed values
 
 The implemented module foundation now has declaration tables and a
-`NodeId`-keyed table for optional source metadata. Aliases remain named
+`NodeId`-keyed table for optional source metadata, keyed by IR node id (see [[ir-spec]]). Aliases remain named
 definitions; records and enums retain their structural children and stable
 type IDs. Function bodies distinguish declarations, typed binding reads,
 writes, and returns. General AST population and the richer shapes below

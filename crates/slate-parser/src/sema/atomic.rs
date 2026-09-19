@@ -186,8 +186,8 @@ impl Lowerer {
         builtin: AtomicBuiltin,
         arguments: &[Expr],
     ) -> Result<Value, ResolveError> {
+        let mut metadata = Vec::new();
         if let ExprKind::Identifier(name) = &callee.value {
-            let metadata = self.module.metadata.entry(e.id).or_default();
             metadata.push(("c_builtin".into(), name.clone()));
             if let Some(origin) = &callee.macro_origin {
                 let mut innermost = origin.as_ref();
@@ -197,6 +197,21 @@ impl Lowerer {
                 metadata.push(("c_macro".into(), innermost.name.clone()));
             }
         }
+        let value = self.atomic_operation(e, builtin, arguments)?;
+        let operation = match &value.node.value {
+            ValueKind::Sequence { left, .. } => &left.node,
+            _ => &value.node,
+        };
+        self.module.annotate(operation, metadata);
+        Ok(value)
+    }
+
+    fn atomic_operation(
+        &mut self,
+        e: &Expr,
+        builtin: AtomicBuiltin,
+        arguments: &[Expr],
+    ) -> Result<Value, ResolveError> {
         match (builtin, arguments) {
             (AtomicBuiltin::Init, [object, desired]) => {
                 let place = self.atomic_object(object)?;

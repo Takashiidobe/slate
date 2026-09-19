@@ -1,7 +1,5 @@
 use super::validate::{fits_rank, integer_rank_width, select_integer_candidate};
-use crate::ast::{
-    Declarator, Expr, ExprKind, FloatingType, IntegerType, Span, TypeName, TypeSpecifier,
-};
+use crate::ast::{Declarator, Expr, ExprKind, FloatingType, IntegerType, TypeName, TypeSpecifier};
 use crate::const_expr::{
     BinaryOp, FloatLiteral, FloatSuffix, FloatValue, IntegerSizeSuffix, ResolvedFloat, UnaryOp,
     resolve_float,
@@ -203,15 +201,7 @@ impl Context {
         };
         Ok(Value {
             ty,
-            node: Span {
-                id: expression.id,
-                value: kind,
-                spelling: expression.spelling,
-                expansion: expression.expansion,
-                provenance: expression.provenance,
-                macro_origin: expression.macro_origin.clone(),
-                leading_space: expression.leading_space,
-            },
+            node: expression.derive(kind),
         })
     }
 
@@ -1192,17 +1182,14 @@ impl Context {
             NumericType::Integer { .. } => Number::Integer(BigUint::default()),
             NumericType::Float(format) => Number::float_zero(format),
         };
-        let node = derived_span(&value.node, ValueKind::Constant(zero));
+        let anchor = value.node.derive(());
         let zero = Value {
             ty: value.ty.clone(),
-            node: node.clone(),
+            node: anchor.derive(ValueKind::Constant(zero)),
         };
         Value {
             ty: Type::Bool,
-            node: Span {
-                value: self.comparison(CompareOp::Ne, ty, value, zero),
-                ..node
-            },
+            node: anchor.with_value(self.comparison(CompareOp::Ne, ty, value, zero)),
         }
     }
 }
@@ -1234,7 +1221,7 @@ fn imaginary_literal(
         target: AggregateTarget::Index(index),
         value: Value {
             ty: Type::Numeric(component),
-            node: expression.clone().with_value(ValueKind::Constant(number)),
+            node: expression.derive(ValueKind::Constant(number)),
         },
     };
     (
@@ -1306,18 +1293,6 @@ fn wider_component(a: NumericType, b: NumericType) -> NumericType {
     }
 }
 
-fn derived_span(node: &Span<ValueKind>, value: ValueKind) -> Span<ValueKind> {
-    Span {
-        id: node.id,
-        value,
-        spelling: node.spelling,
-        expansion: node.expansion,
-        provenance: node.provenance,
-        macro_origin: node.macro_origin.clone(),
-        leading_space: node.leading_space,
-    }
-}
-
 pub(super) fn resolve_float_literal(
     literal: &FloatLiteral,
     target: &TargetInfo,
@@ -1340,20 +1315,13 @@ fn conversion(
     reason: ConversionReason,
     semantics: ConversionSema,
 ) -> Value {
-    let node = Span {
-        id: value.node.id,
-        spelling: value.node.spelling,
-        expansion: value.node.expansion,
-        provenance: value.node.provenance,
-        macro_origin: value.node.macro_origin.clone(),
-        leading_space: value.node.leading_space,
-        value: ValueKind::Convert {
-            kind,
-            operand: Box::new(value),
-            reason,
-            semantics,
-        },
-    };
+    let anchor = value.node.derive(());
+    let node = anchor.with_value(ValueKind::Convert {
+        kind,
+        operand: Box::new(value),
+        reason,
+        semantics,
+    });
     Value { ty, node }
 }
 

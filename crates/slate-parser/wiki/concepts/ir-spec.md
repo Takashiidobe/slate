@@ -63,7 +63,18 @@ local declarations, assignment, compound assignment, increments, member and
 index access, conditional and comma expressions, and scalar casts are typed
 while constructing IR. Return, assignment, argument, and variadic conversions
 carry their reasons. Function parameter arrays and functions adjust to pointers.
-Spans retain the original AST node identity and provenance.
+Spans retain the source location and provenance of the AST node they lower.
+Every IR node has its own `NodeId`: a node synthesized from another node's
+span (conversion wrappers, hoisted temporaries, reads of temporaries,
+initializer values anchored at a declarator, type definitions created by a
+declarator) takes a fresh id via `Span::derive`. A rewrite of the same node
+(the effects pass) keeps its id with `Span::with_value`, and an IR enumerator
+keeps its AST enumerator's id because name resolution looks it up by that id.
+`Module.metadata` is keyed by IR node id and written with `Module::annotate`
+on the node that owns the fact, so each key prints on exactly one node. A
+declarator's C type annotates the declared entity (let, global, function,
+parameter, typedef alias), not type definitions it happens to create.
+`tests/fixtures/sema/ir_metadata_single_owner.c` covers this.
 
 The module node model includes named aliases, records with field layouts,
 enums with typed enumerators, globals, and function prototypes or definitions.

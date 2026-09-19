@@ -479,6 +479,18 @@ impl<T> Span<T> {
         }
     }
 
+    pub fn derive<U>(&self, value: U) -> Span<U> {
+        Span {
+            id: NodeId::next(),
+            value,
+            spelling: self.spelling,
+            expansion: self.expansion,
+            provenance: self.provenance,
+            macro_origin: self.macro_origin.clone(),
+            leading_space: self.leading_space,
+        }
+    }
+
     pub fn map<U>(self, f: impl FnOnce(T) -> U) -> Span<U> {
         Span {
             id: self.id,

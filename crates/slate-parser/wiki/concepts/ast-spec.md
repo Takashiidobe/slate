@@ -87,7 +87,8 @@ increment and body, then the enclosing bindings are restored.
   declaration, declarator, statement and expression node is spanned.
 - `id: NodeId`, a globally unique id allocated when the `Span` is built
   (`Span::new`/`Span::cover`; `Span::with_value`/`Span::map` keep the
-  original id since they relabel the same node). This is the node identity
+  original id since they relabel the same node; `Span::derive` copies the
+  location with a fresh id for a new node, as IR lowering does). This is the node identity
   `Loc` can't provide: every token from one macro expansion shares an
   `expansion` `Loc`, but each gets a distinct `NodeId`, which is what lets
   `src/sema/` preserve identity rather than keying nodes by location (see

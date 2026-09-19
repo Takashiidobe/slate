@@ -206,4 +206,12 @@ impl Module {
             metadata: Metadata::new(),
         }
     }
+
+    pub fn annotate<T>(
+        &mut self,
+        node: &Span<T>,
+        entries: impl IntoIterator<Item = (String, String)>,
+    ) {
+        self.metadata.entry(node.id).or_default().extend(entries);
+    }
 }

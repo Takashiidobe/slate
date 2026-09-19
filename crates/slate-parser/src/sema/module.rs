@@ -73,10 +73,9 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                 let start = lower.types.definitions.len();
                 let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
                 for definition in &lower.types.definitions[start..] {
-                    lower.type_spans.insert(
-                        definition.id,
-                        declaration.clone().with_value(definition.clone()),
-                    );
+                    lower
+                        .type_spans
+                        .insert(definition.id, declaration.derive(definition.clone()));
                 }
                 let ty = resolved
                     .ty
@@ -96,7 +95,6 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     ("c_return".into(), c_return),
                 ];
                 metadata.extend(resolved.c.entries());
-                lower.module.metadata.insert(declaration.id, metadata);
                 let params = function
                     .declarator
                     .function_parameters()
@@ -124,7 +122,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                 } else {
                     Fallthrough::UndefinedIfUsed
                 };
-                lower.declare_function(declaration.clone().with_value(Function {
+                let lowered = declaration.derive(Function {
                     id,
                     name: name.into(),
                     parameters,
@@ -135,7 +133,9 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
                     semantics: Default::default(),
                     body: Some(body),
                     fallthrough: Some(fallthrough),
-                }))?;
+                });
+                lower.module.annotate(&lowered, metadata);
+                lower.declare_function(lowered)?;
             }
             _ => return Err(ResolveError::Unsupported("module declaration")),
         }
@@ -144,15 +144,12 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>)
         if let Some(span) = lower.type_spans.get(&definition.id) {
             lower.module.types.push(span.clone());
         } else if let Some(tag) = lower.types.tag_span(definition.id, unit) {
-            lower
-                .module
-                .types
-                .push(tag.clone().with_value(definition.clone()));
+            lower.module.types.push(tag.derive(definition.clone()));
         } else if let Some(declaration) = unit.decls.first() {
             lower
                 .module
                 .types
-                .push(declaration.clone().with_value(definition.clone()));
+                .push(declaration.derive(definition.clone()));
         }
     }
     for global in &mut lower.module.globals {
@@ -439,7 +436,7 @@ impl Lowerer {
                 return Err(ResolveError::Unsupported("parameter attributes"));
             }
             if let Some(prologue) = prologue.as_deref_mut() {
-                let anchor = parameter.clone().with_value(());
+                let anchor = parameter.derive(());
                 self.capture_extents(&parameter.declarator, &anchor, prologue)?;
             }
             let start = self.types.definitions.len();
@@ -485,23 +482,20 @@ impl Lowerer {
             self.types
                 .access
                 .insert(id, super::types::access(qualifiers));
-            self.module
-                .metadata
-                .insert(parameter.id, resolved.c.entries());
             for definition in &self.types.definitions[start..] {
-                self.type_spans.insert(
-                    definition.id,
-                    parameter.clone().with_value(definition.clone()),
-                );
+                self.type_spans
+                    .insert(definition.id, parameter.derive(definition.clone()));
             }
-            fixed.push(parameter.clone().with_value(Parameter {
+            let lowered = parameter.derive(Parameter {
                 id,
                 name: name.map(str::to_owned),
                 ty,
                 restrict: qualifiers.is_restrict,
                 is_const: qualifiers.is_const,
                 array,
-            }));
+            });
+            self.module.annotate(&lowered, resolved.c.entries());
+            fixed.push(lowered);
         }
         Ok(Parameters::Prototype {
             fixed,
@@ -558,29 +552,26 @@ impl Lowerer {
                 .name()
                 .ok_or(ResolveError::Unsupported("unnamed declaration"))?;
             if !global {
-                let anchor = declarator.clone().with_value(());
+                let anchor = declarator.derive(());
                 self.capture_extents(&declarator.declarator, &anchor, &mut statements)?;
             }
             let start = self.types.definitions.len();
             let resolved = self.resolve_type(&item.specifiers, &declarator.declarator)?;
-            self.module
-                .metadata
-                .insert(declarator.id, resolved.c.entries());
+            let c_entries = resolved.c.entries();
             if item.specifiers.storage == StorageClass::Typedef {
                 self.types.define_alias(name.into(), resolved)?;
                 for definition in &self.types.definitions[start..] {
-                    self.type_spans.insert(
-                        definition.id,
-                        declarator.clone().with_value(definition.clone()),
-                    );
+                    let span = declarator.derive(definition.clone());
+                    if matches!(definition.kind, TypeDefinitionKind::Alias(_)) {
+                        self.module.annotate(&span, c_entries.clone());
+                    }
+                    self.type_spans.insert(definition.id, span);
                 }
                 continue;
             }
             for definition in &self.types.definitions[start..] {
-                self.type_spans.insert(
-                    definition.id,
-                    declarator.clone().with_value(definition.clone()),
-                );
+                self.type_spans
+                    .insert(definition.id, declarator.derive(definition.clone()));
             }
             let qualifiers = resolved.c.qualifiers;
             if item.specifiers.is_constexpr && declarator.initializer.is_none() {
@@ -647,7 +638,7 @@ impl Lowerer {
                     },
                 };
                 let abi = self.abi_signature(&ty, None)?;
-                self.declare_function(declarator.clone().with_value(Function {
+                let lowered = declarator.derive(Function {
                     id,
                     name: name.into(),
                     parameters,
@@ -658,7 +649,9 @@ impl Lowerer {
                     semantics: Default::default(),
                     body: None,
                     fallthrough: None,
-                }))?;
+                });
+                self.module.annotate(&lowered, c_entries);
+                self.declare_function(lowered)?;
                 continue;
             }
             let linked = global || storage_class == StorageClass::Extern;
@@ -708,7 +701,7 @@ impl Lowerer {
                     }
                     let value = Value {
                         ty: ty.clone(),
-                        node: declarator.clone().with_value(ValueKind::Aggregate {
+                        node: declarator.derive(ValueKind::Aggregate {
                             members: Vec::new(),
                             zero_fill: true,
                         }),
@@ -716,7 +709,7 @@ impl Lowerer {
                     (ty, Some(value))
                 }
                 Some(initializer) => {
-                    let anchor = declarator.clone().with_value(());
+                    let anchor = declarator.derive(());
                     let value = self.initializer_value(&ty, initializer, &anchor)?;
                     let ty = match ty {
                         Type::Array { length: None, .. } => value.ty.clone(),
@@ -761,27 +754,31 @@ impl Lowerer {
                     || variable.initializer.is_some()
                     || symbol.alias.is_some())
                     && symbol.weakref.is_none();
-                self.declare_global(declarator.clone().with_value(Global {
+                let global = declarator.derive(Global {
                     variable,
                     linkage: declared_linkage,
                     symbol,
                     definition,
                     alignment: None,
                     common: false,
-                }))?;
+                });
+                self.module.annotate(&global, c_entries);
+                self.declare_global(global)?;
             } else if storage == StorageDuration::Automatic {
-                statements.push(declarator.clone().with_value(Statement::Let(variable)));
+                let binding = declarator.derive(Statement::Let(variable));
+                self.module.annotate(&binding, c_entries);
+                statements.push(binding);
             } else {
-                self.module
-                    .globals
-                    .push(declarator.clone().with_value(Global {
-                        variable,
-                        linkage: Linkage::Internal,
-                        symbol,
-                        definition: true,
-                        alignment: None,
-                        common: false,
-                    }));
+                let global = declarator.derive(Global {
+                    variable,
+                    linkage: Linkage::Internal,
+                    symbol,
+                    definition: true,
+                    alignment: None,
+                    common: false,
+                });
+                self.module.annotate(&global, c_entries);
+                self.module.globals.push(global);
             }
         }
         Ok(statements)
@@ -796,7 +793,7 @@ impl Lowerer {
         let mut extents = Vec::new();
         self.extents(declarator, &mut extents)?;
         out.extend(extents.into_iter().map(|(id, count)| {
-            anchor.clone().with_value(Statement::Temporary {
+            anchor.derive(Statement::Temporary {
                 id,
                 ty: count.ty.clone(),
                 initializer: Some(count),
@@ -875,6 +872,7 @@ impl Lowerer {
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         let mut result = Vec::new();
         for statement in body {
+            let mut annotations = Vec::new();
             let kind = match &statement.value {
                 StmtKind::Comment(_) | StmtKind::StaticAssert(_) => continue,
                 StmtKind::Decl(item) => {
@@ -1040,11 +1038,7 @@ impl Lowerer {
                     if self.switches.is_empty() {
                         return Err(ResolveError::Unsupported("fallthrough outside switch"));
                     }
-                    self.module
-                        .metadata
-                        .entry(statement.id)
-                        .or_default()
-                        .push(("c_attribute".into(), "fallthrough".into()));
+                    annotations.push(("c_attribute".into(), "fallthrough".into()));
                     Statement::Null
                 }
                 StmtKind::LocalLabelDecl(_) => continue,
@@ -1077,7 +1071,9 @@ impl Lowerer {
                 ),
                 _ => return Err(ResolveError::Unsupported("module statement")),
             };
-            result.push(statement.clone().with_value(kind));
+            let lowered = statement.derive(kind);
+            self.module.annotate(&lowered, annotations);
+            result.push(lowered);
         }
         Ok(result)
     }

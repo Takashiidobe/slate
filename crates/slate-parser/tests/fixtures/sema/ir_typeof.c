@@ -90,7 +90,7 @@ int extents(int n) {
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%21), read<i32>(%22)), read<i32>(%25)), read<i32>(%28)))), const<u64>(7) [size_of="array<i8, 7>"]), const<u64>(12) [size_of="array<i32, 3>"])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %29 @extents(%30 n: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
-// DEFAULT-NEXT:         let %35: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%30))) [c="int[*]"];
+// DEFAULT-NEXT:         let %35: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%30)));
 // DEFAULT-NEXT:         let %31 original: vla<i32, %35> [storage=automatic] [c="int[*]"];
 // DEFAULT-NEXT:         let %32 copy: vla<i32, %35> [storage=automatic] [c="typeof(original)"] [c_canon="int[*]"];
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(mul<u64, overflow=wrap>(read<u64>(%35), const<u64>(4))));

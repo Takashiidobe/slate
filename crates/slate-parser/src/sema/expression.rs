@@ -116,7 +116,7 @@ impl Lowerer {
     pub fn value<T: Clone>(&self, e: &Span<T>, ty: Type, kind: ValueKind) -> Value {
         Value {
             ty,
-            node: e.clone().with_value(kind),
+            node: e.derive(kind),
         }
     }
 
@@ -373,7 +373,7 @@ impl Lowerer {
                 let declared = resolved
                     .ty
                     .ok_or(ResolveError::Unsupported("void compound literal"))?;
-                let anchor = e.clone().with_value(());
+                let anchor = e.derive(());
                 let value = self.initializer_value(
                     &declared,
                     &Initializer::List(initializer.clone()),
@@ -834,13 +834,10 @@ impl Lowerer {
     }
 
     fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Value {
-        self.module
-            .metadata
-            .entry(e.id)
-            .or_default()
-            .push((key.into(), detail));
         let ty = Type::integer(self.context.target.pointer_width, false);
-        self.value(e, ty, ValueKind::Constant(Number::Integer(amount.into())))
+        let value = self.value(e, ty, ValueKind::Constant(Number::Integer(amount.into())));
+        self.module.annotate(&value.node, [(key.into(), detail)]);
+        value
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Value, ResolveError> {
@@ -921,7 +918,7 @@ impl Lowerer {
                 );
                 let id = self.fresh();
                 let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
-                self.module.globals.push(e.clone().with_value(Global {
+                self.module.globals.push(e.derive(Global {
                     variable: Variable {
                         id,
                         name: format!(".str{}", id.0),
@@ -1274,16 +1271,16 @@ impl Lowerer {
                 let operand = constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Unsupported("__builtin_constant_p"))?;
                 let constant = super::types::is_folded(&self.expr(operand)?);
-                self.module
-                    .metadata
-                    .entry(e.id)
-                    .or_default()
-                    .push(("c_builtin".into(), "__builtin_constant_p".into()));
-                Ok(self.value(
+                let value = self.value(
                     e,
                     self.context.int_type(),
                     ValueKind::Constant(Number::SignedInteger(u8::from(constant).into())),
-                ))
+                );
+                self.module.annotate(
+                    &value.node,
+                    [("c_builtin".into(), "__builtin_constant_p".into())],
+                );
+                Ok(value)
             }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
                 let builtin = va_builtin(callee).ok_or(ResolveError::Unsupported("va builtin"))?;
@@ -1395,16 +1392,14 @@ impl Lowerer {
             }
             ExprKind::TypesCompatible { left_ty, right_ty } => {
                 let (compatible, compared) = self.types.types_compatible(left_ty, right_ty)?;
-                self.module
-                    .metadata
-                    .entry(e.id)
-                    .or_default()
-                    .push(("types_compatible".into(), compared));
-                Ok(self.value(
+                let value = self.value(
                     e,
                     self.context.int_type(),
                     ValueKind::Constant(Number::SignedInteger(u8::from(compatible).into())),
-                ))
+                );
+                self.module
+                    .annotate(&value.node, [("types_compatible".into(), compared)]);
+                Ok(value)
             }
             ExprKind::OffsetOf { ty, member } => {
                 let ty = self

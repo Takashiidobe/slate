@@ -409,7 +409,7 @@ impl TypeResolver {
         };
         Ok(Value {
             ty,
-            node: e.clone().with_value(kind),
+            node: e.derive(kind),
         })
     }
 
@@ -1406,7 +1406,7 @@ impl TypeResolver {
                             .ty
                             .clone()
                             .ok_or(ResolveError::Unsupported("void record field"))?;
-                        fields.push(item.clone().with_value(Field {
+                        fields.push(item.derive(Field {
                             name: None,
                             ty,
                             access: access(resolved.c.qualifiers),
@@ -1436,7 +1436,7 @@ impl TypeResolver {
                                 })
                             })
                             .transpose()?;
-                        fields.push(declarator.clone().with_value(Field {
+                        fields.push(declarator.derive(Field {
                             name: declarator.declarator.name().map(str::to_owned),
                             ty,
                             access: access(resolved.c.qualifiers),
@@ -1533,7 +1533,7 @@ impl TypeResolver {
                 for (item, enumerator, value) in values {
                     let value = Value {
                         ty: enumerator_type.clone(),
-                        node: item.clone().with_value(ValueKind::Constant(if value < 0 {
+                        node: item.derive(ValueKind::Constant(if value < 0 {
                             Number::SignedInteger(BigInt::from(value))
                         } else {
                             Number::Integer(BigUint::from(value as u64))
@@ -2178,9 +2178,7 @@ pub fn resolve_type_module(
                 let start = resolver.definitions.len();
                 resolver.resolve(&item.specifiers, &Declarator::Abstract)?;
                 for definition in &resolver.definitions[start..] {
-                    module
-                        .types
-                        .push(declaration.clone().with_value(definition.clone()));
+                    module.types.push(declaration.derive(definition.clone()));
                 }
             }
             DeclKind::Declaration(item) if item.specifiers.storage == StorageClass::Typedef => {
@@ -2192,12 +2190,14 @@ pub fn resolve_type_module(
                         .ok_or(ResolveError::Unsupported("anonymous typedef"))?
                         .to_owned();
                     let resolved = resolver.resolve(&item.specifiers, &declarator.declarator)?;
-                    module.metadata.insert(declarator.id, resolved.c.entries());
+                    let c_entries = resolved.c.entries();
                     resolver.define_alias(name, resolved)?;
                     for definition in &resolver.definitions[start..] {
-                        module
-                            .types
-                            .push(declarator.clone().with_value(definition.clone()));
+                        let span = declarator.derive(definition.clone());
+                        if matches!(definition.kind, TypeDefinitionKind::Alias(_)) {
+                            module.annotate(&span, c_entries.clone());
+                        }
+                        module.types.push(span);
                     }
                 }
             }
@@ -2223,27 +2223,24 @@ pub fn resolve_type_module(
                     ),
                     parameter_types.len(),
                 )?;
-                module
-                    .metadata
-                    .insert(declaration.id, return_type.c.entries());
-                module
-                    .functions
-                    .push(declaration.clone().with_value(Function {
-                        id: BindingId(next_binding),
-                        name: name.into(),
-                        parameters,
-                        return_type: return_type.ty,
-                        abi,
-                        linkage: if function.specifiers.storage == StorageClass::Static {
-                            Linkage::Internal
-                        } else {
-                            Linkage::External
-                        },
-                        symbol: Default::default(),
-                        semantics: Default::default(),
-                        body: None,
-                        fallthrough: None,
-                    }));
+                let lowered = declaration.derive(Function {
+                    id: BindingId(next_binding),
+                    name: name.into(),
+                    parameters,
+                    return_type: return_type.ty,
+                    abi,
+                    linkage: if function.specifiers.storage == StorageClass::Static {
+                        Linkage::Internal
+                    } else {
+                        Linkage::External
+                    },
+                    symbol: Default::default(),
+                    semantics: Default::default(),
+                    body: None,
+                    fallthrough: None,
+                });
+                module.annotate(&lowered, return_type.c.entries());
+                module.functions.push(lowered);
                 next_binding += 1;
             }
             DeclKind::Declaration(item) => {
@@ -2273,27 +2270,24 @@ pub fn resolve_type_module(
                             ),
                             parameter_types.len(),
                         )?;
-                    module
-                        .metadata
-                        .insert(declarator.id, return_type.c.entries());
-                    module
-                        .functions
-                        .push(declarator.clone().with_value(Function {
-                            id: BindingId(next_binding),
-                            name: name.into(),
-                            parameters,
-                            return_type: return_type.ty,
-                            abi,
-                            linkage: if item.specifiers.storage == StorageClass::Static {
-                                Linkage::Internal
-                            } else {
-                                Linkage::External
-                            },
-                            symbol: Default::default(),
-                            semantics: Default::default(),
-                            body: None,
-                            fallthrough: None,
-                        }));
+                    let lowered = declarator.derive(Function {
+                        id: BindingId(next_binding),
+                        name: name.into(),
+                        parameters,
+                        return_type: return_type.ty,
+                        abi,
+                        linkage: if item.specifiers.storage == StorageClass::Static {
+                            Linkage::Internal
+                        } else {
+                            Linkage::External
+                        },
+                        symbol: Default::default(),
+                        semantics: Default::default(),
+                        body: None,
+                        fallthrough: None,
+                    });
+                    module.annotate(&lowered, return_type.c.entries());
+                    module.functions.push(lowered);
                     next_binding += 1;
                 }
             }
@@ -2308,13 +2302,9 @@ pub fn resolve_type_module(
         {
             let span = resolver.tag_span(definition.id, unit);
             if let Some(span) = span {
-                module
-                    .types
-                    .push(span.clone().with_value(definition.clone()));
+                module.types.push(span.derive(definition.clone()));
             } else if let Some(declaration) = unit.decls.first() {
-                module
-                    .types
-                    .push(declaration.clone().with_value(definition.clone()));
+                module.types.push(declaration.derive(definition.clone()));
             }
         }
     }
@@ -2363,20 +2353,19 @@ fn resolve_parameters(
             }),
             _ => None,
         };
-        module.metadata.insert(parameter.id, resolved.c.entries());
         for definition in &resolver.definitions[start..] {
-            module
-                .types
-                .push(parameter.clone().with_value(definition.clone()));
+            module.types.push(parameter.derive(definition.clone()));
         }
-        fixed.push(parameter.clone().with_value(Parameter {
+        let lowered = parameter.derive(Parameter {
             id: BindingId(*next_binding),
             name: parameter.declarator.name().map(str::to_owned),
             ty,
             restrict: qualifiers.is_restrict,
             is_const: qualifiers.is_const,
             array,
-        }));
+        });
+        module.annotate(&lowered, resolved.c.entries());
+        fixed.push(lowered);
         *next_binding += 1;
     }
     Ok(Parameters::Prototype {

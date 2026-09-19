@@ -30,7 +30,7 @@ impl Hoister {
             self.discard(evaluation.value, None, &mut statements)?;
             Value {
                 ty: Type::Void,
-                node: node.with_value(ValueKind::Void),
+                node: node.derive(ValueKind::Void),
             }
         } else {
             self.value(evaluation.value, &mut statements)?
@@ -65,7 +65,7 @@ impl Hoister {
                             out.push(span.clone().with_value(Statement::Let(variable)));
                             out.extend(effects);
                             let ordering = place.implicit_ordering();
-                            out.push(span.with_value(Statement::Write {
+                            out.push(span.derive(Statement::Write {
                                 place,
                                 value,
                                 ordering,

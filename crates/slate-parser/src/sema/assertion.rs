@@ -209,7 +209,7 @@ impl Checker<'_> {
                             ty,
                             node: item
                                 .clone()
-                                .with_value(ValueKind::Constant(Number::SignedInteger(value))),
+                                .derive(ValueKind::Constant(Number::SignedInteger(value))),
                         }),
                     );
                 }
