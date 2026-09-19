@@ -123,10 +123,15 @@ fn run() -> miette::Result<()> {
     if dump_ir || dump_ir_types {
         let module = if dump_ir_types {
             slate_parser::sema::types::resolve_type_module(&ast)
+                .map_err(|error| miette::miette!("{error}"))?
         } else {
-            slate_parser::sema::resolve_module(&ast)
-        }
-        .map_err(|error| miette::miette!("{error}"))?;
+            let (module, diagnostics) = slate_parser::sema::resolve_module(&ast)
+                .map_err(|error| miette::miette!("{error}"))?;
+            for warning in slate_parser::sema::with_sources(diagnostics, &files)? {
+                eprintln!("{:?}", miette::Report::new(warning));
+            }
+            module
+        };
         let display = module.display(show_metadata);
         print!(
             "{}",

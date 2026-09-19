@@ -215,15 +215,22 @@ impl TranslationUnit {
                 }
             }
         }
-        let errors: Vec<SemaError> = errors
-            .into_iter()
-            .map(|error| error.with_source(files))
-            .collect();
-        if errors.iter().any(|error| error.severity == Severity::Error) {
-            Err(SemaErrors { errors })
-        } else {
-            Ok(errors)
-        }
+        with_sources(errors, files)
+    }
+}
+
+pub fn with_sources(
+    diagnostics: Vec<SemaError>,
+    files: &Files,
+) -> Result<Vec<SemaError>, SemaErrors> {
+    let errors: Vec<SemaError> = diagnostics
+        .into_iter()
+        .map(|error| error.with_source(files))
+        .collect();
+    if errors.iter().any(|error| error.severity == Severity::Error) {
+        Err(SemaErrors { errors })
+    } else {
+        Ok(errors)
     }
 }
 
@@ -620,7 +627,7 @@ fn check_type_name(
 }
 
 impl Warning {
-    fn diagnose(
+    pub(super) fn diagnose(
         self,
         message: impl Into<String>,
         diagnostics: &DiagnosticOptions,

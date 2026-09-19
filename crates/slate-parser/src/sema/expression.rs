@@ -1,7 +1,9 @@
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
+use crate::compiler_args::LanguageStandard;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
+use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::ir::*;
 use std::collections::HashMap;
 
@@ -20,9 +22,22 @@ pub(super) struct Lowerer {
     pub switches: Vec<(BindingId, Type)>,
     pub in_function: bool,
     pub return_type: Option<Type>,
+    pub diagnostic_options: DiagnosticOptions,
+    pub standard: LanguageStandard,
+    pub diagnostics: Vec<super::SemaError>,
 }
 
 impl Lowerer {
+    fn warn<T>(&mut self, warning: Warning, message: &str, node: &Span<T>) {
+        self.diagnostics.extend(warning.diagnose(
+            message,
+            &self.diagnostic_options,
+            self.standard,
+            node.provenance,
+            node.expansion,
+        ));
+    }
+
     fn is_record(&self, ty: &Type) -> bool {
         match ty {
             Type::Defined(_) => match self.kind(ty) {
@@ -192,7 +207,7 @@ impl Lowerer {
     }
 
     pub fn convert(
-        &self,
+        &mut self,
         value: Value,
         to: Type,
         reason: ConversionReason,
@@ -256,10 +271,18 @@ impl Lowerer {
             if let (Ok(a), Ok(b)) = (self.pointee(&value.ty), self.pointee(&to))
                 && (super::types::compatible(&a, &b)
                     || differ_only_in_sign(&a, &b)
+                    || differ_only_in_nested_qualifiers(&a, &b)
                     || a == Type::Void
                     || b == Type::Void
                     || reason == ConversionReason::Explicit)
             {
+                if matches!(
+                    reason,
+                    ConversionReason::Assign | ConversionReason::Arg | ConversionReason::Return
+                ) && let Some((warning, message)) = pointer_conversion_warning(&value.ty, &to)
+                {
+                    self.warn(warning, message, &value.node);
+                }
                 let node = value.node.clone();
                 return Ok(self.value(
                     &node,
@@ -305,7 +328,7 @@ impl Lowerer {
     }
 
     pub fn convert_expr(
-        &self,
+        &mut self,
         expression: &Expr,
         value: Value,
         to: Type,
@@ -1082,6 +1105,14 @@ impl Lowerer {
                     } else {
                         right.ty.clone()
                     };
+                    let left = self.convert_expr(
+                        left_expr,
+                        left,
+                        ty.clone(),
+                        ConversionReason::UsualArith,
+                    )?;
+                    let right =
+                        self.convert_expr(right_expr, right, ty, ConversionReason::UsualArith)?;
                     return Ok(self.value(
                         e,
                         Type::Bool,
@@ -1091,18 +1122,8 @@ impl Lowerer {
                             } else {
                                 CompareOp::Ne
                             },
-                            left: Box::new(self.convert_expr(
-                                left_expr,
-                                left,
-                                ty.clone(),
-                                ConversionReason::UsualArith,
-                            )?),
-                            right: Box::new(self.convert_expr(
-                                right_expr,
-                                right,
-                                ty,
-                                ConversionReason::UsualArith,
-                            )?),
+                            left: Box::new(left),
+                            right: Box::new(right),
                             exceptions: None,
                             reason: None,
                         },
@@ -1117,6 +1138,14 @@ impl Lowerer {
                 ) && (self.pointee(&left.ty).is_ok() && self.pointee(&right.ty).is_ok())
                 {
                     let ty = left.ty.clone();
+                    let left = self.convert_expr(
+                        left_expr,
+                        left,
+                        ty.clone(),
+                        ConversionReason::UsualArith,
+                    )?;
+                    let right =
+                        self.convert_expr(right_expr, right, ty, ConversionReason::UsualArith)?;
                     return Ok(self.value(
                         e,
                         Type::Bool,
@@ -1127,18 +1156,8 @@ impl Lowerer {
                                 BinaryOp::Greater => CompareOp::Gt,
                                 _ => CompareOp::Ge,
                             },
-                            left: Box::new(self.convert_expr(
-                                left_expr,
-                                left,
-                                ty.clone(),
-                                ConversionReason::UsualArith,
-                            )?),
-                            right: Box::new(self.convert_expr(
-                                right_expr,
-                                right,
-                                ty,
-                                ConversionReason::UsualArith,
-                            )?),
+                            left: Box::new(left),
+                            right: Box::new(right),
                             exceptions: None,
                             reason: None,
                         },
@@ -1480,6 +1499,58 @@ pub(super) enum VaBuiltin {
     Start,
     End,
     Copy,
+}
+
+fn pointer_conversion_warning(from: &Type, to: &Type) -> Option<(Warning, &'static str)> {
+    let (
+        Type::Pointer {
+            pointee: from_pointee,
+            is_const: from_const,
+            access: from_access,
+        },
+        Type::Pointer {
+            pointee: to_pointee,
+            is_const: to_const,
+            access: to_access,
+        },
+    ) = (from, to)
+    else {
+        return None;
+    };
+    if differ_only_in_sign(from_pointee, to_pointee) {
+        return Some((
+            Warning::PointerSign,
+            "conversion between pointers to integer types with different sign",
+        ));
+    }
+    if (*from_const && !to_const) || (from_access.volatile && !to_access.volatile) {
+        return Some((
+            Warning::IncompatiblePointerTypesDiscardsQualifiers,
+            "pointer conversion discards qualifiers",
+        ));
+    }
+    if differ_only_in_nested_qualifiers(from_pointee, to_pointee) {
+        return Some((
+            Warning::IncompatiblePointerTypesDiscardsQualifiers,
+            "pointer conversion discards qualifiers in nested pointer types",
+        ));
+    }
+    None
+}
+
+fn differ_only_in_nested_qualifiers(a: &Type, b: &Type) -> bool {
+    matches!((a, b), (Type::Pointer { .. }, Type::Pointer { .. }))
+        && !super::types::compatible(a, b)
+        && compatible_ignoring_qualifiers(a, b)
+}
+
+fn compatible_ignoring_qualifiers(a: &Type, b: &Type) -> bool {
+    match (a, b) {
+        (Type::Pointer { pointee: a, .. }, Type::Pointer { pointee: b, .. }) => {
+            compatible_ignoring_qualifiers(a, b)
+        }
+        _ => super::types::compatible(a, b),
+    }
 }
 
 fn differ_only_in_sign(a: &Type, b: &Type) -> bool {

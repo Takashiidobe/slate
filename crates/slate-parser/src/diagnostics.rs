@@ -8,14 +8,18 @@ pub enum Warning {
     C99Compat,
     ImplicitlyUnsignedLiteral,
     C23Extensions,
+    PointerSign,
+    IncompatiblePointerTypesDiscardsQualifiers,
 }
 
 impl Warning {
-    pub const ALL: [Self; 4] = [
+    pub const ALL: [Self; 6] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
         Self::C23Extensions,
+        Self::PointerSign,
+        Self::IncompatiblePointerTypesDiscardsQualifiers,
     ];
 
     pub fn name(self) -> &'static str {
@@ -24,6 +28,10 @@ impl Warning {
             Self::C99Compat => "c99-compat",
             Self::ImplicitlyUnsignedLiteral => "implicitly-unsigned-literal",
             Self::C23Extensions => "c23-extensions",
+            Self::PointerSign => "pointer-sign",
+            Self::IncompatiblePointerTypesDiscardsQualifiers => {
+                "incompatible-pointer-types-discards-qualifiers"
+            }
         }
     }
 
@@ -32,14 +40,23 @@ impl Warning {
     }
 
     fn is_pedantic(self) -> bool {
-        matches!(self, Self::LongLong | Self::C23Extensions)
+        matches!(
+            self,
+            Self::LongLong
+                | Self::C23Extensions
+                | Self::PointerSign
+                | Self::IncompatiblePointerTypesDiscardsQualifiers
+        )
     }
 
     fn enabled_by_default(self, standard: LanguageStandard) -> bool {
         match self {
             Self::LongLong => false,
             Self::C99Compat => standard.stdc_version().is_none(),
-            Self::ImplicitlyUnsignedLiteral | Self::C23Extensions => true,
+            Self::ImplicitlyUnsignedLiteral
+            | Self::C23Extensions
+            | Self::PointerSign
+            | Self::IncompatiblePointerTypesDiscardsQualifiers => true,
         }
     }
 }

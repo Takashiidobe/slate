@@ -16,7 +16,7 @@ pub mod types;
 mod validate;
 
 pub use module::resolve_module;
-pub use validate::{SemaError, SemaErrors};
+pub use validate::{SemaError, SemaErrors, with_sources};
 
 use crate::ast::{DeclKind, Expr, StmtKind, TranslationUnit};
 use crate::ir::Value;

@@ -45,6 +45,17 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `c99-compat`                  | on in c89 | no       | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate                                            |
 | `implicitly-unsigned-literal` | on        | no       | a signed-only decimal literal lands on an unsigned candidate at the widest rank                                             |
 | `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
+| `pointer-sign`                | on        | yes      | an implicit pointer conversion (assign/init, argument, return) whose integer pointees differ only in signedness            |
+| `incompatible-pointer-types-discards-qualifiers` | on | yes | the same conversions dropping pointee `const`/`volatile`, or differing in qualifiers below the first pointer level |
+
+The two pointer warnings are clang `ExtWarn`s and need resolved types, so
+they come from IR lowering rather than `TranslationUnit::analyze`. `Lowerer`
+collects them in `diagnostics` through `Lowerer::warn`, `resolve_module`
+returns them next to the `Module`, and the driver passes them through
+`sema::with_sources`, the same function `analyze` uses. A promoted warning
+fails `ir --dump-ir` exactly like an `analyze` error. A warning is reported on
+the converted value's node, which carries the operand's span, so a warning on
+`take((unsigned *)p)` points at `p` rather than the whole cast.
 
 `c99-compat` is deliberately not in the pedantic group: clang leaves it a
 warning even under `-pedantic-errors`.

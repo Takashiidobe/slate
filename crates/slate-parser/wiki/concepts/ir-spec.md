@@ -1183,9 +1183,13 @@ Types and policies are elided below; the grammar has the full forms.
 
 An implicit conversion between pointers whose pointees are integers differing
 only in signedness (clang's `-Wpointer-sign`, e.g. `const char *p = u8"a"` in
-C23) is accepted as a `pointer_cast`. Only the immediate pointee is checked, so
-`unsigned ** → int **` and `unsigned * → long *` stay errors, as in clang 22.
-Fixture: `tests/fixtures/sema/ir_pointer_sign.c`.
+C23) is accepted as a `pointer_cast`, as is one whose pointees are pointers
+differing only in qualifiers (`const int ** → int **`). Both are reported as
+warnings (see [`diagnostic-severity.md`](diagnostic-severity.md)). Only the
+immediate pointee's signedness is checked, so `unsigned ** → int **` and
+`unsigned * → long *` stay errors, as in clang 22. Fixtures:
+`tests/fixtures/sema/ir_pointer_sign.c`,
+`tests/fixtures/sema/ir_pointer_conversion_warnings.c`.
 
 Original pointer qualifiers are retained as metadata; volatile/atomic
 access behavior is also resolved on the actual accesses. Pointee `const`

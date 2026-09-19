@@ -1,3 +1,4 @@
+use super::SemaError;
 use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
@@ -12,7 +13,7 @@ use std::collections::HashMap;
 
 /// Lowers an already analyzed unit; `TranslationUnit::analyze` reports the
 /// diagnostics, including failed static assertions.
-pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
+pub fn resolve_module(unit: &TranslationUnit) -> Result<(Module, Vec<SemaError>), ResolveError> {
     let features = StandardFeatures::new(unit.standard);
     let context = Context::new(unit.target.clone())
         .with_options(&unit.options)
@@ -41,6 +42,9 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         switches: Vec::new(),
         in_function: false,
         return_type: None,
+        diagnostic_options: unit.options.diagnostics.clone(),
+        standard: unit.standard,
+        diagnostics: Vec::new(),
     };
     for declaration in &unit.decls {
         match &declaration.value {
@@ -161,7 +165,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
     lower.resolve_object_requests(unit)?;
     lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
     super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.types.access)?;
-    Ok(lower.module)
+    Ok((lower.module, lower.diagnostics))
 }
 
 #[derive(Debug, Default, Clone, Copy)]
