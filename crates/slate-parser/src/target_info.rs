@@ -1,5 +1,6 @@
 use crate::ir::{FloatType, NumericType, ShiftFill, Type};
 use crate::target::isa::TargetIsa;
+use crate::target::x86_isa::X86Feature;
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -382,6 +383,19 @@ impl TargetInfo {
         match self.family {
             TargetFamily::X86_64 | TargetFamily::AArch64 => 16,
             TargetFamily::X86 | TargetFamily::Arm32 => 8,
+        }
+    }
+
+    // clang's getMaxAtomicInlineWidth: the widest access done without libatomic
+    pub fn max_atomic_inline_bytes(&self) -> u64 {
+        match (self.family, self.isa) {
+            (TargetFamily::X86_64, TargetIsa::X86(isa))
+                if !isa.features.contains(X86Feature::Cx16) =>
+            {
+                8
+            }
+            (TargetFamily::X86_64 | TargetFamily::AArch64, _) => 16,
+            (TargetFamily::X86 | TargetFamily::Arm32, _) => 8,
         }
     }
 

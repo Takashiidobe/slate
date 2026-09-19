@@ -12,6 +12,20 @@ pub enum MemoryOrder {
     Dynamic(Box<Value>),
 }
 
+#[derive(Debug, Clone)]
+pub enum Weakness {
+    Strong,
+    Weak,
+    Dynamic(Box<Value>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CompareExchangeForm {
+    WriteBack,
+    Success,
+    Old,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FenceScope {
     Thread,
@@ -66,6 +80,38 @@ pub(super) fn format_ordering(
     match ordering {
         Some(ordering) => write!(f, ", atomic={}", ordering.display_mode(compact)),
         None => Ok(()),
+    }
+}
+
+impl Weakness {
+    pub(super) fn display_mode(&self, compact: bool) -> impl fmt::Display + '_ {
+        struct DisplayWeakness<'a>(&'a Weakness, bool);
+
+        impl fmt::Display for DisplayWeakness<'_> {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                match self.0 {
+                    Weakness::Strong => f.write_str("false"),
+                    Weakness::Weak => f.write_str("true"),
+                    Weakness::Dynamic(value) => write!(
+                        f,
+                        "dynamic({})",
+                        value.display_metadata(false, None).with_compact(self.1)
+                    ),
+                }
+            }
+        }
+
+        DisplayWeakness(self, compact)
+    }
+}
+
+impl fmt::Display for CompareExchangeForm {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::WriteBack => "write_back",
+            Self::Success => "success",
+            Self::Old => "old",
+        })
     }
 }
 

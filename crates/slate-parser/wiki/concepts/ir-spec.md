@@ -1246,6 +1246,12 @@ their own:
 | `__c11_atomic_init(p, v)` | non-atomic `write` |
 | compare-exchange | `compare_exchange<T, weak=, success=, failure=>(place, expected, desired)` |
 | `*_thread_fence` / `*_signal_fence` | `fence<scope=thread\|signal, order=o>` statement |
+| `__sync_fetch_and_OP` / `__sync_OP_and_fetch` | `update` with `result=old` / `result=new`, `atomic=seq_cst` |
+| `__sync_bool_compare_and_swap` / `__sync_val_compare_and_swap` | `compare_exchange<T, form=success\|old, weak=false, success=seq_cst, failure=seq_cst>` with a value `expected` |
+| `__sync_lock_test_and_set` / `__sync_swap` | `update<T, result=old>` of the value, `atomic=acquire` / `seq_cst` |
+| `__sync_lock_release` | `write<T, atomic=release>` of 0 |
+| `__sync_synchronize` | `fence<scope=thread, order=seq_cst>` |
+| lock-free queries | `const<bool>` when decidable, else a call to libatomic's `__atomic_is_lock_free` |
 
 - Orderings are recorded exactly as written, including ones that are UB
   for the operation (an acquire store, a failure ordering stronger than
@@ -1258,11 +1264,35 @@ their own:
   and GCC `__atomic_fetch_add` in bytes (`element=u8`).
 - The builtin's name is kept as `c_builtin` metadata on the call's node,
   since an exchange or fetch no longer names itself once it is an `update`.
-- A GCC compare-exchange `weak` argument must be constant.
+  When the builtin's identifier came from a macro, `c_macro` names the
+  innermost one, which for `<stdatomic.h>` is the standard name
+  (`atomic_fetch_add_explicit`) even through a user macro wrapping it.
+- A constant GCC compare-exchange `weak` argument folds to `weak=true|false`;
+  a non-constant one prints as `weak=dynamic(v)`, since clang then picks
+  strong or weak at run time.
+- Clang accepts floating `add`/`sub` fetches (`atomicrmw fadd`); they lower
+  to floating `add`/`sub` with the ambient floating semantics. Floating
+  `min`/`max` (`atomicrmw fmin`, NaN-ignoring) have no exact compare-and-select
+  form and stay unsupported.
+- `__sync_*` builtins are all `seq_cst` except `lock_test_and_set`
+  (acquire, as gcc documents it; clang strengthens it to `seq_cst`) and
+  `lock_release` (release). Trailing "protected variable" arguments are
+  ignored. `__sync_fetch_and_min/max` compare signed and `umin/umax`
+  unsigned, whatever the object's signedness, through `reinterpret`
+  conversions of both operands. On a pointer, an integer operand offsets in
+  bytes, as with `__atomic_*` (gcc; clang requires a pointer operand).
+- `__c11_atomic_is_lock_free(n)`, `__atomic_is_lock_free(n, p)` and
+  `__atomic_always_lock_free(n, p)` follow clang's constant evaluator: true
+  when `n` is a power of two no wider than the target's max inline atomic
+  width (`TargetInfo::max_atomic_inline_bytes`: 16 on AArch64 and on x86-64
+  with `cx16`, else 8), and `n == 1`, `p` is null, or `p`'s pointee is
+  aligned to at least `n`. Otherwise `always_lock_free` is false and the
+  other two call libatomic's `bool __atomic_is_lock_free(size_t, const
+  volatile void *)`, declared on first use.
 
-`tests/fixtures/sema/ir_atomic_builtins.c` and `ir_atomic_stdatomic.c`
-cover these. The legacy `__sync_*` builtins and `__atomic_*_lock_free`
-queries do not resolve yet.
+`tests/fixtures/sema/ir_atomic_builtins.c`, `ir_atomic_stdatomic.c`,
+`ir_atomic_sync.c`, `ir_atomic_sync_gcc.c`, `ir_atomic_extensions.c` and
+`ir_atomic_lock_free.c` (plus the AArch64 and `-mcx16` variants) cover these.
 
 ## Things C leaves implicit that the IR materializes
 

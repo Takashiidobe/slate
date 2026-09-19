@@ -136,11 +136,11 @@ int gnu(int order, int *expected, int *desired) {
 // IR-NEXT:         let %45: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%43), read<i32>(%44));
 // IR-NEXT:         write<i32>(%10, read<i32>(%45));
 // IR-NEXT:         let %46: i32 [synthetic] = read<i32>(%10);
-// IR-NEXT:         let %47: bool [synthetic] = compare_exchange<i32, weak=false, success=acq_rel, failure=acquire>(deref(addr_of<ptr<atomic i32>>(%0)), read<ptr<i32>>(%9), const<i32>(7));
+// IR-NEXT:         let %47: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=acq_rel, failure=acquire>(deref(addr_of<ptr<atomic i32>>(%0)), read<ptr<i32>>(%9), const<i32>(7));
 // IR-NEXT:         let %48: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%46), from_bool<i32, reason=promotion>(read<bool>(%47)));
 // IR-NEXT:         write<i32>(%10, read<i32>(%48));
 // IR-NEXT:         let %49: i32 [synthetic] = read<i32>(%10);
-// IR-NEXT:         let %50: bool [synthetic] = compare_exchange<i32, weak=true, success=seq_cst, failure=relaxed>(deref(addr_of<ptr<atomic i32>>(%0)), read<ptr<i32>>(%9), const<i32>(7));
+// IR-NEXT:         let %50: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=seq_cst, failure=relaxed>(deref(addr_of<ptr<atomic i32>>(%0)), read<ptr<i32>>(%9), const<i32>(7));
 // IR-NEXT:         let %51: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%49), from_bool<i32, reason=promotion>(read<bool>(%50)));
 // IR-NEXT:         write<i32>(%10, read<i32>(%51));
 // IR-NEXT:         let %52: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic ptr<i32>>>(%1)), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=wrap>(old<ptr<i32>>, const<i32>(1)));
@@ -206,11 +206,11 @@ int gnu(int order, int *expected, int *desired) {
 // IR-NEXT:         let %89: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%87), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%88))));
 // IR-NEXT:         write<i32>(%15, read<i32>(%89));
 // IR-NEXT:         let %90: i32 [synthetic] = read<i32>(%15);
-// IR-NEXT:         let %91: bool [synthetic] = compare_exchange<i32, weak=false, success=seq_cst, failure=consume>(deref(addr_of<ptr<i32>>(%2)), read<ptr<i32>>(%13), const<i32>(8));
+// IR-NEXT:         let %91: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=consume>(deref(addr_of<ptr<i32>>(%2)), read<ptr<i32>>(%13), const<i32>(8));
 // IR-NEXT:         let %92: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%90), from_bool<i32, reason=promotion>(read<bool>(%91)));
 // IR-NEXT:         write<i32>(%15, read<i32>(%92));
 // IR-NEXT:         let %93: i32 [synthetic] = read<i32>(%15);
-// IR-NEXT:         let %94: bool [synthetic] = compare_exchange<i32, weak=true, success=release, failure=relaxed>(deref(addr_of<ptr<i32>>(%2)), read<ptr<i32>>(%13), read<i32>(deref(read<ptr<i32>>(%14))));
+// IR-NEXT:         let %94: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=release, failure=relaxed>(deref(addr_of<ptr<i32>>(%2)), read<ptr<i32>>(%13), read<i32>(deref(read<ptr<i32>>(%14))));
 // IR-NEXT:         let %95: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%93), from_bool<i32, reason=promotion>(read<bool>(%94)));
 // IR-NEXT:         write<i32>(%15, read<i32>(%95));
 // IR-NEXT:         let %96: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%3)), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, const<i32>(4)));

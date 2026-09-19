@@ -280,12 +280,19 @@ impl Hoister {
                 success,
                 failure,
                 weak,
+                form,
             } => {
                 let place = self.place(place, out)?;
                 let expected = self.value(*expected, out)?;
                 let desired = self.value(*desired, out)?;
                 let success = self.order(success, out)?;
                 let failure = self.order(failure, out)?;
+                let weak = match weak {
+                    Weakness::Dynamic(value) => {
+                        Weakness::Dynamic(Box::new(self.value(*value, out)?))
+                    }
+                    fixed => fixed,
+                };
                 let exchange = Value {
                     ty,
                     node: source.with_value(ValueKind::CompareExchange {
@@ -295,6 +302,7 @@ impl Hoister {
                         success,
                         failure,
                         weak,
+                        form,
                     }),
                 };
                 return Ok(self.temporary(exchange, out));

@@ -278,8 +278,9 @@ core       = "const<" type ">(" constant ")"
            | "store<" type access [ ordering ] ">(" place ", " value ")"
            | "update<" type ", result=" ( "old" | "new" ) access [ ordering ]
              ">(" place ", " value ")"
-           | "compare_exchange<" type access ", weak=" bool ", success=" order
-             ", failure=" order ">(" place ", " value ", " value ")"
+           | "compare_exchange<" type access ", form=" exchange_form ", weak="
+             ( bool | "dynamic(" value ")" ) ", success=" order ", failure=" order
+             ">(" place ", " value ", " value ")"
            | "old<" type ">"
            | "addr_of<" type ">(" place ")"
            | "array_decay<" type ", length=" opt_int ">(" place ")"
@@ -305,12 +306,13 @@ core       = "const<" type ">(" constant ")"
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
 member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
              " = " value ;
+exchange_form = "write_back" | "success" | "old" ;
 reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
            | "usual_arith" | "explicit" ;
 ```
 
 - The type after `<` is the result type, except in `read`/`write` and
-  `compare_exchange` (result `bool`), where it is the place type, and in `compare_op`, where it is the operand type. A
+  `compare_exchange` (result `bool`, or the place type for `form=old`), where it is the place type, and in `compare_op`, where it is the operand type. A
   scalar comparison results in `bool`; a vector comparison prints its
   `result=vector<iN, lanes>` lane-mask type instead.
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
@@ -326,9 +328,12 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   statements, so the module dump contains only atomic `update`s (one
   read-modify-write). Atomic `update` and `compare_exchange` are each kept
   whole in a synthetic temporary. A fence value becomes a `fence` statement.
-- `compare_exchange(place, expected, desired)`: `expected` is a pointer that
-  receives the current value on failure; the result is whether the exchange
-  happened. `old<T>` is the place's old value inside an `update`
+- `compare_exchange(place, expected, desired)`: with `form=write_back`,
+  `expected` is a pointer that receives the current value on failure and the
+  result is whether the exchange happened. With `form=success` and `form=old`
+  (the `__sync_*_compare_and_swap` builtins), `expected` is a value, nothing
+  is written back, and the result is whether the exchange happened or the
+  old value respectively. `old<T>` is the place's old value inside an `update`
   computation.
 - `array_decay`'s `length` is the source array's length (`None` for a VLA or
   an incomplete array).

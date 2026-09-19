@@ -7,7 +7,7 @@ mod names;
 mod numeric;
 
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
-pub use atomic::{FenceScope, MemoryOrder};
+pub use atomic::{CompareExchangeForm, FenceScope, MemoryOrder, Weakness};
 pub use declarations::{
     Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, BitFieldAccess,
     BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
@@ -83,7 +83,8 @@ pub enum ValueKind {
         desired: Box<Value>,
         success: MemoryOrder,
         failure: MemoryOrder,
-        weak: bool,
+        weak: Weakness,
+        form: CompareExchangeForm,
     },
     Fence {
         ordering: MemoryOrder,
@@ -358,11 +359,13 @@ impl Value {
                 success,
                 failure,
                 weak,
+                form,
             } => write!(
                 f,
-                "compare_exchange<{}{}, weak={weak}, success={}, failure={}>({}, {}, {})",
+                "compare_exchange<{}{}, form={form}, weak={}, success={}, failure={}>({}, {}, {})",
                 place.ty,
                 place.access,
+                weak.display_mode(compact),
                 success.display_mode(compact),
                 failure.display_mode(compact),
                 place.display_mode(compact),
