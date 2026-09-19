@@ -28,6 +28,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         context,
         names,
         bindings: HashMap::new(),
+        c_types: HashMap::new(),
         access: HashMap::new(),
         type_spans: HashMap::new(),
         next_id,
@@ -59,14 +60,11 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .ok_or(ResolveError::Unsupported("unnamed function"))?;
                 let id = lower.declaration_id(declaration.id, name)?;
                 let c_return = lower
-                    .types
-                    .resolve(&function.specifiers, &Declarator::Abstract)?
+                    .resolve_type(&function.specifiers, &Declarator::Abstract)?
                     .c
                     .spelling;
                 let start = lower.types.definitions.len();
-                let resolved = lower
-                    .types
-                    .resolve(&function.specifiers, &function.declarator)?;
+                let resolved = lower.resolve_type(&function.specifiers, &function.declarator)?;
                 for definition in &lower.types.definitions[start..] {
                     lower.type_spans.insert(
                         definition.id,
@@ -82,6 +80,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 let abi = lower.abi_signature(&ty, None)?;
                 lower.bindings.insert(id, ty);
+                lower.c_types.insert(id, resolved.c.clone());
                 let mut metadata = vec![
                     (
                         "c_storage".into(),
@@ -343,19 +342,17 @@ impl Lowerer {
                 self.capture_extents(&parameter.declarator, &anchor, prologue)?;
             }
             let start = self.types.definitions.len();
-            let resolved = self
-                .types
-                .resolve_parameter(&parameter.specifiers, &parameter.declarator)?;
+            let resolved =
+                self.resolve_parameter_type(&parameter.specifiers, &parameter.declarator)?;
             let mut ty = resolved
                 .ty
                 .clone()
                 .ok_or(ResolveError::Unsupported("void parameter"))?;
             let element_access = super::types::access(resolved.c.qualifiers);
             let qualifiers = match ty {
-                Type::Array { .. } | Type::VariableArray { .. } => parameter
-                    .declarator
-                    .array_qualifiers()
-                    .ok_or(ResolveError::Unsupported("array parameter declarator"))?,
+                Type::Array { .. } | Type::VariableArray { .. } => {
+                    parameter.declarator.array_qualifiers().unwrap_or_default()
+                }
                 _ => resolved.c.qualifiers,
             };
             ty = match ty {
@@ -375,6 +372,8 @@ impl Lowerer {
                 self.fresh()
             };
             self.bindings.insert(id, ty.clone());
+            self.c_types
+                .insert(id, TypeResolver::parameter_c(&resolved, qualifiers));
             self.access.insert(id, super::types::access(qualifiers));
             self.module
                 .metadata
@@ -419,8 +418,7 @@ impl Lowerer {
             if !item.specifiers.attributes.is_empty() {
                 return Err(ResolveError::Unsupported("declaration attributes"));
             }
-            self.types
-                .resolve(&item.specifiers, &Declarator::Abstract)?;
+            self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
         }
         let storage_class = item.specifiers.storage;
         let mut statements = Vec::new();
@@ -449,9 +447,7 @@ impl Lowerer {
                 self.capture_extents(&declarator.declarator, &anchor, &mut statements)?;
             }
             let start = self.types.definitions.len();
-            let resolved = self
-                .types
-                .resolve(&item.specifiers, &declarator.declarator)?;
+            let resolved = self.resolve_type(&item.specifiers, &declarator.declarator)?;
             self.module
                 .metadata
                 .insert(declarator.id, resolved.c.entries());
@@ -477,8 +473,15 @@ impl Lowerer {
                 .ok_or(ResolveError::Unsupported("void object"))?;
             let id = self.declaration_id(declarator.id, name)?;
             self.bindings.insert(id, ty.clone());
+            self.c_types.insert(id, resolved.c.clone());
             self.access.insert(id, super::types::access(qualifiers));
-            if let Type::Function { return_type, .. } = &ty {
+            if let Type::Function {
+                return_type,
+                parameters: parameter_types,
+                variadic,
+                prototyped,
+            } = &ty
+            {
                 if declarator.initializer.is_some() {
                     return Err(ResolveError::Invalid("function initializer"));
                 }
@@ -489,11 +492,29 @@ impl Lowerer {
                     return Err(ResolveError::Invalid("block scope static function"));
                 }
                 let symbol = function_symbol(attributes, declarator.asm_label.as_ref())?;
-                let params = declarator
-                    .declarator
-                    .function_parameters()
-                    .ok_or(ResolveError::Unsupported("missing prototype"))?;
-                let parameters = self.parameters(params, None)?;
+                let parameters = match declarator.declarator.function_parameters() {
+                    Some(params) => self.parameters(params, None)?,
+                    None if !prototyped => Parameters::Unprototyped,
+                    None => Parameters::Prototype {
+                        fixed: parameter_types
+                            .iter()
+                            .map(|ty| {
+                                Span::new(
+                                    Parameter {
+                                        id: self.fresh(),
+                                        name: None,
+                                        ty: ty.clone(),
+                                        restrict: false,
+                                    },
+                                    declarator.spelling,
+                                    declarator.expansion,
+                                )
+                                .with_provenance(declarator.provenance)
+                            })
+                            .collect(),
+                        variadic: *variadic,
+                    },
+                };
                 let abi = self.abi_signature(&ty, None)?;
                 self.declare_function(declarator.clone().with_value(Function {
                     id,
@@ -545,6 +566,8 @@ impl Lowerer {
                         ty => ty,
                     };
                     self.bindings.insert(id, ty.clone());
+                    self.c_types
+                        .insert(id, super::type_of::with_length(resolved.c.clone(), &ty));
                     (ty, Some(value))
                 }
             };

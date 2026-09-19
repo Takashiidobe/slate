@@ -106,6 +106,16 @@ or string-literal globals its lowering would have created. A selection is also a
 place when the selected expression is one, which is what makes `_Generic(...) = v`
 and `&_Generic(...)` lower.
 
+`typeof` and `typeof_unqual` resolve in sema for both type names and expression
+operands. Expression operands retain array and function types without decay;
+typing them emits no runtime effects and rolls back temporary binding IDs and
+string globals. `typeof_unqual` removes outer qualifiers, including atomic
+qualification, while preserving pointee qualifiers. Resolved declarations keep
+their `typeof` spelling, canonical C type, and applicable typedef chain metadata.
+Function types can declare functions without a new parameter list, and existing
+variable array types retain their captured extents. See
+`tests/fixtures/sema/ir_typeof.c` and `ir_typeof_qualifiers.c`.
+
 Declarator type derivation visits prefix pointers and arrays before wrapping
 suffix function and array forms, so `int *f(void)` is `fn() -> ptr<i32>` and
 `int *a[3]` is `array<ptr<i32>, 3>`; grouped declarators such as

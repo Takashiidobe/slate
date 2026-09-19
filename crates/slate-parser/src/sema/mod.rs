@@ -9,6 +9,7 @@ mod initializer;
 mod module;
 pub mod names;
 pub mod numeric;
+mod type_of;
 pub mod types;
 mod validate;
 

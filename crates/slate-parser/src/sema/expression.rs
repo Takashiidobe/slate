@@ -11,6 +11,7 @@ pub(super) struct Lowerer {
     pub module: Module,
     pub names: NameResolution,
     pub bindings: HashMap<BindingId, Type>,
+    pub c_types: HashMap<BindingId, super::types::CTypeMetadata>,
     pub access: HashMap<BindingId, Access>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub next_id: u32,
@@ -52,7 +53,7 @@ impl Lowerer {
             .ok_or(ResolveError::Unsupported("missing declaration binding"))
     }
 
-    fn reference(&self, e: &Expr) -> Result<BindingId, ResolveError> {
+    pub(super) fn reference(&self, e: &Expr) -> Result<BindingId, ResolveError> {
         self.names
             .references
             .iter()
@@ -316,7 +317,7 @@ impl Lowerer {
         self.convert(value, to, reason)
     }
 
-    fn place(&mut self, e: &Expr) -> Result<Place, ResolveError> {
+    pub(super) fn place(&mut self, e: &Expr) -> Result<Place, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
             ExprKind::Generic {
@@ -340,7 +341,7 @@ impl Lowerer {
                 })
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
-                let resolved = self.types.resolve(&ty.specifiers, &ty.declarator)?;
+                let resolved = self.resolve_type_name(ty)?;
                 let access = super::types::access(resolved.c.qualifiers);
                 let declared = resolved
                     .ty
@@ -515,19 +516,23 @@ impl Lowerer {
         Ok(None)
     }
 
-    fn generic_selected<'e>(
+    pub(super) fn generic_selected<'e>(
         &mut self,
         controlling: &crate::ast::GenericControl,
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e Expr, ResolveError> {
         let controlling = match controlling {
             crate::ast::GenericControl::Type { ty } => self
-                .types
-                .resolve(&ty.specifiers, &ty.declarator)?
+                .resolve_type_name(ty)?
                 .ty
                 .ok_or(ResolveError::Unsupported("void generic controlling type"))?,
             crate::ast::GenericControl::Expr(expr) => self.unevaluated(expr)?,
         };
+        for association in associations {
+            if let crate::ast::GenericAssociation::Type { ty, .. } = association {
+                self.prepare_typeof(&ty.specifiers, &ty.declarator)?;
+            }
+        }
         self.types.select_association(controlling, associations)
     }
 
@@ -883,7 +888,7 @@ impl Lowerer {
                 )
             }
             ExprKind::Cast { ty, value } => {
-                let to = self.types.resolve(&ty.specifiers, &ty.declarator)?.ty;
+                let to = self.resolve_type_name(ty)?.ty;
                 let value = self.expr(value)?;
                 if let Some(to) = to {
                     self.convert(value, to, ConversionReason::Explicit)
@@ -1265,8 +1270,7 @@ impl Lowerer {
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let ty = self
-                    .types
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .resolve_type_name(ty)?
                     .ty
                     .ok_or(ResolveError::Unsupported("void layout"))?;
                 if matches!(e.value, ExprKind::SizeOfType { .. })
@@ -1322,8 +1326,7 @@ impl Lowerer {
             }
             ExprKind::OffsetOf { ty, member } => {
                 let ty = self
-                    .types
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .resolve_type_name(ty)?
                     .ty
                     .ok_or(ResolveError::Unsupported("void offsetof"))?;
                 let (_, offset) = self.types.offsetof_member(ty.clone(), member)?;
@@ -1331,8 +1334,7 @@ impl Lowerer {
             }
             ExprKind::BitCast { ty, value } => {
                 let ty = self
-                    .types
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .resolve_type_name(ty)?
                     .ty
                     .ok_or(ResolveError::Invalid("bit cast to void"))?;
                 if matches!(ty, Type::Array { .. } | Type::VariableArray { .. }) {
@@ -1390,8 +1392,7 @@ impl Lowerer {
                     return Err(ResolveError::Unsupported("va_arg of non-va_list"));
                 }
                 let ty = self
-                    .types
-                    .resolve(&ty.specifiers, &ty.declarator)?
+                    .resolve_type_name(ty)?
                     .ty
                     .ok_or(ResolveError::Unsupported("va_arg of void"))?;
                 self.types.storage(ty.clone())?;

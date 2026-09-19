@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, DeclarationSpecifiers, Declarator, EnumItemKind,
     FieldItemKind, FloatingType, IntegerRank, IntegerType, ParameterList, Qualifiers, TagBody,
-    TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeSpecifier,
+    TagDefinition, TagId, TagKind, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand,
+    TypeSpecifier,
 };
 use crate::const_expr::Encoding;
 use crate::ir::{
@@ -23,9 +24,69 @@ pub struct CTypeMetadata {
     pub canonical: String,
     pub typedef_chain: Vec<String>,
     pub qualifiers: Qualifiers,
+    pub derived_from: Option<Box<CTypeMetadata>>,
 }
 
 impl CTypeMetadata {
+    fn plain(spelling: String) -> Self {
+        Self {
+            canonical: spelling.clone(),
+            spelling,
+            typedef_chain: Vec::new(),
+            qualifiers: Qualifiers::default(),
+            derived_from: None,
+        }
+    }
+
+    pub(super) fn qualified(mut self, qualifiers: Qualifiers, ty: Option<&Type>) -> Self {
+        let words = qualifier_spelling(Qualifiers {
+            is_const: qualifiers.is_const && !self.qualifiers.is_const,
+            is_volatile: qualifiers.is_volatile && !self.qualifiers.is_volatile,
+            is_restrict: qualifiers.is_restrict && !self.qualifiers.is_restrict,
+            is_atomic: qualifiers.is_atomic && !self.qualifiers.is_atomic,
+        });
+        if words.is_empty() {
+            return self;
+        }
+        let pointer = matches!(ty, Some(Type::Pointer { .. }));
+        for spelling in [&mut self.spelling, &mut self.canonical] {
+            match top_pointer_star(spelling).filter(|_| pointer) {
+                Some(star) => spelling.insert_str(star + 1, &words),
+                None => spelling.insert_str(0, &words),
+            }
+        }
+        self.qualifiers = merge_qualifiers(self.qualifiers, qualifiers);
+        self
+    }
+
+    pub(super) fn unqualified(&self, ty: Option<&Type>) -> Self {
+        let pointer = matches!(ty, Some(Type::Pointer { .. }));
+        let derived_from = match ty {
+            Some(Type::Array { element, .. } | Type::VariableArray { element, .. }) => self
+                .derived_from
+                .as_ref()
+                .map(|element_c| Box::new(element_c.unqualified(Some(element)))),
+            _ => self.derived_from.clone(),
+        };
+        if self.qualifiers == Qualifiers::default() && derived_from == self.derived_from {
+            return self.clone();
+        }
+        let canonical = strip_qualifiers(&self.canonical, pointer);
+        let spelling = strip_qualifiers(&self.spelling, pointer);
+        let sugared = spelling != self.spelling;
+        Self {
+            spelling: if sugared { spelling } else { canonical.clone() },
+            canonical,
+            typedef_chain: if sugared {
+                self.typedef_chain.clone()
+            } else {
+                Vec::new()
+            },
+            qualifiers: Qualifiers::default(),
+            derived_from,
+        }
+    }
+
     pub fn entries(&self) -> Vec<(String, String)> {
         let mut entries = vec![("c".into(), self.spelling.clone())];
         if self.canonical != self.spelling {
@@ -66,6 +127,8 @@ pub struct TypeResolver {
     pub definitions: Vec<TypeDefinition>,
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
+    pub(super) typeof_operands: HashMap<crate::ast::NodeId, ResolvedType>,
+    pub(super) field_c: HashMap<TypeId, Vec<CTypeMetadata>>,
     prototype_scope: bool,
 }
 
@@ -88,6 +151,8 @@ impl TypeResolver {
             definitions: Vec::new(),
             assertion_scope: false,
             extents: HashMap::new(),
+            typeof_operands: HashMap::new(),
+            field_c: HashMap::new(),
             prototype_scope: false,
         }
     }
@@ -107,6 +172,13 @@ impl TypeResolver {
         unit.tags
             .iter()
             .find(|tag| self.tag_ids.get(&tag.value.id) == Some(&id))
+    }
+
+    pub(super) fn tag_definition(&self, id: TagId) -> Option<TagDefinition> {
+        self.tags
+            .iter()
+            .find(|tag| tag.value.id == id)
+            .map(|tag| tag.value.clone())
     }
 
     pub(super) fn constant_integer(
@@ -522,66 +594,67 @@ impl TypeResolver {
         specifiers: &DeclarationSpecifiers,
         declarator: &Declarator,
     ) -> Result<ResolvedType, ResolveError> {
-        let (base, spelling, canonical, chain) = self.base(&specifiers.ty)?;
+        let mut resolved = self.base(&specifiers.ty)?;
         let prefix = qualifier_spelling(specifiers.qualifiers);
-        let qualifiers = merge_qualifiers(
-            self.specifier_qualifiers(&specifiers.ty),
-            specifiers.qualifiers,
-        );
-        let mut resolved = ResolvedType {
-            ty: base,
-            c: CTypeMetadata {
-                spelling: format!("{prefix}{spelling}"),
-                canonical: format!("{prefix}{canonical}"),
-                typedef_chain: chain,
-                qualifiers,
-            },
-        };
+        resolved.c.spelling.insert_str(0, &prefix);
+        resolved.c.canonical.insert_str(0, &prefix);
+        resolved.c.qualifiers = merge_qualifiers(resolved.c.qualifiers, specifiers.qualifiers);
         self.derive(declarator, &mut resolved)?;
         Ok(resolved)
     }
 
-    fn specifier_qualifiers(&self, specifier: &TypeSpecifier) -> Qualifiers {
-        match specifier {
-            TypeSpecifier::Named(name) => match self.lookup(name) {
-                Some(Ordinary::Alias(alias)) => alias.c.qualifiers,
-                _ => Qualifiers::default(),
-            },
-            TypeSpecifier::Atomic(_) => Qualifiers {
-                is_atomic: true,
-                ..Qualifiers::default()
-            },
-            _ => Qualifiers::default(),
-        }
-    }
-
-    fn base(
-        &mut self,
-        specifier: &TypeSpecifier,
-    ) -> Result<(Option<Type>, String, String, Vec<String>), ResolveError> {
+    fn base(&mut self, specifier: &TypeSpecifier) -> Result<ResolvedType, ResolveError> {
         let scalar = match specifier {
-            TypeSpecifier::Void => return Ok((None, "void".into(), "void".into(), Vec::new())),
+            TypeSpecifier::Void => {
+                return Ok(ResolvedType {
+                    ty: None,
+                    c: CTypeMetadata::plain("void".into()),
+                });
+            }
             TypeSpecifier::Atomic(inner) => {
                 let inner = self.resolve(&inner.specifiers, &inner.declarator)?;
-                return Ok((
-                    inner.ty,
-                    format!("_Atomic({})", inner.c.spelling),
-                    format!("_Atomic({})", inner.c.canonical),
-                    Vec::new(),
-                ));
+                return Ok(ResolvedType {
+                    ty: inner.ty,
+                    c: CTypeMetadata {
+                        spelling: format!("_Atomic({})", inner.c.spelling),
+                        canonical: format!("_Atomic({})", inner.c.canonical),
+                        typedef_chain: Vec::new(),
+                        qualifiers: Qualifiers {
+                            is_atomic: true,
+                            ..Qualifiers::default()
+                        },
+                        derived_from: inner.c.derived_from,
+                    },
+                });
+            }
+            TypeSpecifier::TypeOf(operand) | TypeSpecifier::TypeOfUnqual(operand) => {
+                let unqualified = matches!(specifier, TypeSpecifier::TypeOfUnqual(_));
+                let resolved = self.typeof_operand(operand)?;
+                let spelling = match operand {
+                    TypeOfOperand::Expression(expr) => expr.value.to_string(),
+                    TypeOfOperand::Type(_) => resolved.c.spelling.clone(),
+                };
+                let mut c = if unqualified {
+                    resolved.c.unqualified(resolved.ty.as_ref())
+                } else {
+                    resolved.c
+                };
+                let keyword = if unqualified {
+                    "typeof_unqual"
+                } else {
+                    "typeof"
+                };
+                c.spelling = format!("{keyword}({spelling})");
+                return Ok(ResolvedType { ty: resolved.ty, c });
             }
             TypeSpecifier::Named(name) => {
                 let Some(Ordinary::Alias(alias)) = self.lookup(name) else {
                     return Err(ResolveError::Unsupported("unknown typedef"));
                 };
-                let mut chain = vec![name.clone()];
-                chain.extend(alias.c.typedef_chain.iter().cloned());
-                return Ok((
-                    alias.ty.clone(),
-                    name.clone(),
-                    alias.c.canonical.clone(),
-                    chain,
-                ));
+                let mut resolved = alias.clone();
+                resolved.c.spelling = name.clone();
+                resolved.c.typedef_chain.insert(0, name.clone());
+                return Ok(resolved);
             }
             TypeSpecifier::Tag(TagSpecifier::Definition(id)) => {
                 let tag = self
@@ -591,8 +664,10 @@ impl TypeResolver {
                     .cloned()
                     .ok_or(ResolveError::Unsupported("unknown tag definition"))?;
                 let ty = Type::Defined(self.define_tag(&tag.value)?);
-                let spelling = tag_spelling(tag.kind, tag.name.as_deref());
-                return Ok((Some(ty), spelling.clone(), spelling, Vec::new()));
+                return Ok(ResolvedType {
+                    ty: Some(ty),
+                    c: CTypeMetadata::plain(tag_spelling(tag.kind, tag.name.as_deref())),
+                });
             }
             TypeSpecifier::Tag(TagSpecifier::Reference {
                 kind,
@@ -641,29 +716,28 @@ impl TypeResolver {
                         layout: Some(layout),
                     };
                 }
-                let spelling = tag_spelling(*kind, Some(name));
-                return Ok((
-                    Some(Type::Defined(id)),
-                    spelling.clone(),
-                    spelling,
-                    Vec::new(),
-                ));
+                return Ok(ResolvedType {
+                    ty: Some(Type::Defined(id)),
+                    c: CTypeMetadata::plain(tag_spelling(*kind, Some(name))),
+                });
             }
             TypeSpecifier::Bool => (Type::Bool, "_Bool".into()),
             TypeSpecifier::Complex(inner) => {
-                let (component, spelling, canonical, chain) = self.base(inner)?;
+                let ResolvedType { ty: component, c } = self.base(inner)?;
                 let Some(Type::Numeric(component)) = component else {
                     return Err(ResolveError::Unsupported("complex component type"));
                 };
-                return Ok((
-                    Some(Type::Complex(component)),
-                    format!("_Complex {spelling}"),
-                    format!("_Complex {canonical}"),
-                    chain,
-                ));
+                return Ok(ResolvedType {
+                    ty: Some(Type::Complex(component)),
+                    c: CTypeMetadata {
+                        spelling: format!("_Complex {}", c.spelling),
+                        canonical: format!("_Complex {}", c.canonical),
+                        ..c
+                    },
+                });
             }
             TypeSpecifier::Imaginary(inner) => {
-                let (component, spelling, canonical, chain) = self.base(inner)?;
+                let ResolvedType { ty: component, c } = self.base(inner)?;
                 let Some(Type::Numeric(NumericType::Float(format))) = component else {
                     return Err(ResolveError::Invalid(
                         "imaginary component must be a real floating type",
@@ -674,12 +748,14 @@ impl TypeResolver {
                         "imaginary component must be a real floating type",
                     ));
                 }
-                return Ok((
-                    Some(Type::Imaginary(format)),
-                    format!("_Imaginary {spelling}"),
-                    format!("_Imaginary {canonical}"),
-                    chain,
-                ));
+                return Ok(ResolvedType {
+                    ty: Some(Type::Imaginary(format)),
+                    c: CTypeMetadata {
+                        spelling: format!("_Imaginary {}", c.spelling),
+                        canonical: format!("_Imaginary {}", c.canonical),
+                        ..c
+                    },
+                });
             }
             TypeSpecifier::Integer(IntegerType::Char { signed }) => {
                 let spelling = match signed {
@@ -746,7 +822,208 @@ impl TypeResolver {
             }
             _ => return Err(ResolveError::Unsupported("type specifier")),
         };
-        Ok((Some(scalar.0), scalar.1.clone(), scalar.1, Vec::new()))
+        Ok(ResolvedType {
+            ty: Some(scalar.0),
+            c: CTypeMetadata::plain(scalar.1),
+        })
+    }
+
+    fn typeof_operand(&mut self, operand: &TypeOfOperand) -> Result<ResolvedType, ResolveError> {
+        match operand {
+            TypeOfOperand::Type(ty) => self.resolve(&ty.specifiers, &ty.declarator),
+            TypeOfOperand::Expression(expr) => {
+                if let Some(resolved) = self.typeof_operands.get(&expr.id) {
+                    return Ok(resolved.clone());
+                }
+                let ty = self.assertion_operand_type(expr)?;
+                Ok(ResolvedType {
+                    c: self.c_type(Some(&ty))?,
+                    ty: Some(ty),
+                })
+            }
+        }
+    }
+
+    pub(super) fn c_type(&self, ty: Option<&Type>) -> Result<CTypeMetadata, ResolveError> {
+        let Some(ty) = ty else {
+            return Ok(CTypeMetadata::plain("void".into()));
+        };
+        Ok(match ty {
+            Type::Void => CTypeMetadata::plain("void".into()),
+            Type::Bool => CTypeMetadata::plain("_Bool".into()),
+            Type::VaList => CTypeMetadata::plain("__builtin_va_list".into()),
+            Type::Numeric(numeric) => CTypeMetadata::plain(self.numeric_spelling(*numeric)?),
+            Type::Complex(numeric) => {
+                CTypeMetadata::plain(format!("_Complex {}", self.numeric_spelling(*numeric)?))
+            }
+            Type::Imaginary(format) => CTypeMetadata::plain(format!(
+                "_Imaginary {}",
+                self.numeric_spelling(NumericType::Float(*format))?
+            )),
+            Type::Defined(id) => {
+                let definition = self
+                    .definitions
+                    .get(id.0 as usize)
+                    .ok_or(ResolveError::Unsupported("unknown type definition"))?;
+                let name = definition.name.as_deref();
+                match &definition.kind {
+                    TypeDefinitionKind::Alias(inner) => {
+                        let name = name.ok_or(ResolveError::Unsupported("unnamed typedef"))?;
+                        let mut c = self.c_type(Some(inner))?;
+                        c.spelling = name.to_owned();
+                        c.typedef_chain.insert(0, name.to_owned());
+                        c
+                    }
+                    TypeDefinitionKind::Record { kind, .. } => {
+                        let kind = match kind {
+                            RecordKind::Struct => TagKind::Struct,
+                            RecordKind::Union => TagKind::Union,
+                        };
+                        CTypeMetadata::plain(tag_spelling(kind, name))
+                    }
+                    TypeDefinitionKind::Enum { .. } => {
+                        CTypeMetadata::plain(tag_spelling(TagKind::Enum, name))
+                    }
+                }
+            }
+            Type::Pointer {
+                pointee,
+                is_const,
+                access,
+            } => {
+                let qualifiers = Qualifiers {
+                    is_const: *is_const,
+                    is_volatile: access.volatile,
+                    is_atomic: access.atomic,
+                    is_restrict: false,
+                };
+                let mut resolved = ResolvedType {
+                    c: self
+                        .c_type(Some(pointee))?
+                        .qualified(qualifiers, Some(pointee)),
+                    ty: Some((**pointee).clone()),
+                };
+                Self::apply_pointer(Qualifiers::default(), &mut resolved);
+                resolved.c
+            }
+            Type::Array { .. } | Type::VariableArray { .. } => {
+                let mut extents = Vec::new();
+                let mut core = ty;
+                loop {
+                    match core {
+                        Type::Array { element, length } => {
+                            extents.push(length.map_or_else(|| "[]".into(), |n| format!("[{n}]")));
+                            core = element;
+                        }
+                        Type::VariableArray { element, .. } => {
+                            extents.push("[*]".to_owned());
+                            core = element;
+                        }
+                        _ => break,
+                    }
+                }
+                let base = self.c_type(Some(core))?;
+                let mut c = base.clone();
+                let mut suffix = String::new();
+                for extent in extents.iter().rev() {
+                    suffix.insert_str(0, extent);
+                    let element_c = std::mem::replace(
+                        &mut c,
+                        CTypeMetadata {
+                            spelling: format!("{}{suffix}", base.spelling),
+                            canonical: format!("{}{suffix}", base.canonical),
+                            typedef_chain: base.typedef_chain.clone(),
+                            qualifiers: base.qualifiers,
+                            derived_from: None,
+                        },
+                    );
+                    c.derived_from = Some(Box::new(element_c));
+                }
+                c
+            }
+            Type::Function {
+                return_type,
+                parameters,
+                variadic,
+                prototyped,
+            } => {
+                let return_c = self.c_type(return_type.as_deref())?;
+                let mut spellings = parameters
+                    .iter()
+                    .map(|parameter| self.c_type(Some(parameter)).map(|c| c.spelling))
+                    .collect::<Result<Vec<_>, _>>()?;
+                let suffix = if !prototyped {
+                    "()".to_owned()
+                } else if spellings.is_empty() && !variadic {
+                    "(void)".to_owned()
+                } else {
+                    if *variadic {
+                        spellings.push("...".into());
+                    }
+                    format!("({})", spellings.join(", "))
+                };
+                CTypeMetadata {
+                    spelling: format!("{}{suffix}", return_c.spelling),
+                    canonical: format!("{}{suffix}", return_c.canonical),
+                    typedef_chain: return_c.typedef_chain.clone(),
+                    qualifiers: return_c.qualifiers,
+                    derived_from: Some(Box::new(return_c)),
+                }
+            }
+        })
+    }
+
+    fn numeric_spelling(&self, numeric: NumericType) -> Result<String, ResolveError> {
+        let (width, signed) = match numeric {
+            NumericType::Integer {
+                width,
+                signed,
+                bit_precise: true,
+            } => {
+                let sign = if signed { "" } else { "unsigned " };
+                return Ok(format!("{sign}_BitInt({width})"));
+            }
+            NumericType::Integer { width, signed, .. } => (width, signed),
+            NumericType::Float(format) => {
+                return Ok(match format {
+                    FloatType::F16 => "_Float16",
+                    FloatType::F32 => "float",
+                    FloatType::F64 => "double",
+                    FloatType::F80 => "long double",
+                    FloatType::F128 if self.target.long_double == LongDoubleFormat::Binary128 => {
+                        "long double"
+                    }
+                    FloatType::F128 => "__float128",
+                    FloatType::D32 => "_Decimal32",
+                    FloatType::D64 => "_Decimal64",
+                    FloatType::D128 => "_Decimal128",
+                }
+                .into());
+            }
+        };
+        if width == 8 {
+            return Ok(match signed {
+                _ if signed == self.target.char_signed => "char",
+                true => "signed char",
+                false => "unsigned char",
+            }
+            .into());
+        }
+        let name = [
+            (self.target.int_width, "int"),
+            (self.target.long_width, "long"),
+            (self.target.long_long_width, "long long"),
+            (self.target.short_width, "short"),
+            (128, "__int128"),
+        ]
+        .into_iter()
+        .find_map(|(candidate, name)| (candidate == width).then_some(name))
+        .ok_or(ResolveError::Unsupported("C spelling of integer width"))?;
+        Ok(if signed {
+            name.into()
+        } else {
+            format!("unsigned {name}")
+        })
     }
 
     fn derive(
@@ -794,16 +1071,9 @@ impl TypeResolver {
                     });
                     core = inner;
                 }
-                let suffix: String = lengths
-                    .iter()
-                    .rev()
-                    .map(|length| match length {
-                        Extent::Unspecified => "[]".to_owned(),
-                        Extent::Fixed(length) => format!("[{length}]"),
-                        Extent::Variable(_) => "[*]".to_owned(),
-                    })
-                    .collect();
                 let core = Self::apply_pointers(core, resolved);
+                let base = resolved.c.clone();
+                let mut suffix = String::new();
                 for length in lengths {
                     let element = Box::new(
                         resolved
@@ -811,6 +1081,25 @@ impl TypeResolver {
                             .take()
                             .ok_or(ResolveError::Unsupported("void array element"))?,
                     );
+                    suffix.insert_str(
+                        0,
+                        &match length {
+                            Extent::Unspecified => "[]".to_owned(),
+                            Extent::Fixed(length) => format!("[{length}]"),
+                            Extent::Variable(_) => "[*]".to_owned(),
+                        },
+                    );
+                    let element_c = std::mem::replace(
+                        &mut resolved.c,
+                        CTypeMetadata {
+                            spelling: format!("{}{suffix}", base.spelling),
+                            canonical: format!("{}{suffix}", base.canonical),
+                            typedef_chain: base.typedef_chain.clone(),
+                            qualifiers: base.qualifiers,
+                            derived_from: None,
+                        },
+                    );
+                    resolved.c.derived_from = Some(Box::new(element_c));
                     resolved.ty = Some(match length {
                         Extent::Unspecified => Type::Array {
                             element,
@@ -823,8 +1112,6 @@ impl TypeResolver {
                         Extent::Variable(extent) => Type::VariableArray { element, extent },
                     });
                 }
-                resolved.c.spelling.push_str(&suffix);
-                resolved.c.canonical.push_str(&suffix);
                 self.derive(core, resolved)
             }
             Declarator::Function { inner, parameters } => {
@@ -874,8 +1161,10 @@ impl TypeResolver {
                     variadic,
                     prototyped,
                 });
+                let return_c = resolved.c.clone();
                 resolved.c.spelling.push_str(&suffix);
                 resolved.c.canonical.push_str(&suffix);
+                resolved.c.derived_from = Some(Box::new(return_c));
                 self.derive(core, resolved)
             }
         }
@@ -892,7 +1181,7 @@ impl TypeResolver {
         resolved
     }
 
-    fn apply_pointer(qualifiers: Qualifiers, resolved: &mut ResolvedType) {
+    pub(super) fn apply_pointer(qualifiers: Qualifiers, resolved: &mut ResolvedType) {
         let pointee = resolved.ty.take().unwrap_or(Type::Void);
         let grouped = matches!(
             pointee,
@@ -903,9 +1192,32 @@ impl TypeResolver {
             is_const: resolved.c.qualifiers.is_const,
             access: access(resolved.c.qualifiers),
         });
+        let pointee_c = resolved.c.clone();
         resolved.c.spelling = pointer_spelling(&resolved.c.spelling, qualifiers, grouped);
         resolved.c.canonical = pointer_spelling(&resolved.c.canonical, qualifiers, grouped);
         resolved.c.qualifiers = qualifiers;
+        resolved.c.derived_from = Some(Box::new(pointee_c));
+    }
+
+    pub(super) fn parameter_c(resolved: &ResolvedType, array: Qualifiers) -> CTypeMetadata {
+        let mut adjusted = match (&resolved.ty, &resolved.c.derived_from) {
+            (
+                Some(Type::Array { element, .. } | Type::VariableArray { element, .. }),
+                Some(element_c),
+            ) => ResolvedType {
+                ty: Some((**element).clone()),
+                c: (**element_c).clone(),
+            },
+            (Some(Type::Function { .. }), _) => resolved.clone(),
+            _ => return resolved.c.clone(),
+        };
+        let qualifiers = if matches!(resolved.ty, Some(Type::Function { .. })) {
+            Qualifiers::default()
+        } else {
+            array
+        };
+        Self::apply_pointer(qualifiers, &mut adjusted);
+        adjusted.c
     }
 
     // pointers under an array or function node bind to its element or return type
@@ -941,6 +1253,7 @@ impl TypeResolver {
         let kind = match &tag.body {
             TagBody::Record(items) => {
                 let mut fields = Vec::new();
+                let mut field_c = Vec::new();
                 let mut requests = Vec::new();
                 for item in items {
                     let FieldItemKind::Field(declaration) = &item.value else {
@@ -972,6 +1285,7 @@ impl TypeResolver {
                             access: access(resolved.c.qualifiers),
                             bit_width: None,
                         }));
+                        field_c.push(resolved.c);
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
@@ -1001,6 +1315,7 @@ impl TypeResolver {
                             access: access(resolved.c.qualifiers),
                             bit_width,
                         }));
+                        field_c.push(resolved.c);
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
@@ -1014,6 +1329,7 @@ impl TypeResolver {
                     .any(|attribute| matches!(attribute, Attribute::Packed));
                 let alignment = requested_alignment(self, &tag.attributes)?;
                 let layout = self.layout_record(tag.kind, &fields, &requests, packed, alignment)?;
+                self.field_c.insert(id, field_c);
                 TypeDefinitionKind::Record {
                     kind: match tag.kind {
                         TagKind::Struct => RecordKind::Struct,
@@ -1576,6 +1892,51 @@ fn qualifier_spelling(qualifiers: Qualifiers) -> String {
     } else {
         format!("{} ", words.join(" "))
     }
+}
+
+fn skip_qualifier_words(mut spelling: &str) -> &str {
+    loop {
+        let trimmed = spelling.trim_start();
+        let rest = ["const", "volatile", "restrict", "_Atomic"]
+            .iter()
+            .find_map(|word| {
+                trimmed
+                    .strip_prefix(word)
+                    .filter(|rest| rest.is_empty() || rest.starts_with([' ', ')']))
+            });
+        match rest {
+            Some(rest) => spelling = rest,
+            None => return trimmed,
+        }
+    }
+}
+
+fn top_pointer_star(spelling: &str) -> Option<usize> {
+    let last = spelling.rfind('*')?;
+    if skip_qualifier_words(&spelling[last + 1..]).is_empty() {
+        return Some(last);
+    }
+    spelling.find("(*").map(|open| open + 1)
+}
+
+fn strip_qualifiers(spelling: &str, pointer: bool) -> String {
+    if let Some(inner) = skip_qualifier_words(spelling)
+        .strip_prefix("_Atomic(")
+        .and_then(|s| s.strip_suffix(')'))
+    {
+        return inner.to_owned();
+    }
+    if pointer {
+        return match top_pointer_star(spelling) {
+            Some(star) => format!(
+                "{}{}",
+                &spelling[..=star],
+                skip_qualifier_words(&spelling[star + 1..])
+            ),
+            None => spelling.to_owned(),
+        };
+    }
+    skip_qualifier_words(spelling).to_owned()
 }
 
 fn pointer_spelling(base: &str, qualifiers: Qualifiers, grouped: bool) -> String {
