@@ -145,6 +145,7 @@ impl TranslationUnit {
                     if flavor == CompilerFlavor::Clang {
                         check_function_asm(self, function, provenance, &mut errors);
                     }
+                    check_unnamed_parameters(function, types, &mut errors);
                     check_literals(function, literals, provenance, &mut errors);
                     check_body_types(function, types, provenance, &mut errors);
                 }
@@ -292,6 +293,32 @@ fn extension_warning(
             "'long long' is an extension when C99 mode is not enabled",
         )),
         _ => None,
+    }
+}
+
+fn check_unnamed_parameters(
+    function: &FunctionDefinition,
+    context: TypeContext<'_>,
+    errors: &mut Vec<SemaError>,
+) {
+    if context.features.unnamed_definition_parameters == Availability::Standard {
+        return;
+    }
+    let parameters = function
+        .declarator
+        .function_parameters()
+        .map_or(&[][..], ParameterList::parameters);
+    for parameter in parameters {
+        if parameter.declarator.name().is_some() {
+            continue;
+        }
+        errors.extend(Warning::C23Extensions.diagnose(
+            "omitting the parameter name in a function definition is a C23 extension",
+            context.diagnostics,
+            context.standard,
+            parameter.provenance,
+            parameter.expansion,
+        ));
     }
 }
 

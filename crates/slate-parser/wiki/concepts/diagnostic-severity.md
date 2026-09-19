@@ -44,9 +44,14 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `long-long`                   | off       | yes      | a written `long long` specifier, or a selected integer literal rank of `LongLong`, while `long_long_type` is not `Standard` |
 | `c99-compat`                  | on in c89 | no       | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate                                            |
 | `implicitly-unsigned-literal` | on        | no       | a signed-only decimal literal lands on an unsigned candidate at the widest rank                                             |
+| `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
 
 `c99-compat` is deliberately not in the pedantic group: clang leaves it a
 warning even under `-pedantic-errors`.
+
+`c23-extensions` is clang's `ExtWarn` shape: on by default, and an error
+under `-pedantic-errors`. gcc accepts unnamed definition parameters before
+C23 silently, but the flavor does not change whether the warning is raised.
 
 Both literal warnings are derived from the candidate the selection actually
 picked, so they cannot drift from the typing rules in

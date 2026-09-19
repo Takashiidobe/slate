@@ -7,13 +7,15 @@ pub enum Warning {
     LongLong,
     C99Compat,
     ImplicitlyUnsignedLiteral,
+    C23Extensions,
 }
 
 impl Warning {
-    pub const ALL: [Self; 3] = [
+    pub const ALL: [Self; 4] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
+        Self::C23Extensions,
     ];
 
     pub fn name(self) -> &'static str {
@@ -21,6 +23,7 @@ impl Warning {
             Self::LongLong => "long-long",
             Self::C99Compat => "c99-compat",
             Self::ImplicitlyUnsignedLiteral => "implicitly-unsigned-literal",
+            Self::C23Extensions => "c23-extensions",
         }
     }
 
@@ -29,14 +32,14 @@ impl Warning {
     }
 
     fn is_pedantic(self) -> bool {
-        matches!(self, Self::LongLong)
+        matches!(self, Self::LongLong | Self::C23Extensions)
     }
 
     fn enabled_by_default(self, standard: LanguageStandard) -> bool {
         match self {
             Self::LongLong => false,
             Self::C99Compat => standard.stdc_version().is_none(),
-            Self::ImplicitlyUnsignedLiteral => true,
+            Self::ImplicitlyUnsignedLiteral | Self::C23Extensions => true,
         }
     }
 }

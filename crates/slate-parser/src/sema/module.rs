@@ -388,13 +388,9 @@ impl Lowerer {
                 other => other,
             };
             let name = parameter.declarator.name();
-            let id = if prologue.is_some() {
-                self.declaration_id(
-                    parameter.id,
-                    name.ok_or(ResolveError::Unsupported("unnamed definition parameter"))?,
-                )?
-            } else {
-                self.fresh()
+            let id = match (prologue.is_some(), name) {
+                (true, Some(name)) => self.declaration_id(parameter.id, name)?,
+                _ => self.fresh(),
             };
             self.types.bindings.insert(id, ty.clone());
             self.c_types
