@@ -35,6 +35,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         continue_targets: Vec::new(),
         switches: Vec::new(),
         in_function: false,
+        return_type: None,
     };
     for declaration in &unit.decls {
         match &declaration.value {
@@ -96,6 +97,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     .ok_or(ResolveError::Unsupported("missing function parameters"))?;
                 let mut prologue = Vec::new();
                 lower.in_function = true;
+                lower.return_type = return_type.clone();
                 let parameters = lower.parameters(params, Some(&mut prologue));
                 let body = parameters.and_then(|parameters| {
                     let body = lower.statements(&function.body, return_type.clone())?;
@@ -103,6 +105,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     Ok((parameters, prologue))
                 });
                 lower.in_function = false;
+                lower.return_type = None;
                 let (parameters, body) = body?;
                 let fallthrough = if name == "main"
                     && return_type == Some(lower.context.int_type())
@@ -645,7 +648,7 @@ impl Lowerer {
         result
     }
 
-    fn statements(
+    pub(super) fn statements(
         &mut self,
         body: &[Stmt],
         return_type: Option<Type>,

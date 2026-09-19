@@ -337,6 +337,33 @@ impl Hoister {
                 }));
                 return Ok(if postfix { old } else { result });
             }
+            ValueKind::StatementExpression(evaluation) => {
+                let result = (ty != Type::Void).then(|| self.declare(&template, None, out));
+                let mut body = self.statements(evaluation.statements)?;
+                match &result {
+                    Some(place) => {
+                        let value = self.value(evaluation.value, &mut body)?;
+                        body.push(value.node.clone().with_value(Statement::Write {
+                            place: place.clone(),
+                            value,
+                            ordering: None,
+                        }));
+                    }
+                    None if matches!(evaluation.value.node.value, ValueKind::Void) => {}
+                    None => self.discard(evaluation.value, None, &mut body)?,
+                }
+                out.push(source.clone().with_value(Statement::Block(body)));
+                return Ok(Value {
+                    ty,
+                    node: source.with_value(match result {
+                        Some(place) => ValueKind::Read {
+                            place,
+                            ordering: None,
+                        },
+                        None => ValueKind::Void,
+                    }),
+                });
+            }
             ValueKind::OldValue => {
                 return self
                     .old
@@ -564,6 +591,7 @@ fn effects(value: &Value) -> bool {
         | ValueKind::Fence { .. }
         | ValueKind::Call { .. }
         | ValueKind::VaArg { .. }
+        | ValueKind::StatementExpression(_)
         | ValueKind::VaStart { .. }
         | ValueKind::VaEnd { .. }
         | ValueKind::VaCopy { .. }

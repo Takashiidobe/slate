@@ -125,6 +125,7 @@ pub enum ValueKind {
     VaArg {
         list: Place,
     },
+    StatementExpression(Box<Evaluation>),
     VaStart {
         list: Place,
     },
@@ -451,6 +452,16 @@ impl Value {
             ValueKind::VaArg { list } => {
                 write!(f, "va_arg<{}>({})", self.ty, list.display_mode(compact))
             }
+            ValueKind::StatementExpression(evaluation) => write!(
+                f,
+                "statement_expression<{}, statements={}>({})",
+                self.ty,
+                evaluation.statements.len(),
+                evaluation
+                    .value
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::VaStart { list } => write!(f, "va_start({})", list.display_mode(compact)),
             ValueKind::VaEnd { list } => write!(f, "va_end({})", list.display_mode(compact)),
             ValueKind::VaCopy {

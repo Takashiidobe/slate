@@ -82,6 +82,9 @@ attributes, `#if`), and wraps each node in a `Span` covering its tokens.
 - `src/sema/validate.rs` — `is_integer_constant_expression` and `walk_expr` are
   exhaustive; `walk_expr` must recurse so asm/label checks see nested
   statement expressions.
+- `src/sema/expression.rs` — `Lowerer::expr` is exhaustive (no catch-all
+  since `lh7.2.12`); a new variant needs an IR lowering or an explicit
+  `ResolveError`.
 - `src/reachability.rs` — `Reachability::mark_expr` is exhaustive; mark
   identifiers and embedded type names so referenced header declarations
   survive filtering.

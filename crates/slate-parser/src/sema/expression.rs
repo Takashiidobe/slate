@@ -1,6 +1,6 @@
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
-use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span};
+use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::ir::*;
 use std::collections::HashMap;
@@ -18,6 +18,7 @@ pub(super) struct Lowerer {
     pub continue_targets: Vec<BindingId>,
     pub switches: Vec<(BindingId, Type)>,
     pub in_function: bool,
+    pub return_type: Option<Type>,
 }
 
 impl Lowerer {
@@ -1356,6 +1357,33 @@ impl Lowerer {
                     },
                 ))
             }
+            ExprKind::StatementExpression(body) => {
+                if !self.in_function {
+                    return Err(ResolveError::Invalid(
+                        "statement expression outside a function",
+                    ));
+                }
+                let last = body
+                    .iter()
+                    .rposition(|statement| !matches!(statement.value, StmtKind::Comment(_)));
+                let (leading, result) = match last {
+                    Some(index) => match &body[index].value {
+                        StmtKind::Expr(result) => (&body[..index], Some(result)),
+                        _ => (&body[..], None),
+                    },
+                    None => (&body[..], None),
+                };
+                let statements = self.statements(leading, self.return_type.clone())?;
+                let value = match result {
+                    Some(result) => self.expr(result)?,
+                    None => self.value(e, Type::Void, ValueKind::Void),
+                };
+                Ok(self.value(
+                    e,
+                    value.ty.clone(),
+                    ValueKind::StatementExpression(Box::new(Evaluation { statements, value })),
+                ))
+            }
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
                 if list.ty != Type::VaList {
@@ -1369,7 +1397,6 @@ impl Lowerer {
                 self.types.storage(ty.clone())?;
                 Ok(self.value(e, ty, ValueKind::VaArg { list }))
             }
-            _ => Err(ResolveError::Unsupported("advanced expression")),
         }
     }
 }

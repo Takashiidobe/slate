@@ -570,6 +570,19 @@ statement block evaluated in that position, with the condition as its
 trailing expression, the `evaluation` form in the grammar (valid Rust:
 `while { ch = getc(f); ch != EOF } {}`).
 
+A GNU statement expression `({ stmts; e; })` lowers to
+`ValueKind::StatementExpression(Evaluation)`: the leading statements plus
+the value of a trailing expression statement (`void` when the block does not
+end in one). It always counts as effectful, and hoisting always removes it,
+so it never reaches printed IR. When the value is used, it becomes a
+synthetic `let %t: T;` followed by a `{ ... }` block that ends by writing
+the value into `%t`, and the expression reads `%t`. When the value is
+discarded or `void`, the block alone remains. The block keeps the
+statement expression's scope, and `return`/`break`/`goto` inside it act on
+the enclosing function and loops as in GCC. Under `&&`/`||`/`?:` it goes
+through the same `if` lowering as any other effect, so it stays
+conditional. Fixture: `sema/ir_statement_expressions.c`.
+
 Hard cases hoisting must respect (evaluation order and sequencing):
 
 - `f(i++)`: C increments before the call executes. Lowering always

@@ -38,7 +38,7 @@ impl Hoister {
         Ok(Evaluation { statements, value })
     }
 
-    fn statements(
+    pub(super) fn statements(
         &mut self,
         body: Vec<Span<Statement>>,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
