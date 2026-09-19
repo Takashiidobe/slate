@@ -5,6 +5,7 @@ mod effects;
 mod effects_statements;
 mod expression;
 mod fold;
+mod function;
 mod initializer;
 mod module;
 pub mod names;
@@ -31,9 +32,6 @@ pub fn resolve_expression_roots(unit: &TranslationUnit) -> Result<Vec<Value>, Re
         match &declaration.value {
             DeclKind::Comment(_) => {}
             DeclKind::Function(function) => {
-                if !function.attributes.is_empty() || !function.specifiers.attributes.is_empty() {
-                    return Err(ResolveError::Unsupported("function attributes"));
-                }
                 for statement in &function.body {
                     match &statement.value {
                         StmtKind::Expr(expression) | StmtKind::Return(expression) => {

@@ -51,7 +51,14 @@ impl CTypeMetadata {
         let pointer = matches!(ty, Some(Type::Pointer { .. }));
         for spelling in [&mut self.spelling, &mut self.canonical] {
             match top_pointer_star(spelling).filter(|_| pointer) {
-                Some(star) => spelling.insert_str(star + 1, &words),
+                Some(star) => {
+                    let words = if star + 1 == spelling.len() {
+                        words.trim_end()
+                    } else {
+                        &words
+                    };
+                    spelling.insert_str(star + 1, words);
+                }
                 None => spelling.insert_str(0, &words),
             }
         }
@@ -600,6 +607,15 @@ impl TypeResolver {
         resolved.c.canonical.insert_str(0, &prefix);
         resolved.c.qualifiers = merge_qualifiers(resolved.c.qualifiers, specifiers.qualifiers);
         self.derive(declarator, &mut resolved)?;
+        if specifiers.is_constexpr {
+            resolved.c = resolved.c.qualified(
+                Qualifiers {
+                    is_const: true,
+                    ..Qualifiers::default()
+                },
+                resolved.ty.as_ref(),
+            );
+        }
         Ok(resolved)
     }
 
@@ -2026,6 +2042,7 @@ pub fn resolve_type_module(
                             Linkage::External
                         },
                         symbol: Default::default(),
+                        semantics: Default::default(),
                         body: None,
                         fallthrough: None,
                     }));
@@ -2075,6 +2092,7 @@ pub fn resolve_type_module(
                                 Linkage::External
                             },
                             symbol: Default::default(),
+                            semantics: Default::default(),
                             body: None,
                             fallthrough: None,
                         }));

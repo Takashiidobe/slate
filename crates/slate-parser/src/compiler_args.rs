@@ -118,6 +118,7 @@ struct ParsedCompilerArgs {
     strict_overflow: Option<bool>,
     rounding_math: Option<bool>,
     trapping_math: Option<bool>,
+    gnu89_inline: Option<bool>,
     long_double: Option<LongDoubleFormat>,
     diagnostics: DiagnosticOptions,
     present: BTreeSet<Opt>,
@@ -137,6 +138,7 @@ enum Opt {
     StrictOverflow,
     RoundingMath,
     TrappingMath,
+    Gnu89Inline,
     LongDouble,
     Warning,
     Pedantic,
@@ -157,6 +159,7 @@ impl std::fmt::Display for Opt {
             Self::StrictOverflow => "strict-overflow",
             Self::RoundingMath => "rounding-math",
             Self::TrappingMath => "trapping-math",
+            Self::Gnu89Inline => "gnu89-inline",
             Self::LongDouble => "long-double",
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
@@ -173,6 +176,7 @@ impl Opt {
             Self::StrictOverflow => "strict-overflow",
             Self::RoundingMath => "rounding-math",
             Self::TrappingMath => "trapping-math",
+            Self::Gnu89Inline => "gnu89-inline",
             _ => "",
         }
     }
@@ -189,7 +193,8 @@ impl Opt {
     }
 }
 
-const FLAG_OPTS: [Opt; 5] = [
+const FLAG_OPTS: [Opt; 6] = [
+    Opt::Gnu89Inline,
     Opt::Wrapv,
     Opt::Trapv,
     Opt::StrictOverflow,
@@ -216,19 +221,28 @@ impl CompilerArgParser {
                 .map(|exponent| 1u32 << exponent)
                 .or(raw.stack_alignment),
         };
+        let mut options = CompilerOptions::from_values(
+            flavor,
+            layout,
+            raw.diagnostics,
+            arguments,
+            OperationValues {
+                signed_overflow: raw.signed_overflow,
+                strict_overflow: raw.strict_overflow,
+                rounding_math: raw.rounding_math,
+                trapping_math: raw.trapping_math,
+            },
+        );
+        options.inline_semantics = raw.gnu89_inline.map(|enabled| {
+            use crate::compiler_options::InlineSemantics;
+            if enabled {
+                InlineSemantics::SupressDef
+            } else {
+                InlineSemantics::ProvideDef
+            }
+        });
         Ok(CompilerArgs {
-            options: CompilerOptions::from_values(
-                flavor,
-                layout,
-                raw.diagnostics,
-                arguments,
-                OperationValues {
-                    signed_overflow: raw.signed_overflow,
-                    strict_overflow: raw.strict_overflow,
-                    rounding_math: raw.rounding_math,
-                    trapping_math: raw.trapping_math,
-                },
-            ),
+            options,
             defines: raw.defines,
             standard: raw.standard.unwrap_or_default(),
             isystem: raw.isystem,
@@ -294,6 +308,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::StrictOverflow => parsed.strict_overflow = Some(value),
                 Opt::RoundingMath => parsed.rounding_math = Some(value),
                 Opt::TrappingMath => parsed.trapping_math = Some(value),
+                Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 _ => return Err(invalid(argument, "unknown flag")),
             }
         } else if let Some(value) = option_value(argument, "D") {
@@ -564,7 +579,8 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 8] = [
+    const UNSUPPORTED: [Opt; 9] = [
+        Opt::Gnu89Inline,
         Opt::Wrapv,
         Opt::Trapv,
         Opt::StrictOverflow,

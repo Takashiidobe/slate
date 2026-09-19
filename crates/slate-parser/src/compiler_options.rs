@@ -1,14 +1,21 @@
-use crate::compiler_args::CompilerFlavor;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::DiagnosticOptions;
 use crate::ir::{Exceptions, FloatingSemantics, Overflow, Rounding};
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompilerOptions {
+    pub inline_semantics: Option<InlineSemantics>,
     pub operations: OperationOptions,
     pub layout: LayoutOptions,
     pub diagnostics: DiagnosticOptions,
     pub arguments: Vec<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InlineSemantics {
+    SupressDef,
+    ProvideDef,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -35,6 +42,7 @@ pub struct LayoutOptions {
 impl Default for CompilerOptions {
     fn default() -> Self {
         Self {
+            inline_semantics: None,
             operations: OperationOptions {
                 signed_overflow: Overflow::Undefined,
                 pointer_wrap: false,
@@ -51,6 +59,12 @@ impl Default for CompilerOptions {
 }
 
 impl CompilerOptions {
+    pub fn effective_inline_semantics(&self, standard: LanguageStandard) -> InlineSemantics {
+        self.inline_semantics.unwrap_or_else(|| {
+            crate::standard_features::StandardFeatures::new(standard).inline_semantics
+        })
+    }
+
     pub fn for_flavor(flavor: CompilerFlavor) -> Self {
         let mut options = Self::default();
         if flavor == CompilerFlavor::Gcc {

@@ -29,6 +29,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         names,
         bindings: HashMap::new(),
         c_types: HashMap::new(),
+        function_declarations: HashMap::new(),
         access: HashMap::new(),
         type_spans: HashMap::new(),
         next_id,
@@ -45,20 +46,18 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 lower.declaration(item, true)?;
             }
             DeclKind::Function(function) => {
-                check_specifiers(&function.specifiers)?;
-                let symbol = function_symbol(
-                    function
-                        .specifiers
-                        .attributes
-                        .iter()
-                        .chain(&function.attributes),
-                    None,
-                )?;
+                let attributes = super::function::attributes(
+                    &function.specifiers,
+                    &function.declarator,
+                    &function.attributes,
+                );
+                let symbol = function_symbol(attributes.iter().copied(), None)?;
                 let name = function
                     .declarator
                     .name()
                     .ok_or(ResolveError::Unsupported("unnamed function"))?;
                 let id = lower.declaration_id(declaration.id, name)?;
+                lower.record_function(id, &function.specifiers, &attributes, true, true)?;
                 let c_return = lower
                     .resolve_type(&function.specifiers, &Declarator::Abstract)?
                     .c
@@ -124,6 +123,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                     abi,
                     linkage: linkage(function.specifiers.storage)?,
                     symbol,
+                    semantics: Default::default(),
                     body: Some(body),
                     fallthrough: Some(fallthrough),
                 }));
@@ -154,6 +154,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
             *length = Some(1);
         }
     }
+    lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
     super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.access)?;
     Ok(lower.module)
 }
@@ -164,15 +165,6 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
         StorageClass::None | StorageClass::Extern => Ok(Linkage::External),
         _ => Err(ResolveError::Unsupported("linkage storage class")),
     }
-}
-
-fn check_specifiers(specifiers: &ast::DeclarationSpecifiers) -> Result<(), ResolveError> {
-    if specifiers.is_inline || specifiers.is_noreturn || specifiers.is_constexpr {
-        return Err(ResolveError::Unsupported(
-            "attributes or function specifiers",
-        ));
-    }
-    Ok(())
 }
 
 fn symbol_attributes<'a>(
@@ -231,7 +223,22 @@ fn function_symbol<'a>(
     {
         return Err(ResolveError::Invalid("thread-local function"));
     }
-    symbol_attributes(attributes, asm_label)
+    symbol_attributes(
+        attributes.into_iter().filter(|attribute| {
+            matches!(
+                attribute,
+                ast::Attribute::Visibility(_)
+                    | ast::Attribute::Weak
+                    | ast::Attribute::Alias(_)
+                    | ast::Attribute::Section(_)
+                    | ast::Attribute::Used
+                    | ast::Attribute::Retain
+                    | ast::Attribute::DllImport
+                    | ast::Attribute::DllExport
+            )
+        }),
+        asm_label,
+    )
 }
 
 impl Lowerer {
@@ -333,7 +340,6 @@ impl Lowerer {
         }
         let mut fixed = Vec::new();
         for parameter in params.parameters() {
-            check_specifiers(&parameter.specifiers)?;
             if !parameter.specifiers.attributes.is_empty() {
                 return Err(ResolveError::Unsupported("parameter attributes"));
             }
@@ -402,7 +408,6 @@ impl Lowerer {
         item: &ast::Declaration,
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
-        check_specifiers(&item.specifiers)?;
         if !global
             && (item.specifiers.storage == StorageClass::Typedef
                 || matches!(
@@ -468,6 +473,11 @@ impl Lowerer {
                 );
             }
             let qualifiers = resolved.c.qualifiers;
+            if item.specifiers.is_constexpr && declarator.initializer.is_none() {
+                return Err(ResolveError::Invalid(
+                    "constexpr object requires an initializer",
+                ));
+            }
             let ty = resolved
                 .ty
                 .ok_or(ResolveError::Unsupported("void object"))?;
@@ -491,7 +501,14 @@ impl Lowerer {
                 if !global && storage_class == StorageClass::Static {
                     return Err(ResolveError::Invalid("block scope static function"));
                 }
-                let symbol = function_symbol(attributes, declarator.asm_label.as_ref())?;
+                let attributes = super::function::attributes(
+                    &item.specifiers,
+                    &declarator.declarator,
+                    &declarator.attributes,
+                );
+                let symbol =
+                    function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())?;
+                self.record_function(id, &item.specifiers, &attributes, false, global)?;
                 let parameters = match declarator.declarator.function_parameters() {
                     Some(params) => self.parameters(params, None)?,
                     None if !prototyped => Parameters::Unprototyped,
@@ -524,6 +541,7 @@ impl Lowerer {
                     abi,
                     linkage: linkage(storage_class)?,
                     symbol,
+                    semantics: Default::default(),
                     body: None,
                     fallthrough: None,
                 }));
@@ -577,6 +595,7 @@ impl Lowerer {
                 ty,
                 storage,
                 restrict: qualifiers.is_restrict,
+                constexpr: item.specifiers.is_constexpr,
                 initializer,
             };
             if storage != StorageDuration::Automatic
@@ -587,7 +606,11 @@ impl Lowerer {
                 ));
             }
             if linked {
-                let declared_linkage = linkage(storage_class)?;
+                let declared_linkage = if item.specifiers.is_constexpr {
+                    Linkage::Internal
+                } else {
+                    linkage(storage_class)?
+                };
                 let definition = storage_class != StorageClass::Extern
                     || variable.initializer.is_some()
                     || symbol.alias.is_some();

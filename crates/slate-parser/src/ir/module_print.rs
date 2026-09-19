@@ -1,7 +1,7 @@
 use super::{
-    DllStorage, Evaluation, FloatType, Linkage, Metadata, Module, NumericType, Parameters,
-    RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel, Type, TypeDefinitionKind,
-    Variable, Visibility,
+    DllStorage, Evaluation, FloatType, Inlining, Linkage, Metadata, Module, NumericType,
+    Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel, Type,
+    TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{NodeId, Span},
@@ -136,6 +136,9 @@ impl DisplayModule<'_> {
         )?;
         if variable.restrict {
             f.write_str(" [restrict]")?;
+        }
+        if variable.constexpr {
+            f.write_str(" [constexpr]")?;
         }
         if let Some(value) = &variable.initializer {
             write!(
@@ -604,6 +607,31 @@ impl fmt::Display for DisplayModule<'_> {
                 None => f.write_str("void")?,
             }
             write!(f, " [linkage={}]{}", function.linkage, function.symbol)?;
+            if let Some(inlining) = function.semantics.inlining {
+                write!(
+                    f,
+                    " [inline={}]",
+                    match inlining {
+                        Inlining::Hint => "hint",
+                        Inlining::Always => "always",
+                        Inlining::Never => "never",
+                    }
+                )?;
+            }
+            if function.body.is_some() && function.semantics.inlining.is_some() {
+                write!(
+                    f,
+                    " [definition={}]",
+                    if function.semantics.inline_only {
+                        "inline_only"
+                    } else {
+                        "emitted"
+                    }
+                )?;
+            }
+            if function.semantics.noreturn {
+                f.write_str(" [noreturn]")?;
+            }
             if function.abi.has_nontrivial_pass() {
                 write!(f, " [abi={}]", function.abi)?;
             }
@@ -612,6 +640,7 @@ impl fmt::Display for DisplayModule<'_> {
                     f,
                     " [fallthrough={}]",
                     match fallthrough {
+                        Fallthrough::Undefined => "ub",
                         Fallthrough::ReturnZero => "ret_zero",
                         Fallthrough::ReturnVoid => "ret_void",
                         Fallthrough::UndefinedIfUsed => "ub_if_used",

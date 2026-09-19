@@ -389,6 +389,16 @@ impl<'a> Preprocessor<'a> {
     ) -> Result<(), PPError> {
         self.target = target.clone();
         self.seed_builtin_macros(&target, flavor)?;
+        if self.macros.contains_key("__GNUC__") {
+            use crate::compiler_options::InlineSemantics;
+            let (selected, other) = match options.effective_inline_semantics(self.standard) {
+                InlineSemantics::SupressDef => ("__GNUC_GNU_INLINE__", "__GNUC_STDC_INLINE__"),
+                InlineSemantics::ProvideDef => ("__GNUC_STDC_INLINE__", "__GNUC_GNU_INLINE__"),
+            };
+            if let Some(entry) = self.macros.remove(other) {
+                self.macros.insert(selected.to_owned(), entry);
+            }
+        }
         let mut defines = if target.os == crate::target_info::TargetOs::Windows
             && flavor == CompilerFlavor::Msvc
         {

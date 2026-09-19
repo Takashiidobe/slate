@@ -81,12 +81,28 @@ pub struct Function {
     pub abi: AbiSignature,
     pub linkage: Linkage,
     pub symbol: SymbolAttributes,
+    pub semantics: FunctionSemantics,
     pub body: Option<Vec<Span<Statement>>>,
     pub fallthrough: Option<Fallthrough>,
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct FunctionSemantics {
+    pub inlining: Option<Inlining>,
+    pub inline_only: bool,
+    pub noreturn: bool,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Inlining {
+    Hint,
+    Always,
+    Never,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum Fallthrough {
+    Undefined,
     ReturnZero,
     ReturnVoid,
     UndefinedIfUsed,

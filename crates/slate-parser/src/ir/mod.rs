@@ -14,8 +14,8 @@ pub use declarations::{
     TypeDefinition, TypeDefinitionKind, TypeId, Variable,
 };
 pub use module::{
-    DllStorage, Evaluation, Fallthrough, Function, Linkage, Metadata, Module, Statement,
-    SymbolAttributes, TlsModel, Visibility,
+    DllStorage, Evaluation, Fallthrough, Function, FunctionSemantics, Inlining, Linkage, Metadata,
+    Module, Statement, SymbolAttributes, TlsModel, Visibility,
 };
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};

@@ -124,7 +124,7 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 
 ```ebnf
 global       = ( "global" | "extern" ) variable linkage symbol_attrs { metadata } ";" ;
-variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ]
+variable     = binding name ":" type "[storage=" storage "]" [ "[restrict]" ] [ "[constexpr]" ]
                [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
@@ -146,13 +146,15 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 
 ```ebnf
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
-              linkage symbol_attrs [ "[abi=" abi_signature "]" ]
+              linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
+              [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
+              [ "[abi=" abi_signature "]" ]
               [ "[fallthrough=" fallthrough "]" ] { metadata }
               ( ";" | "{" { statement } "}" ) ;
 params      = "unprototyped" | param { ", " param } [ ", ..." ] | "..." ;
 param       = binding ( c_identifier | "<unnamed>" ) ":" type [ "[restrict]" ]
               { metadata } ;
-fallthrough = "ret_zero" | "ret_void" | "ub_if_used" ;
+fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 ```
 
 - One `fn` per function: the body and parameters come from the definition,
@@ -161,6 +163,9 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" ;
   as a plain scalar.
 - `fallthrough` is present only on definitions and says what reaching the end
   of the body means.
+- Inlining preference and definition emission are independent. Inline bodies
+  print whether they supply a linkable definition; `inline_only` bodies do not.
+  `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.
 
 ## ABI signatures
 

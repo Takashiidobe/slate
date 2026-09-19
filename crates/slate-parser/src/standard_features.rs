@@ -1,4 +1,5 @@
 use crate::compiler_args::LanguageStandard;
+use crate::compiler_options::InlineSemantics;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Availability {
@@ -36,6 +37,7 @@ pub struct StandardFeatures {
     pub auto_type_inference: bool,
     pub empty_parens_are_prototype: bool,
     pub main_implicit_return_zero: bool,
+    pub inline_semantics: InlineSemantics,
 }
 
 impl StandardFeatures {
@@ -75,6 +77,11 @@ impl StandardFeatures {
             auto_type_inference: c23,
             empty_parens_are_prototype: c23,
             main_implicit_return_zero: standard.stdc_version().is_some(),
+            inline_semantics: if c89 {
+                InlineSemantics::SupressDef
+            } else {
+                InlineSemantics::ProvideDef
+            },
         }
     }
 }

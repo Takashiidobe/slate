@@ -797,9 +797,33 @@ automatic local they are invalid. Symbol attributes are a semantic
 `SymbolAttributes` on both `Global` and `Function`, printed after the linkage
 and merged across redeclarations (first value wins, flags OR): `asm_name`
 (from `asm("sym")` labels), `visibility`, `weak`, `alias`, `section`, `used`,
-`retain`, `tls_model`, `dllimport`/`dllexport`. Any other declaration
-attribute, and any attribute on a typedef, parameter, or automatic local, is
-still unsupported. Fixture: `sema/ir_globals_linkage.c`.
+`retain`, `tls_model`, `dllimport`/`dllexport`. Other object declaration
+attributes, and attributes on typedefs, parameters, or automatic locals, remain
+unsupported. Fixture: `sema/ir_globals_linkage.c`.
+
+**Function specifiers (`lh7.2.14`):** `FunctionSemantics` separates inlining
+preference (`hint`, `always`, `never`), definition emission, and `noreturn`.
+`InlineSemantics::SupressDef` makes an external `extern inline` body inline-only;
+`ProvideDef` makes it supply an external definition. The standard selects the
+default; `-fgnu89-inline` selects `SupressDef`, and `-fno-gnu89-inline` selects
+`ProvideDef`, with the last flag winning. The preprocessor's inline-mode macros
+follow the same setting. A function's `gnu_inline` attribute selects `SupressDef`.
+File-scope redeclarations before or after a definition participate in resolving
+`ProvideDef`: any declaration without `inline`, or with `extern`, requires an
+external definition. Static inline bodies retain internal linkage and a definition.
+These rules follow [GCC's inline documentation](https://gcc.gnu.org/onlinedocs/gcc/Inline.html).
+
+`always_inline` and `noinline` resolve into the preference enum independently of
+emission; contradictory preferences are diagnosed. `_Noreturn`, `[[noreturn]]`,
+and the GNU attribute merge across declarations into the same flag. Reaching the
+end of such a body is `fallthrough=ub`. Function attributes also survive as
+`c_attributes` metadata, including attributes not otherwise interpreted by sema;
+retention does not implement attribute-specific ABI or optimization behavior.
+
+`Variable.constexpr` distinguishes C23 constexpr objects from ordinary const
+objects. Their types are implicitly const-qualified, file-scope objects have
+internal linkage, and an initializer is required. The initializer remains
+structured IR. Fixtures: `sema/ir_inline*.c` and `sema/ir_function_specifiers.c`.
 
 **Implemented for variable-length arrays (`er8`):** a block-scope declarator
 whose array bound is not a constant emits a synthetic size_t
