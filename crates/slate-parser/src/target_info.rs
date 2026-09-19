@@ -1,5 +1,5 @@
 use crate::ir::{FloatType, NumericType, ShiftFill, Type};
-use crate::target::x86_isa::{X86Isa, X86IsaRequest};
+use crate::target::isa::TargetIsa;
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,7 +22,7 @@ pub struct TargetInfo {
     pub family: TargetFamily,
     pub os: TargetOs,
     pub environment: TargetEnvironment,
-    pub x86_isa: Option<X86Isa>,
+    pub isa: TargetIsa,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -79,7 +79,7 @@ impl Default for TargetInfo {
             family: TargetFamily::X86_64,
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
-            x86_isa: Some(X86Isa::baseline(TargetFamily::X86_64)),
+            isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Gnu),
         }
     }
 }
@@ -271,7 +271,7 @@ impl TargetInfo {
             os: TargetOs::Windows,
             environment: TargetEnvironment::Msvc,
             family,
-            x86_isa: (family == TargetFamily::X86_64).then(|| X86Isa::baseline(family)),
+            isa: TargetIsa::baseline(family, TargetEnvironment::Msvc),
             long_width: 32,
             long_double: LongDoubleFormat::Binary64,
             wchar_signed: false,
@@ -307,7 +307,7 @@ impl TargetInfo {
             family: TargetFamily::X86,
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
-            x86_isa: Some(X86Isa::baseline(TargetFamily::X86)),
+            isa: TargetIsa::baseline(TargetFamily::X86, TargetEnvironment::Gnu),
         }
     }
 
@@ -337,11 +337,16 @@ impl TargetInfo {
             family: TargetFamily::AArch64,
             os: TargetOs::Linux,
             environment: TargetEnvironment::Gnu,
-            x86_isa: None,
+            isa: TargetIsa::baseline(TargetFamily::AArch64, TargetEnvironment::Gnu),
         }
     }
 
     fn arm32_linux(triple: &str) -> Self {
+        let environment = if triple.ends_with("gnueabihf") {
+            TargetEnvironment::GnuEabiHf
+        } else {
+            TargetEnvironment::GnuEabi
+        };
         Self {
             triple: triple.into(),
             endian: Endian::Little,
@@ -366,12 +371,8 @@ impl TargetInfo {
             },
             family: TargetFamily::Arm32,
             os: TargetOs::Linux,
-            environment: if triple.ends_with("gnueabihf") {
-                TargetEnvironment::GnuEabiHf
-            } else {
-                TargetEnvironment::GnuEabi
-            },
-            x86_isa: None,
+            environment,
+            isa: TargetIsa::baseline(TargetFamily::Arm32, environment),
         }
     }
 
@@ -474,13 +475,6 @@ impl TargetInfo {
 
     pub fn with_long_double(mut self, format: LongDoubleFormat) -> Self {
         self.long_double = format;
-        self
-    }
-
-    pub fn with_x86_isa(mut self, request: X86IsaRequest) -> Self {
-        if self.x86_isa.is_some() {
-            self.x86_isa = Some(X86Isa::resolve(self.family, request));
-        }
         self
     }
 

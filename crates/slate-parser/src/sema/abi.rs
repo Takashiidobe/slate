@@ -100,7 +100,7 @@ impl<'a> AbiClassifier<'a> {
             (TargetFamily::X86, _) => AbiConvention::X86Cdecl,
             (TargetFamily::AArch64, TargetEnvironment::Msvc) => AbiConvention::WinArm64,
             (TargetFamily::AArch64, _) => AbiConvention::Aapcs64,
-            (TargetFamily::Arm32, TargetEnvironment::GnuEabiHf) if !variadic => {
+            (TargetFamily::Arm32, _) if !variadic && target.isa.arm_hard_float() => {
                 AbiConvention::Aapcs32HardFloat
             }
             (TargetFamily::Arm32, _) => AbiConvention::Aapcs32,
@@ -190,10 +190,7 @@ impl<'a> AbiClassifier<'a> {
         let layout = self.types.storage(ty.clone())?;
         let size = layout.size_bytes;
         let align = layout.alignment_bytes;
-        let register_bytes = self
-            .target
-            .x86_isa
-            .map_or(16, |isa| isa.vector_register_bytes());
+        let register_bytes = self.target.isa.vector_register_bytes();
         let pass = match convention {
             AbiConvention::Win64 => AbiPass::Direct,
             AbiConvention::SysV64 if size < 8 => {

@@ -35,7 +35,7 @@ Prefer one owning configuration with separate groups over a flat
 | Category                | Inputs                                                                                             | Resolved effects                                                                 |
 | ----------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Operation semantics     | `-fwrapv`, `-ftrapv`, `-fno-strict-overflow`, `-fno-delete-null-pointer-checks`, `-frounding-math` | Required behavior on relevant operations                                         |
-| Type meaning and layout | `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`, `-mlong-double-*`, `-m<isa>` | Effective `TargetInfo`, concrete types, layouts, and calling contracts           |
+| Type meaning and layout | `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`, `-mlong-double-*`, `-m<isa>`, `-march`, `-mfpu`, `-mfloat-abi` | Effective `TargetInfo`, concrete types, layouts, and calling contracts           |
 | Language                | `-std`, `-fms-extensions`, `-fdollars-in-identifiers`, `-fgnu89-inline`                            | Parsing and declaration meaning, including emitted definitions                   |
 | Linkage                 | `-fcommon`/`-fno-common`, `-fvisibility`                                                           | Definition kinds and symbol visibility                                           |
 | Codegen settings        | `-O`, `-g`, `-fstack-protector`                                                                    | Applicable predefines and configuration provenance within this translation scope |
@@ -321,21 +321,49 @@ user `-D` definitions. The option is rejected for the supported AArch64 and
 ARM32 Linux targets. Sema parses the original literal directly at the
 selected precision. f80 has 80 value bits with 16-byte storage on x86_64 and
 12-byte storage on x86.
-x86 ISA options (`-m<feature>`, `-mno-<feature>`, `-march=x86-64[-v2|-v3|-v4]`)
-resolve to `TargetInfo.x86_isa` (`src/target/x86_isa.rs`). The predefine
-headers do not carry ISA or CPU macros (`__SSE2__`, `__MMX__`, `__FXSR__`,
-`__k8`, `__pentium4`, ...); `Preprocessor::configure` generates them from the
-resolved ISA, and the `sysv64` vector ABI reads the same value, so macros and
-register passing can't disagree. Resolution matches clang 22: `-march` sets
-the base, then the `-m` flags apply in order, where enabling a feature enables
-what it implies (`-mavx2` → AVX → SSE4.2 → ...) and disabling one disables
-everything that implies it. POPCNT and CRC32 follow SSE4.2, and XSAVE follows
-AVX, unless explicitly disabled. i686 always defines `__LAHF_SAHF__` and never
-`__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16`. GCC flavor also sets
-`__BIGGEST_ALIGNMENT__` to the widest vector register (16/32/64); clang keeps
-16. Disabling SSE or SSE2 is rejected, since it would change the float ABI and
-`_Float16` availability. The options are rejected on non-x86 targets and for
-MSVC flavor, which uses `/arch:`. Only x86 is modeled.
+ISA options resolve to `TargetInfo.isa` (`TargetIsa` in `src/target/isa.rs`),
+once, in `CompilerArgParser::parse`. The predefine headers do not carry ISA,
+FPU, or CPU macros; `Preprocessor::configure` generates them from the resolved
+ISA, and the ABI classifier reads the same value, so macros and calling
+conventions can't disagree. `-march` is parsed family-neutrally (`March`) and
+the target rule rejects a value for the wrong family. Everything is checked
+against clang 22 `-dM` (x86: 34 combinations; Arm: 1333) and rejected for MSVC
+flavor.
+
+- x86 (`src/target/x86_isa.rs`): `-m<feature>`, `-mno-<feature>`,
+  `-march=x86-64[-v2|-v3|-v4]`. `-march` sets the base, then the `-m` flags
+  apply in order: enabling a feature enables what it implies (`-mavx2` → AVX →
+  SSE4.2 → ...), disabling one disables everything that implies it. POPCNT and
+  CRC32 follow SSE4.2, and XSAVE follows AVX, unless explicitly disabled. i686
+  always defines `__LAHF_SAHF__` and never
+  `__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16`. GCC flavor also sets
+  `__BIGGEST_ALIGNMENT__` to the widest vector register (16/32/64); clang keeps
+  16. Disabling SSE or SSE2 is rejected (float ABI and `_Float16` would
+  change). The ISA sets the `sysv64` vector register width.
+- AArch64 (`src/target/aarch64_isa.rs`): `-march=armv8-a` through `armv9.6-a`
+  with `+ext`/`+noext` modifiers for a curated set (simd, fp, fp16, crc,
+  crypto, aes, sha2, lse, dotprod, sve, sve2, bf16, i8mm), plus
+  `-msve-vector-bits`. Other features follow only the version. Enable and
+  disable are not mirror images in clang, so each feature has separate
+  `enables`/`disables` tables. The rules that aren't obvious: QRDMX, COMPLEX,
+  JCVT, and FRINT follow the arch version, not a feature; armv9.x-a is
+  armv8.(x+5)-a plus fp16/sve/sve2 (9.4+ adds sve2p1); enabling fp16 pulls in
+  fp16fml only on armv8.4–8.9-a; `+nosimd` hides `__ARM_FEATURE_SVE` but keeps
+  SVE2; `+aes+sha2` forms an implicit pair (CRYPTO, no SHA3), and disabling
+  either half of a pair (or `+nocrypto`) drops both; `+crypto` adds
+  SHA3/SHA512/SM3/SM4 on armv8.4+. No flag here changes the aapcs64 ABI of
+  anything slate lowers (GNU vectors, floats, HFAs); SVE only matters for
+  sizeless types, which the parser doesn't accept.
+- Arm32 (`src/target/arm_isa.rs`): `-march=armv7-a|armv8-a` (no modifiers),
+  `-mfpu=` (none, vfpv3[-d16], vfpv4[-d16], neon, neon-vfpv4, [neon-|crypto-neon-]fp-armv8),
+  `-mfloat-abi=soft|softfp|hard`, `-mthumb`/`-marm`. The default FPU is neon
+  on armv7-a and crypto-neon-fp-armv8 on armv8-a; the default float ABI comes
+  from the triple (gnueabihf → hard, gnueabi → softfp). The float ABI picks
+  `aapcs32_hard_float` vs `aapcs32` for non-variadic calls; the triple
+  environment now only selects the predefine snapshot. `soft` removes every
+  FPU macro and defines `__SOFTFP__`, which `-mfpu=none` also does unless the
+  ABI is hard.
+
 The target layout is selected by the supported target triple and is printed in
 the IR module header. GCC's `-mpreferred-stack-boundary` and Clang's
 `-mstack-alignment` update the target's stack ABI policy after validating their

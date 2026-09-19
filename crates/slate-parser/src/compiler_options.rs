@@ -1,7 +1,6 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::DiagnosticOptions;
 use crate::ir::{Exceptions, FloatingSemantics, Overflow, Rounding};
-use crate::target::x86_isa::X86IsaRequest;
 use crate::target_info::{LongDoubleFormat, TargetInfo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -38,7 +37,6 @@ pub struct OperationValues {
 pub struct LayoutOptions {
     pub long_double: Option<LongDoubleFormat>,
     pub preferred_stack_alignment: Option<u32>,
-    pub x86_isa: X86IsaRequest,
 }
 
 impl Default for CompilerOptions {
@@ -114,6 +112,6 @@ impl CompilerOptions {
         if let Some(alignment) = self.layout.preferred_stack_alignment {
             target = target.with_preferred_stack_alignment(alignment);
         }
-        target.with_x86_isa(self.layout.x86_isa)
+        target
     }
 }

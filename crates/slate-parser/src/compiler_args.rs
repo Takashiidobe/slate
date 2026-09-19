@@ -2,7 +2,8 @@ use crate::compiler_options::{CompilerOptions, LayoutOptions, OperationValues};
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::ir::Overflow;
 use crate::rules::{Rule, Rules};
-use crate::target::x86_isa::{X86Feature, X86Isa, X86IsaRequest};
+use crate::target::isa::{IsaRequest, TargetIsa};
+use crate::target::x86_isa::X86Feature;
 use crate::target_info::{LongDoubleFormat, TargetFamily, TargetInfo};
 use std::collections::BTreeSet;
 use std::str::FromStr;
@@ -121,7 +122,7 @@ struct ParsedCompilerArgs {
     trapping_math: Option<bool>,
     gnu89_inline: Option<bool>,
     long_double: Option<LongDoubleFormat>,
-    x86_isa: X86IsaRequest,
+    isa: IsaRequest,
     diagnostics: DiagnosticOptions,
     present: BTreeSet<Opt>,
 }
@@ -144,6 +145,10 @@ enum Opt {
     LongDouble,
     IsaFeature,
     Arch,
+    FloatAbi,
+    Fpu,
+    Thumb,
+    SveVectorBits,
     Warning,
     Pedantic,
 }
@@ -167,6 +172,10 @@ impl std::fmt::Display for Opt {
             Self::LongDouble => "long-double",
             Self::IsaFeature => "m<feature>",
             Self::Arch => "march",
+            Self::FloatAbi => "mfloat-abi",
+            Self::Fpu => "mfpu",
+            Self::Thumb => "mthumb",
+            Self::SveVectorBits => "msve-vector-bits",
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
         };
@@ -217,8 +226,10 @@ impl CompilerArgParser {
     {
         let arguments = args.into_iter().collect::<Vec<_>>();
         let raw = parse_arguments(&arguments)?;
-        let target = TargetInfo::for_triple(&raw.target)?;
+        let mut target = TargetInfo::for_triple(&raw.target)?;
         validate_rules(&target).check(&raw)?;
+        target.isa = TargetIsa::resolve(target.family, target.environment, &raw.isa)
+            .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
         let layout = LayoutOptions {
             long_double: raw.long_double,
@@ -226,7 +237,6 @@ impl CompilerArgParser {
                 .preferred_stack_boundary
                 .map(|exponent| 1u32 << exponent)
                 .or(raw.stack_alignment),
-            x86_isa: raw.x86_isa,
         };
         let mut options = CompilerOptions::from_values(
             flavor,
@@ -368,14 +378,38 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             )?);
         } else if let Some(value) = option_value(argument, "march") {
             parsed.present.insert(Opt::Arch);
-            parsed.x86_isa.arch = Some(parse_value(
+            parsed.isa.march = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
                 "architecture",
             )?);
+        } else if let Some(value) = option_value(argument, "mfloat-abi") {
+            parsed.present.insert(Opt::FloatAbi);
+            parsed.isa.float_abi = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "float ABI",
+            )?);
+        } else if let Some(value) = option_value(argument, "mfpu") {
+            parsed.present.insert(Opt::Fpu);
+            parsed.isa.fpu = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "FPU",
+            )?);
+        } else if let Some(value) = option_value(argument, "msve-vector-bits") {
+            parsed.present.insert(Opt::SveVectorBits);
+            parsed.isa.sve_vector_bits = Some(parse_value(
+                next_value(arguments, &mut index, argument, value)?,
+                argument,
+                "SVE vector length",
+            )?);
+        } else if let Some(thumb) = thumb_flag(argument) {
+            parsed.present.insert(Opt::Thumb);
+            parsed.isa.thumb = Some(thumb);
         } else if let Some((feature, enabled)) = X86Feature::parse_flag(argument) {
             parsed.present.insert(Opt::IsaFeature);
-            parsed.x86_isa.set(feature, enabled);
+            parsed.isa.x86.set(feature, enabled);
         } else if parse_pedantic(argument, &mut parsed.diagnostics) {
             parsed.present.insert(Opt::Pedantic);
         } else if let Some(name) = argument.strip_prefix("-W") {
@@ -473,6 +507,14 @@ where
         .map_err(|error| invalid(argument, &format!("invalid {description}: {error}")))
 }
 
+fn thumb_flag(argument: &str) -> Option<bool> {
+    match argument {
+        "-mthumb" | "--mthumb" => Some(true),
+        "-marm" | "--marm" => Some(false),
+        _ => None,
+    }
+}
+
 fn long_double_flag(argument: &str) -> Option<LongDoubleFormat> {
     match argument {
         "-mlong-double-64" | "--mlong-double-64" => Some(LongDoubleFormat::Binary64),
@@ -499,30 +541,11 @@ fn validate_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn isa_target_rule<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
-    Rules::when(
-        |args: &ParsedCompilerArgs| {
-            args.present.contains(&Opt::IsaFeature) || args.present.contains(&Opt::Arch)
-        },
-        Rule::validate("target ISA options", move |args: &ParsedCompilerArgs| {
-            if target.x86_isa.is_none() {
-                return Err(format!(
-                    "ISA feature options are unsupported for {}",
-                    target.triple
-                ));
-            }
-            if X86Isa::resolve(target.family, args.x86_isa)
-                .features
-                .contains(X86Feature::Sse2)
-            {
-                Ok(())
-            } else {
-                Err(format!(
-                    "disabling SSE or SSE2 is unsupported for {}",
-                    target.triple
-                ))
-            }
-        }),
-    )
+    Rule::validate("target ISA options", move |args: &ParsedCompilerArgs| {
+        TargetIsa::resolve(target.family, target.environment, &args.isa)
+            .map(drop)
+            .map_err(|reason| format!("{reason} for {}", target.triple))
+    })
 }
 
 fn long_double_target_rule<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
@@ -628,7 +651,7 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 11] = [
+    const UNSUPPORTED: [Opt; 15] = [
         Opt::Gnu89Inline,
         Opt::Wrapv,
         Opt::Trapv,
@@ -640,6 +663,10 @@ fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
         Opt::StackAlignment,
         Opt::IsaFeature,
         Opt::Arch,
+        Opt::FloatAbi,
+        Opt::Fpu,
+        Opt::Thumb,
+        Opt::SveVectorBits,
     ];
     Rule::validate(
         "MSVC stack alignment options",

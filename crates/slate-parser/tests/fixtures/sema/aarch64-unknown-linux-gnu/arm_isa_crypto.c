@@ -1,0 +1,223 @@
+// SLATE-FILECHECK-DEFINES CHECK
+// SLATE-FILECHECK-ARGS --dump-ir -march=armv8.4-a+crypto
+
+#ifdef __ARM_ARCH
+int val__ARM_ARCH[__ARM_ARCH];
+#endif
+#ifdef __ARM_ARCH_7A__
+int val__ARM_ARCH_7A__[__ARM_ARCH_7A__];
+#endif
+#ifdef __ARM_ARCH_8A__
+int val__ARM_ARCH_8A__[__ARM_ARCH_8A__];
+#endif
+#ifdef __ARM_ARCH_EXT_IDIV__
+int val__ARM_ARCH_EXT_IDIV__[__ARM_ARCH_EXT_IDIV__];
+#endif
+#ifdef __ARM_BF16_FORMAT_ALTERNATIVE
+int val__ARM_BF16_FORMAT_ALTERNATIVE[__ARM_BF16_FORMAT_ALTERNATIVE];
+#endif
+#ifdef __ARM_FEATURE_AES
+int val__ARM_FEATURE_AES[__ARM_FEATURE_AES];
+#endif
+#ifdef __ARM_FEATURE_ATOMICS
+int val__ARM_FEATURE_ATOMICS[__ARM_FEATURE_ATOMICS];
+#endif
+#ifdef __ARM_FEATURE_BF16
+int val__ARM_FEATURE_BF16[__ARM_FEATURE_BF16];
+#endif
+#ifdef __ARM_FEATURE_BF16_SCALAR_ARITHMETIC
+int val__ARM_FEATURE_BF16_SCALAR_ARITHMETIC[__ARM_FEATURE_BF16_SCALAR_ARITHMETIC];
+#endif
+#ifdef __ARM_FEATURE_BF16_VECTOR_ARITHMETIC
+int val__ARM_FEATURE_BF16_VECTOR_ARITHMETIC[__ARM_FEATURE_BF16_VECTOR_ARITHMETIC];
+#endif
+#ifdef __ARM_FEATURE_BTI
+int val__ARM_FEATURE_BTI[__ARM_FEATURE_BTI];
+#endif
+#ifdef __ARM_FEATURE_COMPLEX
+int val__ARM_FEATURE_COMPLEX[__ARM_FEATURE_COMPLEX];
+#endif
+#ifdef __ARM_FEATURE_COPROC
+int val__ARM_FEATURE_COPROC[__ARM_FEATURE_COPROC];
+#endif
+#ifdef __ARM_FEATURE_CRC32
+int val__ARM_FEATURE_CRC32[__ARM_FEATURE_CRC32];
+#endif
+#ifdef __ARM_FEATURE_CRYPTO
+int val__ARM_FEATURE_CRYPTO[__ARM_FEATURE_CRYPTO];
+#endif
+#ifdef __ARM_FEATURE_CSSC
+int val__ARM_FEATURE_CSSC[__ARM_FEATURE_CSSC];
+#endif
+#ifdef __ARM_FEATURE_DIRECTED_ROUNDING
+int val__ARM_FEATURE_DIRECTED_ROUNDING[__ARM_FEATURE_DIRECTED_ROUNDING];
+#endif
+#ifdef __ARM_FEATURE_DOTPROD
+int val__ARM_FEATURE_DOTPROD[__ARM_FEATURE_DOTPROD];
+#endif
+#ifdef __ARM_FEATURE_FMA
+int val__ARM_FEATURE_FMA[__ARM_FEATURE_FMA];
+#endif
+#ifdef __ARM_FEATURE_FP16_FML
+int val__ARM_FEATURE_FP16_FML[__ARM_FEATURE_FP16_FML];
+#endif
+#ifdef __ARM_FEATURE_FP16_SCALAR_ARITHMETIC
+int val__ARM_FEATURE_FP16_SCALAR_ARITHMETIC[__ARM_FEATURE_FP16_SCALAR_ARITHMETIC];
+#endif
+#ifdef __ARM_FEATURE_FP16_VECTOR_ARITHMETIC
+int val__ARM_FEATURE_FP16_VECTOR_ARITHMETIC[__ARM_FEATURE_FP16_VECTOR_ARITHMETIC];
+#endif
+#ifdef __ARM_FEATURE_FRINT
+int val__ARM_FEATURE_FRINT[__ARM_FEATURE_FRINT];
+#endif
+#ifdef __ARM_FEATURE_IDIV
+int val__ARM_FEATURE_IDIV[__ARM_FEATURE_IDIV];
+#endif
+#ifdef __ARM_FEATURE_JCVT
+int val__ARM_FEATURE_JCVT[__ARM_FEATURE_JCVT];
+#endif
+#ifdef __ARM_FEATURE_MATMUL_INT8
+int val__ARM_FEATURE_MATMUL_INT8[__ARM_FEATURE_MATMUL_INT8];
+#endif
+#ifdef __ARM_FEATURE_MOPS
+int val__ARM_FEATURE_MOPS[__ARM_FEATURE_MOPS];
+#endif
+#ifdef __ARM_FEATURE_NUMERIC_MAXMIN
+int val__ARM_FEATURE_NUMERIC_MAXMIN[__ARM_FEATURE_NUMERIC_MAXMIN];
+#endif
+#ifdef __ARM_FEATURE_PAUTH
+int val__ARM_FEATURE_PAUTH[__ARM_FEATURE_PAUTH];
+#endif
+#ifdef __ARM_FEATURE_QRDMX
+int val__ARM_FEATURE_QRDMX[__ARM_FEATURE_QRDMX];
+#endif
+#ifdef __ARM_FEATURE_RCPC
+int val__ARM_FEATURE_RCPC[__ARM_FEATURE_RCPC];
+#endif
+#ifdef __ARM_FEATURE_SHA2
+int val__ARM_FEATURE_SHA2[__ARM_FEATURE_SHA2];
+#endif
+#ifdef __ARM_FEATURE_SHA3
+int val__ARM_FEATURE_SHA3[__ARM_FEATURE_SHA3];
+#endif
+#ifdef __ARM_FEATURE_SHA512
+int val__ARM_FEATURE_SHA512[__ARM_FEATURE_SHA512];
+#endif
+#ifdef __ARM_FEATURE_SM3
+int val__ARM_FEATURE_SM3[__ARM_FEATURE_SM3];
+#endif
+#ifdef __ARM_FEATURE_SM4
+int val__ARM_FEATURE_SM4[__ARM_FEATURE_SM4];
+#endif
+#ifdef __ARM_FEATURE_SVE
+int val__ARM_FEATURE_SVE[__ARM_FEATURE_SVE];
+#endif
+#ifdef __ARM_FEATURE_SVE2
+int val__ARM_FEATURE_SVE2[__ARM_FEATURE_SVE2];
+#endif
+#ifdef __ARM_FEATURE_SVE2p1
+int val__ARM_FEATURE_SVE2p1[__ARM_FEATURE_SVE2p1];
+#endif
+#ifdef __ARM_FEATURE_SVE_BF16
+int val__ARM_FEATURE_SVE_BF16[__ARM_FEATURE_SVE_BF16];
+#endif
+#ifdef __ARM_FEATURE_SVE_BITS
+int val__ARM_FEATURE_SVE_BITS[__ARM_FEATURE_SVE_BITS];
+#endif
+#ifdef __ARM_FEATURE_SVE_MATMUL_INT8
+int val__ARM_FEATURE_SVE_MATMUL_INT8[__ARM_FEATURE_SVE_MATMUL_INT8];
+#endif
+#ifdef __ARM_FEATURE_SVE_VECTOR_OPERATORS
+int val__ARM_FEATURE_SVE_VECTOR_OPERATORS[__ARM_FEATURE_SVE_VECTOR_OPERATORS];
+#endif
+#ifdef __ARM_FEATURE_UNALIGNED
+int val__ARM_FEATURE_UNALIGNED[__ARM_FEATURE_UNALIGNED];
+#endif
+#ifdef __ARM_FP
+int val__ARM_FP[__ARM_FP];
+#endif
+#ifdef __ARM_FPV5__
+int val__ARM_FPV5__[__ARM_FPV5__];
+#endif
+#ifdef __ARM_NEON
+int val__ARM_NEON[__ARM_NEON];
+#endif
+#ifdef __ARM_NEON_FP
+int val__ARM_NEON_FP[__ARM_NEON_FP];
+#endif
+#ifdef __ARM_NEON_SVE_BRIDGE
+int val__ARM_NEON_SVE_BRIDGE[__ARM_NEON_SVE_BRIDGE];
+#endif
+#ifdef __ARM_NEON__
+int val__ARM_NEON__[__ARM_NEON__];
+#endif
+#ifdef __ARM_PCS_VFP
+int val__ARM_PCS_VFP[__ARM_PCS_VFP];
+#endif
+#ifdef __ARM_VFPV2__
+int val__ARM_VFPV2__[__ARM_VFPV2__];
+#endif
+#ifdef __ARM_VFPV3__
+int val__ARM_VFPV3__[__ARM_VFPV3__];
+#endif
+#ifdef __ARM_VFPV4__
+int val__ARM_VFPV4__[__ARM_VFPV4__];
+#endif
+#ifdef __SOFTFP__
+int val__SOFTFP__[__SOFTFP__];
+#endif
+#ifdef __THUMBEL__
+int val__THUMBEL__[__THUMBEL__];
+#endif
+#ifdef __thumb2__
+int val__thumb2__[__thumb2__];
+#endif
+#ifdef __thumb__
+int val__thumb__[__thumb__];
+#endif
+
+// SLATE-FILECHECK-BEGIN CHECK
+// CHECK: module {
+// CHECK-NEXT:     target "aarch64-unknown-linux-gnu" {
+// CHECK-NEXT:         endian = little;
+// CHECK-NEXT:         pointer [size=8, align=8];
+// CHECK-NEXT:         stack_alignment = 16;
+// CHECK-NEXT:         long_double = f128;
+// CHECK-NEXT:         storage bool [size=1, align=1];
+// CHECK-NEXT:         storage i8, u8 [size=1, align=1];
+// CHECK-NEXT:         storage i16, u16 [size=2, align=2];
+// CHECK-NEXT:         storage i32, u32 [size=4, align=4];
+// CHECK-NEXT:         storage i64, u64 [size=8, align=8];
+// CHECK-NEXT:         storage i128, u128 [size=16, align=16];
+// CHECK-NEXT:         storage f16 [size=2, align=2];
+// CHECK-NEXT:         storage f32 [size=4, align=4];
+// CHECK-NEXT:         storage f64 [size=8, align=8];
+// CHECK-NEXT:         storage f128 [size=16, align=16];
+// CHECK-NEXT:     }
+// CHECK-NEXT:     global %0 val__ARM_ARCH: array<i32, 8> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %1 val__ARM_FEATURE_AES: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %2 val__ARM_FEATURE_ATOMICS: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %3 val__ARM_FEATURE_COMPLEX: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %4 val__ARM_FEATURE_CRC32: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %5 val__ARM_FEATURE_CRYPTO: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %6 val__ARM_FEATURE_DIRECTED_ROUNDING: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %7 val__ARM_FEATURE_DOTPROD: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %8 val__ARM_FEATURE_FMA: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %9 val__ARM_FEATURE_IDIV: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %10 val__ARM_FEATURE_JCVT: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %11 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %12 val__ARM_FEATURE_PAUTH: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %13 val__ARM_FEATURE_QRDMX: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %14 val__ARM_FEATURE_RCPC: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %15 val__ARM_FEATURE_SHA2: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %16 val__ARM_FEATURE_SHA3: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %17 val__ARM_FEATURE_SHA512: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %18 val__ARM_FEATURE_SM3: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %19 val__ARM_FEATURE_SM4: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %20 val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %21 val__ARM_FP: array<i32, 14> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %22 val__ARM_NEON: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %23 val__ARM_NEON_FP: array<i32, 14> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %24 val__ARM_NEON_SVE_BRIDGE: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT: }
+// SLATE-FILECHECK-END CHECK

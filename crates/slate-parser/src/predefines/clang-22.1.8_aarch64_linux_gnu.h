@@ -5,7 +5,6 @@
 #define __ARM_ACLE 202420
 #define __ARM_ACLE_VERSION(year,quarter,patch) (100 * (year) + 10 * (quarter) + (patch))
 #define __ARM_ALIGN_MAX_STACK_PWR 4
-#define __ARM_ARCH 8
 #define __ARM_ARCH_ISA_A64 1
 #define __ARM_ARCH_PROFILE 'A'
 #define __ARM_FEATURE_CLZ 1
@@ -16,11 +15,8 @@
 #define __ARM_FEATURE_LDREX 0xF
 #define __ARM_FEATURE_NUMERIC_MAXMIN 1
 #define __ARM_FEATURE_UNALIGNED 1
-#define __ARM_FP 0xE
 #define __ARM_FP16_ARGS 1
 #define __ARM_FP16_FORMAT_IEEE 1
-#define __ARM_NEON 1
-#define __ARM_NEON_FP 0xE
 #define __ARM_NEON_SVE_BRIDGE 1
 #define __ARM_PCS_AAPCS64 1
 #define __ARM_PREFETCH_RANGE 1

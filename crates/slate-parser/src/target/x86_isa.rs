@@ -271,7 +271,6 @@ impl X86Arch {
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct X86IsaRequest {
-    pub arch: Option<X86Arch>,
     enabled: X86Features,
     disabled: X86Features,
 }
@@ -298,12 +297,12 @@ pub struct X86Isa {
 
 impl X86Isa {
     pub fn baseline(family: TargetFamily) -> Self {
-        Self::resolve(family, X86IsaRequest::default())
+        Self::resolve(family, None, X86IsaRequest::default())
     }
 
-    pub fn resolve(family: TargetFamily, request: X86IsaRequest) -> Self {
+    pub fn resolve(family: TargetFamily, arch: Option<X86Arch>, request: X86IsaRequest) -> Self {
         use X86Feature::*;
-        let arch = request.arch.unwrap_or(X86Arch::default_for(family));
+        let arch = arch.unwrap_or(X86Arch::default_for(family));
         let mut features = arch
             .features()
             .union(request.enabled)

@@ -677,7 +677,10 @@ AArch64 Linux and Windows, and ARM32 soft/hard-float for complex values,
 128-bit integers where Clang supports them, and flat records. For example,
 `complex<f64>` is two direct floating pieces on SysV x86-64, a copied memory
 argument plus indirect result on i386, and a reference argument plus indirect
-result on Windows x86-64. ARM hard-float variadic signatures use base AAPCS;
+result on Windows x86-64. ARM32 picks hard-float from the resolved float ABI
+(`TargetIsa::Arm`, default from the gnueabihf/gnueabi triple, overridden by
+`-mfloat-abi`), not from the triple environment directly. ARM hard-float
+variadic signatures use base AAPCS;
 Windows AArch64 variadic aggregate arguments use integer pieces. The
 `ir_call_abi.c` and target-specific `abi_target.c` FileCheck fixtures pin
 these cases against Clang IR signatures. More elaborate records use
