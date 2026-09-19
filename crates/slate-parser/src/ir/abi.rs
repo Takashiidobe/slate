@@ -47,6 +47,7 @@ impl fmt::Display for AbiChunk {
 pub enum AbiPass {
     Void,
     Scalar,
+    Direct,
     NativeC,
     Coerce(Vec<AbiChunk>),
     ByValue { align: u32 },
@@ -59,6 +60,7 @@ impl fmt::Display for AbiPass {
         match self {
             Self::Void => f.write_str("void"),
             Self::Scalar => f.write_str("scalar"),
+            Self::Direct => f.write_str("direct"),
             Self::NativeC => f.write_str("native_c"),
             Self::Coerce(chunks) => {
                 f.write_str("coerce<")?;

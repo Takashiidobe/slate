@@ -176,14 +176,16 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub" ;
 abi_signature = convention "(" [ abi_pass { ", " abi_pass } ] ") -> " abi_pass ;
 convention    = "sysv64" | "win64" | "x86_cdecl" | "aapcs64" | "win_arm64"
               | "aapcs32" | "aapcs32_hard_float" ;
-abi_pass      = "void" | "scalar" | "native_c"
+abi_pass      = "void" | "scalar" | "direct" | "native_c"
               | "coerce<" chunk { ", " chunk } ">"
               | "byval<align=" int ">" | "byref<align=" int ">" | "sret<align=" int ">" ;
 chunk         = "i" digits | float_type | "pair<" float_type ">" ;
 ```
 
 `native_c` leaves the record to the target's ordinary C ABI; it is not a
-verified coercion.
+verified coercion. `direct` is the opposite: the value is passed in registers
+as its own type, with no coercion and no memory copy. It is what vectors that
+fit the target's vector registers use, where `scalar` would misdescribe them.
 
 ## Statements
 

@@ -664,8 +664,9 @@ target's ISA and ABI environment. It records the calling convention and the
 passing shape of each argument and the result without replacing source-level
 types with hidden pointers or machine registers. Scalar passes remain implicit
 in the default dump; nontrivial signatures print `abi=...`. `coerce<...>`
-records direct value pieces, `byval` a copied memory argument, `byref` an
-indirect argument, and `sret` an indirect result. `native_c` leaves an
+records direct value pieces, `direct` a value passed in registers as its own
+type, `byval` a copied memory argument, `byref` an indirect argument, and
+`sret` an indirect result. `native_c` leaves an
 unclassified record to the target's ordinary C ABI for `repr(C)` emission;
 it is explicit so Rust lowering does not mistake a guessed coercion for a
 verified one. Call nodes keep their own ABI signature because an indirect
@@ -733,10 +734,32 @@ accepted; `_Bool` and decimal elements are rejected, matching clang.
 Target storage is `next_power_of_two(lanes * element_size)` for both size and
 alignment, so a 3-lane `int` vector is 16 bytes aligned to 16, and a 3-lane
 `short` vector is 8 aligned to 8. That rounding is clang's, and it is why
-lanes cannot be recovered from `sizeof` alone. Arguments and results pass as
-`native_c`: the register-level classification of vectors is target- and
-ISA-extension-dependent, so it is left explicitly unclassified rather than
-guessed (`slate-parser-lh7.2.17.6`).
+lanes cannot be recovered from `sizeof` alone.
+
+Vector arguments and results are classified per convention. `AbiPass::Direct`
+is a vector passed in registers as its own type, distinct from `scalar` and
+from `native_c`. The classification is the target's **baseline** ISA, which is
+what clang assumes without `-mavx` and friends; a wider ISA would keep more of
+these in registers, and clang says so with `-Wpsabi`.
+
+| Convention           | < 8 bytes     | 8 bytes                      | 16 bytes | > 16 bytes                      |
+| -------------------- | ------------- | ---------------------------- | -------- | ------------------------------- |
+| `sysv64`             | `coerce<iN>`  | `coerce<f64>`                | `direct` | arg `byval`, result `direct`    |
+| `win64`              | `direct`      | `direct`                     | `direct` | `direct`                        |
+| `x86_cdecl`          | `direct`      | arg `coerce<i64>` if MMX     | `direct` | `direct`                        |
+| `aapcs64`/`win_arm64`| arg `coerce<i32>` | `direct`                 | `direct` | arg `byref`, result `sret` (align 16) |
+| `aapcs32`(`_hard_float`) | arg `coerce<i32>` | `direct`             | `direct` | arg `direct`, result `sret` (align 8) |
+
+Results take the `direct` form wherever the table names a coercion only for
+arguments. Two corners are inherited from gcc and pinned by fixtures: a
+one-lane `double` vector is passed in memory on `sysv64` (`vector<f64, 1>` is
+`byval<align=8>`, though its result is `direct`), and an eight-byte vector of
+integer lanes narrower than 64 bits is an MMX type that `x86_cdecl` passes as
+`i64`, while `vector<i64, 1>` and float-lane vectors of that size pass
+directly. `tests/fixtures/sema/ir_vector_abi.c` pins `sysv64` including the
+indirect and variadic call sites, and the `abi_target.c` fixture in each
+target directory pins the rest; all of them were diffed against clang's IR
+signatures for that target.
 
 Arithmetic is per-lane. An operation whose result type is a vector prints
 `elementwise=true` and otherwise carries the element's scalar contract, with

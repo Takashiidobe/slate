@@ -130,7 +130,7 @@ impl<'a> AbiClassifier<'a> {
             | Type::Pointer { .. }
             | Type::VaList => Ok(AbiPass::Scalar),
             Type::Complex(component) => self.complex_abi(*component, result, convention),
-            Type::Vector { .. } => Ok(AbiPass::NativeC),
+            Type::Vector { .. } => self.vector_abi(ty, result, convention),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.abi_pass(inner, result, convention),
                 TypeDefinitionKind::Enum { .. } => Ok(AbiPass::Scalar),
@@ -176,6 +176,69 @@ impl<'a> AbiClassifier<'a> {
                 Err(ResolveError::Unsupported("unadjusted ABI parameter type"))
             }
         }
+    }
+
+    // sizes are the target's baseline ISA: -mavx and friends widen what x86
+    // passes in registers, and this crate has no ISA feature flags
+    fn vector_abi(
+        &self,
+        ty: &Type,
+        result: bool,
+        convention: AbiConvention,
+    ) -> Result<AbiPass, ResolveError> {
+        let Type::Vector { element, .. } = *ty else {
+            return Err(ResolveError::Unsupported("vector ABI of non-vector type"));
+        };
+        let layout = self.types.storage(ty.clone())?;
+        let size = layout.size_bytes;
+        let align = layout.alignment_bytes;
+        let pass = match convention {
+            AbiConvention::Win64 => AbiPass::Direct,
+            AbiConvention::SysV64 if size < 8 => {
+                AbiPass::Coerce(vec![AbiChunk::Integer((size * 8) as u32)])
+            }
+            // gcc passes a one-lane double vector in memory, and clang follows it
+            AbiConvention::SysV64 if size == 8 && element == NumericType::Float(FloatType::F64) => {
+                if result {
+                    AbiPass::Direct
+                } else {
+                    AbiPass::ByValue { align }
+                }
+            }
+            AbiConvention::SysV64 if size == 8 => {
+                AbiPass::Coerce(vec![AbiChunk::Float(FloatType::F64)])
+            }
+            AbiConvention::SysV64 if size > 16 && !result => AbiPass::ByValue { align },
+            AbiConvention::SysV64 => AbiPass::Direct,
+            // an eight-byte vector of narrow integer lanes is an MMX type, which
+            // i386 passes as an integer to keep MMX registers out of the ABI
+            AbiConvention::X86Cdecl
+                if size == 8
+                    && !result
+                    && matches!(element, NumericType::Integer { width, .. } if width < 64) =>
+            {
+                AbiPass::Coerce(vec![AbiChunk::Integer(64)])
+            }
+            AbiConvention::X86Cdecl => AbiPass::Direct,
+            AbiConvention::Aapcs64 | AbiConvention::WinArm64 => match size {
+                _ if size < 8 && !result => AbiPass::Coerce(vec![AbiChunk::Integer(32)]),
+                _ if size <= 16 => AbiPass::Direct,
+                _ if result => AbiPass::SRet {
+                    align: align.min(16),
+                },
+                _ => AbiPass::ByReference {
+                    align: align.min(16),
+                },
+            },
+            AbiConvention::Aapcs32 | AbiConvention::Aapcs32HardFloat => match size {
+                _ if size < 8 && !result => AbiPass::Coerce(vec![AbiChunk::Integer(32)]),
+                _ if size > 16 && result => AbiPass::SRet {
+                    align: align.min(8),
+                },
+                _ => AbiPass::Direct,
+            },
+        };
+        Ok(pass)
     }
 
     fn complex_abi(
