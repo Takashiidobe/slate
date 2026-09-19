@@ -22,15 +22,15 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         .map(|b| b.value.id.0 + 1)
         .max()
         .unwrap_or(0);
+    let mut types = TypeResolver::with_tags(context.target.clone(), unit);
+    types.references = names.references.iter().map(|r| (r.id, r.binding)).collect();
     let mut lower = Lowerer {
-        types: TypeResolver::with_tags(context.target.clone(), unit),
+        types,
         module: Module::new(context.target.clone()),
         context,
         names,
-        bindings: HashMap::new(),
         c_types: HashMap::new(),
         function_declarations: HashMap::new(),
-        access: HashMap::new(),
         type_spans: HashMap::new(),
         next_id,
         break_targets: Vec::new(),
@@ -78,7 +78,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
                 let abi = lower.abi_signature(&ty, None)?;
-                lower.bindings.insert(id, ty);
+                lower.types.bindings.insert(id, ty);
                 lower.c_types.insert(id, resolved.c.clone());
                 let mut metadata = vec![
                     (
@@ -155,7 +155,7 @@ pub fn resolve_module(unit: &TranslationUnit) -> Result<Module, ResolveError> {
         }
     }
     lower.finish_functions(unit.options.effective_inline_semantics(unit.standard));
-    super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.access)?;
+    super::effects_statements::normalize(&mut lower.module, lower.next_id, lower.types.access)?;
     Ok(lower.module)
 }
 
@@ -290,7 +290,8 @@ impl Lowerer {
                 }
             }
         }
-        self.bindings
+        self.types
+            .bindings
             .insert(existing.variable.id, existing.variable.ty.clone());
         if global.variable.initializer.is_some() {
             if existing.variable.initializer.is_some() {
@@ -395,10 +396,12 @@ impl Lowerer {
             } else {
                 self.fresh()
             };
-            self.bindings.insert(id, ty.clone());
+            self.types.bindings.insert(id, ty.clone());
             self.c_types
                 .insert(id, TypeResolver::parameter_c(&resolved, qualifiers));
-            self.access.insert(id, super::types::access(qualifiers));
+            self.types
+                .access
+                .insert(id, super::types::access(qualifiers));
             self.module
                 .metadata
                 .insert(parameter.id, resolved.c.entries());
@@ -509,9 +512,11 @@ impl Lowerer {
                 .ty
                 .ok_or(ResolveError::Unsupported("void object"))?;
             let id = self.declaration_id(declarator.id, name)?;
-            self.bindings.insert(id, ty.clone());
+            self.types.bindings.insert(id, ty.clone());
             self.c_types.insert(id, resolved.c.clone());
-            self.access.insert(id, super::types::access(qualifiers));
+            self.types
+                .access
+                .insert(id, super::types::access(qualifiers));
             if let Type::Function {
                 return_type,
                 parameters: parameter_types,
@@ -612,7 +617,7 @@ impl Lowerer {
                         Type::Array { length: None, .. } => value.ty.clone(),
                         ty => ty,
                     };
-                    self.bindings.insert(id, ty.clone());
+                    self.types.bindings.insert(id, ty.clone());
                     self.c_types
                         .insert(id, super::type_of::with_length(resolved.c.clone(), &ty));
                     (ty, Some(value))
@@ -689,7 +694,7 @@ impl Lowerer {
                 let count = self.expr(expr)?;
                 let count = self.convert(count, extent_type.clone(), ConversionReason::Assign)?;
                 let id = self.fresh();
-                self.bindings.insert(id, extent_type.clone());
+                self.types.bindings.insert(id, extent_type.clone());
                 self.types.extents.insert(expr.id, id);
                 out.push(anchor.clone().with_value(Statement::Temporary {
                     id,

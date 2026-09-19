@@ -10,10 +10,8 @@ pub(super) struct Lowerer {
     pub types: TypeResolver,
     pub module: Module,
     pub names: NameResolution,
-    pub bindings: HashMap<BindingId, Type>,
     pub c_types: HashMap<BindingId, super::types::CTypeMetadata>,
     pub function_declarations: HashMap<BindingId, super::function::FunctionDeclarations>,
-    pub access: HashMap<BindingId, Access>,
     pub type_spans: HashMap<TypeId, Span<TypeDefinition>>,
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
@@ -55,11 +53,10 @@ impl Lowerer {
     }
 
     pub(super) fn reference(&self, e: &Expr) -> Result<BindingId, ResolveError> {
-        self.names
+        self.types
             .references
-            .iter()
-            .find(|r| r.id == e.id)
-            .map(|r| r.binding)
+            .get(&e.id)
+            .copied()
             .ok_or(ResolveError::Unsupported("missing expression binding"))
     }
 
@@ -334,6 +331,7 @@ impl Lowerer {
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
                 let ty = self
+                    .types
                     .bindings
                     .get(&id)
                     .ok_or(ResolveError::Unsupported("untyped binding"))?
@@ -341,7 +339,7 @@ impl Lowerer {
                 Ok(Place {
                     ty,
                     kind: PlaceKind::Binding(id),
-                    access: self.access.get(&id).copied().unwrap_or_default(),
+                    access: self.types.access.get(&id).copied().unwrap_or_default(),
                 })
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
@@ -358,7 +356,7 @@ impl Lowerer {
                 )?;
                 let object = self.fresh();
                 let ty = value.ty.clone();
-                self.bindings.insert(object, ty.clone());
+                self.types.bindings.insert(object, ty.clone());
                 let storage = if self.in_function {
                     StorageDuration::Automatic
                 } else {

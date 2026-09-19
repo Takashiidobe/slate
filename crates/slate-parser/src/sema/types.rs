@@ -134,6 +134,9 @@ pub struct TypeResolver {
     pub definitions: Vec<TypeDefinition>,
     pub(super) assertion_scope: bool,
     pub(super) extents: HashMap<crate::ast::NodeId, BindingId>,
+    pub(super) references: HashMap<crate::ast::NodeId, BindingId>,
+    pub(super) bindings: HashMap<BindingId, Type>,
+    pub(super) access: HashMap<BindingId, Access>,
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, ResolvedType>,
     pub(super) field_c: HashMap<TypeId, Vec<CTypeMetadata>>,
     prototype_scope: bool,
@@ -158,6 +161,9 @@ impl TypeResolver {
             definitions: Vec::new(),
             assertion_scope: false,
             extents: HashMap::new(),
+            references: HashMap::new(),
+            bindings: HashMap::new(),
+            access: HashMap::new(),
             typeof_operands: HashMap::new(),
             field_c: HashMap::new(),
             prototype_scope: false,
@@ -407,6 +413,12 @@ impl TypeResolver {
         })
     }
 
+    fn object(&self, e: &crate::ast::Expr) -> Option<(Type, Access)> {
+        let id = self.references.get(&e.id)?;
+        let ty = self.bindings.get(id)?.clone();
+        Some((ty, self.access.get(id).copied().unwrap_or_default()))
+    }
+
     pub(super) fn is_constant(&mut self, e: &crate::ast::Expr) -> bool {
         self.constant_value(e).is_ok_and(|value| is_folded(&value))
     }
@@ -491,6 +503,9 @@ impl TypeResolver {
             }
             .ok_or(ResolveError::Unsupported("nonconstant call expression"))
             .map(|ty| (ty, Access::default())),
+            ExprKind::Identifier(_) if self.object(e).is_some() => self
+                .object(e)
+                .ok_or(ResolveError::Unsupported("untyped binding")),
             ExprKind::Identifier(name) => match self.lookup(name) {
                 Some(Ordinary::Object(ty, access)) => Ok((ty.clone(), *access)),
                 Some(Ordinary::Constant(value)) => Ok((value.ty.clone(), Access::default())),

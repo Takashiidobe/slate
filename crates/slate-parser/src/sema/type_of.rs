@@ -119,8 +119,8 @@ impl Lowerer {
         let resolved = self.operand_type(e);
         self.next_id = next_id;
         self.module.globals.truncate(globals);
-        self.bindings.retain(|id, _| id.0 < next_id);
-        self.access.retain(|id, _| id.0 < next_id);
+        self.types.bindings.retain(|id, _| id.0 < next_id);
+        self.types.access.retain(|id, _| id.0 < next_id);
         self.c_types.retain(|id, _| id.0 < next_id);
         resolved
     }
