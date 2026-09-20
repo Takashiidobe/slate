@@ -554,6 +554,19 @@ impl fmt::Display for DisplayModule<'_> {
             }
         }
         writeln!(f, "    }}")?;
+        for asm in &self.module.asm {
+            write!(f, "    asm {:?}", asm.template)?;
+            if asm.has_sections() {
+                f.write_str(" {")?;
+                metadata(f, self.table(), asm.id)?;
+                writeln!(f)?;
+                self.asm_sections(f, asm, 8)?;
+                writeln!(f, "    }}")?;
+            } else {
+                metadata(f, self.table(), asm.id)?;
+                writeln!(f, ";")?;
+            }
+        }
         for definition in &self.module.types {
             write!(f, "    type @type{}", definition.value.id.0)?;
             if let Some(name) = &definition.name {

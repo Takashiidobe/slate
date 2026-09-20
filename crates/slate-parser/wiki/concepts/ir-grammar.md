@@ -48,7 +48,7 @@ ID in `break`) refers to the same entity.
 ## Module
 
 ```ebnf
-module     = "module" "{" target { type_def } { global } { function } "}" ;
+module     = "module" "{" target { asm } { type_def } { global } { function } "}" ;
 
 target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
@@ -62,6 +62,11 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
 ```
 
 A `storage` line is printed only for types the target supports.
+
+A module-level [`asm`](#statements) is a file-scope `asm("...")`, printed in
+source order before the types. It never carries qualifiers or goto labels, and
+only the GNU personality accepts operands there, so it is almost always the
+single-`;` form.
 
 ## Types
 

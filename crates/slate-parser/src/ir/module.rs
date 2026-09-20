@@ -12,6 +12,7 @@ pub type Metadata = HashMap<NodeId, Vec<(String, String)>>;
 pub struct Module {
     pub target: TargetInfo,
     pub types: Vec<Span<TypeDefinition>>,
+    pub asm: Vec<Span<InlineAsm>>,
     pub globals: Vec<Span<Global>>,
     pub functions: Vec<Span<Function>>,
     pub metadata: Metadata,
@@ -202,6 +203,7 @@ impl Module {
         Self {
             target,
             types: Vec::new(),
+            asm: Vec::new(),
             globals: Vec::new(),
             functions: Vec::new(),
             metadata: Metadata::new(),

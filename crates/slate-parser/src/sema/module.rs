@@ -53,7 +53,11 @@ pub fn resolve_module(
     };
     for declaration in &unit.decls {
         match &declaration.value {
-            DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
+            DeclKind::Comment(_) | DeclKind::StaticAssert(_) | DeclKind::Pragma(_) => {}
+            DeclKind::Asm(asm) => {
+                let lowered = declaration.derive(lower.asm(asm)?);
+                lower.module.asm.push(lowered);
+            }
             DeclKind::Declaration(item) => {
                 lower.declaration(item, true)?;
             }
@@ -145,7 +149,6 @@ pub fn resolve_module(
                 lower.module.annotate(&lowered, metadata);
                 lower.declare_function(lowered, previous)?;
             }
-            _ => return Err(ResolveError::Unsupported("module declaration")),
         }
     }
     for definition in &lower.types.definitions {
@@ -872,7 +875,7 @@ impl Lowerer {
         for statement in body {
             let mut annotations = Vec::new();
             let kind = match &statement.value {
-                StmtKind::Comment(_) | StmtKind::StaticAssert(_) => continue,
+                StmtKind::Comment(_) | StmtKind::StaticAssert(_) | StmtKind::Pragma(_) => continue,
                 StmtKind::Decl(item) => {
                     result.extend(self.declaration(item, false)?);
                     continue;

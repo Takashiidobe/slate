@@ -700,8 +700,26 @@ template as opaque text with holes.
   other operand, so the asm itself never contains an embedded effect.
   Fixture: `sema/ir_asm.c`.
 
-File-scope `asm` and declarator asm labels are separate work
-(`slate-parser-dyd.3`, `slate-parser-dyd.4`); this covers statement asm only.
+File-scope `asm` lowers to `Module::asm`, a source-ordered list of the same
+`InlineAsm`, printed before the type definitions. It is a separate list rather
+than a pseudo-declaration because it declares no entity and has no place in the
+symbol table; keeping it out of `globals`/`functions` means nothing downstream
+has to filter it out. It is almost always basic asm, but the GNU personality
+accepts operands at file scope, so it reuses `InlineAsm` and the statement
+printer rather than carrying only a template string. Name resolution binds
+those operand expressions the same way it binds a statement asm's; only labels
+are impossible, since there is no function to hold them.
+
+Pragmas are dropped at lowering, both at file scope (`DeclKind::Pragma`) and in
+statement position (`StmtKind::Pragma`). Conditional-compilation and macro-stack
+pragmas are already consumed by the preprocessor, so what survives into the AST
+is an annotation on code the IR describes in its own terms, not a node Rust
+conversion could use. The semantic ones (`pack`, `weak`, `visibility`, `Stdc`)
+are not applied anywhere in sema yet either; when they are, they belong on the
+declarations they affect (record layout, `SymbolAttributes`) rather than as IR
+nodes of their own.
+
+Declarator asm labels are separate work (`slate-parser-dyd.4`).
 
 ### Side effects are hoisted into statements
 

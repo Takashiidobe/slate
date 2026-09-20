@@ -80,7 +80,16 @@ impl Resolver {
 
     fn declaration_node(&mut self, declaration: &Decl) -> Result<(), ResolveError> {
         match &declaration.value {
-            DeclKind::Comment(_) | DeclKind::Asm(_) | DeclKind::Pragma(_) => Ok(()),
+            DeclKind::Comment(_) | DeclKind::Pragma(_) => Ok(()),
+            DeclKind::Asm(asm) => {
+                let Some(operands) = &asm.operands else {
+                    return Ok(());
+                };
+                for operand in operands.outputs.iter().chain(&operands.inputs) {
+                    self.visit_expr(&operand.expr)?;
+                }
+                Ok(())
+            }
             DeclKind::StaticAssert(assertion) => self.visit_expr(&assertion.condition),
             DeclKind::Declaration(inner) => self.declaration(inner, declaration),
             DeclKind::Function(function) => {
