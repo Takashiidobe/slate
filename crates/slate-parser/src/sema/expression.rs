@@ -90,7 +90,7 @@ impl Lowerer {
             };
             lowered.push(self.convert_expr(argument, value, to, reason)?.value);
         }
-        let abi = self.abi_signature(&ty, Some(&lowered))?;
+        let abi = self.c_abi_signature(signature, &ty, Some(&lowered))?;
         Ok(self.operand(
             e,
             returned,

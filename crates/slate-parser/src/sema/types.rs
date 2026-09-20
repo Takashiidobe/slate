@@ -22,7 +22,7 @@ use crate::standard_features::StandardFeatures;
 
 pub struct TypeResolver {
     target: TargetInfo,
-    flavor: CompilerFlavor,
+    pub(super) flavor: CompilerFlavor,
     pub features: StandardFeatures,
     pub ctypes: CTypes,
     tags: Vec<crate::ast::Span<TagDefinition>>,
@@ -1864,15 +1864,19 @@ pub fn resolve_type_module(
                 let return_type = resolver.layout(return_c);
                 let parameters =
                     resolve_parameters(&mut resolver, signature, &mut module, &mut next_binding)?;
-                let parameter_types = parameter_types(&parameters);
+                let parameter_operands = parameter_operands(&parameters);
+                let result = return_type.clone().map(|ty| super::abi::AbiOperand {
+                    ty,
+                    atomic: resolver.ctypes.quals(return_c).is_atomic,
+                });
                 let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
-                    return_type.as_ref(),
-                    &parameter_types,
+                    result.as_ref(),
+                    &parameter_operands,
                     matches!(
                         &parameters,
                         crate::ir::Parameters::Prototype { variadic: true, .. }
                     ),
-                    parameter_types.len(),
+                    parameter_operands.len(),
                 )?;
                 let lowered = declaration.derive(Function {
                     id: BindingId(next_binding),
@@ -1911,16 +1915,20 @@ pub fn resolve_type_module(
                         &mut module,
                         &mut next_binding,
                     )?;
-                    let parameter_types = parameter_types(&parameters);
+                    let parameter_operands = parameter_operands(&parameters);
+                    let result = return_type.clone().map(|ty| super::abi::AbiOperand {
+                        ty,
+                        atomic: resolver.ctypes.quals(return_c).is_atomic,
+                    });
                     let abi = super::abi::AbiClassifier::new(&resolver, &module.target)
                         .from_parts(
-                            return_type.as_ref(),
-                            &parameter_types,
+                            result.as_ref(),
+                            &parameter_operands,
                             matches!(
                                 &parameters,
                                 crate::ir::Parameters::Prototype { variadic: true, .. }
                             ),
-                            parameter_types.len(),
+                            parameter_operands.len(),
                         )?;
                     let lowered = declarator.derive(Function {
                         id: BindingId(next_binding),
@@ -1963,11 +1971,15 @@ pub fn resolve_type_module(
     Ok(module)
 }
 
-fn parameter_types(parameters: &crate::ir::Parameters) -> Vec<Type> {
+fn parameter_operands(parameters: &crate::ir::Parameters) -> Vec<super::abi::AbiOperand> {
     match parameters {
-        crate::ir::Parameters::Prototype { fixed, .. } => {
-            fixed.iter().map(|parameter| parameter.ty.clone()).collect()
-        }
+        crate::ir::Parameters::Prototype { fixed, .. } => fixed
+            .iter()
+            .map(|parameter| super::abi::AbiOperand {
+                ty: parameter.ty.clone(),
+                atomic: parameter.access.atomic,
+            })
+            .collect(),
         crate::ir::Parameters::Unprototyped => Vec::new(),
     }
 }

@@ -93,7 +93,7 @@ pub fn resolve_module(
                     return Err(ResolveError::Unsupported("function definition declarator"));
                 };
                 let return_type = return_type.as_ref().map(|ty| (**ty).clone());
-                let abi = lower.abi_signature(&ty, None)?;
+                let abi = lower.c_abi_signature(resolved, &ty, None)?;
                 let previous = lower.types.entities.declare(id, resolved, false);
                 let mut metadata = vec![
                     (
@@ -615,7 +615,7 @@ impl Lowerer {
                         variadic: *variadic,
                     },
                 };
-                let abi = self.abi_signature(&ty, None)?;
+                let abi = self.c_abi_signature(resolved, &ty, None)?;
                 let lowered = declarator.derive(Function {
                     id,
                     name: name.into(),

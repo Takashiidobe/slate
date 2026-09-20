@@ -2,6 +2,7 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::Span;
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AbiChunk, AbiConvention, AbiPass, AbiSignature, Field, FloatType, NumericType, Type,
     TypeDefinitionKind, Value,
@@ -14,8 +15,31 @@ impl Lowerer {
         signature: &Type,
         actual_arguments: Option<&[Value]>,
     ) -> Result<AbiSignature, ResolveError> {
-        AbiClassifier::new(&self.types, &self.context.target).signature(signature, actual_arguments)
+        AbiClassifier::new(&self.types, &self.context.target).signature(
+            signature,
+            None,
+            actual_arguments,
+        )
     }
+
+    pub(super) fn c_abi_signature(
+        &self,
+        signature: crate::sema::ctype::QualType,
+        ir: &Type,
+        actual_arguments: Option<&[Value]>,
+    ) -> Result<AbiSignature, ResolveError> {
+        AbiClassifier::new(&self.types, &self.context.target).signature(
+            ir,
+            Some(signature),
+            actual_arguments,
+        )
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AbiOperand {
+    pub ty: Type,
+    pub atomic: bool,
 }
 
 pub(super) struct AbiClassifier<'a> {
@@ -31,6 +55,7 @@ impl<'a> AbiClassifier<'a> {
     fn signature(
         &self,
         signature: &Type,
+        c_signature: Option<crate::sema::ctype::QualType>,
         actual_arguments: Option<&[Value]>,
     ) -> Result<AbiSignature, ResolveError> {
         let Type::Function {
@@ -42,12 +67,33 @@ impl<'a> AbiClassifier<'a> {
         else {
             return Err(ResolveError::Unsupported("ABI of non-function type"));
         };
-        let argument_types = actual_arguments.map_or_else(
-            || parameters.clone(),
-            |values| values.iter().map(|value| value.ty.clone()).collect(),
-        );
+        let c_parts = c_signature.and_then(|q| self.types.ctypes.function_parts(q));
+        let atomic_result = c_parts.is_some_and(|(ret, ..)| self.types.ctypes.quals(ret).is_atomic);
+        let atomic_arguments = |index: usize| {
+            c_parts.is_some_and(|(_, params, ..)| {
+                params
+                    .get(index)
+                    .is_some_and(|param| self.types.ctypes.quals(*param).is_atomic)
+            })
+        };
+        let argument_types: Vec<_> = actual_arguments
+            .map_or_else(
+                || parameters.clone(),
+                |values| values.iter().map(|value| value.ty.clone()).collect(),
+            )
+            .into_iter()
+            .enumerate()
+            .map(|(index, ty)| AbiOperand {
+                ty,
+                atomic: atomic_arguments(index),
+            })
+            .collect();
+        let result = return_type.as_deref().map(|ty| AbiOperand {
+            ty: ty.clone(),
+            atomic: atomic_result,
+        });
         self.from_parts(
-            return_type.as_deref(),
+            result.as_ref(),
             &argument_types,
             *variadic,
             parameters.len(),
@@ -57,8 +103,8 @@ impl<'a> AbiClassifier<'a> {
     #[expect(clippy::wrong_self_convention, reason = "ok for now")]
     pub(super) fn from_parts(
         &self,
-        return_type: Option<&Type>,
-        parameters: &[Type],
+        return_type: Option<&AbiOperand>,
+        parameters: &[AbiOperand],
         variadic: bool,
         fixed_count: usize,
     ) -> Result<AbiSignature, ResolveError> {
@@ -66,15 +112,15 @@ impl<'a> AbiClassifier<'a> {
         let arguments = parameters
             .iter()
             .enumerate()
-            .map(|(index, ty)| -> Result<AbiPass, ResolveError> {
-                let pass = self.abi_pass(ty, false, convention)?;
+            .map(|(index, operand)| -> Result<AbiPass, ResolveError> {
+                let pass = self.abi_pass(operand, false, convention)?;
                 if convention == AbiConvention::WinArm64
                     && variadic
                     && index >= fixed_count
                     && matches!(pass, AbiPass::Coerce(_))
-                    && matches!(ty, Type::Complex(_) | Type::Defined(_))
+                    && matches!(operand.ty, Type::Complex(_) | Type::Defined(_))
                 {
-                    let layout = self.types.storage(ty.clone())?;
+                    let layout = self.layout(operand)?;
                     Ok(integer_chunks(layout.size_bytes, 64))
                 } else {
                     Ok(pass)
@@ -82,7 +128,7 @@ impl<'a> AbiClassifier<'a> {
             })
             .collect::<Result<Vec<_>, _>>()?;
         let result = match return_type {
-            Some(ty) => self.abi_pass(ty, true, convention)?,
+            Some(operand) => self.abi_pass(operand, true, convention)?,
             None => AbiPass::Void,
         };
         Ok(AbiSignature {
@@ -107,12 +153,61 @@ impl<'a> AbiClassifier<'a> {
         }
     }
 
+    fn layout(
+        &self,
+        operand: &AbiOperand,
+    ) -> Result<crate::target_info::StorageLayout, ResolveError> {
+        self.types
+            .qualified_storage(operand.ty.clone(), operand.atomic)
+    }
+
+    fn atomic_is_memory(&self, operand: &AbiOperand, convention: AbiConvention) -> bool {
+        if !operand.atomic || !matches!(self.types.flavor, CompilerFlavor::Clang) {
+            return false;
+        }
+        if !matches!(convention, AbiConvention::SysV64 | AbiConvention::X86Cdecl) {
+            return false;
+        }
+        self.is_record_or_complex(&operand.ty)
+    }
+
+    fn is_record_or_complex(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Complex(_) => true,
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.is_record_or_complex(inner),
+                TypeDefinitionKind::Record { .. } => true,
+                TypeDefinitionKind::Enum { .. } => false,
+            },
+            _ => false,
+        }
+    }
+
     fn abi_pass(
         &self,
-        ty: &Type,
+        operand: &AbiOperand,
         result: bool,
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
+        if operand.atomic
+            && matches!(convention, AbiConvention::Win64 | AbiConvention::WinArm64)
+            && self.is_record_or_complex(&operand.ty)
+        {
+            return Err(ResolveError::Unsupported("atomic aggregate Windows ABI"));
+        }
+        if self.atomic_is_memory(operand, convention) {
+            let align = self.layout(operand)?.alignment_bytes;
+            return Ok(if result {
+                AbiPass::SRet { align }
+            } else if convention == AbiConvention::X86Cdecl {
+                AbiPass::ByValue {
+                    align: align.min(4),
+                }
+            } else {
+                AbiPass::ByValue { align }
+            });
+        }
+        let ty = &operand.ty;
         match ty {
             Type::Void => Ok(AbiPass::Void),
             Type::Numeric(NumericType::Integer { width: 128, .. })
@@ -130,16 +225,23 @@ impl<'a> AbiClassifier<'a> {
             | Type::Pointer { .. }
             | Type::VaList => Ok(AbiPass::Scalar),
             Type::Complex(component) => self.complex_abi(*component, result, convention),
-            Type::Vector { .. } => self.vector_abi(ty, result, convention),
+            Type::Vector { .. } => self.vector_abi(operand, result, convention),
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
-                TypeDefinitionKind::Alias(inner) => self.abi_pass(inner, result, convention),
+                TypeDefinitionKind::Alias(inner) => self.abi_pass(
+                    &AbiOperand {
+                        ty: inner.clone(),
+                        atomic: operand.atomic,
+                    },
+                    result,
+                    convention,
+                ),
                 TypeDefinitionKind::Enum { .. } => Ok(AbiPass::Scalar),
                 TypeDefinitionKind::Record {
                     fields: Some(fields),
                     layout: Some(record_layout),
                     ..
                 } => {
-                    let layout = self.types.storage(ty.clone())?;
+                    let layout = self.layout(operand)?;
                     let homogeneous = if fields.len() >= 2 && fields.len() <= 4 {
                         let mut formats = fields.iter().map(|field| match &field.ty {
                             Type::Numeric(NumericType::Float(format))
@@ -180,14 +282,14 @@ impl<'a> AbiClassifier<'a> {
 
     fn vector_abi(
         &self,
-        ty: &Type,
+        operand: &AbiOperand,
         result: bool,
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
-        let Type::Vector { element, .. } = *ty else {
+        let Type::Vector { element, .. } = operand.ty else {
             return Err(ResolveError::Unsupported("vector ABI of non-vector type"));
         };
-        let layout = self.types.storage(ty.clone())?;
+        let layout = self.layout(operand)?;
         let size = layout.size_bytes;
         let align = layout.alignment_bytes;
         let register_bytes = self.target.isa.vector_register_bytes();
