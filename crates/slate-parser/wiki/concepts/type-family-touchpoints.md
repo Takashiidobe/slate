@@ -149,7 +149,16 @@ decision and what is implemented.
 
 Fixed-point is the most recent and the most complete worked example, including
 a new `ArithSema` variant, five new `ConversionKind`s, and its own common-type
-rule: `git show dc093c57`.
+rule:
+
+```
+git log --grep "lower fixed-point types" -p
+```
+
+Refer to commits by subject, not by hash. The beads post-commit hook in
+`.beads/hooks` re-exports `issues.jsonl` and amends, so every hash shifts once
+after it is created and a hash written into the commit that mentions it is
+always stale.
 
 ## Process note
 
