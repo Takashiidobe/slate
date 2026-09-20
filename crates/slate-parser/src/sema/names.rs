@@ -328,9 +328,7 @@ impl Resolver {
                     _ => None,
                 };
                 if implicit_builtin.is_none()
-                    && super::expression::va_builtin(callee).is_none()
-                    && super::atomic::atomic_builtin(callee).is_none()
-                    && super::expression::constant_p_operand(callee, arguments).is_none()
+                    && !super::expression::specially_lowered(callee, arguments)
                 {
                     self.visit_expr(callee)?;
                 }

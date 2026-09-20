@@ -6,6 +6,8 @@ mod render;
 
 use std::collections::HashMap;
 
+pub(super) use layout::rank_width;
+
 use crate::ir::{BindingId, TypeId};
 
 pub use render::CTypeMetadata;
@@ -34,12 +36,22 @@ impl Qualifiers {
         ..Self::NONE
     };
 
+    pub const VOLATILE: Self = Self {
+        is_volatile: true,
+        ..Self::NONE
+    };
+
+    pub const RESTRICT: Self = Self {
+        is_restrict: true,
+        ..Self::NONE
+    };
+
     pub const ATOMIC: Self = Self {
         is_atomic: true,
         ..Self::NONE
     };
 
-    pub fn union(self, other: Self) -> Self {
+    pub const fn union(self, other: Self) -> Self {
         Self {
             is_const: self.is_const || other.is_const,
             is_volatile: self.is_volatile || other.is_volatile,

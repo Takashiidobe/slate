@@ -1,3 +1,7 @@
+use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
+use super::types::TypeResolver;
+use crate::target_info::TargetInfo;
+
 pub(super) fn is_foldable_builtin(name: &str) -> bool {
     FOLDABLE_BUILTINS.binary_search(&name).is_ok()
 }
@@ -10,6 +14,99 @@ pub(super) enum ClangBuiltinKind {
     Library,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BuiltinAttribute {
+    Callback,
+    Const,
+    ConstIgnoringErrnoAndExceptions,
+    ConstIgnoringExceptions,
+    Consteval,
+    Constexpr,
+    CustomTypeChecking,
+    FunctionWithBuiltinPrefix,
+    FunctionWithoutBuiltinPrefix,
+    IgnoreSignature,
+    NoReturn,
+    NoThrow,
+    NonNull,
+    PrintfFormat,
+    Pure,
+    RequireDeclaration,
+    ReturnsTwice,
+    ScanfFormat,
+    UnevaluatedArguments,
+    VPrintfFormat,
+    VScanfFormat,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BuiltinLanguage {
+    AllLanguages,
+    AllGnuLanguages,
+    AllMsLanguages,
+    AllOclLanguages,
+    C23Lang,
+    C2yLang,
+    CorLang,
+    CudaLang,
+    CxxLang,
+    HlslLang,
+    ObjcLang,
+    OclDse,
+    OclGas,
+    OclPipe,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BuiltinType {
+    Void,
+    Bool,
+    Char,
+    #[expect(
+        dead_code,
+        reason = "no current builtin prototype spells `signed char`"
+    )]
+    SChar,
+    UChar,
+    Int {
+        rank: IntRank,
+        signed: bool,
+    },
+    FixedInt {
+        bits: u32,
+        signed: bool,
+    },
+    Float(FloatKind),
+    Complex(&'static BuiltinType),
+    Pointer(&'static BuiltinParam),
+    Reference(&'static BuiltinParam),
+    ExtVector {
+        lanes: u32,
+        element: &'static BuiltinParam,
+    },
+    SizeT,
+    PtrdiffT,
+    WcharT,
+    VaList,
+    VaListRef,
+    Opaque(&'static str),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct BuiltinParam {
+    pub ty: &'static BuiltinType,
+    pub quals: Qualifiers,
+    pub constant: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct BuiltinPrototype {
+    pub spelling: &'static str,
+    pub ret: BuiltinParam,
+    pub params: &'static [BuiltinParam],
+    pub variadic: bool,
+}
+
 #[derive(Clone, Copy, Debug)]
 #[expect(
     dead_code,
@@ -18,12 +115,18 @@ pub(super) enum ClangBuiltinKind {
 pub(super) struct ClangBuiltin {
     pub name: &'static str,
     pub record: &'static str,
-    pub prototype: &'static str,
+    pub prototype: Option<&'static BuiltinPrototype>,
     pub kind: ClangBuiltinKind,
-    pub attributes: &'static [&'static str],
-    pub languages: Option<&'static str>,
+    pub attributes: &'static [BuiltinAttribute],
+    pub languages: Option<BuiltinLanguage>,
     pub header: Option<&'static str>,
     pub features: Option<&'static str>,
+}
+
+impl ClangBuiltin {
+    pub fn has(&self, attribute: BuiltinAttribute) -> bool {
+        self.attributes.contains(&attribute)
+    }
 }
 
 pub(super) fn clang_builtin(name: &str) -> Option<&'static ClangBuiltin> {
@@ -31,6 +134,87 @@ pub(super) fn clang_builtin(name: &str) -> Option<&'static ClangBuiltin> {
         .binary_search_by_key(&name, |builtin| builtin.name)
         .ok()
         .map(|index| &CLANG_BUILTINS[index])
+}
+
+impl TypeResolver {
+    pub(super) fn builtin_signature(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
+        let prototype = builtin.prototype?;
+        if builtin.has(BuiltinAttribute::CustomTypeChecking)
+            || (prototype.params.is_empty() && prototype.variadic)
+        {
+            return None;
+        }
+        let target = self.target_info().clone();
+        let ret = self.builtin_param(&prototype.ret, &target)?;
+        let mut params = Vec::with_capacity(prototype.params.len());
+        for param in prototype.params {
+            params.push(self.builtin_param(param, &target)?);
+        }
+        Some(self.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic: prototype.variadic,
+            prototyped: true,
+        }))
+    }
+
+    fn builtin_param(&mut self, param: &BuiltinParam, target: &TargetInfo) -> Option<QualType> {
+        Some(self.builtin_type(param.ty, target)?.with(param.quals))
+    }
+
+    fn builtin_type(&mut self, ty: &BuiltinType, target: &TargetInfo) -> Option<QualType> {
+        let kind = match ty {
+            BuiltinType::Void => CTypeKind::Void,
+            BuiltinType::Bool => CTypeKind::Bool,
+            BuiltinType::Char => CTypeKind::Char,
+            BuiltinType::SChar => CTypeKind::SChar,
+            BuiltinType::UChar => CTypeKind::UChar,
+            BuiltinType::Int { rank, signed } => CTypeKind::Int {
+                rank: *rank,
+                signed: *signed,
+            },
+            BuiltinType::FixedInt { bits, signed } => CTypeKind::Int {
+                rank: fixed_rank(*bits, target)?,
+                signed: *signed,
+            },
+            BuiltinType::Float(kind) => CTypeKind::Float(*kind),
+            BuiltinType::Complex(element) => {
+                let element = self.builtin_type(element, target)?;
+                CTypeKind::Complex(element.ty)
+            }
+            BuiltinType::Pointer(pointee) => {
+                let pointee = self.builtin_param(pointee, target)?;
+                CTypeKind::Pointer(pointee)
+            }
+            BuiltinType::SizeT => return Some(self.ctypes.size_type(target)),
+            BuiltinType::PtrdiffT => return Some(self.ctypes.ptrdiff_type(target)),
+            BuiltinType::WcharT => CTypeKind::Int {
+                rank: if target.wchar_width == target.short_width {
+                    IntRank::Short
+                } else {
+                    IntRank::Int
+                },
+                signed: target.wchar_signed,
+            },
+            BuiltinType::VaList => CTypeKind::VaList,
+            BuiltinType::Reference(_)
+            | BuiltinType::ExtVector { .. }
+            | BuiltinType::VaListRef
+            | BuiltinType::Opaque(_) => return None,
+        };
+        Some(self.ctypes.qual(kind))
+    }
+}
+
+fn fixed_rank(bits: u32, target: &TargetInfo) -> Option<IntRank> {
+    [
+        IntRank::Short,
+        IntRank::Int,
+        IntRank::Long,
+        IntRank::LongLong,
+    ]
+    .into_iter()
+    .find(|rank| super::ctype::rank_width(*rank, target) == bits)
 }
 
 include!("clang_builtins.rs");

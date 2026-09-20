@@ -99,7 +99,8 @@ impl Lowerer {
         callee: &Expr,
         arguments: &[Expr],
     ) -> Result<Option<Operand>, ResolveError> {
-        let (name, record) = if let ExprKind::Identifier(name) = &callee.value
+        let builtin = if !specially_lowered(callee, arguments)
+            && let ExprKind::Identifier(name) = &callee.value
             && !self
                 .names
                 .references
@@ -107,12 +108,15 @@ impl Lowerer {
                 .any(|reference| reference.id == callee.id)
             && let Some(builtin) = super::builtins::clang_builtin(name)
         {
-            (builtin.name.to_owned(), builtin.record.to_owned())
+            builtin
         } else {
             return Ok(None);
         };
-        let record = record.as_str();
-        if matches!(record, "AddOverflow" | "SubOverflow" | "MulOverflow") {
+        let name = builtin.name.to_owned();
+        if matches!(
+            builtin.record,
+            "AddOverflow" | "SubOverflow" | "MulOverflow"
+        ) {
             let [left, right, result] = arguments else {
                 return Err(ResolveError::Unsupported("overflow builtin argument count"));
             };
@@ -126,7 +130,7 @@ impl Lowerer {
             {
                 return Err(ResolveError::Invalid("overflow builtin operand type"));
             }
-            let op = match record {
+            let op = match builtin.record {
                 "AddOverflow" => ArithOp::Add,
                 "SubOverflow" => ArithOp::Sub,
                 "MulOverflow" => ArithOp::Mul,
@@ -147,25 +151,9 @@ impl Lowerer {
                 .annotate(&value.value.node, [("c_builtin".into(), name)]);
             return Ok(Some(value));
         }
-        let void = self.types.ctypes.qual(CTypeKind::Void);
-        let int = self.types.ctypes.int();
-        let size = self.types.ctypes.size_type(&self.context.target);
-        let const_void = void.with(super::ctype::Qualifiers::CONST);
-        let void_pointer = self.types.ctypes.pointer(void);
-        let const_void_pointer = self.types.ctypes.pointer(const_void);
-        let (ret, params) = match record {
-            "Abort" => (void, Vec::new()),
-            "BuiltinMemCmp" | "MemCmp" => (int, vec![const_void_pointer, const_void_pointer, size]),
-            "MemCpy" | "MemMove" => (void_pointer, vec![void_pointer, const_void_pointer, size]),
-            "MemSet" => (void_pointer, vec![void_pointer, int, size]),
-            _ => return Ok(None),
+        let Some(signature) = self.types.builtin_signature(builtin) else {
+            return Ok(None);
         };
-        let signature = self.types.ctypes.qual(CTypeKind::Function {
-            ret,
-            params,
-            variadic: false,
-            prototyped: true,
-        });
         let value = self.call(e, Callee::Builtin(name.clone()), signature, arguments)?;
         self.module
             .annotate(&value.value.node, [("c_builtin".into(), name)]);
@@ -1100,9 +1088,7 @@ impl Lowerer {
             if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
                 return Ok(value);
             }
-            if super::atomic::atomic_builtin(callee).is_none()
-                && va_builtin(callee).is_none()
-                && constant_p_operand(callee, arguments).is_none()
+            if !specially_lowered(callee, arguments)
                 && let ExprKind::Identifier(name) = &callee.value
                 && !self
                     .names
@@ -1726,6 +1712,12 @@ fn conversion_context(reason: ConversionReason) -> ConversionContext {
             ConversionContext::Cast
         }
     }
+}
+
+pub(super) fn specially_lowered(callee: &Expr, arguments: &[Expr]) -> bool {
+    super::atomic::atomic_builtin(callee).is_some()
+        || va_builtin(callee).is_some()
+        || constant_p_operand(callee, arguments).is_some()
 }
 
 pub(super) fn constant_p_operand<'e>(callee: &Expr, arguments: &'e [Expr]) -> Option<&'e Expr> {

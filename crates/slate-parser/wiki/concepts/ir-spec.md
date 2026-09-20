@@ -109,11 +109,21 @@ function changes it
 (`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
 
 Clang's target-independent `Builtins.td` is expanded through `clang-tblgen`
-into the checked-in Rust registry in `src/sema/clang_builtins.rs`. The registry
-provides builtin identity, prototypes, attributes, language restrictions, and
-library aliases; semantic handlers remain handwritten. Ordinary declarations
-take precedence over implicit builtin recognition. The generic checked
-arithmetic builtins lower to `overflow_add/sub/mul<bool>(left, right, place)`,
+into the checked-in Rust registry in `src/sema/clang_builtins.rs`. The generator
+parses each `Prototype` spelling into a typed `BuiltinPrototype` and emits
+`BuiltinAttribute`/`BuiltinLanguage` enum values, so the registry carries types
+rather than strings and an unparseable prototype fails generation. Sema derives
+a builtin's call signature from that model
+(`TypeResolver::builtin_signature`), which is what lets a recognized builtin be
+called without a source declaration. A builtin gets no derived signature when it
+is marked `CustomTypeChecking`, when its prototype is variadic with no named
+parameters, or when the prototype names something with no C type in our model
+(`FILE`, `jmp_buf`, ObjC `id`, HLSL resources, C++ references, ext-vectors);
+those still report an unsupported-builtin diagnostic. Named types resolve to the
+target's canonical types, not to any typedef the translation unit declares.
+Ordinary declarations take precedence over implicit builtin recognition. The
+generic checked arithmetic builtins lower to
+`overflow_add/sub/mul<bool>(left, right, place)`,
 which computes in the mathematical domain, stores the converted result through
 the destination place, and returns whether conversion overflowed. Fixture:
 `tests/fixtures/sema/ir_implicit_builtins.c`.
