@@ -1096,10 +1096,23 @@ impl Lowerer {
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
-        if let ExprKind::Call { callee, arguments } = &e.value
-            && let Some(value) = self.function_like_builtin(e, callee, arguments)?
-        {
-            return Ok(value);
+        if let ExprKind::Call { callee, arguments } = &e.value {
+            if let Some(value) = self.function_like_builtin(e, callee, arguments)? {
+                return Ok(value);
+            }
+            if super::atomic::atomic_builtin(callee).is_none()
+                && va_builtin(callee).is_none()
+                && constant_p_operand(callee, arguments).is_none()
+                && let ExprKind::Identifier(name) = &callee.value
+                && !self
+                    .names
+                    .references
+                    .iter()
+                    .any(|reference| reference.id == callee.id)
+                && super::builtins::clang_builtin(name).is_some()
+            {
+                return Err(ResolveError::UnsupportedBuiltin(name.clone()));
+            }
         }
         match &e.value {
             ExprKind::Paren(inner) => self.expr(inner),

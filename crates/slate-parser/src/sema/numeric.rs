@@ -25,6 +25,8 @@ pub enum ResolveError {
     IntegerLiteral(String),
     #[error("missing expression binding for `{0}`")]
     MissingExpressionBinding(String),
+    #[error("unsupported Clang builtin `{0}`")]
+    UnsupportedBuiltin(String),
     #[error("invalid operands to binary expression: {left} {operator} {right}")]
     InvalidOperands {
         left: NumericType,
