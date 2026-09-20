@@ -1648,6 +1648,21 @@ their own:
   `__atomic_uinc_fetch` or `__c11_atomic_fetch_fminimum`. Names outside a
   family's set are not atomic builtins at all and fall through to ordinary
   name resolution, matching clang's "call to undeclared function".
+- The `__scoped_atomic_*` family is the `__atomic_*` one with a trailing
+  synchronization-scope argument, and lowers to the same nodes with
+  `sync_scope=` on them: `system` (never printed, since it is the default and
+  what every unscoped builtin means), `device`, `workgroup`, `wavefront`,
+  `single`, `cluster`, or `dynamic(v)` for a non-constant scope, which clang
+  turns into a run-time switch exactly as it does for a non-constant ordering.
+  The scope is recorded as written, not as the target would lower it: on a CPU
+  target clang maps every scope to the system scope and emits no `syncscope`,
+  while on `amdgcn` the same source gives `syncscope("agent")`,
+  `syncscope("workgroup")` and so on. Keeping the C scope leaves that mapping
+  to whoever consumes the IR. The family covers `load`/`load_n`,
+  `store`/`store_n`, `exchange`/`exchange_n`, `compare_exchange`/`_n`, the
+  fetch operations and `thread_fence`; it has no `signal_fence`,
+  `test_and_set`, `clear`, `init` or lock-free query, so those spellings are
+  not builtins at all.
 - `__sync_*` builtins are all `seq_cst` except `lock_test_and_set`
   (acquire, as gcc documents it; clang strengthens it to `seq_cst`) and
   `lock_release` (release). Trailing "protected variable" arguments are
@@ -1665,8 +1680,9 @@ their own:
   volatile void *)`, declared on first use.
 
 `tests/fixtures/sema/ir_atomic_builtins.c`, `ir_atomic_stdatomic.c`,
-`ir_atomic_sync.c`, `ir_atomic_sync_gcc.c`, `ir_atomic_extensions.c` and
-`ir_atomic_lock_free.c` (plus the AArch64 and `-mcx16` variants) cover these.
+`ir_atomic_sync.c`, `ir_atomic_sync_gcc.c`, `ir_atomic_extensions.c`,
+`ir_atomic_scoped.c` and `ir_atomic_lock_free.c` (plus the AArch64 and
+`-mcx16` variants) cover these.
 
 ## Things C leaves implicit that the IR materializes
 

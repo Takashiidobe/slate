@@ -12,7 +12,7 @@ pub use asm::{
     AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
     AsmConstraintModifier, AsmInput, AsmOutput, AsmPiece, AsmRegister, InlineAsm,
 };
-pub use atomic::{CompareExchangeForm, FenceScope, MemoryOrder, Weakness};
+pub use atomic::{Atomicity, CompareExchangeForm, FenceScope, MemoryOrder, SyncScope, Weakness};
 pub use declarations::{
     Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, BitFieldAccess,
     BitFieldUnit, Enumerator, Field, Global, Parameter, Parameters, Place, PlaceKind, RecordKind,
@@ -75,13 +75,13 @@ pub enum ValueKind {
     Store {
         place: Place,
         value: Box<Value>,
-        ordering: Option<MemoryOrder>,
+        ordering: Option<Atomicity>,
     },
     Update {
         place: Place,
         computation: Box<Value>,
         postfix: bool,
-        ordering: Option<MemoryOrder>,
+        ordering: Option<Atomicity>,
     },
     CompareExchange {
         place: Place,
@@ -89,11 +89,12 @@ pub enum ValueKind {
         desired: Box<Value>,
         success: MemoryOrder,
         failure: MemoryOrder,
+        sync_scope: SyncScope,
         weak: Weakness,
         form: CompareExchangeForm,
     },
     Fence {
-        ordering: MemoryOrder,
+        ordering: Atomicity,
         scope: FenceScope,
     },
     OldValue,
@@ -126,7 +127,7 @@ pub enum ValueKind {
     },
     Read {
         place: Place,
-        ordering: Option<MemoryOrder>,
+        ordering: Option<Atomicity>,
     },
     AddressOf(Place),
     VaArg {
@@ -394,16 +395,18 @@ impl Value {
                 desired,
                 success,
                 failure,
+                sync_scope,
                 weak,
                 form,
             } => write!(
                 f,
-                "compare_exchange<{}{}, form={form}, weak={}, success={}, failure={}>({}, {}, {})",
+                "compare_exchange<{}{}, form={form}, weak={}, success={}, failure={}{}>({}, {}, {})",
                 place.ty,
                 place.access,
                 weak.display_mode(compact),
                 success.display_mode(compact),
                 failure.display_mode(compact),
+                atomic::SyncScopeAttribute(sync_scope, compact),
                 place.display_mode(compact),
                 expected
                     .display_metadata(show_spans, metadata)
@@ -414,8 +417,9 @@ impl Value {
             ),
             ValueKind::Fence { ordering, scope } => write!(
                 f,
-                "fence<scope={scope}, order={}>",
-                ordering.display_mode(compact)
+                "fence<scope={scope}, order={}{}>",
+                ordering.order.display_mode(compact),
+                atomic::SyncScopeAttribute(&ordering.scope, compact)
             ),
             ValueKind::Conditional {
                 condition,

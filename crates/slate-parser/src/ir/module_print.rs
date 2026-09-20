@@ -304,8 +304,9 @@ impl DisplayModule<'_> {
                 }
                 Statement::Fence { ordering, scope } => write!(
                     f,
-                    "fence<scope={scope}, order={}>",
-                    ordering.display_mode(self.compact)
+                    "fence<scope={scope}, order={}{}>",
+                    ordering.order.display_mode(self.compact),
+                    super::atomic::SyncScopeAttribute(&ordering.scope, self.compact)
                 )?,
                 Statement::Expression(value) => write!(
                     f,

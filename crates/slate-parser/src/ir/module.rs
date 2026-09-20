@@ -1,5 +1,5 @@
 use super::{
-    AbiSignature, BindingId, FenceScope, Global, InlineAsm, MemoryOrder, Parameters, Place, Type,
+    AbiSignature, Atomicity, BindingId, FenceScope, Global, InlineAsm, Parameters, Place, Type,
     TypeDefinition, Value, Variable,
 };
 use crate::ast::{NodeId, Span};
@@ -138,10 +138,10 @@ pub enum Statement {
     Write {
         place: Place,
         value: Value,
-        ordering: Option<MemoryOrder>,
+        ordering: Option<Atomicity>,
     },
     Fence {
-        ordering: MemoryOrder,
+        ordering: Atomicity,
         scope: FenceScope,
     },
     Expression(Value),

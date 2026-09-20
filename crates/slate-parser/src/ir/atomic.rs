@@ -13,6 +13,32 @@ pub enum MemoryOrder {
 }
 
 #[derive(Debug, Clone)]
+pub enum SyncScope {
+    System,
+    Device,
+    Workgroup,
+    Wavefront,
+    Single,
+    Cluster,
+    Dynamic(Box<Value>),
+}
+
+#[derive(Debug, Clone)]
+pub struct Atomicity {
+    pub order: MemoryOrder,
+    pub scope: SyncScope,
+}
+
+impl From<MemoryOrder> for Atomicity {
+    fn from(order: MemoryOrder) -> Self {
+        Self {
+            order,
+            scope: SyncScope::System,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum Weakness {
     Strong,
     Weak,
@@ -72,13 +98,69 @@ impl MemoryOrder {
     }
 }
 
+impl SyncScope {
+    pub fn from_c(value: u64) -> Option<Self> {
+        Some(match value {
+            0 => Self::System,
+            1 => Self::Device,
+            2 => Self::Workgroup,
+            3 => Self::Wavefront,
+            4 => Self::Single,
+            5 => Self::Cluster,
+            _ => return None,
+        })
+    }
+
+    pub(super) fn display_mode(&self, compact: bool) -> impl fmt::Display + '_ {
+        struct DisplayScope<'a>(&'a SyncScope, bool);
+
+        impl fmt::Display for DisplayScope<'_> {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                f.write_str(match self.0 {
+                    SyncScope::System => "system",
+                    SyncScope::Device => "device",
+                    SyncScope::Workgroup => "workgroup",
+                    SyncScope::Wavefront => "wavefront",
+                    SyncScope::Single => "single",
+                    SyncScope::Cluster => "cluster",
+                    SyncScope::Dynamic(value) => {
+                        return write!(
+                            f,
+                            "dynamic({})",
+                            value.display_metadata(false, None).with_compact(self.1)
+                        );
+                    }
+                })
+            }
+        }
+
+        DisplayScope(self, compact)
+    }
+}
+
+pub(super) struct SyncScopeAttribute<'a>(pub &'a SyncScope, pub bool);
+
+impl fmt::Display for SyncScopeAttribute<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.0 {
+            SyncScope::System => Ok(()),
+            scope => write!(f, ", sync_scope={}", scope.display_mode(self.1)),
+        }
+    }
+}
+
 pub(super) fn format_ordering(
     f: &mut fmt::Formatter<'_>,
-    ordering: Option<&MemoryOrder>,
+    ordering: Option<&Atomicity>,
     compact: bool,
 ) -> fmt::Result {
     match ordering {
-        Some(ordering) => write!(f, ", atomic={}", ordering.display_mode(compact)),
+        Some(ordering) => write!(
+            f,
+            ", atomic={}{}",
+            ordering.order.display_mode(compact),
+            SyncScopeAttribute(&ordering.scope, compact)
+        ),
         None => Ok(()),
     }
 }

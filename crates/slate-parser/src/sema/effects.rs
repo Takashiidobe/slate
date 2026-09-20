@@ -174,22 +174,44 @@ impl Hoister {
         })
     }
 
-    fn order(
+    fn memory_order(
         &mut self,
-        ordering: MemoryOrder,
+        order: MemoryOrder,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<MemoryOrder, ResolveError> {
-        Ok(match ordering {
+        Ok(match order {
             MemoryOrder::Dynamic(value) => MemoryOrder::Dynamic(Box::new(self.value(*value, out)?)),
             fixed => fixed,
         })
     }
 
+    fn sync_scope(
+        &mut self,
+        scope: SyncScope,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<SyncScope, ResolveError> {
+        Ok(match scope {
+            SyncScope::Dynamic(value) => SyncScope::Dynamic(Box::new(self.value(*value, out)?)),
+            fixed => fixed,
+        })
+    }
+
+    fn order(
+        &mut self,
+        ordering: Atomicity,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<Atomicity, ResolveError> {
+        Ok(Atomicity {
+            order: self.memory_order(ordering.order, out)?,
+            scope: self.sync_scope(ordering.scope, out)?,
+        })
+    }
+
     fn ordering(
         &mut self,
-        ordering: Option<MemoryOrder>,
+        ordering: Option<Atomicity>,
         out: &mut Vec<Span<Statement>>,
-    ) -> Result<Option<MemoryOrder>, ResolveError> {
+    ) -> Result<Option<Atomicity>, ResolveError> {
         ordering
             .map(|ordering| self.order(ordering, out))
             .transpose()
@@ -300,14 +322,16 @@ impl Hoister {
                 desired,
                 success,
                 failure,
+                sync_scope,
                 weak,
                 form,
             } => {
                 let place = self.place(place, out)?;
                 let expected = self.value(*expected, out)?;
                 let desired = self.value(*desired, out)?;
-                let success = self.order(success, out)?;
-                let failure = self.order(failure, out)?;
+                let success = self.memory_order(success, out)?;
+                let failure = self.memory_order(failure, out)?;
+                let sync_scope = self.sync_scope(sync_scope, out)?;
                 let weak = match weak {
                     Weakness::Dynamic(value) => {
                         Weakness::Dynamic(Box::new(self.value(*value, out)?))
@@ -322,6 +346,7 @@ impl Hoister {
                         desired: Box::new(desired),
                         success,
                         failure,
+                        sync_scope,
                         weak,
                         form,
                     }),
@@ -656,6 +681,11 @@ fn place_effects(place: &Place) -> bool {
     }
 }
 
+fn atomicity_effects(ordering: &Atomicity) -> bool {
+    matches!(&ordering.order, MemoryOrder::Dynamic(value) if effects(value))
+        || matches!(&ordering.scope, SyncScope::Dynamic(value) if effects(value))
+}
+
 fn effects(value: &Value) -> bool {
     match &value.node.value {
         ValueKind::Store { .. }
@@ -699,8 +729,8 @@ fn effects(value: &Value) -> bool {
         | ValueKind::Convert { operand, .. } => effects(operand),
         ValueKind::Read {
             place,
-            ordering: Some(MemoryOrder::Dynamic(ordering)),
-        } => place_effects(place) || effects(ordering),
+            ordering: Some(ordering),
+        } => place_effects(place) || atomicity_effects(ordering),
         ValueKind::Read { place, .. }
         | ValueKind::AddressOf(place)
         | ValueKind::ArrayDecay { place, .. }

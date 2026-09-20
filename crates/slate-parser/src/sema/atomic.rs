@@ -7,7 +7,13 @@ use crate::ir::*;
 use num_bigint::BigInt;
 
 #[derive(Clone, Copy)]
-pub(super) enum AtomicBuiltin {
+pub(super) struct AtomicBuiltin {
+    operation: AtomicOperation,
+    scoped: bool,
+}
+
+#[derive(Clone, Copy)]
+enum AtomicOperation {
     Init,
     Load {
         generic: bool,
@@ -29,6 +35,12 @@ pub(super) enum AtomicBuiltin {
     Fence(FenceScope),
     Sync(SyncBuiltin),
     LockFree(LockFreeQuery),
+}
+
+struct Exchange {
+    weak: Weakness,
+    form: CompareExchangeForm,
+    scope: SyncScope,
 }
 
 #[derive(Clone, Copy)]
@@ -114,25 +126,52 @@ pub(super) fn atomic_builtin(callee: &Expr) -> Option<AtomicBuiltin> {
     let ExprKind::Identifier(name) = &callee.value else {
         return None;
     };
+    if let Some(operation) = name.strip_prefix("__scoped_atomic_") {
+        return Some(AtomicBuiltin {
+            operation: scoped_operation(operation)?,
+            scoped: true,
+        });
+    }
+    Some(AtomicBuiltin {
+        operation: unscoped_operation(name)?,
+        scoped: false,
+    })
+}
+
+fn scoped_operation(operation: &str) -> Option<AtomicOperation> {
+    let operation = gnu_operation(operation)?;
+    matches!(
+        operation,
+        AtomicOperation::Load { .. }
+            | AtomicOperation::Store { .. }
+            | AtomicOperation::Exchange { .. }
+            | AtomicOperation::CompareExchange(_)
+            | AtomicOperation::Fetch { .. }
+            | AtomicOperation::Fence(FenceScope::Thread)
+    )
+    .then_some(operation)
+}
+
+fn unscoped_operation(name: &str) -> Option<AtomicOperation> {
     if let Some(operation) = name.strip_prefix("__sync_") {
-        return sync_builtin(operation).map(AtomicBuiltin::Sync);
+        return sync_builtin(operation).map(AtomicOperation::Sync);
     }
     if let Some(operation) = name.strip_prefix("__c11_atomic_") {
         return Some(match operation {
-            "init" => AtomicBuiltin::Init,
-            "is_lock_free" => AtomicBuiltin::LockFree(LockFreeQuery::C11),
-            "load" => AtomicBuiltin::Load { generic: false },
-            "store" => AtomicBuiltin::Store { generic: false },
-            "exchange" => AtomicBuiltin::Exchange { generic: false },
+            "init" => AtomicOperation::Init,
+            "is_lock_free" => AtomicOperation::LockFree(LockFreeQuery::C11),
+            "load" => AtomicOperation::Load { generic: false },
+            "store" => AtomicOperation::Store { generic: false },
+            "exchange" => AtomicOperation::Exchange { generic: false },
             "compare_exchange_strong" => {
-                AtomicBuiltin::CompareExchange(CompareExchangeSource::C11 { weak: false })
+                AtomicOperation::CompareExchange(CompareExchangeSource::C11 { weak: false })
             }
             "compare_exchange_weak" => {
-                AtomicBuiltin::CompareExchange(CompareExchangeSource::C11 { weak: true })
+                AtomicOperation::CompareExchange(CompareExchangeSource::C11 { weak: true })
             }
-            "thread_fence" => AtomicBuiltin::Fence(FenceScope::Thread),
-            "signal_fence" => AtomicBuiltin::Fence(FenceScope::Signal),
-            _ => AtomicBuiltin::Fetch {
+            "thread_fence" => AtomicOperation::Fence(FenceScope::Thread),
+            "signal_fence" => AtomicOperation::Fence(FenceScope::Signal),
+            _ => AtomicOperation::Fetch {
                 op: FetchOp::parse(operation.strip_prefix("fetch_")?)?
                     .spelled_as(FetchSpelling::C11)?,
                 postfix: true,
@@ -140,33 +179,36 @@ pub(super) fn atomic_builtin(callee: &Expr) -> Option<AtomicBuiltin> {
             },
         });
     }
-    let operation = name.strip_prefix("__atomic_")?;
+    gnu_operation(name.strip_prefix("__atomic_")?)
+}
+
+fn gnu_operation(operation: &str) -> Option<AtomicOperation> {
     Some(match operation {
-        "load_n" => AtomicBuiltin::Load { generic: false },
-        "load" => AtomicBuiltin::Load { generic: true },
-        "store_n" => AtomicBuiltin::Store { generic: false },
-        "store" => AtomicBuiltin::Store { generic: true },
-        "exchange_n" => AtomicBuiltin::Exchange { generic: false },
-        "exchange" => AtomicBuiltin::Exchange { generic: true },
+        "load_n" => AtomicOperation::Load { generic: false },
+        "load" => AtomicOperation::Load { generic: true },
+        "store_n" => AtomicOperation::Store { generic: false },
+        "store" => AtomicOperation::Store { generic: true },
+        "exchange_n" => AtomicOperation::Exchange { generic: false },
+        "exchange" => AtomicOperation::Exchange { generic: true },
         "compare_exchange_n" => {
-            AtomicBuiltin::CompareExchange(CompareExchangeSource::Gnu { generic: false })
+            AtomicOperation::CompareExchange(CompareExchangeSource::Gnu { generic: false })
         }
         "compare_exchange" => {
-            AtomicBuiltin::CompareExchange(CompareExchangeSource::Gnu { generic: true })
+            AtomicOperation::CompareExchange(CompareExchangeSource::Gnu { generic: true })
         }
-        "always_lock_free" => AtomicBuiltin::LockFree(LockFreeQuery::Always),
-        "is_lock_free" => AtomicBuiltin::LockFree(LockFreeQuery::Runtime),
-        "test_and_set" => AtomicBuiltin::TestAndSet,
-        "clear" => AtomicBuiltin::Clear,
-        "thread_fence" => AtomicBuiltin::Fence(FenceScope::Thread),
-        "signal_fence" => AtomicBuiltin::Fence(FenceScope::Signal),
+        "always_lock_free" => AtomicOperation::LockFree(LockFreeQuery::Always),
+        "is_lock_free" => AtomicOperation::LockFree(LockFreeQuery::Runtime),
+        "test_and_set" => AtomicOperation::TestAndSet,
+        "clear" => AtomicOperation::Clear,
+        "thread_fence" => AtomicOperation::Fence(FenceScope::Thread),
+        "signal_fence" => AtomicOperation::Fence(FenceScope::Signal),
         _ => match operation.strip_prefix("fetch_") {
-            Some(op) => AtomicBuiltin::Fetch {
+            Some(op) => AtomicOperation::Fetch {
                 op: FetchOp::parse(op)?.spelled_as(FetchSpelling::Gnu { fetch: true })?,
                 postfix: true,
                 byte_offsets: true,
             },
-            None => AtomicBuiltin::Fetch {
+            None => AtomicOperation::Fetch {
                 op: FetchOp::parse(operation.strip_suffix("_fetch")?)?
                     .spelled_as(FetchSpelling::Gnu { fetch: false })?,
                 postfix: false,
@@ -242,44 +284,48 @@ impl Lowerer {
         builtin: AtomicBuiltin,
         arguments: &[Expr],
     ) -> Result<Operand, ResolveError> {
-        match (builtin, arguments) {
-            (AtomicBuiltin::Init, [object, desired]) => {
+        let (arguments, scope) = match arguments.split_last() {
+            Some((scope, rest)) if builtin.scoped => (rest, self.sync_scope(scope)?),
+            _ => (arguments, SyncScope::System),
+        };
+        match (builtin.operation, arguments) {
+            (AtomicOperation::Init, [object, desired]) => {
                 let place = self.atomic_object(object)?;
                 let value = self.atomic_operand(desired, &place)?;
                 let store = self.store(e, place, value, None);
                 Ok(self.discarded(e, store))
             }
-            (AtomicBuiltin::Load { generic: false }, [object, order]) => {
+            (AtomicOperation::Load { generic: false }, [object, order]) => {
                 let place = self.atomic_object(object)?;
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 Ok(self.atomic_read(e, place, Some(ordering)))
             }
-            (AtomicBuiltin::Load { generic: true }, [object, result, order]) => {
+            (AtomicOperation::Load { generic: true }, [object, result, order]) => {
                 let place = self.atomic_object(object)?;
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 let value = self.atomic_read(e, place, Some(ordering));
                 let target = self.atomic_object(result)?;
                 let ordering = target.implicit_ordering();
                 let store = self.store(result, target, value, ordering);
                 Ok(self.discarded(e, store))
             }
-            (AtomicBuiltin::Store { generic }, [object, desired, order]) => {
+            (AtomicOperation::Store { generic }, [object, desired, order]) => {
                 let place = self.atomic_object(object)?;
                 let value = self.desired(desired, &place, generic)?;
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 let store = self.store(e, place, value, Some(ordering));
                 Ok(self.discarded(e, store))
             }
-            (AtomicBuiltin::Exchange { generic: false }, [object, desired, order]) => {
+            (AtomicOperation::Exchange { generic: false }, [object, desired, order]) => {
                 let place = self.atomic_object(object)?;
                 let value = self.atomic_operand(desired, &place)?;
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 Ok(self.atomic_update(e, place, value, true, ordering))
             }
-            (AtomicBuiltin::Exchange { generic: true }, [object, desired, result, order]) => {
+            (AtomicOperation::Exchange { generic: true }, [object, desired, result, order]) => {
                 let place = self.atomic_object(object)?;
                 let value = self.desired(desired, &place, true)?;
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 let old = self.atomic_update(e, place, value, true, ordering);
                 let target = self.atomic_object(result)?;
                 let ordering = target.implicit_ordering();
@@ -287,7 +333,7 @@ impl Lowerer {
                 Ok(self.discarded(e, store))
             }
             (
-                AtomicBuiltin::CompareExchange(CompareExchangeSource::C11 { weak }),
+                AtomicOperation::CompareExchange(CompareExchangeSource::C11 { weak }),
                 [object, expected, desired, success, failure],
             ) => {
                 let place = self.atomic_object(object)?;
@@ -304,12 +350,15 @@ impl Lowerer {
                     place,
                     [expected, desired],
                     [success, failure],
-                    weak,
-                    CompareExchangeForm::WriteBack,
+                    Exchange {
+                        weak,
+                        form: CompareExchangeForm::WriteBack,
+                        scope,
+                    },
                 )
             }
             (
-                AtomicBuiltin::CompareExchange(CompareExchangeSource::Gnu { generic }),
+                AtomicOperation::CompareExchange(CompareExchangeSource::Gnu { generic }),
                 [object, expected, desired, weak, success, failure],
             ) => {
                 let place = self.atomic_object(object)?;
@@ -327,12 +376,15 @@ impl Lowerer {
                     place,
                     [expected, desired],
                     [success, failure],
-                    weak,
-                    CompareExchangeForm::WriteBack,
+                    Exchange {
+                        weak,
+                        form: CompareExchangeForm::WriteBack,
+                        scope,
+                    },
                 )
             }
             (
-                AtomicBuiltin::Fetch {
+                AtomicOperation::Fetch {
                     op,
                     postfix,
                     byte_offsets,
@@ -341,15 +393,15 @@ impl Lowerer {
             ) => {
                 let place = self.atomic_object(object)?;
                 let computation = self.fetch_computation(&place, op, operand, byte_offsets)?;
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 Ok(self.atomic_update(e, place, computation, postfix, ordering))
             }
-            (AtomicBuiltin::Sync(builtin), arguments) => self.sync_builtin(e, builtin, arguments),
-            (AtomicBuiltin::LockFree(query), arguments) => self.lock_free(e, query, arguments),
-            (AtomicBuiltin::TestAndSet, [object, order]) => {
+            (AtomicOperation::Sync(builtin), arguments) => self.sync_builtin(e, builtin, arguments),
+            (AtomicOperation::LockFree(query), arguments) => self.lock_free(e, query, arguments),
+            (AtomicOperation::TestAndSet, [object, order]) => {
                 let place = self.flag_object(object)?;
                 let set = self.flag_constant(object, place.c, 1);
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 let old = self.atomic_update(e, place, set, true, ordering);
                 if old.ty == Type::Bool {
                     return Ok(old);
@@ -367,16 +419,23 @@ impl Lowerer {
                     },
                 ))
             }
-            (AtomicBuiltin::Clear, [object, order]) => {
+            (AtomicOperation::Clear, [object, order]) => {
                 let place = self.flag_object(object)?;
                 let clear = self.flag_constant(object, place.c, 0);
-                let ordering = self.memory_order(order)?;
+                let ordering = self.atomicity(order, &scope)?;
                 let store = self.store(e, place, clear, Some(ordering));
                 Ok(self.discarded(e, store))
             }
-            (AtomicBuiltin::Fence(scope), [order]) => {
-                let ordering = self.memory_order(order)?;
-                Ok(self.builtin_operand(e, CTypeKind::Void, ValueKind::Fence { ordering, scope }))
+            (AtomicOperation::Fence(fence), [order]) => {
+                let ordering = self.atomicity(order, &scope)?;
+                Ok(self.builtin_operand(
+                    e,
+                    CTypeKind::Void,
+                    ValueKind::Fence {
+                        ordering,
+                        scope: fence,
+                    },
+                ))
             }
             _ => Err(ResolveError::Unsupported("atomic builtin argument count")),
         }
@@ -431,7 +490,7 @@ impl Lowerer {
         Ok(self.atomic_read(desired, source, ordering))
     }
 
-    fn atomic_read(&mut self, e: &Expr, place: Lvalue, ordering: Option<MemoryOrder>) -> Operand {
+    fn atomic_read(&mut self, e: &Expr, place: Lvalue, ordering: Option<Atomicity>) -> Operand {
         self.operand(
             e,
             place.c,
@@ -447,7 +506,7 @@ impl Lowerer {
         e: &Expr,
         place: Lvalue,
         value: Operand,
-        ordering: Option<MemoryOrder>,
+        ordering: Option<Atomicity>,
     ) -> Operand {
         self.operand(
             e,
@@ -478,7 +537,7 @@ impl Lowerer {
         place: Lvalue,
         computation: Operand,
         postfix: bool,
-        ordering: MemoryOrder,
+        ordering: Atomicity,
     ) -> Operand {
         self.operand(
             e,
@@ -498,19 +557,11 @@ impl Lowerer {
         place: Lvalue,
         [expected, desired]: [Operand; 2],
         [success, failure]: [&Expr; 2],
-        weak: Weakness,
-        form: CompareExchangeForm,
+        exchange: Exchange,
     ) -> Result<Operand, ResolveError> {
         let success = self.memory_order(success)?;
         let failure = self.memory_order(failure)?;
-        Ok(self.exchange_node(
-            e,
-            place,
-            [expected, desired],
-            [success, failure],
-            weak,
-            form,
-        ))
+        Ok(self.exchange_node(e, place, [expected, desired], [success, failure], exchange))
     }
 
     fn exchange_node(
@@ -519,8 +570,7 @@ impl Lowerer {
         place: Lvalue,
         [expected, desired]: [Operand; 2],
         [success, failure]: [MemoryOrder; 2],
-        weak: Weakness,
-        form: CompareExchangeForm,
+        Exchange { weak, form, scope }: Exchange,
     ) -> Operand {
         let ty = match form {
             CompareExchangeForm::WriteBack | CompareExchangeForm::Success => {
@@ -537,6 +587,7 @@ impl Lowerer {
                 desired: Box::new(desired.value),
                 success,
                 failure,
+                sync_scope: scope,
                 weak,
                 form,
             },
@@ -553,7 +604,7 @@ impl Lowerer {
             (SyncBuiltin::Fetch { op, postfix }, [object, operand, ..]) => {
                 let place = self.atomic_object(object)?;
                 let computation = self.fetch_computation(&place, op, operand, true)?;
-                Ok(self.atomic_update(e, place, computation, postfix, MemoryOrder::SeqCst))
+                Ok(self.atomic_update(e, place, computation, postfix, MemoryOrder::SeqCst.into()))
             }
             (SyncBuiltin::CompareAndSwap(form), [object, expected, desired, ..]) => {
                 let place = self.atomic_object(object)?;
@@ -564,8 +615,11 @@ impl Lowerer {
                     place,
                     [expected, desired],
                     [MemoryOrder::SeqCst, MemoryOrder::SeqCst],
-                    Weakness::Strong,
-                    form,
+                    Exchange {
+                        weak: Weakness::Strong,
+                        form,
+                        scope: SyncScope::System,
+                    },
                 ))
             }
             // gcc documents lock_test_and_set as an acquire barrier only; clang emits seq_cst
@@ -577,19 +631,19 @@ impl Lowerer {
                 } else {
                     MemoryOrder::SeqCst
                 };
-                Ok(self.atomic_update(e, place, value, true, ordering))
+                Ok(self.atomic_update(e, place, value, true, ordering.into()))
             }
             (SyncBuiltin::LockRelease, [object, ..]) => {
                 let place = self.atomic_object(object)?;
                 let zero = self.flag_constant(object, place.c, 0);
-                let store = self.store(e, place, zero, Some(MemoryOrder::Release));
+                let store = self.store(e, place, zero, Some(MemoryOrder::Release.into()));
                 Ok(self.discarded(e, store))
             }
             (SyncBuiltin::Synchronize, _) => Ok(self.builtin_operand(
                 e,
                 CTypeKind::Void,
                 ValueKind::Fence {
-                    ordering: MemoryOrder::SeqCst,
+                    ordering: MemoryOrder::SeqCst.into(),
                     scope: FenceScope::Thread,
                 },
             )),
@@ -951,6 +1005,24 @@ impl Lowerer {
                 reason: None,
             },
         )
+    }
+
+    fn atomicity(&mut self, order: &Expr, scope: &SyncScope) -> Result<Atomicity, ResolveError> {
+        Ok(Atomicity {
+            order: self.memory_order(order)?,
+            scope: scope.clone(),
+        })
+    }
+
+    fn sync_scope(&mut self, scope: &Expr) -> Result<SyncScope, ResolveError> {
+        let value = self.expr(scope)?;
+        if let Some(scope) = constant_integer(&value)
+            .and_then(|value| u64::try_from(value).ok())
+            .and_then(SyncScope::from_c)
+        {
+            return Ok(scope);
+        }
+        Ok(SyncScope::Dynamic(Box::new(self.enum_integer(value.value))))
     }
 
     fn memory_order(&mut self, order: &Expr) -> Result<MemoryOrder, ResolveError> {

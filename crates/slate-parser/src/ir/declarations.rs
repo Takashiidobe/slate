@@ -276,8 +276,10 @@ pub struct BitFieldAccess {
 }
 
 impl Place {
-    pub fn implicit_ordering(&self) -> Option<super::MemoryOrder> {
-        self.access.atomic.then_some(super::MemoryOrder::SeqCst)
+    pub fn implicit_ordering(&self) -> Option<super::Atomicity> {
+        self.access
+            .atomic
+            .then(|| super::MemoryOrder::SeqCst.into())
     }
 
     pub(super) fn display_mode(&self, compact: bool) -> impl std::fmt::Display + '_ {

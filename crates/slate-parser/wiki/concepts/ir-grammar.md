@@ -227,7 +227,8 @@ register   = string [ "as" identifier ] ;
 simple     = "let" binding ":" type "[synthetic]" [ "=" value ]
            | "let" variable
            | "write<" type access [ ordering ] ">(" place ", " value ")"
-           | "fence<scope=" ( "thread" | "signal" ) ", order=" order ">"
+           | "fence<scope=" ( "thread" | "signal" ) ", order=" order
+             [ sync_scope ] ">"
            | value
            | "return" [ value ]
            | "break" binding | "continue" binding
@@ -278,9 +279,12 @@ place  = binding
        | "swizzle<lanes=[" digits { ", " digits } "]>(" place ")"
        | "compound_literal" binding "[storage=" storage "]" "=" value ;
 access   = [ ", volatile" ] ;
-ordering = ", atomic=" order ;
+ordering = ", atomic=" order [ sync_scope ] ;
 order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
          | "seq_cst" | "dynamic(" value ")" ;
+sync_scope = ", sync_scope=" scope ;
+scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
+         | "dynamic(" value ")" ;
 ```
 
 - A place is a storage location, not a read. Only `read`, `write`, `store`,
@@ -289,6 +293,10 @@ order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
 - `ordering` belongs to the operation, not the place: it is absent on a
   non-atomic access and follows `access` when present (`read<i32, volatile,
   atomic=acquire>`). `dynamic(v)` is a runtime ordering value.
+- `sync_scope` is the synchronization scope of an atomic operation, from the
+  `__scoped_atomic_*` builtins. The system scope is the default and is never
+  printed, so it has no spelling here; every other scope prints after the
+  ordering, and `dynamic(v)` is a runtime scope value.
 - `bitfieldN<unit=U, bytes=A..B, bits=C..D>` is field `N`, stored in storage
   unit `U` (record bytes `A..B`), occupying bits `C..D` from the least
   significant bit of that unit. Bit-fields are not addressable.
@@ -320,7 +328,7 @@ core       = "const<" type ">(" constant ")"
              ">(" place ", " value ")"
            | "compare_exchange<" type access ", form=" exchange_form ", weak="
              ( bool | "dynamic(" value ")" ) ", success=" order ", failure=" order
-             ">(" place ", " value ", " value ")"
+             [ sync_scope ] ">(" place ", " value ", " value ")"
            | "old<" type ">"
            | "addr_of<" type ">(" place ")"
            | "array_decay<" type ", length=" opt_int ">(" place ")"
