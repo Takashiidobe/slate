@@ -2,6 +2,7 @@ mod abi;
 mod asm;
 mod assertion;
 mod atomic;
+mod attributes;
 mod builtins;
 pub mod ctype;
 mod effects;

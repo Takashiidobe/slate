@@ -1099,8 +1099,39 @@ automatic local they are invalid. Symbol attributes are a semantic
 and merged across redeclarations (first value wins, flags OR): `asm_name`
 (from `asm("sym")` labels), `visibility`, `weak`, `alias`, `section`, `used`,
 `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`, `selectany`.
-Attributes on typedefs or parameters remain unsupported; on automatic locals
-only alignment attributes are accepted. Fixture: `sema/ir_globals_linkage.c`.
+Fixture: `sema/ir_globals_linkage.c`.
+
+**Declaration attribute classification (`dyd.4`):** every attribute written on
+an object or typedef declaration is classified once, by the exhaustive
+`sema::attributes::declaration_use`, into `Symbol` (folded into
+`SymbolAttributes`), `Layout` (consumed by type resolution or the object
+request), `Ignored` (no meaning the IR needs to carry), or `Unsupported` with a
+reason string. Before this there were three blanket refusals -- "typedef
+attributes or asm label", "declaration attribute", "automatic variable
+attributes or asm label" -- which rejected a module over `[[deprecated]]` or
+`may_alias` just as readily as over something that changes layout. The
+classification is what decides; `Ignored` covers diagnostic-only attributes
+(`deprecated`, `nodiscard`, `maybe_unused`, `warn_unused_result`, unknown and
+vendor attributes), aliasing hints the IR does not model (`may_alias`), and
+function attributes written where they have no object meaning. `Unsupported`
+names what is missing instead: `machine mode attribute`, `cleanup attribute`,
+`address space attribute`, `transparent union attribute`, `scalar storage order
+attribute`, `record layout attribute`, `ifunc attribute`, `code segment
+attribute`. Functions are not classified this way -- `function_symbol` keeps its
+own filter and `record_function` retains the rest as `c_attributes` metadata.
+
+An `asm("sym")` label is ignored on a typedef and on an automatic local, which
+is what clang does; a register label (`register int x asm("eax")`) still gives
+`register asm label`, because the register binding is real and dropping it
+would be silently wrong.
+
+Alignment written on a *typedef* is refused with `typedef alignment attribute`
+rather than dropped. It belongs to the aliased type -- clang propagates it to
+every object, field and `_Alignof` of that alias, and `aligned(1)` on a typedef
+*lowers* alignment where the same attribute on a declaration cannot -- but
+`ir::Type` is structural and desugars typedefs away, so there is nowhere to put
+it without a type-model change (`slate-parser-dyd.30`). Fixture:
+`sema/ir_declaration_attributes.c`.
 
 **Object attributes (`lh7.2.22`):** `weakref("t")` is not `weak` plus
 `alias`: `alias` defines a symbol, while a weakref emits none and its uses

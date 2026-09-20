@@ -134,6 +134,20 @@ walk its declarator too.
   declarations referenced through the type.
 - `tests/filecheck.rs` — `type_spelling` renders it for declaration summaries.
 
+## Adding an `Attribute` variant
+
+- `src/visit.rs` — shared recursion reaches expression-bearing attributes.
+- `src/parser/attributes.rs` — spelling table and argument parsing.
+- `src/sema/attributes.rs` — `declaration_use` is exhaustive: a new variant must
+  be classified as symbol, layout, ignored, or unsupported with a reason, or an
+  object declaration carrying it is rejected without a name for why.
+- `src/sema/module.rs` — `symbol_attributes` folds the `Symbol` group into
+  `SymbolAttributes`; `function_symbol` keeps its own narrower filter.
+- `src/sema/function.rs` — `record_function` interprets function attributes and
+  retains the rest as `c_attributes` metadata.
+- `src/sema/types.rs` — `requested_alignment` and `field_request` read the
+  `Layout` group.
+
 ## Process note
 
 This impact map was reconstructed by reading most of `src/` in one session

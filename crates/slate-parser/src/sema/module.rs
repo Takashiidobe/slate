@@ -191,18 +191,22 @@ fn linkage(storage: StorageClass) -> Result<Linkage, ResolveError> {
     }
 }
 
-fn is_alignment_attribute(attribute: &ast::Attribute) -> bool {
-    matches!(
-        attribute,
-        ast::Attribute::Aligned(_) | ast::Attribute::AlignAs(_)
-    )
+fn reject_unsupported<'a>(
+    attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+) -> Result<(), ResolveError> {
+    reject_with(attributes, super::attributes::unsupported)
 }
 
-fn is_vector_attribute(attribute: &ast::Attribute) -> bool {
-    matches!(
-        attribute,
-        ast::Attribute::VectorSize(_) | ast::Attribute::ExtVectorType(_)
-    )
+fn reject_with<'a>(
+    attributes: impl IntoIterator<Item = &'a ast::Attribute>,
+    classify: impl Fn(&ast::Attribute) -> Option<&'static str>,
+) -> Result<(), ResolveError> {
+    for attribute in attributes {
+        if let Some(reason) = classify(attribute) {
+            return Err(ResolveError::Unsupported(reason));
+        }
+    }
+    Ok(())
 }
 
 fn symbol_attributes<'a>(
@@ -250,7 +254,11 @@ fn symbol_attributes<'a>(
             | ast::Attribute::AlignAs(_)
             | ast::Attribute::Common
             | ast::Attribute::NoCommon => {}
-            _ => return Err(ResolveError::Unsupported("declaration attribute")),
+            other => {
+                if let Some(reason) = super::attributes::unsupported(other) {
+                    return Err(ResolveError::Unsupported(reason));
+                }
+            }
         }
     }
     Ok(symbol)
@@ -491,14 +499,7 @@ impl Lowerer {
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
         if item.declarators.is_empty() {
-            if item
-                .specifiers
-                .attributes
-                .iter()
-                .any(|attribute| !is_vector_attribute(attribute))
-            {
-                return Err(ResolveError::Unsupported("declaration attributes"));
-            }
+            reject_unsupported(&item.specifiers.attributes)?;
             if let ast::TypeSpecifier::Tag(ast::TagSpecifier::Reference {
                 kind,
                 name,
@@ -518,13 +519,8 @@ impl Lowerer {
                 .attributes
                 .iter()
                 .chain(&declarator.attributes);
-            let has_attributes = attributes
-                .clone()
-                .any(|attribute| !is_vector_attribute(attribute));
-            if storage_class == StorageClass::Typedef
-                && (has_attributes || declarator.asm_label.is_some())
-            {
-                return Err(ResolveError::Unsupported("typedef attributes or asm label"));
+            if storage_class == StorageClass::Typedef {
+                reject_with(attributes.clone(), super::attributes::typedef_unsupported)?;
             }
             let thread = item.specifiers.is_thread_local
                 || attributes
@@ -647,16 +643,7 @@ impl Lowerer {
             } else {
                 StorageDuration::Static
             };
-            let unsupported_on_automatic = attributes.clone().any(|attribute| {
-                !is_vector_attribute(attribute) && !is_alignment_attribute(attribute)
-            });
-            if storage == StorageDuration::Automatic
-                && (unsupported_on_automatic || declarator.asm_label.is_some())
-            {
-                return Err(ResolveError::Unsupported(
-                    "automatic variable attributes or asm label",
-                ));
-            }
+            reject_unsupported(attributes.clone())?;
             if !global && linked && declarator.initializer.is_some() {
                 return Err(ResolveError::Invalid("block scope extern initializer"));
             }
