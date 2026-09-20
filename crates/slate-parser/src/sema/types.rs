@@ -245,6 +245,20 @@ impl TypeResolver {
                 )),
             ),
             ExprKind::Call { callee, arguments }
+                if super::expression::choose_expr_operands(callee, arguments).is_some() =>
+            {
+                let (condition, when_true, when_false) =
+                    super::expression::choose_expr_operands(callee, arguments)
+                        .ok_or(ResolveError::Unsupported("__builtin_choose_expr"))?;
+                let taken = self.constant_integer(condition)?;
+                let chosen = if taken.sign() == num_bigint::Sign::NoSign {
+                    when_false
+                } else {
+                    when_true
+                };
+                return self.constant_value(chosen);
+            }
+            ExprKind::Call { callee, arguments }
                 if super::expression::constant_p_operand(callee, arguments).is_some() =>
             {
                 let operand = super::expression::constant_p_operand(callee, arguments)

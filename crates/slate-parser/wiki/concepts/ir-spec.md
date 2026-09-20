@@ -158,6 +158,16 @@ that advances the list, so it counts as a side effect for hoisting like a call.
 name in sema, not declared; va_start's last-named-parameter argument is
 resolved but dropped, as the IR does not need it.
 
+`__builtin_choose_expr(cond, a, b)` also resolves during lowering and never
+reaches the IR. It is a Clang keyword rather than a `Builtins.td` record, so
+the generated registry does not contain it; sema recognizes it by callee name
+like `__builtin_constant_p`. The condition must be an integer constant
+expression; the selected operand is lowered in place of the call and supplies
+the result type, and the unselected operand is not evaluated, so its side
+effects are discarded. Both operands are still name-resolved and type-checked,
+matching Clang and GCC. In a constant expression the call folds to the
+selected operand's constant value.
+
 `_Generic` resolves during lowering rather than reaching the IR: sema types the
 controlling operand, matches it against the association types, and lowers only
 the selected expression, so the selected branch can be constant or runtime and

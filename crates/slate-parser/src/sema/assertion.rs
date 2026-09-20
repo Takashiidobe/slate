@@ -431,9 +431,12 @@ fn constant_truth(types: &mut TypeResolver, expr: &Expr, shape: Shape) -> Option
         .map(|value| value.sign() != Sign::NoSign)
 }
 
-fn call_shape<'e>(expr: &'e Expr, callee: &Expr, arguments: &[Expr]) -> Shape<'e> {
+fn call_shape<'e>(expr: &'e Expr, callee: &Expr, arguments: &'e [Expr]) -> Shape<'e> {
     if super::expression::constant_p_operand(callee, arguments).is_some() {
         return Shape::Constant;
+    }
+    if super::expression::choose_expr_operands(callee, arguments).is_some() {
+        return Shape::Skip;
     }
     let mut callee = callee;
     while let ExprKind::Paren(inner) = &callee.value {

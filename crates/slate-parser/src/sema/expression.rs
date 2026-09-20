@@ -254,6 +254,21 @@ impl Lowerer {
         }
     }
 
+    pub(super) fn chosen_expr<'e>(
+        &mut self,
+        callee: &Expr,
+        arguments: &'e [Expr],
+    ) -> Result<&'e Expr, ResolveError> {
+        let (condition, when_true, when_false) = choose_expr_operands(callee, arguments)
+            .ok_or(ResolveError::Unsupported("__builtin_choose_expr"))?;
+        let taken = self.types.constant_integer(condition)?;
+        Ok(if taken.sign() == num_bigint::Sign::NoSign {
+            when_false
+        } else {
+            when_true
+        })
+    }
+
     fn overflow_builtin(
         &mut self,
         e: &Expr,
@@ -1737,6 +1752,12 @@ impl Lowerer {
                 );
                 Ok(value)
             }
+            ExprKind::Call { callee, arguments }
+                if choose_expr_operands(callee, arguments).is_some() =>
+            {
+                let chosen = self.chosen_expr(callee, arguments)?;
+                self.expr(chosen)
+            }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
                 let builtin = va_builtin(callee).ok_or(ResolveError::Unsupported("va builtin"))?;
                 self.va_builtin(e, builtin, arguments)
@@ -1927,6 +1948,21 @@ pub(super) fn specially_lowered(callee: &Expr, arguments: &[Expr]) -> bool {
     super::atomic::atomic_builtin(callee).is_some()
         || va_builtin(callee).is_some()
         || constant_p_operand(callee, arguments).is_some()
+        || choose_expr_operands(callee, arguments).is_some()
+}
+
+pub(super) fn choose_expr_operands<'e>(
+    callee: &Expr,
+    arguments: &'e [Expr],
+) -> Option<(&'e Expr, &'e Expr, &'e Expr)> {
+    match (&callee.value, arguments) {
+        (ExprKind::Identifier(name), [condition, when_true, when_false])
+            if name == "__builtin_choose_expr" =>
+        {
+            Some((condition, when_true, when_false))
+        }
+        _ => None,
+    }
 }
 
 pub(super) fn constant_p_operand<'e>(callee: &Expr, arguments: &'e [Expr]) -> Option<&'e Expr> {
