@@ -472,14 +472,6 @@ impl Lowerer {
         item: &ast::Declaration,
         global: bool,
     ) -> Result<Vec<Span<Statement>>, ResolveError> {
-        if !global
-            && matches!(
-                item.specifiers.ty,
-                ast::TypeSpecifier::Tag(ast::TagSpecifier::Definition(_))
-            )
-        {
-            return Err(ResolveError::Unsupported("block scoped tag definition"));
-        }
         if item.declarators.is_empty() {
             if item
                 .specifiers
@@ -489,7 +481,16 @@ impl Lowerer {
             {
                 return Err(ResolveError::Unsupported("declaration attributes"));
             }
-            self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
+            if let ast::TypeSpecifier::Tag(ast::TagSpecifier::Reference {
+                kind,
+                name,
+                fixed_type: None,
+            }) = &item.specifiers.ty
+            {
+                self.types.declare_incomplete_tag(*kind, name);
+            } else {
+                self.resolve_type(&item.specifiers, &Declarator::Abstract)?;
+            }
         }
         let storage_class = item.specifiers.storage;
         let mut statements = Vec::new();

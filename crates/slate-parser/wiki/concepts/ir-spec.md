@@ -83,6 +83,16 @@ Pointers, arrays, and function-pointer signatures are structural types printed
 inline at their uses. A direct function's `fn` declaration carries its complete
 signature; it has no duplicate type-table entry. `Type::Defined(TypeId)`
 references named or recursive definitions, preserving incomplete type identity.
+
+Tag identity is per scope, not per name (`slate-parser-8lv`). A block-scope
+`struct Local { ... }` in two different functions gets two `TypeId`s with their
+own layouts, and a bare `struct S;` declares an *incomplete* tag in the current
+scope per C11 6.7.2.3p8, hiding any outer tag of that name rather than
+referring to it. So after `struct Outer { int x; };` at file scope, a function
+body containing `struct Outer;` sees a distinct incomplete `Outer`, and
+`sizeof` of it is rejected as clang and gcc reject it. A forward declaration
+followed by a definition in the *same* scope completes the one tag.
+Fixture: `sema/ir_tag_scopes.c`.
 Variables and parameters have binding IDs; root places use those IDs and concrete types.
 Statements support declarations, writes, and numeric operations.
 Pointer nulls, address-of values, byte-array constants, array decay,

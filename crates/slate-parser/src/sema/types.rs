@@ -997,6 +997,19 @@ impl TypeResolver {
         (core, q)
     }
 
+    /// C11 6.7.2.3p8: `struct S;` alone declares an incomplete tag in the
+    /// current scope, hiding any outer one, rather than referring outward.
+    pub(super) fn declare_incomplete_tag(&mut self, kind: TagKind, name: &str) -> TypeId {
+        let key = (kind, name.to_owned());
+        if let Some(id) = self.tag_names.last().and_then(|scope| scope.get(&key)) {
+            return *id;
+        }
+        let id = self.push(incomplete_tag(kind));
+        self.definitions[id.0 as usize].name = Some(name.to_owned());
+        self.declare_tag(key, id);
+        id
+    }
+
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {
         if let Some(id) = self.tag_ids.get(&tag.id) {
             return Ok(*id);

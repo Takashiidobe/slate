@@ -29,7 +29,7 @@ void bad(void *p) { p++; }
 // INCOMPATIBLE: Error:   × unsupported in numeric IR lowering: incompatible pointer subtraction
 // SLATE-FILECHECK-END INCOMPATIBLE
 // SLATE-FILECHECK-BEGIN INCOMPLETE
-// INCOMPLETE: Error:   × unresolved tag name `S`
+// INCOMPLETE: Error:   × unsupported in numeric IR lowering: incomplete field type
 // SLATE-FILECHECK-END INCOMPLETE
 // SLATE-FILECHECK-BEGIN VOID
 // VOID: Error:   × unsupported scalar storage layout for void

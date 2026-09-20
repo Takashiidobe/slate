@@ -121,6 +121,15 @@ impl Resolver {
         declaration: &Declaration,
         span: &Span<T>,
     ) -> Result<(), ResolveError> {
+        if declaration.declarators.is_empty()
+            && let TypeSpecifier::Tag(TagSpecifier::Reference {
+                name,
+                fixed_type: None,
+                ..
+            }) = &declaration.specifiers.ty
+        {
+            return self.declare_incomplete_tag(name, span);
+        }
         self.type_specifier(&declaration.specifiers.ty, span)?;
         let base_kind = if declaration.specifiers.storage == StorageClass::Typedef {
             BindingKind::Typedef
@@ -742,6 +751,28 @@ impl Resolver {
                 name: name.into(),
             })?;
         self.push_reference(name, entry, span);
+        Ok(())
+    }
+
+    fn declare_incomplete_tag<T>(
+        &mut self,
+        name: &str,
+        span: &Span<T>,
+    ) -> Result<(), ResolveError> {
+        if self.collecting_labels {
+            return Ok(());
+        }
+        if self
+            .tags
+            .last()
+            .is_some_and(|scope| scope.contains_key(name))
+        {
+            return self.reference_tag(name, span);
+        }
+        let entry = self.new_entry(name, BindingKind::Tag, span);
+        if let Some(scope) = self.tags.last_mut() {
+            scope.insert(name.to_owned(), entry);
+        }
         Ok(())
     }
 
