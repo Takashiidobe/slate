@@ -1,10 +1,11 @@
 use crate::ast::{
-    ArraySize, Decl, DeclKind, Declaration, Declarator, Designator, EnumItemKind, Expr, ExprKind,
-    Initializer, InitializerItem, ParameterList, Span, Stmt, StmtKind, StorageClass, TagBody,
-    TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    ArraySize, Decl, DeclKind, Declaration, Declarator, EnumItemKind, Expr, ExprKind, Initializer,
+    InitializerItem, ParameterList, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId,
+    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
 use crate::standard_features::StandardFeatures;
+use crate::visit::Visitor;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, thiserror::Error)]
@@ -29,7 +30,9 @@ struct Entry {
 }
 
 pub fn resolve(unit: &TranslationUnit) -> Result<NameResolution, ResolveError> {
-    Resolver::new(unit).translation_unit(unit)
+    let mut resolver = Resolver::new(unit);
+    resolver.visit_translation_unit(unit)?;
+    Ok(resolver.resolution)
 }
 
 struct Resolver {
@@ -75,17 +78,10 @@ impl Resolver {
         }
     }
 
-    fn translation_unit(mut self, unit: &TranslationUnit) -> Result<NameResolution, ResolveError> {
-        for declaration in &unit.decls {
-            self.declaration_node(declaration)?;
-        }
-        Ok(self.resolution)
-    }
-
     fn declaration_node(&mut self, declaration: &Decl) -> Result<(), ResolveError> {
         match &declaration.value {
             DeclKind::Comment(_) | DeclKind::Asm(_) | DeclKind::Pragma(_) => Ok(()),
-            DeclKind::StaticAssert(assertion) => self.expr(&assertion.condition),
+            DeclKind::StaticAssert(assertion) => self.visit_expr(&assertion.condition),
             DeclKind::Declaration(inner) => self.declaration(inner, declaration),
             DeclKind::Function(function) => {
                 self.type_specifier(&function.specifiers.ty, declaration)?;
@@ -99,14 +95,14 @@ impl Resolver {
                 if let Some(parameters) = function.declarator.function_parameters() {
                     for parameter in parameters.parameters() {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
-                        self.declarator(&parameter.declarator)?;
+                        self.visit_declarator(&parameter.declarator)?;
                         if let Some(name) = parameter.declarator.name() {
                             self.bind_ordinary(name, BindingKind::Parameter, false, parameter)?;
                         }
                     }
                 }
                 for statement in &function.body {
-                    self.statement(statement)?;
+                    self.visit_stmt(statement)?;
                 }
                 self.pop_scope();
                 self.labels = outer_labels;
@@ -137,7 +133,7 @@ impl Resolver {
             BindingKind::Object
         };
         for declarator in &declaration.declarators {
-            self.declarator(&declarator.declarator)?;
+            self.visit_declarator(&declarator.declarator)?;
             let kind = if base_kind == BindingKind::Object
                 && declarator.declarator.function_parameters().is_some()
             {
@@ -156,7 +152,7 @@ impl Resolver {
                 self.bind_ordinary(name, kind, linked, declarator)?;
             }
             if let Some(initializer) = &declarator.initializer {
-                self.initializer(initializer)?;
+                self.visit_initializer(initializer)?;
             }
         }
         Ok(())
@@ -190,7 +186,7 @@ impl Resolver {
         if scoped {
             self.push_scope();
         }
-        let result = self.statement(body);
+        let result = self.visit_stmt(body);
         if scoped {
             self.pop_scope();
         }
@@ -212,19 +208,19 @@ impl Resolver {
                 }
                 Ok(())
             }
-            StmtKind::Attributed { body, .. } => self.statement(body),
+            StmtKind::Attributed { body, .. } => self.visit_stmt(body),
             StmtKind::Return(value) | StmtKind::Expr(value) | StmtKind::ComputedGoto(value) => {
-                self.expr(value)
+                self.visit_expr(value)
             }
             StmtKind::Decl(declaration) => self.declaration(declaration, statement),
-            StmtKind::StaticAssert(assertion) => self.expr(&assertion.condition),
+            StmtKind::StaticAssert(assertion) => self.visit_expr(&assertion.condition),
             StmtKind::Block(body) => self.scoped_statements(body),
             StmtKind::If {
                 condition,
                 then_branch,
                 else_branch,
             } => {
-                self.expr(condition)?;
+                self.visit_expr(condition)?;
                 self.control_body(then_branch)?;
                 if let Some(branch) = else_branch {
                     self.control_body(branch)?;
@@ -232,12 +228,12 @@ impl Resolver {
                 Ok(())
             }
             StmtKind::While { condition, body } => {
-                self.expr(condition)?;
+                self.visit_expr(condition)?;
                 self.control_body(body)
             }
             StmtKind::DoWhile { body, condition } => {
                 self.control_body(body)?;
-                self.expr(condition)
+                self.visit_expr(condition)
             }
             StmtKind::For {
                 init,
@@ -246,19 +242,19 @@ impl Resolver {
                 body,
             } => {
                 if let Some(init) = init {
-                    self.statement(init)?;
+                    self.visit_stmt(init)?;
                 }
                 if let Some(condition) = condition {
-                    self.expr(condition)?;
+                    self.visit_expr(condition)?;
                 }
                 if let Some(increment) = increment {
-                    self.expr(increment)?;
+                    self.visit_expr(increment)?;
                 }
                 self.control_body(body)?;
                 Ok(())
             }
             StmtKind::Switch { discriminant, body } => {
-                self.expr(discriminant)?;
+                self.visit_expr(discriminant)?;
                 self.control_body(body)
             }
             StmtKind::Labeled { label, body } => {
@@ -266,23 +262,23 @@ impl Resolver {
                     let entry = self.bind_label(label)?;
                     self.resolution.label_definitions.insert(label.id, entry.id);
                 }
-                self.statement(body)
+                self.visit_stmt(body)
             }
             StmtKind::SwitchLabel { label, body } => {
                 match label {
-                    crate::ast::SwitchLabel::Case(value) => self.expr(value)?,
+                    crate::ast::SwitchLabel::Case(value) => self.visit_expr(value)?,
                     crate::ast::SwitchLabel::CaseRange { start, end } => {
-                        self.expr(start)?;
-                        self.expr(end)?;
+                        self.visit_expr(start)?;
+                        self.visit_expr(end)?;
                     }
                     crate::ast::SwitchLabel::Default => {}
                 }
-                self.statement(body)
+                self.visit_stmt(body)
             }
             StmtKind::Asm(asm) => {
                 if let Some(operands) = &asm.operands {
                     for operand in operands.outputs.iter().chain(&operands.inputs) {
-                        self.expr(&operand.expr)?;
+                        self.visit_expr(&operand.expr)?;
                     }
                     for label in &operands.labels {
                         self.reference_label(label)?;
@@ -303,7 +299,7 @@ impl Resolver {
 
     fn statements(&mut self, statements: &[Stmt]) -> Result<(), ResolveError> {
         for statement in statements {
-            self.statement(statement)?;
+            self.visit_stmt(statement)?;
         }
         Ok(())
     }
@@ -318,59 +314,28 @@ impl Resolver {
     fn expr(&mut self, expr: &Expr) -> Result<(), ResolveError> {
         match &expr.value {
             ExprKind::Identifier(name) => self.reference_ordinary(name, expr),
-            ExprKind::Paren(value)
-            | ExprKind::SizeOfExpr(value)
-            | ExprKind::AlignOfExpr(value)
-            | ExprKind::Unary { operand: value, .. }
-            | ExprKind::Postfix { operand: value, .. }
-            | ExprKind::Member { base: value, .. } => self.expr(value),
             ExprKind::Cast { ty, value }
             | ExprKind::BitCast { ty, value }
             | ExprKind::VaArg { list: value, ty } => {
                 self.type_name(ty, expr)?;
-                self.expr(value)
-            }
-            ExprKind::Binary { left, right, .. }
-            | ExprKind::Assign {
-                target: left,
-                value: right,
-                ..
-            }
-            | ExprKind::Comma { left, right }
-            | ExprKind::Index {
-                base: left,
-                index: right,
-            } => {
-                self.expr(left)?;
-                self.expr(right)
-            }
-            ExprKind::Conditional {
-                condition,
-                then_value,
-                else_value,
-            } => {
-                self.expr(condition)?;
-                if let Some(value) = then_value {
-                    self.expr(value)?;
-                }
-                self.expr(else_value)
+                self.visit_expr(value)
             }
             ExprKind::Call { callee, arguments } => {
                 if super::expression::va_builtin(callee).is_none()
                     && super::atomic::atomic_builtin(callee).is_none()
                     && super::expression::constant_p_operand(callee, arguments).is_none()
                 {
-                    self.expr(callee)?;
+                    self.visit_expr(callee)?;
                 }
                 for argument in arguments {
-                    self.expr(argument)?;
+                    self.visit_expr(argument)?;
                 }
                 Ok(())
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 self.type_name(ty, expr)?;
                 for item in initializer {
-                    self.initializer_item(item)?;
+                    self.visit_initializer_item(item)?;
                 }
                 Ok(())
             }
@@ -384,16 +349,16 @@ impl Resolver {
                 associations,
             } => {
                 match controlling {
-                    crate::ast::GenericControl::Expr(value) => self.expr(value)?,
+                    crate::ast::GenericControl::Expr(value) => self.visit_expr(value)?,
                     crate::ast::GenericControl::Type { ty } => self.type_name(ty, expr)?,
                 }
                 for association in associations {
                     match association {
                         crate::ast::GenericAssociation::Type { ty, value } => {
                             self.type_name(ty, expr)?;
-                            self.expr(value)?;
+                            self.visit_expr(value)?;
                         }
-                        crate::ast::GenericAssociation::Default(value) => self.expr(value)?,
+                        crate::ast::GenericAssociation::Default(value) => self.visit_expr(value)?,
                     }
                 }
                 Ok(())
@@ -404,12 +369,7 @@ impl Resolver {
             }
             ExprKind::LabelAddress(label) => self.reference_label(label),
             ExprKind::StatementExpression(body) => self.scoped_statements(body),
-            ExprKind::IntegerLiteral(_)
-            | ExprKind::FloatLiteral(_)
-            | ExprKind::CharLiteral(_)
-            | ExprKind::StringLiteral(_)
-            | ExprKind::BoolLiteral(_)
-            | ExprKind::NullPtrLiteral => Ok(()),
+            _ => crate::visit::walk_expr(self, expr),
         }
     }
 
@@ -419,41 +379,15 @@ impl Resolver {
             ExprKind::Member { base, .. } => self.offsetof_member(base),
             ExprKind::Index { base, index } => {
                 self.offsetof_member(base)?;
-                self.expr(index)
+                self.visit_expr(index)
             }
-            _ => self.expr(member),
+            _ => self.visit_expr(member),
         }
-    }
-
-    fn initializer(&mut self, initializer: &Initializer) -> Result<(), ResolveError> {
-        match initializer {
-            Initializer::Expr(value) => self.expr(value),
-            Initializer::List(items) => {
-                for item in items {
-                    self.initializer_item(item)?;
-                }
-                Ok(())
-            }
-        }
-    }
-
-    fn initializer_item(&mut self, item: &InitializerItem) -> Result<(), ResolveError> {
-        for designator in &item.designators {
-            match designator {
-                Designator::Array(value) => self.expr(value)?,
-                Designator::ArrayRange { start, end } => {
-                    self.expr(start)?;
-                    self.expr(end)?;
-                }
-                Designator::Field(_) => {}
-            }
-        }
-        self.initializer(&item.value)
     }
 
     fn type_name<T>(&mut self, ty: &TypeName, span: &Span<T>) -> Result<(), ResolveError> {
         self.type_specifier(&ty.specifiers.ty, span)?;
-        self.declarator(&ty.declarator)
+        self.visit_declarator(&ty.declarator)
     }
 
     fn declarator(&mut self, declarator: &Declarator) -> Result<(), ResolveError> {
@@ -461,21 +395,21 @@ impl Resolver {
             Declarator::Abstract | Declarator::Name(_) => Ok(()),
             Declarator::Grouped(inner)
             | Declarator::Attributed { inner, .. }
-            | Declarator::Pointer { inner, .. } => self.declarator(inner),
+            | Declarator::Pointer { inner, .. } => self.visit_declarator(inner),
             Declarator::Array { inner, size, .. } => {
-                self.declarator(inner)?;
+                self.visit_declarator(inner)?;
                 if let ArraySize::Expression(value) = size {
-                    self.expr(value)?;
+                    self.visit_expr(value)?;
                 }
                 Ok(())
             }
             Declarator::Function { inner, parameters } => {
-                self.declarator(inner)?;
+                self.visit_declarator(inner)?;
                 if let ParameterList::Prototype { parameters, .. } = parameters {
                     for parameter in parameters {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
                         if self.collecting_labels {
-                            self.declarator(&parameter.declarator)?;
+                            self.visit_declarator(&parameter.declarator)?;
                         }
                     }
                 }
@@ -506,17 +440,19 @@ impl Resolver {
                 self.type_specifier(inner, span)
             }
             TypeSpecifier::TypeOf(TypeOfOperand::Expression(value))
-            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(value)) => self.expr(value),
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(value)) => {
+                self.visit_expr(value)
+            }
             TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
             | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => self.type_name(ty, span),
             TypeSpecifier::Integer(crate::ast::IntegerType::BitInt { width, .. }) => {
-                self.expr(width)
+                self.visit_expr(width)
             }
             TypeSpecifier::Vector(vector) => {
                 self.type_specifier(&vector.element, span)?;
                 match &vector.size {
                     crate::ast::VectorSize::Bytes(value) | crate::ast::VectorSize::Lanes(value) => {
-                        self.expr(value)
+                        self.visit_expr(value)
                     }
                 }
             }
@@ -552,7 +488,7 @@ impl Resolver {
                 for item in enumerators {
                     if let EnumItemKind::Enumerator(enumerator) = &item.value {
                         if let Some(value) = &enumerator.value {
-                            self.expr(value)?;
+                            self.visit_expr(value)?;
                         }
                         if !self.collecting_labels {
                             self.bind_ordinary(
@@ -570,9 +506,9 @@ impl Resolver {
                     if let crate::ast::FieldItemKind::Field(field) = &field.value {
                         self.type_specifier(&field.specifiers.ty, &tag)?;
                         for declarator in &field.declarators {
-                            self.declarator(&declarator.declarator)?;
+                            self.visit_declarator(&declarator.declarator)?;
                             if let Some(width) = &declarator.bit_width {
-                                self.expr(width)?;
+                                self.visit_expr(width)?;
                             }
                         }
                     }
@@ -838,6 +774,41 @@ impl Resolver {
         self.ordinary.pop();
         self.tags.pop();
         self.local_labels.pop();
+    }
+}
+
+impl Visitor for Resolver {
+    type Error = ResolveError;
+
+    fn visit_translation_unit(&mut self, unit: &TranslationUnit) -> Result<(), Self::Error> {
+        for declaration in &unit.decls {
+            self.visit_decl(declaration)?;
+        }
+        Ok(())
+    }
+
+    fn visit_decl(&mut self, decl: &Decl) -> Result<(), Self::Error> {
+        self.declaration_node(decl)
+    }
+
+    fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Self::Error> {
+        self.statement(stmt)
+    }
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
+        self.expr(expr)
+    }
+
+    fn visit_initializer(&mut self, initializer: &Initializer) -> Result<(), Self::Error> {
+        crate::visit::walk_initializer(self, initializer)
+    }
+
+    fn visit_initializer_item(&mut self, item: &InitializerItem) -> Result<(), Self::Error> {
+        crate::visit::walk_initializer_item(self, item)
+    }
+
+    fn visit_declarator(&mut self, declarator: &Declarator) -> Result<(), Self::Error> {
+        self.declarator(declarator)
     }
 }
 

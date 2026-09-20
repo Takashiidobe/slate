@@ -5,6 +5,7 @@ use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::{Files, decode_source_bytes, display_path};
 use crate::standard_features::{Availability, StandardFeatures};
 use crate::target_info::TargetInfo;
+use crate::visit::{self, Visitor};
 use miette::{Diagnostic, LabeledSpan, NamedSource, Severity, SourceCode, SourceSpan};
 use num_bigint::BigUint;
 use std::collections::{HashMap, HashSet};
@@ -117,10 +118,10 @@ impl TranslationUnit {
         let mut errors = super::assertion::validate(self);
         for decl in &self.decls {
             match &decl.value {
-                DeclKind::Comment(_)
-                | DeclKind::StaticAssert { .. }
-                | DeclKind::Asm { .. }
-                | DeclKind::Pragma(_) => {}
+                DeclKind::Comment(_) | DeclKind::Asm { .. } | DeclKind::Pragma(_) => {}
+                DeclKind::StaticAssert { .. } => {
+                    visit_literals(decl, literals, &mut errors);
+                }
                 DeclKind::Function(function) => {
                     let provenance = decl.provenance;
                     check_attributes(
@@ -146,7 +147,7 @@ impl TranslationUnit {
                         check_function_asm(self, function, provenance, &mut errors);
                     }
                     check_unnamed_parameters(function, types, &mut errors);
-                    check_literals(function, literals, provenance, &mut errors);
+                    visit_literals(function, literals, &mut errors);
                     check_body_types(function, types, provenance, &mut errors);
                 }
                 DeclKind::Declaration(declaration) => {
@@ -156,6 +157,7 @@ impl TranslationUnit {
                         && let Some(tag) = self.tag(*id)
                     {
                         check_tag_definition(tag, types, decl.expansion, &mut errors);
+                        visit_literals(tag, literals, &mut errors);
                     }
                     check_type(
                         &specifiers.ty,
@@ -170,7 +172,7 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
-                    check_declaration_literals(declaration, literals, provenance, &mut errors);
+                    visit_literals(declaration, literals, &mut errors);
                     for init_declarator in &declaration.declarators {
                         let declarator = &init_declarator.declarator;
                         if matches!(specifiers.ty, TypeSpecifier::Void)
@@ -256,34 +258,6 @@ fn declarator_indirects_void(declarator: &Declarator) -> bool {
         | Declarator::Array { inner, .. } => declarator_indirects_void(inner),
         Declarator::Pointer { .. } | Declarator::Function { .. } => true,
         Declarator::Abstract | Declarator::Name(_) => false,
-    }
-}
-
-fn walk_type(ty: &TypeSpecifier, visit: &mut impl FnMut(&TypeSpecifier)) {
-    visit(ty);
-    match ty {
-        TypeSpecifier::Atomic(ty)
-        | TypeSpecifier::TypeOf(TypeOfOperand::Type(ty))
-        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(ty)) => {
-            walk_type(&ty.specifiers.ty, visit)
-        }
-        TypeSpecifier::Vector(vector) => walk_type(&vector.element, visit),
-        TypeSpecifier::Imaginary(ty) => walk_type(ty, visit),
-        TypeSpecifier::Tag(TagSpecifier::Reference {
-            fixed_type: Some(fixed_type),
-            ..
-        }) => walk_type(&fixed_type.specifiers.ty, visit),
-        TypeSpecifier::Void
-        | TypeSpecifier::Bool
-        | TypeSpecifier::Integer(_)
-        | TypeSpecifier::Floating(_)
-        | TypeSpecifier::Complex(_)
-        | TypeSpecifier::FixedPoint(_)
-        | TypeSpecifier::TypeOf(TypeOfOperand::Expression(_))
-        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(_))
-        | TypeSpecifier::TargetBuiltin(_)
-        | TypeSpecifier::Named(_)
-        | TypeSpecifier::Tag(_) => {}
     }
 }
 
@@ -655,193 +629,6 @@ pub(super) fn error(provenance: Provenance, loc: Loc, message: impl Into<String>
     }
 }
 
-enum BodyNode<'a> {
-    Stmt(&'a Stmt),
-    Expr(&'a Expr),
-    EnterJumpScope,
-    ExitJumpScope,
-}
-
-fn walk_stmts<'a>(stmts: &'a [Stmt], visit: &mut impl FnMut(BodyNode<'a>)) {
-    for stmt in stmts {
-        walk_stmt(stmt, visit);
-    }
-}
-
-fn walk_stmt<'a>(stmt: &'a Stmt, visit: &mut impl FnMut(BodyNode<'a>)) {
-    visit(BodyNode::Stmt(stmt));
-    match &stmt.value {
-        StmtKind::Return(expr) | StmtKind::Expr(expr) | StmtKind::ComputedGoto(expr) => {
-            walk_expr(expr, visit)
-        }
-        StmtKind::Labeled { body, .. } | StmtKind::Attributed { body, .. } => {
-            walk_stmt(body, visit)
-        }
-        StmtKind::SwitchLabel { label, body } => {
-            match label {
-                SwitchLabel::Case(expr) => walk_expr(expr, visit),
-                SwitchLabel::CaseRange { start, end } => {
-                    walk_expr(start, visit);
-                    walk_expr(end, visit);
-                }
-                SwitchLabel::Default => {}
-            }
-            walk_stmt(body, visit);
-        }
-        StmtKind::Decl(declaration) => {
-            for initializer in declaration
-                .declarators
-                .iter()
-                .filter_map(|declarator| declarator.initializer.as_ref())
-            {
-                walk_initializer(initializer, visit);
-            }
-        }
-        StmtKind::Block(body) => walk_stmts(body, visit),
-        StmtKind::DoWhile { body, condition } => {
-            walk_stmt(body, visit);
-            walk_expr(condition, visit);
-        }
-        StmtKind::While { condition, body }
-        | StmtKind::Switch {
-            discriminant: condition,
-            body,
-        } => {
-            walk_expr(condition, visit);
-            walk_stmt(body, visit);
-        }
-        StmtKind::If {
-            condition,
-            then_branch,
-            else_branch,
-        } => {
-            walk_expr(condition, visit);
-            walk_stmt(then_branch, visit);
-            if let Some(else_branch) = else_branch {
-                walk_stmt(else_branch, visit);
-            }
-        }
-        StmtKind::For {
-            init,
-            condition,
-            increment,
-            body,
-        } => {
-            if let Some(init) = init {
-                walk_stmt(init, visit);
-            }
-            for expr in condition.iter().chain(increment) {
-                walk_expr(expr, visit);
-            }
-            walk_stmt(body, visit);
-        }
-        StmtKind::Null
-        | StmtKind::NestedFunction(_)
-        | StmtKind::Comment(_)
-        | StmtKind::ReturnVoid
-        | StmtKind::StaticAssert(_)
-        | StmtKind::Attribute(_)
-        | StmtKind::LocalLabelDecl(_)
-        | StmtKind::Asm(_)
-        | StmtKind::Goto(_)
-        | StmtKind::Break
-        | StmtKind::Continue
-        | StmtKind::Pragma(_) => {}
-    }
-}
-
-fn walk_initializer<'a>(initializer: &'a Initializer, visit: &mut impl FnMut(BodyNode<'a>)) {
-    match initializer {
-        Initializer::Expr(expr) => walk_expr(expr, visit),
-        Initializer::List(items) => {
-            for item in items {
-                walk_initializer(&item.value, visit);
-            }
-        }
-    }
-}
-
-fn walk_expr<'a>(expr: &'a Expr, visit: &mut impl FnMut(BodyNode<'a>)) {
-    visit(BodyNode::Expr(expr));
-    match &expr.value {
-        ExprKind::StatementExpression(body) => {
-            visit(BodyNode::EnterJumpScope);
-            walk_stmts(body, visit);
-            visit(BodyNode::ExitJumpScope);
-        }
-        ExprKind::Generic {
-            controlling,
-            associations,
-        } => {
-            if let GenericControl::Expr(controlling) = controlling {
-                walk_expr(controlling, visit);
-            }
-            for association in associations {
-                let (GenericAssociation::Type { value, .. } | GenericAssociation::Default(value)) =
-                    association;
-                walk_expr(value, visit);
-            }
-        }
-        ExprKind::Paren(value)
-        | ExprKind::SizeOfExpr(value)
-        | ExprKind::AlignOfExpr(value)
-        | ExprKind::Unary { operand: value, .. }
-        | ExprKind::Postfix { operand: value, .. }
-        | ExprKind::Cast { value, .. }
-        | ExprKind::BitCast { value, .. }
-        | ExprKind::Member { base: value, .. }
-        | ExprKind::VaArg { list: value, .. } => walk_expr(value, visit),
-        ExprKind::Binary { left, right, .. }
-        | ExprKind::Assign {
-            target: left,
-            value: right,
-            ..
-        }
-        | ExprKind::Comma { left, right }
-        | ExprKind::Index {
-            base: left,
-            index: right,
-        } => {
-            walk_expr(left, visit);
-            walk_expr(right, visit);
-        }
-        ExprKind::Conditional {
-            condition,
-            then_value,
-            else_value,
-        } => {
-            walk_expr(condition, visit);
-            if let Some(then_value) = then_value {
-                walk_expr(then_value, visit);
-            }
-            walk_expr(else_value, visit);
-        }
-        ExprKind::Call { callee, arguments } => {
-            walk_expr(callee, visit);
-            for argument in arguments {
-                walk_expr(argument, visit);
-            }
-        }
-        ExprKind::CompoundLiteral { initializer, .. } => {
-            for item in initializer {
-                walk_initializer(&item.value, visit);
-            }
-        }
-        ExprKind::IntegerLiteral(_)
-        | ExprKind::FloatLiteral(_)
-        | ExprKind::CharLiteral(_)
-        | ExprKind::Identifier(_)
-        | ExprKind::StringLiteral(_)
-        | ExprKind::SizeOfType { .. }
-        | ExprKind::AlignOf { .. }
-        | ExprKind::OffsetOf { .. }
-        | ExprKind::TypesCompatible { .. }
-        | ExprKind::LabelAddress(_)
-        | ExprKind::BoolLiteral(_)
-        | ExprKind::NullPtrLiteral => {}
-    }
-}
-
 pub(super) fn integer_rank_width(rank: IntegerRank, target: &TargetInfo) -> u32 {
     match rank {
         IntegerRank::Short => target.short_width,
@@ -1057,18 +844,62 @@ fn push_literal_diagnostics(
     }
 }
 
-fn check_literals(
-    function: &FunctionDefinition,
+struct LiteralVisitor<'a, 'b> {
+    context: LiteralContext<'a>,
+    errors: &'b mut Vec<SemaError>,
+}
+
+impl Visitor for LiteralVisitor<'_, '_> {
+    type Error = std::convert::Infallible;
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
+        push_literal_diagnostics(expr, self.context, expr.provenance, self.errors);
+        visit::walk_expr(self, expr)
+    }
+}
+
+trait LiteralVisitable {
+    fn visit_literals(&self, visitor: &mut LiteralVisitor<'_, '_>);
+}
+
+impl LiteralVisitable for Decl {
+    fn visit_literals(&self, visitor: &mut LiteralVisitor<'_, '_>) {
+        visitor
+            .visit_decl(self)
+            .unwrap_or_else(|never| match never {});
+    }
+}
+
+impl LiteralVisitable for FunctionDefinition {
+    fn visit_literals(&self, visitor: &mut LiteralVisitor<'_, '_>) {
+        visitor
+            .visit_function(self)
+            .unwrap_or_else(|never| match never {});
+    }
+}
+
+impl LiteralVisitable for Declaration {
+    fn visit_literals(&self, visitor: &mut LiteralVisitor<'_, '_>) {
+        visitor
+            .visit_declaration(self)
+            .unwrap_or_else(|never| match never {});
+    }
+}
+
+impl LiteralVisitable for Span<TagDefinition> {
+    fn visit_literals(&self, visitor: &mut LiteralVisitor<'_, '_>) {
+        visitor
+            .visit_tag_definition(self)
+            .unwrap_or_else(|never| match never {});
+    }
+}
+
+fn visit_literals<T: LiteralVisitable + ?Sized>(
+    node: &T,
     context: LiteralContext<'_>,
-    provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
-    walk_stmts(&function.body, &mut |node| {
-        let BodyNode::Expr(expr) = node else {
-            return;
-        };
-        push_literal_diagnostics(expr, context, provenance, errors);
-    });
+    node.visit_literals(&mut LiteralVisitor { context, errors });
 }
 
 fn check_body_types(
@@ -1077,35 +908,37 @@ fn check_body_types(
     provenance: Provenance,
     errors: &mut Vec<SemaError>,
 ) {
-    walk_stmts(&function.body, &mut |node| {
-        let BodyNode::Stmt(stmt) = node else {
-            return;
-        };
-        let StmtKind::Decl(declaration) = &stmt.value else {
-            return;
-        };
-        walk_type(&declaration.specifiers.ty, &mut |ty| {
-            check_extensions(ty, context, provenance, stmt.expansion, errors)
-        });
-    });
+    let mut visitor = BodyTypeVisitor {
+        context,
+        provenance,
+        errors,
+        loc: None,
+    };
+    visit::walk_stmts(&mut visitor, &function.body).unwrap_or_else(|never| match never {});
 }
 
-fn check_declaration_literals(
-    declaration: &Declaration,
-    context: LiteralContext<'_>,
+struct BodyTypeVisitor<'a, 'b> {
+    context: TypeContext<'a>,
     provenance: Provenance,
-    errors: &mut Vec<SemaError>,
-) {
-    for init_declarator in &declaration.declarators {
-        let Some(initializer) = &init_declarator.initializer else {
-            continue;
-        };
-        walk_initializer(initializer, &mut |node| {
-            let BodyNode::Expr(expr) = node else {
-                return;
-            };
-            push_literal_diagnostics(expr, context, provenance, errors);
-        });
+    errors: &'b mut Vec<SemaError>,
+    loc: Option<Loc>,
+}
+
+impl Visitor for BodyTypeVisitor<'_, '_> {
+    type Error = std::convert::Infallible;
+
+    fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Self::Error> {
+        let outer = self.loc.replace(stmt.expansion);
+        let result = visit::walk_stmt(self, stmt);
+        self.loc = outer;
+        result
+    }
+
+    fn visit_type_specifier(&mut self, ty: &TypeSpecifier) -> Result<(), Self::Error> {
+        if let Some(loc) = self.loc {
+            check_extensions(ty, self.context, self.provenance, loc, self.errors);
+        }
+        visit::walk_type_specifier(self, ty)
     }
 }
 
@@ -1116,59 +949,125 @@ fn check_function_asm(
     errors: &mut Vec<SemaError>,
 ) {
     let mut labels = HashMap::new();
-    let mut scope = Vec::new();
-    let mut next_scope = 0;
-    walk_stmts(&function.body, &mut |node| match node {
-        BodyNode::Stmt(stmt) => {
-            if let StmtKind::Labeled { label: name, .. } = &stmt.value {
-                labels.insert(name.as_str(), scope.clone());
-            }
+    let mut collector = AsmLabelVisitor::new(&mut labels);
+    visit::walk_stmts(&mut collector, &function.body).unwrap_or_else(|never| match never {});
+    let mut checker = AsmCheckVisitor::new(unit, &labels, provenance, errors);
+    visit::walk_stmts(&mut checker, &function.body).unwrap_or_else(|never| match never {});
+}
+
+struct AsmLabelVisitor<'a> {
+    labels: &'a mut HashMap<String, Vec<usize>>,
+    scope: Vec<usize>,
+    next_scope: usize,
+}
+
+impl<'a> AsmLabelVisitor<'a> {
+    fn new(labels: &'a mut HashMap<String, Vec<usize>>) -> Self {
+        Self {
+            labels,
+            scope: Vec::new(),
+            next_scope: 0,
         }
-        BodyNode::Expr(_) => {}
-        BodyNode::EnterJumpScope => {
-            scope.push(next_scope);
-            next_scope += 1;
+    }
+}
+
+impl<'a> Visitor for AsmLabelVisitor<'a> {
+    type Error = std::convert::Infallible;
+
+    fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Self::Error> {
+        if let StmtKind::Labeled { label, .. } = &stmt.value {
+            self.labels.insert(label.value.clone(), self.scope.clone());
         }
-        BodyNode::ExitJumpScope => {
-            scope.pop();
+        visit::walk_stmt(self, stmt)
+    }
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
+        if let ExprKind::StatementExpression(body) = &expr.value {
+            self.scope.push(self.next_scope);
+            self.next_scope += 1;
+            visit::walk_stmts(self, body)?;
+            self.scope.pop();
+            Ok(())
+        } else {
+            visit::walk_expr(self, expr)
         }
-    });
-    scope.clear();
-    next_scope = 0;
-    walk_stmts(&function.body, &mut |node| match node {
-        BodyNode::Stmt(stmt) => match &stmt.value {
-            StmtKind::Asm(asm) => {
-                check_asm_operands(asm, &labels, &scope, provenance, stmt.expansion, errors)
-            }
+    }
+}
+
+struct AsmCheckVisitor<'a, 'b> {
+    unit: &'a TranslationUnit,
+    labels: &'a HashMap<String, Vec<usize>>,
+    provenance: Provenance,
+    errors: &'b mut Vec<SemaError>,
+    scope: Vec<usize>,
+    next_scope: usize,
+}
+
+impl<'a, 'b> AsmCheckVisitor<'a, 'b> {
+    fn new(
+        unit: &'a TranslationUnit,
+        labels: &'a HashMap<String, Vec<usize>>,
+        provenance: Provenance,
+        errors: &'b mut Vec<SemaError>,
+    ) -> Self {
+        Self {
+            unit,
+            labels,
+            provenance,
+            errors,
+            scope: Vec::new(),
+            next_scope: 0,
+        }
+    }
+}
+
+impl Visitor for AsmCheckVisitor<'_, '_> {
+    type Error = std::convert::Infallible;
+
+    fn visit_stmt(&mut self, stmt: &Stmt) -> Result<(), Self::Error> {
+        match &stmt.value {
+            StmtKind::Asm(asm) => check_asm_operands(
+                asm,
+                self.labels,
+                &self.scope,
+                self.provenance,
+                stmt.expansion,
+                self.errors,
+            ),
             StmtKind::Decl(declaration) => {
                 for declarator in &declaration.declarators {
                     check_register_variable(
-                        unit,
+                        self.unit,
                         &declaration.specifiers,
                         declarator,
                         false,
-                        provenance,
+                        self.provenance,
                         stmt.expansion,
-                        errors,
+                        self.errors,
                     );
                 }
             }
             _ => {}
-        },
-        BodyNode::Expr(_) => {}
-        BodyNode::EnterJumpScope => {
-            scope.push(next_scope);
-            next_scope += 1;
         }
-        BodyNode::ExitJumpScope => {
-            scope.pop();
+        visit::walk_stmt(self, stmt)
+    }
+
+    fn visit_expr(&mut self, expr: &Expr) -> Result<(), Self::Error> {
+        if let ExprKind::StatementExpression(body) = &expr.value {
+            self.scope.push(self.next_scope);
+            self.next_scope += 1;
+            visit::walk_stmts(self, body)?;
+            self.scope.pop();
+            Ok(())
+        } else {
+            visit::walk_expr(self, expr)
         }
-    });
+    }
 }
 
 fn check_asm_operands(
     asm: &GnuAsm,
-    labels: &HashMap<&str, Vec<usize>>,
+    labels: &HashMap<String, Vec<usize>>,
     scope: &[usize],
     provenance: Provenance,
     asm_loc: Loc,

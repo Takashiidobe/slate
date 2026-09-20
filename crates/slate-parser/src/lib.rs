@@ -16,3 +16,4 @@ pub mod sema;
 pub mod standard_features;
 pub mod target;
 pub mod target_info;
+pub mod visit;

@@ -2,13 +2,14 @@
 
 _created 2026-09-12_
 
-`Stmt`, `ExprKind`, `TypeSpecifier`, and `ArraySize` (all in `src/ast.rs`) are each matched exhaustively, by variant name, in
-several unrelated files. The compiler will refuse to build until every one
-of these is updated, but nothing points at them up front — you either grep
-every constructor name across the crate or read the files end to end. This
-page is that grep, done once, so the next AST change doesn't require
-re-deriving it. See [[architecture_single_configuration]] for the
-single-configuration pipeline these enums belong to.
+`src/visit.rs` owns exhaustive recursion over `DeclKind`, `StmtKind`,
+`ExprKind`, `TypeSpecifier`, `Declarator`, `Initializer`, attributes, tag
+bodies, and their auxiliary enums. Validation and name resolution implement
+`Visitor`; adding an expression-bearing field or variant fails in the shared
+walker instead of silently disappearing from one pass. The remaining
+touchpoints below either render nodes or assign semantics to them. See
+[[architecture_single_configuration]] for the single-configuration pipeline
+these enums belong to.
 
 Update this page whenever a new exhaustive match site over one of these
 enums is added or removed.
@@ -32,8 +33,10 @@ Control-flow bodies and if/else branches are `Box<Stmt>`; only `Block` and
 function/statement-expression bodies contain statement lists. `Null` represents
 an empty statement without introducing a compound scope.
 
-- `src/sema/names.rs` — statement resolution and label collection recurse into
-  single bodies; scope rules depend on `TranslationUnit.standard`.
+- `src/visit.rs` — shared statement traversal, including attributes, asm
+  operands, static assertions, nested functions, and single bodies.
+- `src/sema/names.rs` — visitor overrides implement scope, binding, and label
+  rules that depend on `TranslationUnit.standard`.
 - `src/render.rs` — comment stripping recurses into single bodies and blocks.
 - `src/sema/module.rs` — module lowering handles `Null` and explicit blocks.
 
@@ -55,9 +58,6 @@ an empty statement without introducing a compound scope.
   `StmtKind::Attributed { attributes, body }` attaches attributes to a nested
   statement; all body walkers must recurse through it without adding a scope.
   Reachability visits both the attributes and body.
-- `src/sema/validate.rs` — `walk_stmt` is exhaustive: a variant holding statements
-  or expressions must recurse so clang-flavor asm checks see nested
-  `asm`, register locals, and labels.
 - `Stmt::Labeled { label: String, body: Box<Stmt> }` (goto target) and
   `Stmt::SwitchLabel { label: SwitchLabel, body: Box<Stmt> }` (`case`/
   `case ... ...`/`default`) nest their target statement as `body` instead
@@ -79,9 +79,11 @@ attributes, `#if`), and wraps each node in a `Span` covering its tokens.
   the construct folds to `i64` or returns `ConstExprError::NotConstant`.
   `evaluate_wide` and `contains_wide` only need touching for new
   arithmetic forms.
-- `src/sema/validate.rs` — `is_integer_constant_expression` and `walk_expr` are
-  exhaustive; `walk_expr` must recurse so asm/label checks see nested
-  statement expressions.
+- `src/visit.rs` — shared recursion reaches expressions in declarations,
+  types, attributes, designators, tag bodies, static assertions, and asm
+  operands.
+- `src/sema/validate.rs` — `is_integer_constant_expression` assigns constant
+  expression semantics and remains exhaustive.
 - `src/sema/expression.rs` — `Lowerer::expr` is exhaustive (no catch-all
   since `lh7.2.12`); a new variant needs an IR lowering or an explicit
   `ResolveError`.
@@ -112,8 +114,10 @@ an error.
 `Declarator`. A variant that embeds a `TypeName` (`Atomic`, `TypeOf`) must
 walk its declarator too.
 
-- `src/sema/validate.rs` — `check_type` and `collect_tag_names` are exhaustive and
-  must traverse nested types; `is_register_scalar_type` classifies it.
+- `src/visit.rs` — shared recursion traverses embedded type names and their
+  declarators.
+- `src/sema/validate.rs` — `check_type`, `collect_tag_names`, and
+  `is_register_scalar_type` assign type-specific validation semantics.
 - `src/reachability.rs` — `Marker::mark_type` is exhaustive and must mark
   declarations referenced through the type.
 - `tests/filecheck.rs` — `type_spelling` renders it for declaration summaries.
