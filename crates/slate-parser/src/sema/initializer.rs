@@ -563,7 +563,9 @@ impl Lowerer {
             Shape::Struct(_) | Shape::Union(_) => {
                 self.types.unaliased(&value.ty) == self.types.unaliased(ty)
             }
-            Shape::Array { .. } => false,
+            Shape::Array { vector, .. } => {
+                vector && self.types.unaliased(&value.ty) == self.types.unaliased(ty)
+            }
         };
         if whole {
             consume(&mut cursor);

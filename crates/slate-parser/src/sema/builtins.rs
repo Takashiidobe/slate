@@ -139,6 +139,9 @@ pub(super) enum CustomBuiltin {
     Unordered,
     InfSign,
     Complex,
+    AddressOf,
+    ClassifyType,
+    FloatClassify,
 }
 
 pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
@@ -162,7 +165,72 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "IsUnordered" => CustomBuiltin::Unordered,
         "IsInfSign" => CustomBuiltin::InfSign,
         "BuiltinComplex" => CustomBuiltin::Complex,
+        "FPClassify" => CustomBuiltin::FloatClassify,
+        "BuiltinAddressof" => CustomBuiltin::AddressOf,
+        "BuiltinClassifyType" => CustomBuiltin::ClassifyType,
         _ => return None,
+    })
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum OperandClass {
+    Integer,
+    Floating,
+    Arithmetic,
+    Any,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum DerivedSignature {
+    Uniform {
+        least: usize,
+        most: usize,
+        class: OperandClass,
+    },
+    Scaled,
+    BitCount,
+    Declared,
+}
+
+pub(super) fn derived_signature(builtin: &ClangBuiltin) -> Option<DerivedSignature> {
+    if let Some(operation) = builtin.record.strip_prefix("Elementwise") {
+        return elementwise_signature(operation);
+    }
+    Some(match builtin.record {
+        "BuiltinAssumeAligned" => DerivedSignature::Declared,
+        "NondetermenisticValue" => DerivedSignature::Uniform {
+            least: 1,
+            most: 1,
+            class: OperandClass::Any,
+        },
+        "Clzg" | "Ctzg" => DerivedSignature::BitCount,
+        _ => return None,
+    })
+}
+
+fn elementwise_signature(operation: &str) -> Option<DerivedSignature> {
+    let (operands, class) = match operation {
+        "ACos" | "ASin" | "ATan" | "Canonicalize" | "Ceil" | "Cos" | "Cosh" | "Exp" | "Exp10"
+        | "Exp2" | "Floor" | "Log" | "Log10" | "Log2" | "NearbyInt" | "Rint" | "Round"
+        | "RoundEven" | "Sin" | "Sinh" | "Sqrt" | "Tan" | "Tanh" | "Trunc" => {
+            (1..=1, OperandClass::Floating)
+        }
+        "Abs" => (1..=1, OperandClass::Arithmetic),
+        "Bitreverse" | "Popcount" => (1..=1, OperandClass::Integer),
+        "Ctlz" | "Cttz" => (1..=2, OperandClass::Integer),
+        "ATan2" | "Copysign" | "Fmod" | "Maximum" | "MaximumNum" | "MaxNum" | "Minimum"
+        | "MinimumNum" | "MinNum" | "Pow" => (2..=2, OperandClass::Floating),
+        "Max" | "Min" => (2..=2, OperandClass::Arithmetic),
+        "AddSat" | "SubSat" | "Clmul" | "Pdep" | "Pext" => (2..=2, OperandClass::Integer),
+        "Fma" => (3..=3, OperandClass::Floating),
+        "Fshl" | "Fshr" => (3..=3, OperandClass::Integer),
+        "Ldexp" => return Some(DerivedSignature::Scaled),
+        _ => return None,
+    };
+    Some(DerivedSignature::Uniform {
+        least: *operands.start(),
+        most: *operands.end(),
+        class,
     })
 }
 
@@ -181,6 +249,10 @@ impl TypeResolver {
         {
             return None;
         }
+        self.declared_signature(prototype)
+    }
+
+    pub(super) fn declared_signature(&mut self, prototype: &BuiltinPrototype) -> Option<QualType> {
         let target = self.target_info().clone();
         let ret = self.builtin_param(&prototype.ret, &target)?;
         let mut params = Vec::with_capacity(prototype.params.len());

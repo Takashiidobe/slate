@@ -109,7 +109,14 @@ impl Lowerer {
         }
     }
 
-    fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+    pub(super) fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+        match self.speculative_type(e)? {
+            (_, true) => Err(ResolveError::Invalid("typeof applied to a bit-field")),
+            (resolved, false) => Ok(resolved),
+        }
+    }
+
+    pub(super) fn speculative_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {
         let next_id = self.next_id;
         let globals = self.module.globals.len();
         let resolved = self.operand_type(e);
@@ -119,7 +126,7 @@ impl Lowerer {
         resolved
     }
 
-    fn operand_type(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+    fn operand_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => return self.operand_type(inner),
             ExprKind::Generic {
@@ -129,16 +136,16 @@ impl Lowerer {
                 let selected = self.generic_selected(controlling, associations)?;
                 return self.operand_type(selected);
             }
-            ExprKind::StringLiteral(literal) => return Ok(self.types.string_type(literal)),
+            ExprKind::StringLiteral(literal) => {
+                return Ok((self.types.string_type(literal), false));
+            }
             _ => {}
         }
         if let Ok(place) = self.place(e) {
-            if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
-                return Err(ResolveError::Invalid("typeof applied to a bit-field"));
-            }
-            return Ok(place.c);
+            let bits = matches!(place.kind, PlaceKind::Field { bits: Some(_), .. });
+            return Ok((place.c, bits));
         }
-        Ok(self.expr(e)?.c)
+        Ok((self.expr(e)?.c, false))
     }
 
     pub(super) fn with_length(&mut self, resolved: QualType, ty: &Type) -> QualType {

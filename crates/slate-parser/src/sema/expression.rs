@@ -1,6 +1,6 @@
-use super::builtins::CustomBuiltin;
+use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature, OperandClass};
 use super::ctype::convert::{CastKind, ConversionContext};
-use super::ctype::{CTypeKind, QualType};
+use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
 use super::types::TypeResolver;
@@ -124,7 +124,11 @@ impl Lowerer {
                 .annotate(&value.value.node, [("c_builtin".into(), name)]);
             return Ok(Some(value));
         }
-        let Some(signature) = self.types.builtin_signature(builtin) else {
+        let signature = match super::builtins::derived_signature(builtin) {
+            Some(derived) => Some(self.derived_signature(builtin, derived, arguments)?),
+            None => self.types.builtin_signature(builtin),
+        };
+        let Some(signature) = signature else {
             return Ok(None);
         };
         let value = self.call(e, Callee::Builtin(name.clone()), signature, arguments)?;
@@ -254,7 +258,146 @@ impl Lowerer {
                     },
                 ))
             }
+            CustomBuiltin::FloatClassify => {
+                let [nan, infinite, normal, subnormal, zero, value] = arguments else {
+                    return Err(ResolveError::Invalid("classification builtin arity"));
+                };
+                let value = self.real_floating_operand(value)?;
+                let c = self.types.ctypes.int();
+                let int = self.types.ir_type(c);
+                let mut selected = self.expr(zero)?;
+                selected = self.convert(selected, c, ConversionReason::UsualArith)?;
+                let mut selected = selected.value;
+                for (test, arm) in [
+                    (FloatClassTest::Subnormal, subnormal),
+                    (FloatClassTest::Normal, normal),
+                    (FloatClassTest::Infinite, infinite),
+                    (FloatClassTest::Nan, nan),
+                ] {
+                    let condition = self.value(
+                        e,
+                        Type::Bool,
+                        ValueKind::FloatClass {
+                            test,
+                            operand: Box::new(value.value.clone()),
+                        },
+                    );
+                    let arm = self.expr(arm)?;
+                    let arm = self.convert(arm, c, ConversionReason::UsualArith)?;
+                    selected = self.value(
+                        e,
+                        int.clone(),
+                        ValueKind::Conditional {
+                            condition: Box::new(condition),
+                            then_value: Box::new(arm.value),
+                            else_value: Box::new(selected),
+                        },
+                    );
+                }
+                Ok(self.operand(e, c, selected.node.value))
+            }
+            CustomBuiltin::AddressOf => {
+                let [operand] = arguments else {
+                    return Err(ResolveError::Invalid("addressof builtin arity"));
+                };
+                let place = self.place(operand)?;
+                if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
+                    return Err(ResolveError::Invalid("address of a bit-field"));
+                }
+                let c = self.types.ctypes.pointer(place.c);
+                Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
+            }
+            CustomBuiltin::ClassifyType => {
+                let [operand] = arguments else {
+                    return Err(ResolveError::Invalid("classify builtin arity"));
+                };
+                let (resolved, _) = self.speculative_type(operand)?;
+                let resolved = self.types.ctypes.lvalue_conversion(resolved);
+                let class = type_class(&self.types.ctypes, resolved)
+                    .ok_or(ResolveError::Unsupported("classify builtin operand"))?;
+                let c = self.types.ctypes.int();
+                Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(class.into()))))
+            }
         }
+    }
+
+    fn derived_signature(
+        &mut self,
+        builtin: &ClangBuiltin,
+        derived: DerivedSignature,
+        arguments: &[Expr],
+    ) -> Result<QualType, ResolveError> {
+        match derived {
+            DerivedSignature::Declared => {
+                let prototype = builtin
+                    .prototype
+                    .ok_or(ResolveError::Unsupported("builtin prototype"))?;
+                self.types
+                    .declared_signature(prototype)
+                    .ok_or(ResolveError::Unsupported("builtin prototype"))
+            }
+            DerivedSignature::Uniform { least, most, class } => {
+                if arguments.len() < least || arguments.len() > most {
+                    return Err(ResolveError::Invalid("elementwise builtin arity"));
+                }
+                let operand = self.classified_operand_type(&arguments[0], class)?;
+                Ok(self.function_type(operand, vec![operand; arguments.len()]))
+            }
+            DerivedSignature::Scaled => {
+                let [value, _] = arguments else {
+                    return Err(ResolveError::Invalid("elementwise builtin arity"));
+                };
+                let operand = self.classified_operand_type(value, OperandClass::Floating)?;
+                let exponent = self.types.ctypes.int();
+                Ok(self.function_type(operand, vec![operand, exponent]))
+            }
+            DerivedSignature::BitCount => {
+                let Some((value, fallback)) = arguments.split_first() else {
+                    return Err(ResolveError::Invalid("bit-counting builtin arity"));
+                };
+                if fallback.len() > 1 {
+                    return Err(ResolveError::Invalid("bit-counting builtin arity"));
+                }
+                let operand = self.classified_operand_type(value, OperandClass::Integer)?;
+                let count = self.types.ctypes.int();
+                let mut params = vec![operand];
+                params.extend(fallback.iter().map(|_| count));
+                Ok(self.function_type(count, params))
+            }
+        }
+    }
+
+    fn classified_operand_type(
+        &mut self,
+        argument: &Expr,
+        class: OperandClass,
+    ) -> Result<QualType, ResolveError> {
+        let (resolved, _) = self.speculative_type(argument)?;
+        let operand = self.types.ctypes.lvalue_conversion(resolved);
+        let component = match self.types.ctypes.canonical_kind(operand) {
+            CTypeKind::Vector { element, .. } => *element,
+            _ => operand,
+        };
+        let ctypes = &self.types.ctypes;
+        let accepted = match class {
+            OperandClass::Integer => ctypes.is_integer(component),
+            OperandClass::Floating => ctypes.is_floating(component),
+            OperandClass::Arithmetic => ctypes.is_arithmetic(component),
+            OperandClass::Any => true,
+        };
+        if !accepted {
+            return Err(ResolveError::Invalid("elementwise builtin operand type"));
+        }
+        Ok(operand)
+    }
+
+    fn function_type(&mut self, ret: QualType, params: Vec<QualType>) -> QualType {
+        self.types.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic: false,
+            prototyped: true,
+        })
     }
 
     pub(super) fn chosen_expr<'e>(
@@ -2175,5 +2318,25 @@ fn assignment_operator(op: AssignOp) -> Result<BinaryOp, ResolveError> {
         AssignOp::ShiftLeftAssign => BinaryOp::ShiftLeft,
         AssignOp::ShiftRightAssign => BinaryOp::ShiftRight,
         AssignOp::Assign => return Err(ResolveError::Unsupported("non-compound assignment")),
+    })
+}
+
+fn type_class(ctypes: &CTypes, q: QualType) -> Option<u32> {
+    Some(match ctypes.canonical_kind(q) {
+        CTypeKind::Void => 0,
+        CTypeKind::Char
+        | CTypeKind::SChar
+        | CTypeKind::UChar
+        | CTypeKind::Int { .. }
+        | CTypeKind::Enum(_) => 1,
+        CTypeKind::Bool => 4,
+        CTypeKind::Pointer(_) => 5,
+        CTypeKind::Float(_) | CTypeKind::Imaginary(_) => 8,
+        CTypeKind::Complex(_) => 9,
+        CTypeKind::Record { union: false, .. } => 12,
+        CTypeKind::Record { union: true, .. } => 13,
+        CTypeKind::BitInt { .. } => 18,
+        CTypeKind::Vector { .. } => 19,
+        _ => return None,
     })
 }
