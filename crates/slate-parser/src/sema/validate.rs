@@ -143,6 +143,13 @@ impl TranslationUnit {
                         decl.expansion,
                         &mut errors,
                     );
+                    check_declarator(
+                        &function.declarator,
+                        types,
+                        provenance,
+                        decl.expansion,
+                        &mut errors,
+                    );
                     if flavor == CompilerFlavor::Clang {
                         check_function_asm(self, function, provenance, &mut errors);
                     }
@@ -273,6 +280,14 @@ fn extension_warning(
             Warning::LongLong,
             "'long long' is an extension when C99 mode is not enabled",
         )),
+        TypeSpecifier::Integer(IntegerType::BitInt { .. })
+            if features.bit_int_type != Availability::Standard =>
+        {
+            Some((
+                Warning::BitIntExtension,
+                "'_BitInt' is an extension before C23",
+            ))
+        }
         _ => None,
     }
 }

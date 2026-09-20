@@ -595,6 +595,7 @@ does not reject; input is assumed to have compiled with the real compiler.
 | `//` comments                                                    | C99        | `c89`: warn, `gnu89`: ok    | `c89`: err, `gnu89`: warn | extension                           |
 | `for (int i…)` declaration                                       | C99        | warn                        | `c89`/`gnu89`: err        | gated by `control_statement_scopes` |
 | `_Static_assert`, `_Generic`, `_Alignof`, `_Atomic`, `_Noreturn` | C11        | warn                        | warn                      | extension                           |
+| `_BitInt`                                                       | C23        | warn                        | warn                      | extension                           |
 | `[[…]]` attributes                                               | C23        | warn (all modes before C23) | warn                      | extension                           |
 | `0b` binary literals                                             | C23        | warn                        | warn                      | extension                           |
 | digit separators (`1'000`)                                       | C23        | err                         | err                       | extension                           |

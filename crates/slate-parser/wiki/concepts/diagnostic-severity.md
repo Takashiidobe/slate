@@ -44,6 +44,7 @@ on slate-parser-47s.8 claimed the opposite; it was wrong.
 | `long-long`                   | off       | yes      | a written `long long` specifier, or a selected integer literal rank of `LongLong`, while `long_long_type` is not `Standard` |
 | `c99-compat`                  | on in c89 | no       | a signed-only decimal literal lands on the C89-only `(Long, unsigned)` candidate                                            |
 | `implicitly-unsigned-literal` | on        | no       | a signed-only decimal literal lands on an unsigned candidate at the widest rank                                             |
+| `bit-int-extension`           | off       | yes      | a written `_BitInt` type while `bit_int_type` is not `Standard`                                                           |
 | `c23-extensions`              | on        | yes      | a function definition's parameter has no name while `unnamed_definition_parameters` is not `Standard`                      |
 | `pointer-sign`                | on        | yes      | an implicit pointer conversion (assign/init, argument, return) whose integer pointees differ only in signedness            |
 | `incompatible-pointer-types-discards-qualifiers` | on | yes | the same conversions dropping pointee `const`/`volatile`, or differing in qualifiers below the first pointer level |

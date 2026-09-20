@@ -7,6 +7,7 @@ pub enum Warning {
     LongLong,
     C99Compat,
     ImplicitlyUnsignedLiteral,
+    BitIntExtension,
     C23Extensions,
     PointerSign,
     IncompatiblePointerTypesDiscardsQualifiers,
@@ -18,10 +19,11 @@ pub enum Warning {
 }
 
 impl Warning {
-    pub const ALL: [Self; 11] = [
+    pub const ALL: [Self; 12] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
+        Self::BitIntExtension,
         Self::C23Extensions,
         Self::PointerSign,
         Self::IncompatiblePointerTypesDiscardsQualifiers,
@@ -37,6 +39,7 @@ impl Warning {
             Self::LongLong => "long-long",
             Self::C99Compat => "c99-compat",
             Self::ImplicitlyUnsignedLiteral => "implicitly-unsigned-literal",
+            Self::BitIntExtension => "bit-int-extension",
             Self::C23Extensions => "c23-extensions",
             Self::PointerSign => "pointer-sign",
             Self::IncompatiblePointerTypesDiscardsQualifiers => {
@@ -58,6 +61,7 @@ impl Warning {
         matches!(
             self,
             Self::LongLong
+                | Self::BitIntExtension
                 | Self::C23Extensions
                 | Self::PointerSign
                 | Self::IncompatiblePointerTypesDiscardsQualifiers
@@ -67,6 +71,7 @@ impl Warning {
     fn enabled_by_default(self, standard: LanguageStandard) -> bool {
         match self {
             Self::LongLong => false,
+            Self::BitIntExtension => false,
             Self::C99Compat => standard.stdc_version().is_none(),
             Self::ImplicitlyUnsignedLiteral
             | Self::C23Extensions
