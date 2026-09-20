@@ -2295,7 +2295,16 @@ impl Lowerer {
                 let extents = self.type_name_extents(ty)?;
                 let resolved = self.resolve_type_name(ty)?;
                 let atomic = self.types.ctypes.quals(resolved).is_atomic;
-                let ty = self.types.object_type(resolved, "void layout")?;
+                let ty = self
+                    .types
+                    .object_type(resolved, "void layout")
+                    .map_err(|error| {
+                        if matches!(e.value, ExprKind::SizeOfType { .. }) {
+                            sizeof_error(error)
+                        } else {
+                            error
+                        }
+                    })?;
                 if matches!(e.value, ExprKind::SizeOfType { .. })
                     && matches!(ty, Type::VariableArray { .. })
                 {
@@ -2304,7 +2313,14 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .qualified_storage(fixed_element(&ty).clone(), atomic)?;
+                    .qualified_storage(fixed_element(&ty).clone(), atomic)
+                    .map_err(|error| {
+                        if matches!(e.value, ExprKind::SizeOfType { .. }) {
+                            sizeof_error(error)
+                        } else {
+                            error
+                        }
+                    })?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
@@ -2328,7 +2344,14 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .qualified_storage(fixed_element(&ty).clone(), access.atomic)?;
+                    .qualified_storage(fixed_element(&ty).clone(), access.atomic)
+                    .map_err(|error| {
+                        if matches!(e.value, ExprKind::SizeOfExpr(_)) {
+                            sizeof_error(error)
+                        } else {
+                            error
+                        }
+                    })?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -2462,6 +2485,15 @@ impl Lowerer {
                 Ok(self.operand(e, resolved, ValueKind::VaArg { list: list.place }))
             }
         }
+    }
+}
+
+fn sizeof_error(error: ResolveError) -> ResolveError {
+    match error {
+        ResolveError::Unsupported("incomplete field type") => {
+            ResolveError::Unsupported("sizeof of incomplete type")
+        }
+        error => error,
     }
 }
 

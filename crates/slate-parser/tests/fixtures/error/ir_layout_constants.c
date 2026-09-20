@@ -26,7 +26,7 @@ void bad(void) { (_BitInt(sizeof(int) - 4))1; }
 // FIELD: Error:   × unsupported in numeric IR lowering: unknown offsetof member
 // SLATE-FILECHECK-END FIELD
 // SLATE-FILECHECK-BEGIN INCOMPLETE
-// INCOMPLETE: Error:   × unsupported in numeric IR lowering: incomplete field type
+// INCOMPLETE: Error:   × unsupported in numeric IR lowering: sizeof of incomplete type
 // SLATE-FILECHECK-END INCOMPLETE
 // SLATE-FILECHECK-BEGIN BITFIELD
 // BITFIELD: Error:   × unsupported in numeric IR lowering: offsetof bit-field

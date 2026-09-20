@@ -213,8 +213,16 @@ impl TypeResolver {
             }
             ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
                 let ty = self.assertion_operand_type(operand)?;
-                let layout =
-                    self.qualified_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)?;
+                let layout = self
+                    .qualified_storage(self.ir_type(ty), self.ctypes.quals(ty).is_atomic)
+                    .map_err(|error| match error {
+                        ResolveError::Unsupported("incomplete field type")
+                            if matches!(e.value, ExprKind::SizeOfExpr(_)) =>
+                        {
+                            ResolveError::Unsupported("sizeof of incomplete type")
+                        }
+                        error => error,
+                    })?;
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
                 } else {
@@ -281,8 +289,22 @@ impl TypeResolver {
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
                 let atomic = self.ctypes.quals(resolved).is_atomic;
-                let ty = self.object_type(resolved, "void layout")?;
-                let layout = self.qualified_storage(ty, atomic)?;
+                let ty =
+                    self.object_type(resolved, "void layout")
+                        .map_err(|error| match error {
+                            ResolveError::Unsupported("incomplete field type") => {
+                                ResolveError::Unsupported("sizeof of incomplete type")
+                            }
+                            error => error,
+                        })?;
+                let layout = self
+                    .qualified_storage(ty, atomic)
+                    .map_err(|error| match error {
+                        ResolveError::Unsupported("incomplete field type") => {
+                            ResolveError::Unsupported("sizeof of incomplete type")
+                        }
+                        error => error,
+                    })?;
                 let n = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
                 } else {
