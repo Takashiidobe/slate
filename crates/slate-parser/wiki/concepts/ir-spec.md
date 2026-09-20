@@ -671,6 +671,38 @@ Rust lowering consumes these destinations directly. It does not rediscover
 targets by walking AST parents or looking up label names. The source loop
 form remains available for producing readable Rust.
 
+### Inline asm
+
+**Decided:** a GNU `asm` statement lowers to `Statement::Asm`, which keeps
+everything the parser resolved rather than a token dump: the raw template,
+the `volatile`/`inline`/`goto` qualifiers, the resolved template pieces,
+output operands as places, input operands as values, clobbers, and goto
+labels as label `BindingId`s. Instructions inside the template are still not
+parsed — that is deliberately the assembler's job, and Slate treats the
+template as opaque text with holes.
+
+- Operands are numbered outputs first, then inputs, the same numbering the
+  template's `%N` uses. A resolved `Label(n)` piece indexes the statement's
+  label list, not the operand number the source wrote, so `%l1` and
+  `%l[done]` both print as `%l0` when `done` is the first label.
+- An output is a `Place` because an asm output must be an lvalue; sema
+  rejects non-lvalue outputs before lowering. A `+` (read-write) output
+  stays a single output carrying the `ReadWrite` modifier; it is not split
+  into a tied output/input pair.
+- Constraints keep the parsed alternative list (modifiers, hard register,
+  matching operand number, or letters). The printer reconstructs the GNU
+  spelling from it, so the printed text round-trips the parse rather than
+  echoing the source.
+- Registers carry the source spelling and, when the target register table
+  recognized them, the canonical name. Width is dropped: a clobber clobbers
+  the whole register, and an operand's width is its IR type.
+- Side effects in operand expressions hoist ahead of the statement like any
+  other operand, so the asm itself never contains an embedded effect.
+  Fixture: `sema/ir_asm.c`.
+
+File-scope `asm` and declarator asm labels are separate work
+(`slate-parser-dyd.3`, `slate-parser-dyd.4`); this covers statement asm only.
+
 ### Side effects are hoisted into statements
 
 **Decided:** assignments, `++`/`--`, and compound assignments nested in

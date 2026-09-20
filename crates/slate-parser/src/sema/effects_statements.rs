@@ -171,6 +171,21 @@ impl Hoister {
                     switch,
                     body: self.statements(body)?,
                 },
+                Statement::Asm(mut asm) => {
+                    for output in std::mem::take(&mut asm.outputs) {
+                        asm.outputs.push(AsmOutput {
+                            place: self.place(output.place, &mut out)?,
+                            ..output
+                        });
+                    }
+                    for input in std::mem::take(&mut asm.inputs) {
+                        asm.inputs.push(AsmInput {
+                            value: self.value(input.value, &mut out)?,
+                            ..input
+                        });
+                    }
+                    Statement::Asm(asm)
+                }
                 Statement::Label { id, name, body } => Statement::Label {
                     id,
                     name,

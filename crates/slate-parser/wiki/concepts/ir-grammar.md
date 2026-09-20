@@ -208,7 +208,22 @@ statement  = simple { metadata } ";"
            | "case" binding value [ "..." value ] ":" { metadata } body
            | "default" binding ":" { metadata } body
            | "label" binding c_identifier ":" { metadata } body
+           | asm
            | "{" { metadata } body "}" ;
+asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
+               ( { metadata } ";"
+               | "{" { metadata }
+                   [ "template:" { asm_piece } ";" ]
+                   { "out" integer [ "[" c_identifier "]" ] string
+                       "place<" type [ ", volatile" ] ">(" place ")" ";" }
+                   { "in" integer [ "[" c_identifier "]" ] string value ";" }
+                   [ "clobbers:" clobber { "," clobber } ";" ]
+                   [ "labels:" binding { "," binding } ";" ]
+                 "}" ) ;
+asm_piece  = string | "%" [ letter ] integer | "%l" integer
+           | "%%" | "%=" | "%{" | "%|" | "%}" ;
+clobber    = "memory" | "cc" | "unwind" | register ;
+register   = string [ "as" identifier ] ;
 simple     = "let" binding ":" type "[synthetic]" [ "=" value ]
            | "let" variable
            | "write<" type access [ ordering ] ">(" place ", " value ")"
@@ -227,6 +242,21 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   their switch even when nested deeper (Duff's device). There are no implicit
   targets.
 - Statement order and the absence of `break` express fallthrough.
+- An `asm` with no operand sections prints as a single `;` statement; that
+  is basic asm, whose template is emitted verbatim. The quoted string after
+  the qualifiers is always the raw source template; `template:` is the same
+  text with `%`-directives resolved. In a resolved piece, `%N` is an index
+  into outputs-then-inputs, matching the `out N` / `in N` lines, and `%lN`
+  is an index into the `labels:` list — not the operand number the source
+  wrote. An operand piece may carry a one-letter target modifier (`%a1`).
+- An operand's quoted constraint is the GNU spelling reconstructed from the
+  parsed constraint: `,`-separated alternatives, each with its modifier
+  characters (`=` `+` `&` `%` `-`) and then a hard register `{reg}`, a
+  matching operand number, or constraint letters.
+- A clobbered or hard-coded register prints its source spelling, plus
+  `as <canonical>` when the target's register table recognized it. The
+  register's width is not carried: a clobber names the whole register, and
+  an operand's width is its own IR type.
 - `evaluation` is a loop condition or `for` increment with hoisted side
   effects: the statements run each time, then `yield` gives the value. An
   increment yields `void`.

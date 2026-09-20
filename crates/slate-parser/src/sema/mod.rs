@@ -1,4 +1,5 @@
 mod abi;
+mod asm;
 mod assertion;
 mod atomic;
 mod builtins;

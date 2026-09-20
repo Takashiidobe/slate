@@ -1,5 +1,5 @@
 use super::{
-    ArrayExtent, DllStorage, Evaluation, FloatType, Inlining, Linkage, Metadata, Module,
+    ArrayExtent, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, Metadata, Module,
     NumericType, Parameters, RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel,
     Type, TypeDefinitionKind, Variable, Visibility,
 };
@@ -195,6 +195,66 @@ impl DisplayModule<'_> {
             width = indent + 4
         )?;
         write!(f, "{:indent$}}}", "")
+    }
+
+    fn asm_sections(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        asm: &InlineAsm,
+        indent: usize,
+    ) -> fmt::Result {
+        if !asm.pieces.is_empty() {
+            write!(f, "{:indent$}template:", "")?;
+            for piece in &asm.pieces {
+                write!(f, " {piece}")?;
+            }
+            writeln!(f, ";")?;
+        }
+        for (index, output) in asm.outputs.iter().enumerate() {
+            write!(f, "{:indent$}out {index}", "")?;
+            if let Some(name) = &output.name {
+                write!(f, " [{name}]")?;
+            }
+            writeln!(
+                f,
+                " {} place<{}{}>({});",
+                output.constraint,
+                output.place.ty,
+                output.place.access,
+                output.place.display_mode(self.compact)
+            )?;
+        }
+        for (offset, input) in asm.inputs.iter().enumerate() {
+            let index = asm.outputs.len() + offset;
+            write!(f, "{:indent$}in {index}", "")?;
+            if let Some(name) = &input.name {
+                write!(f, " [{name}]")?;
+            }
+            writeln!(
+                f,
+                " {} {};",
+                input.constraint,
+                input
+                    .value
+                    .display_metadata(false, self.table())
+                    .with_compact(self.compact)
+            )?;
+        }
+        if !asm.clobbers.is_empty() {
+            write!(f, "{:indent$}clobbers:", "")?;
+            for (index, clobber) in asm.clobbers.iter().enumerate() {
+                write!(f, "{} {clobber}", if index > 0 { "," } else { "" })?;
+            }
+            writeln!(f, ";")?;
+        }
+        if !asm.labels.is_empty() {
+            write!(f, "{:indent$}labels:", "")?;
+            for (index, label) in asm.labels.iter().enumerate() {
+                write!(f, "{} %{}", if index > 0 { "," } else { "" }, label.0)?;
+            }
+            writeln!(f, ";")?;
+        }
+        Ok(())
     }
 
     fn statements(
@@ -408,6 +468,30 @@ impl DisplayModule<'_> {
                     metadata(f, self.table(), statement.id)?;
                     writeln!(f)?;
                     self.statements(f, body, indent + 4)?;
+                    continue;
+                }
+                Statement::Asm(asm) => {
+                    f.write_str("asm")?;
+                    if asm.volatile {
+                        f.write_str(" volatile")?;
+                    }
+                    if asm.inline {
+                        f.write_str(" inline")?;
+                    }
+                    if asm.goto {
+                        f.write_str(" goto")?;
+                    }
+                    write!(f, " {:?}", asm.template)?;
+                    if !asm.has_sections() {
+                        metadata(f, self.table(), statement.id)?;
+                        writeln!(f, ";")?;
+                        continue;
+                    }
+                    f.write_str(" {")?;
+                    metadata(f, self.table(), statement.id)?;
+                    writeln!(f)?;
+                    self.asm_sections(f, asm, indent + 4)?;
+                    writeln!(f, "{:indent$}}}", "")?;
                     continue;
                 }
                 Statement::Block(body) => {

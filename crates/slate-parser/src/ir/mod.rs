@@ -1,4 +1,5 @@
 mod abi;
+mod asm;
 mod atomic;
 mod declarations;
 mod module;
@@ -7,6 +8,10 @@ mod names;
 mod numeric;
 
 pub use abi::{AbiChunk, AbiConvention, AbiPass, AbiSignature};
+pub use asm::{
+    AsmClobber, AsmConstraint, AsmConstraintAlternative, AsmConstraintLocation,
+    AsmConstraintModifier, AsmInput, AsmOutput, AsmPiece, AsmRegister, InlineAsm,
+};
 pub use atomic::{CompareExchangeForm, FenceScope, MemoryOrder, Weakness};
 pub use declarations::{
     Access, AggregateMember, AggregateTarget, ArrayExtent, ArrayParameter, BitFieldAccess,

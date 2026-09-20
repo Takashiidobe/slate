@@ -1,5 +1,5 @@
 use super::{
-    AbiSignature, BindingId, FenceScope, Global, MemoryOrder, Parameters, Place, Type,
+    AbiSignature, BindingId, FenceScope, Global, InlineAsm, MemoryOrder, Parameters, Place, Type,
     TypeDefinition, Value, Variable,
 };
 use crate::ast::{NodeId, Span};
@@ -189,6 +189,7 @@ pub enum Statement {
     Continue(BindingId),
     Goto(BindingId),
     ComputedGoto(Value),
+    Asm(Box<InlineAsm>),
     Label {
         id: BindingId,
         name: String,
