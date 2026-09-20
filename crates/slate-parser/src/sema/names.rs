@@ -316,6 +316,7 @@ impl Resolver {
             ExprKind::Identifier(name) => self.reference_ordinary(name, expr),
             ExprKind::Cast { ty, value }
             | ExprKind::BitCast { ty, value }
+            | ExprKind::ConvertVector { ty, value }
             | ExprKind::VaArg { list: value, ty } => {
                 self.type_name(ty, expr)?;
                 self.visit_expr(value)

@@ -9,9 +9,10 @@ use crate::compiler_args::LanguageStandard;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::ir::*;
+use num_bigint::BigInt;
 use std::collections::HashMap;
 
-enum Subscript {
+enum Projection {
     Place(Lvalue),
     Value(Operand),
 }
@@ -301,6 +302,7 @@ impl Lowerer {
                 }
                 Ok(self.operand(e, c, selected.node.value))
             }
+            CustomBuiltin::Shuffle => self.shuffle_builtin(e, arguments),
             CustomBuiltin::AddressOf => {
                 let [operand] = arguments else {
                     return Err(ResolveError::Invalid("addressof builtin arity"));
@@ -1136,20 +1138,18 @@ impl Lowerer {
                 })
             }
             ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
-                Subscript::Place(place) => Ok(place),
-                Subscript::Value(_) => Err(ResolveError::Invalid(
+                Projection::Place(place) => Ok(place),
+                Projection::Value(_) => Err(ResolveError::Invalid(
                     "vector element of a value is not a place",
                 )),
             },
             ExprKind::Member { base, field, arrow } => {
-                let base = if *arrow {
-                    let value = self.expr(base)?;
-                    self.deref(value)?
-                } else {
-                    self.place(base)?
-                };
-                self.project(base, field.value.as_str())?
-                    .ok_or(ResolveError::Unsupported("unknown member"))
+                match self.member(e, base, &field.value, *arrow)? {
+                    Projection::Place(place) => Ok(place),
+                    Projection::Value(_) => Err(ResolveError::Invalid(
+                        "vector components of a value are not a place",
+                    )),
+                }
             }
             _ => Err(ResolveError::Unsupported(
                 "expression is not a supported place",
@@ -1162,11 +1162,11 @@ impl Lowerer {
         e: &Expr,
         base: &Expr,
         index: &Expr,
-    ) -> Result<Subscript, ResolveError> {
+    ) -> Result<Projection, ResolveError> {
         let object = match self.place(base) {
             Ok(object) if self.types.ctypes.is_vector(object.c) => {
                 let index = self.expr(index)?;
-                return Ok(Subscript::Place(self.lane(object, index)?));
+                return Ok(Projection::Place(self.lane(object, index)?));
             }
             Ok(object) => self.read(base, object)?,
             Err(_) => self.expr(base)?,
@@ -1174,7 +1174,7 @@ impl Lowerer {
         let index = self.expr(index)?;
         if self.types.ctypes.is_vector(object.c) {
             let c = self.vector_element(object.c, &index)?;
-            return Ok(Subscript::Value(self.operand(
+            return Ok(Projection::Value(self.operand(
                 e,
                 c,
                 ValueKind::Lane {
@@ -1184,7 +1184,193 @@ impl Lowerer {
             )));
         }
         let pointer = self.binary(e, BinaryOp::Add, object, index)?;
-        Ok(Subscript::Place(self.deref(pointer)?))
+        Ok(Projection::Place(self.deref(pointer)?))
+    }
+
+    fn vector_parts(&mut self, vector: QualType) -> Result<(QualType, u32), ResolveError> {
+        match self.types.ctypes.canonical_kind(vector) {
+            CTypeKind::Vector { element, lanes, .. } => Ok((*element, *lanes)),
+            _ => Err(ResolveError::Invalid("expected a vector operand")),
+        }
+    }
+
+    fn shuffle_builtin(&mut self, e: &Expr, arguments: &[Expr]) -> Result<Operand, ResolveError> {
+        let Some((left, rest)) = arguments.split_first() else {
+            return Err(ResolveError::Invalid("shuffle builtin arity"));
+        };
+        let left = self.expr(left)?;
+        let CTypeKind::Vector {
+            element,
+            lanes,
+            bytes,
+        } = *self.types.ctypes.canonical_kind(left.c)
+        else {
+            return Err(ResolveError::Invalid("shuffle builtin operand type"));
+        };
+        let Some((right, indices)) = rest.split_first() else {
+            return Err(ResolveError::Invalid("shuffle builtin arity"));
+        };
+        let right = self.expr(right)?;
+        if indices.is_empty() {
+            let CTypeKind::Vector {
+                element: mask_element,
+                lanes: mask_lanes,
+                ..
+            } = *self.types.ctypes.canonical_kind(right.c)
+            else {
+                return Err(ResolveError::Invalid("shuffle builtin mask type"));
+            };
+            if !self.types.ctypes.is_integer(mask_element) || mask_lanes != lanes {
+                return Err(ResolveError::Invalid("shuffle builtin mask type"));
+            }
+            return Ok(self.operand(
+                e,
+                left.c,
+                ValueKind::Shuffle {
+                    left: Box::new(left.value),
+                    right: None,
+                    mask: ShuffleMask::Dynamic(Box::new(right.value)),
+                },
+            ));
+        }
+        if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
+            return Err(ResolveError::Invalid("shuffle builtin operand types"));
+        }
+        let mut mask = Vec::with_capacity(indices.len());
+        for index in indices {
+            let index = self.types.constant_integer(index)?;
+            let lane = u32::try_from(&index).ok();
+            if index != BigInt::from(-1) && !lane.is_some_and(|lane| lane < lanes * 2) {
+                return Err(ResolveError::Invalid("shuffle builtin lane index"));
+            }
+            mask.push(lane);
+        }
+        let width = u32::try_from(mask.len())
+            .map_err(|_| ResolveError::Invalid("shuffle builtin lane count"))?;
+        let c = self.types.ctypes.qual(CTypeKind::Vector {
+            element,
+            lanes: width,
+            bytes: bytes / u64::from(lanes) * u64::from(width),
+        });
+        Ok(self.operand(
+            e,
+            c,
+            ValueKind::Shuffle {
+                left: Box::new(left.value),
+                right: Some(Box::new(right.value)),
+                mask: ShuffleMask::Lanes(mask),
+            },
+        ))
+    }
+
+    fn member(
+        &mut self,
+        e: &Expr,
+        base: &Expr,
+        field: &str,
+        arrow: bool,
+    ) -> Result<Projection, ResolveError> {
+        let object = if arrow {
+            let value = self.expr(base)?;
+            self.deref(value)?
+        } else {
+            match self.place(base) {
+                Ok(object) => object,
+                Err(error) => {
+                    let value = self.expr(base)?;
+                    if !self.types.ctypes.is_vector(value.c) {
+                        return Err(error);
+                    }
+                    let (c, mask) = self.swizzle(value.c, field)?;
+                    return Ok(Projection::Value(self.operand(
+                        e,
+                        c,
+                        ValueKind::Shuffle {
+                            left: Box::new(value.value),
+                            right: None,
+                            mask: ShuffleMask::Lanes(mask),
+                        },
+                    )));
+                }
+            }
+        };
+        if !self.types.ctypes.is_vector(object.c) {
+            return self
+                .project(object, field)?
+                .map(Projection::Place)
+                .ok_or(ResolveError::Unsupported("unknown member"));
+        }
+        let (c, mask) = self.swizzle(object.c, field)?;
+        let lanes: Option<Vec<u32>> = mask.iter().copied().collect();
+        let assignable = lanes.as_ref().is_some_and(|lanes| {
+            lanes
+                .iter()
+                .enumerate()
+                .all(|(position, lane)| !lanes[..position].contains(lane))
+        });
+        match lanes.filter(|_| assignable) {
+            Some(lanes) if lanes.len() == 1 => {
+                let index = self.types.ctypes.int();
+                let index = self.operand(
+                    e,
+                    index,
+                    ValueKind::Constant(Number::Integer(lanes[0].into())),
+                );
+                Ok(Projection::Place(self.lane(object, index)?))
+            }
+            Some(lanes) => Ok(Projection::Place(Lvalue {
+                c,
+                place: Place {
+                    ty: self.types.ir_type(c),
+                    access: object.place.access,
+                    kind: PlaceKind::Swizzle {
+                        base: Box::new(object.place),
+                        lanes,
+                    },
+                },
+            })),
+            None => {
+                let value = self.read(base, object)?;
+                Ok(Projection::Value(self.operand(
+                    e,
+                    c,
+                    ValueKind::Shuffle {
+                        left: Box::new(value.value),
+                        right: None,
+                        mask: ShuffleMask::Lanes(mask),
+                    },
+                )))
+            }
+        }
+    }
+
+    fn swizzle(
+        &mut self,
+        vector: QualType,
+        field: &str,
+    ) -> Result<(QualType, Vec<Option<u32>>), ResolveError> {
+        let CTypeKind::Vector {
+            element,
+            lanes,
+            bytes,
+        } = *self.types.ctypes.canonical_kind(vector)
+        else {
+            return Err(ResolveError::Unsupported("expected vector"));
+        };
+        let mask = swizzle_lanes(field, lanes)
+            .ok_or(ResolveError::Invalid("illegal vector component name"))?;
+        let width = u32::try_from(mask.len())
+            .map_err(|_| ResolveError::Invalid("illegal vector component name"))?;
+        let c = if width == 1 {
+            element
+        } else {
+            self.types.ctypes.qual(CTypeKind::Vector {
+                element,
+                lanes: width,
+                bytes: bytes / u64::from(lanes) * u64::from(width),
+            })
+        };
+        Ok((c.with(self.types.ctypes.quals(vector)), mask))
     }
 
     fn lane(&mut self, object: Lvalue, index: Operand) -> Result<Lvalue, ResolveError> {
@@ -1668,11 +1854,16 @@ impl Lowerer {
                 Ok(self.operand(e, value.c, value.value.node.value))
             }
             ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
-                Subscript::Place(place) => self.read(e, place),
-                Subscript::Value(value) => Ok(value),
+                Projection::Place(place) => self.read(e, place),
+                Projection::Value(value) => Ok(value),
             },
+            ExprKind::Member { base, field, arrow } => {
+                match self.member(e, base, &field.value, *arrow)? {
+                    Projection::Place(place) => self.read(e, place),
+                    Projection::Value(value) => Ok(value),
+                }
+            }
             ExprKind::Identifier(_)
-            | ExprKind::Member { .. }
             | ExprKind::CompoundLiteral { .. }
             | ExprKind::Unary {
                 op: UnaryOp::Deref, ..
@@ -2236,6 +2427,30 @@ impl Lowerer {
                     ),
                 })
             }
+            ExprKind::ConvertVector { ty, value } => {
+                let resolved = self.resolve_type_name(ty)?;
+                let value = self.expr(value)?;
+                let (element, lanes) = self.vector_parts(value.c)?;
+                let (target, target_lanes) = self.vector_parts(resolved)?;
+                if lanes != target_lanes {
+                    return Err(ResolveError::Invalid(
+                        "convertvector operands differ in lane count",
+                    ));
+                }
+                let from = self.types.ir_type(element);
+                let to = self.types.ir_type(target);
+                let converted = self.context.elementwise_conversion(
+                    value.value,
+                    from,
+                    to,
+                    lanes,
+                    ConversionReason::Explicit,
+                )?;
+                Ok(Operand {
+                    value: converted,
+                    c: resolved,
+                })
+            }
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
                 if list.ty != Type::VaList {
@@ -2390,6 +2605,37 @@ fn assignment_operator(op: AssignOp) -> Result<BinaryOp, ResolveError> {
         AssignOp::ShiftRightAssign => BinaryOp::ShiftRight,
         AssignOp::Assign => return Err(ResolveError::Unsupported("non-compound assignment")),
     })
+}
+
+fn swizzle_lanes(field: &str, lanes: u32) -> Option<Vec<Option<u32>>> {
+    let half = lanes.next_power_of_two() / 2;
+    let selected: Vec<u32> = match field {
+        "lo" => (0..half).collect(),
+        "hi" => (half..half * 2).collect(),
+        "even" => (0..half).map(|lane| lane * 2).collect(),
+        "odd" => (0..half).map(|lane| lane * 2 + 1).collect(),
+        _ => match field.strip_prefix(['s', 'S']) {
+            Some(digits) if !digits.is_empty() => digits
+                .chars()
+                .map(|digit| digit.to_digit(16))
+                .collect::<Option<_>>()?,
+            _ => {
+                let named = |set: &str| {
+                    field
+                        .chars()
+                        .map(|component| set.find(component).map(|lane| lane as u32))
+                        .collect::<Option<Vec<u32>>>()
+                };
+                named("xyzw").or_else(|| named("rgba"))?
+            }
+        },
+    };
+    Some(
+        selected
+            .into_iter()
+            .map(|lane| (lane < lanes).then_some(lane))
+            .collect(),
+    )
 }
 
 fn type_class(ctypes: &CTypes, q: QualType) -> Option<u32> {

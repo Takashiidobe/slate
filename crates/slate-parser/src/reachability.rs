@@ -305,6 +305,7 @@ impl<'a> Reachability<'a> {
             }
             ExprKind::Cast { ty, value }
             | ExprKind::BitCast { ty, value }
+            | ExprKind::ConvertVector { ty, value }
             | ExprKind::VaArg { list: value, ty } => {
                 self.mark_type_name(ty);
                 self.mark_expr(value);

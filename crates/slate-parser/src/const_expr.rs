@@ -929,6 +929,7 @@ impl<'a> Parser<'a> {
             }
             ExprKind::Cast { value, .. } => Self::evaluate_expr(value, ctx),
             ExprKind::BitCast { .. } => Err(ConstExprError::NotConstant("bit cast")),
+            ExprKind::ConvertVector { .. } => Err(ConstExprError::NotConstant("convertvector")),
             ExprKind::VaArg { .. } => Err(ConstExprError::NotConstant("va_arg")),
             ExprKind::Unary {
                 op: UnaryOp::AddrOf,
@@ -1747,6 +1748,9 @@ impl<'a> Parser<'a> {
             Some(Token::Ident(value)) if value == "__builtin_va_arg" => {
                 return self.parse_va_arg(start);
             }
+            Some(Token::Ident(value)) if value == "__builtin_convertvector" => {
+                return self.parse_convert_vector(start);
+            }
             Some(Token::Ident(value)) if value == "__builtin_types_compatible_p" => {
                 return self.parse_types_compatible(start);
             }
@@ -1904,6 +1908,18 @@ impl<'a> Parser<'a> {
         let value = self.parse_assignment()?;
         self.expect(Token::RParen)?;
         Ok(self.node(ExprKind::BitCast { ty, value }, start))
+    }
+
+    fn parse_convert_vector(&mut self, start: usize) -> Result<Expr, ConstExprError> {
+        self.expect(Token::LParen)?;
+        let value = self.parse_assignment()?;
+        self.expect(Token::Comma)?;
+        let (ty, end) = self
+            .try_parse_type_name(self.position, |_| true)
+            .ok_or(ConstExprError::ExpectedTypeName)?;
+        self.position = end;
+        self.expect(Token::RParen)?;
+        Ok(self.node(ExprKind::ConvertVector { ty, value }, start))
     }
 
     fn parse_va_arg(&mut self, start: usize) -> Result<Expr, ConstExprError> {

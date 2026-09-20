@@ -319,6 +319,7 @@ impl Checker<'_> {
             | ExprKind::Postfix { operand: expr, .. }
             | ExprKind::Cast { value: expr, .. }
             | ExprKind::BitCast { value: expr, .. }
+            | ExprKind::ConvertVector { value: expr, .. }
             | ExprKind::VaArg { list: expr, .. }
             | ExprKind::SizeOfExpr(expr)
             | ExprKind::AlignOfExpr(expr)

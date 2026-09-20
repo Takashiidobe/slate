@@ -259,6 +259,10 @@ pub enum PlaceKind {
         base: Box<Place>,
         index: Box<Value>,
     },
+    Swizzle {
+        base: Box<Place>,
+        lanes: Vec<u32>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -331,6 +335,12 @@ impl Place {
                     ", {})",
                     index.display_metadata(false, None).with_compact(compact)
                 )
+            }
+            PlaceKind::Swizzle { base, lanes } => {
+                let lanes: Vec<String> = lanes.iter().map(u32::to_string).collect();
+                write!(f, "swizzle<lanes=[{}]>(", lanes.join(", "))?;
+                base.format(f, compact)?;
+                f.write_str(")")
             }
             PlaceKind::Field { base, index, bits } => {
                 match bits {

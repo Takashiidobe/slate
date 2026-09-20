@@ -454,6 +454,7 @@ fn is_integer_constant_expression(expression: &Expr) -> bool {
         | ExprKind::Postfix { .. }
         | ExprKind::CompoundLiteral { .. }
         | ExprKind::BitCast { .. }
+        | ExprKind::ConvertVector { .. }
         | ExprKind::VaArg { .. }
         | ExprKind::LabelAddress(_)
         | ExprKind::StatementExpression(_)

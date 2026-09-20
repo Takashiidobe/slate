@@ -134,6 +134,53 @@ float extended_lane(v4sf a) {
     return a[3];
 }
 
+typedef float v2sf __attribute__((ext_vector_type(2)));
+
+float component(v4sf a) {
+    return a.x + a.w;
+}
+
+v2sf halves(v4sf a) {
+    return a.lo + a.hi;
+}
+
+v2sf duplicated_components(v4sf a) {
+    return a.xx;
+}
+
+v2sf named_components(v4sf a) {
+    return a.s13 + a.even;
+}
+
+void assign_components(v4sf *a, v2sf b) {
+    (*a).x  = 1.0f;
+    (*a).zw = b;
+}
+
+v4si reverse(v4si a, v4si b) {
+    return __builtin_shufflevector(a, b, 3, 2, 5, -1);
+}
+
+v2sf narrow_shuffle(v4sf a) {
+    return __builtin_shufflevector(a, a, 0, 3);
+}
+
+v4sf dynamic_shuffle(v4sf a, v4si mask) {
+    return __builtin_shufflevector(a, mask);
+}
+
+v4sf convert_to_float(v4si a) {
+    return __builtin_convertvector(a, v4sf);
+}
+
+v4si convert_to_int(v4sf a) {
+    return __builtin_convertvector(a, v4si);
+}
+
+v4su convert_signedness(v4si a) {
+    return __builtin_convertvector(a, v4su);
+}
+
 // SLATE-FILECHECK-BEGIN IR
 // IR: module {
 // IR-NEXT:     target "x86_64-unknown-linux-gnu" {
@@ -162,6 +209,7 @@ float extended_lane(v4sf a) {
 // IR-NEXT:         field0 value: vector<i32, 4>;
 // IR-NEXT:         field1 tag: i32;
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 16]];
+// IR-NEXT:     type @type6 v2sf = vector<f32, 2>;
 // IR-NEXT:     global %5 global_vector: vector<i32, 4> [storage=static] = aggregate<vector<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4)) [linkage=external];
 // IR-NEXT:     global %6 partial_vector: vector<i32, 4> [storage=static] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(1)) [linkage=external];
 // IR-NEXT:     global %7 sizes: array<u64, 5> [storage=static] = aggregate<array<u64, 5>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(16), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16)) [linkage=external];
@@ -223,10 +271,10 @@ float extended_lane(v4sf a) {
 // IR-NEXT:         return vector_bit_cast<vector<i32, 4>, reason=explicit>(read<vector<u32, 4>>(%55));
 // IR-NEXT:     }
 // IR-NEXT:     fn %56 @compound(%57 a: ptr<vector<i32, 4>>, %58 b: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         let %82: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%57);
-// IR-NEXT:         let %83: vector<i32, 4> [synthetic] = read<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%82)));
-// IR-NEXT:         let %84: vector<i32, 4> [synthetic] = add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%83), read<vector<i32, 4>>(%58));
-// IR-NEXT:         write<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%82)), read<vector<i32, 4>>(%84));
+// IR-NEXT:         let %108: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%57);
+// IR-NEXT:         let %109: vector<i32, 4> [synthetic] = read<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%108)));
+// IR-NEXT:         let %110: vector<i32, 4> [synthetic] = add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%109), read<vector<i32, 4>>(%58));
+// IR-NEXT:         write<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%108)), read<vector<i32, 4>>(%110));
 // IR-NEXT:     }
 // IR-NEXT:     fn %59 @select(%60 a: vector<i32, 4>, %61 b: vector<i32, 4>, %62 c: i32) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct, direct, scalar) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         return conditional<vector<i32, 4>>(ne<i32>(read<i32>(%62), const<i32>(0)), read<vector<i32, 4>>(%60), read<vector<i32, 4>>(%61));
@@ -243,11 +291,11 @@ float extended_lane(v4sf a) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %71 @write_lane(%72 a: ptr<vector<i32, 4>>, %73 i: i32, %74 value: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         write<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%72)), read<i32>(%73)), read<i32>(%74));
-// IR-NEXT:         let %85: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%72);
-// IR-NEXT:         let %86: i32 [synthetic] = const<i32>(0);
-// IR-NEXT:         let %87: i32 [synthetic] = read<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%85)), read<i32>(%86)));
-// IR-NEXT:         let %88: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%87), read<i32>(%74));
-// IR-NEXT:         write<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%85)), read<i32>(%86)), read<i32>(%88));
+// IR-NEXT:         let %111: ptr<vector<i32, 4>> [synthetic] = read<ptr<vector<i32, 4>>>(%72);
+// IR-NEXT:         let %112: i32 [synthetic] = const<i32>(0);
+// IR-NEXT:         let %113: i32 [synthetic] = read<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%111)), read<i32>(%112)));
+// IR-NEXT:         let %114: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%113), read<i32>(%74));
+// IR-NEXT:         write<i32>(lane(deref(read<ptr<vector<i32, 4>>>(%111)), read<i32>(%112)), read<i32>(%114));
 // IR-NEXT:     }
 // IR-NEXT:     fn %75 @value_lane(%76 a: vector<i32, 4>, %77 b: vector<i32, 4>, %78 i: i32) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct, direct, scalar) -> direct] [fallthrough=ub_if_used] {
 // IR-NEXT:         let %79 result: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=false>(index0 = lane<i32>(add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%76), read<vector<i32, 4>>(%77)), read<i32>(%78)), index1 = read<i32>(lane(%76, const<i32>(1))), index2 = read<i32>(lane(%77, const<i32>(2))), index3 = const<i32>(0));
@@ -255,6 +303,40 @@ float extended_lane(v4sf a) {
 // IR-NEXT:     }
 // IR-NEXT:     fn %80 @extended_lane(%81 a: vector<f32, 4>) -> f32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
 // IR-NEXT:         return read<f32>(lane(%81, const<i32>(3)));
+// IR-NEXT:     }
+// IR-NEXT:     fn %83 @component(%84 a: vector<f32, 4>) -> f32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<f32, rounding=nearest_even, exceptions=ignore>(read<f32>(lane(%84, const<i32>(0))), read<f32>(lane(%84, const<i32>(3))));
+// IR-NEXT:     }
+// IR-NEXT:     fn %85 @halves(%86 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 2>>(swizzle<lanes=[0, 1]>(%86)), read<vector<f32, 2>>(swizzle<lanes=[2, 3]>(%86)));
+// IR-NEXT:     }
+// IR-NEXT:     fn %87 @duplicated_components(%88 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return shuffle<vector<f32, 2>, mask=[0, 0]>(read<vector<f32, 4>>(%88));
+// IR-NEXT:     }
+// IR-NEXT:     fn %89 @named_components(%90 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<vector<f32, 2>, elementwise=true, rounding=nearest_even, exceptions=ignore>(read<vector<f32, 2>>(swizzle<lanes=[1, 3]>(%90)), read<vector<f32, 2>>(swizzle<lanes=[0, 2]>(%90)));
+// IR-NEXT:     }
+// IR-NEXT:     fn %91 @assign_components(%92 a: ptr<vector<f32, 4>>, %93 b: vector<f32, 2>) -> void [linkage=external] [abi=sysv64(scalar, coerce<f64>) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         write<f32>(lane(deref(read<ptr<vector<f32, 4>>>(%92)), const<i32>(0)), const<f32>(1.0));
+// IR-NEXT:         write<vector<f32, 2>>(swizzle<lanes=[2, 3]>(deref(read<ptr<vector<f32, 4>>>(%92))), read<vector<f32, 2>>(%93));
+// IR-NEXT:     }
+// IR-NEXT:     fn %94 @reverse(%95 a: vector<i32, 4>, %96 b: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct, direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return shuffle<vector<i32, 4>, mask=[3, 2, 5, undef]>(read<vector<i32, 4>>(%95), read<vector<i32, 4>>(%96));
+// IR-NEXT:     }
+// IR-NEXT:     fn %97 @narrow_shuffle(%98 a: vector<f32, 4>) -> vector<f32, 2> [linkage=external] [abi=sysv64(direct) -> coerce<f64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return shuffle<vector<f32, 2>, mask=[0, 3]>(read<vector<f32, 4>>(%98), read<vector<f32, 4>>(%98));
+// IR-NEXT:     }
+// IR-NEXT:     fn %99 @dynamic_shuffle(%100 a: vector<f32, 4>, %101 mask: vector<i32, 4>) -> vector<f32, 4> [linkage=external] [abi=sysv64(direct, direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return shuffle<vector<f32, 4>, mask=dynamic(read<vector<i32, 4>>(%101))>(read<vector<f32, 4>>(%100));
+// IR-NEXT:     }
+// IR-NEXT:     fn %102 @convert_to_float(%103 a: vector<i32, 4>) -> vector<f32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return int_to_float<vector<f32, 4>, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(read<vector<i32, 4>>(%103));
+// IR-NEXT:     }
+// IR-NEXT:     fn %104 @convert_to_int(%105 a: vector<f32, 4>) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return float_to_int<vector<i32, 4>, reason=explicit, out_of_range=ub, exceptions=ignore>(read<vector<f32, 4>>(%105));
+// IR-NEXT:     }
+// IR-NEXT:     fn %106 @convert_signedness(%107 a: vector<i32, 4>) -> vector<u32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return reinterpret<vector<u32, 4>, reason=explicit, fits=unknown>(read<vector<i32, 4>>(%107));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

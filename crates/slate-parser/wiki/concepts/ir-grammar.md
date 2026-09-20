@@ -245,6 +245,7 @@ place  = binding
          ", bits=" int ".." int ">(" place ")"
        | ( "real(" | "imag(" ) place ")"
        | "lane(" place ", " value ")"
+       | "swizzle<lanes=[" digits { ", " digits } "]>(" place ")"
        | "compound_literal" binding "[storage=" storage "]" "=" value ;
 access   = [ ", volatile" ] ;
 ordering = ", atomic=" order ;
@@ -264,6 +265,10 @@ order    = "relaxed" | "consume" | "acquire" | "release" | "acq_rel"
 - `lane(p, i)` is element `i` of the vector place `p`. Like a bit-field it is
   readable and writable but not addressable, and `i` is a runtime value, not a
   constant. A vector *value* is indexed by the `lane<T>(..)` value instead.
+- `swizzle<lanes=[..]>(p)` is the several-lane form, for an `ext_vector`
+  component selection such as `v.xy` or `v.lo`. Its lanes are constants and
+  distinct, since a repeated component is not assignable; a repeated or
+  out-of-range selection is a `shuffle<..>` value instead.
 - `compound_literal %N` is a distinct object with its own storage duration.
 - Lowering does not produce `index(..)` yet: all indexing is
   `deref(ptr_offset(..))`, including arrays through `array_decay`.
@@ -311,7 +316,10 @@ core       = "const<" type ">(" constant ")"
              [ ", exceptions=" exceptions ] ">(" value ", " value ")"
            | logical_op "<" type ">(" value ", " value ")"
            | "float_class<bool, test=" float_class ">(" value ")"
-           | "lane<" type ">(" value ", " value ")" ;
+           | "lane<" type ">(" value ", " value ")"
+           | "shuffle<" type ", mask=" shuffle_mask ">(" value [ ", " value ] ")" ;
+shuffle_mask = "[" lane { ", " lane } "]" | "dynamic(" value ")" ;
+lane       = digits | "undef" ;
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
 member     = ( "field" digits | "index" digits | "index" digits "..=" digits )
              " = " value ;
@@ -327,6 +335,13 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 - `lane<T>(v, i)` extracts element `i` from the vector value `v`, for a
   subscript whose base is not an lvalue. An lvalue base yields a `lane(..)`
   place instead, so `v[i] = x` stays a write to that place.
+- `shuffle<T, mask=[..]>(v1, v2)` selects lanes from the concatenation of its
+  operands, so an index reaches the second operand once it passes the first
+  operand's lane count; `undef` is a lane whose value is not observed
+  (`__builtin_shufflevector`'s `-1`). A one-operand shuffle indexes only that
+  operand and comes from an `ext_vector` swizzle. `mask=dynamic(v)` is the
+  two-operand `__builtin_shufflevector` form, whose mask is a runtime integer
+  vector, not constants.
 - `float_literal` is a round-trippable decimal (`1.0`, `-0.0`, `inf`); a NaN
   prints as `bits=0x...` to keep its payload. Decimal floats keep their digit
   spelling.

@@ -93,6 +93,12 @@ attributes, `#if`), and wraps each node in a `Span` covering its tokens.
 - `tests/filecheck.rs` — `summarize_evaluated_decl` and `array_size` use
   wildcards; no touch needed.
 
+A variant shaped `{ ty: TypeName, value: Expr }` (`Cast`, `BitCast`,
+`ConvertVector`, `VaArg`) joins the existing or-patterns in `visit.rs`,
+`reachability.rs`, `sema/names.rs` and `sema/assertion.rs` instead of adding
+an arm, and is parsed like `parse_va_arg`: the type operand is read with
+`try_parse_type_name`, not as an expression.
+
 `({ ... })` is parsed by `const_expr::Parser::parse_statement_expression`,
 which calls back into `parser::Parser::parse_statement_expression_body`.
 The callback is the `statements: Option<&parser::Parser>` threaded through

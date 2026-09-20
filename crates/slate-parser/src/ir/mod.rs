@@ -186,6 +186,17 @@ pub enum ValueKind {
         vector: Box<Value>,
         index: Box<Value>,
     },
+    Shuffle {
+        left: Box<Value>,
+        right: Option<Box<Value>>,
+        mask: ShuffleMask,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub enum ShuffleMask {
+    Lanes(Vec<Option<u32>>),
+    Dynamic(Box<Value>),
 }
 
 impl fmt::Display for Value {
@@ -594,6 +605,42 @@ impl Value {
                         .display_metadata(show_spans, metadata)
                         .with_compact(compact)
                 )
+            }
+            ValueKind::Shuffle { left, right, mask } => {
+                let mask = match mask {
+                    ShuffleMask::Lanes(lanes) => {
+                        let lanes: Vec<String> = lanes
+                            .iter()
+                            .map(|lane| match lane {
+                                Some(lane) => lane.to_string(),
+                                None => "undef".to_owned(),
+                            })
+                            .collect();
+                        format!("[{}]", lanes.join(", "))
+                    }
+                    ShuffleMask::Dynamic(mask) => format!(
+                        "dynamic({})",
+                        mask.display_metadata(show_spans, metadata)
+                            .with_compact(compact)
+                    ),
+                };
+                write!(f, "shuffle<{}, mask={mask}>(", self.ty)?;
+                write!(
+                    f,
+                    "{}",
+                    left.display_metadata(show_spans, metadata)
+                        .with_compact(compact)
+                )?;
+                if let Some(right) = right {
+                    write!(
+                        f,
+                        ", {}",
+                        right
+                            .display_metadata(show_spans, metadata)
+                            .with_compact(compact)
+                    )?;
+                }
+                f.write_str(")")
             }
             ValueKind::Lane { vector, index } => write!(
                 f,

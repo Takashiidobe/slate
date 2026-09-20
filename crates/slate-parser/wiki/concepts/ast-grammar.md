@@ -298,6 +298,7 @@ ExprKind = "Identifier(" string ")"
          | VaArg { list: expr, ty: TypeName }
          | TypesCompatible { left_ty: TypeName, right_ty: TypeName }
          | BitCast { ty: TypeName, value: expr }
+         | ConvertVector { ty: TypeName, value: expr }
          | "LabelAddress(" span<string> ")"
          | "StatementExpression(" vec<stmt> ")" ;
 

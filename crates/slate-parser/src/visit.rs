@@ -200,6 +200,7 @@ pub fn walk_expr<V: Visitor + ?Sized>(visitor: &mut V, expr: &Expr) -> Result<()
         | ExprKind::Member { base: value, .. } => visitor.visit_expr(value),
         ExprKind::Cast { ty, value }
         | ExprKind::BitCast { ty, value }
+        | ExprKind::ConvertVector { ty, value }
         | ExprKind::VaArg { list: value, ty } => {
             visitor.visit_type_name(ty)?;
             visitor.visit_expr(value)

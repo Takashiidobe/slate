@@ -746,6 +746,22 @@ impl Context {
         Type::integer(self.target.int_width, true)
     }
 
+    pub(super) fn elementwise_conversion(
+        &self,
+        value: Value,
+        from: Type,
+        to: Type,
+        lanes: u32,
+        reason: ConversionReason,
+    ) -> Result<Value, ResolveError> {
+        let probe = Value {
+            ty: from,
+            node: value.node.clone(),
+        };
+        let converted = self.emit_arithmetic_conversion(probe, to, reason);
+        per_lane(converted, value, lanes)
+    }
+
     pub(super) fn emit_arithmetic_conversion(
         &self,
         value: Value,
@@ -1128,4 +1144,30 @@ fn integer_fits(value: &Value, width: u32, signed: bool) -> Fits {
         } => Fits::Always,
         _ => Fits::Unknown,
     }
+}
+
+fn per_lane(converted: Value, operand: Value, lanes: u32) -> Result<Value, ResolveError> {
+    let mut node = converted.node;
+    let ValueKind::Convert {
+        kind,
+        operand: inner,
+        reason,
+        semantics,
+    } = std::mem::replace(&mut node.value, ValueKind::Void)
+    else {
+        return Ok(operand);
+    };
+    let Type::Numeric(element) = converted.ty else {
+        return Err(ResolveError::Unsupported("elementwise conversion"));
+    };
+    let inner = per_lane(*inner, operand, lanes)?;
+    Ok(Value {
+        ty: Type::Vector { element, lanes },
+        node: node.with_value(ValueKind::Convert {
+            kind,
+            operand: Box::new(inner),
+            reason,
+            semantics,
+        }),
+    })
 }

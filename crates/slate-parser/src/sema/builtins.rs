@@ -142,6 +142,7 @@ pub(super) enum CustomBuiltin {
     AddressOf,
     ClassifyType,
     FloatClassify,
+    Shuffle,
 }
 
 pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
@@ -166,6 +167,7 @@ pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
         "IsInfSign" => CustomBuiltin::InfSign,
         "BuiltinComplex" => CustomBuiltin::Complex,
         "FPClassify" => CustomBuiltin::FloatClassify,
+        "ShuffleVector" => CustomBuiltin::Shuffle,
         "BuiltinAddressof" => CustomBuiltin::AddressOf,
         "BuiltinClassifyType" => CustomBuiltin::ClassifyType,
         _ => return None,

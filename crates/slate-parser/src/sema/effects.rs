@@ -102,6 +102,10 @@ impl Hoister {
                 base: Box::new(self.place(*base, out)?),
                 index: Box::new(self.value(*index, out)?),
             },
+            PlaceKind::Swizzle { base, lanes } => PlaceKind::Swizzle {
+                base: Box::new(self.place(*base, out)?),
+                lanes,
+            },
         };
         Ok(Place {
             ty: place.ty,
@@ -149,6 +153,10 @@ impl Hoister {
                     index: Box::new(index),
                 }
             }
+            PlaceKind::Swizzle { base, lanes } => PlaceKind::Swizzle {
+                base: Box::new(self.stable_place(*base, out)?),
+                lanes,
+            },
             PlaceKind::Lane { base, index } => {
                 let base = self.stable_place(*base, out)?;
                 let index = self.value(*index, out)?;
@@ -553,6 +561,19 @@ impl Hoister {
                 vector: Box::new(self.value(*vector, out)?),
                 index: Box::new(self.value(*index, out)?),
             },
+            ValueKind::Shuffle { left, right, mask } => ValueKind::Shuffle {
+                left: Box::new(self.value(*left, out)?),
+                right: match right {
+                    Some(right) => Some(Box::new(self.value(*right, out)?)),
+                    None => None,
+                },
+                mask: match mask {
+                    ShuffleMask::Dynamic(mask) => {
+                        ShuffleMask::Dynamic(Box::new(self.value(*mask, out)?))
+                    }
+                    lanes => lanes,
+                },
+            },
             ValueKind::Convert {
                 kind,
                 operand,
@@ -631,6 +652,7 @@ fn place_effects(place: &Place) -> bool {
         PlaceKind::Field { base, .. } => place_effects(base),
         PlaceKind::Index { base, index } => effects(base) || effects(index),
         PlaceKind::Lane { base, index } => place_effects(base) || effects(index),
+        PlaceKind::Swizzle { base, .. } => place_effects(base),
     }
 }
 
@@ -663,6 +685,14 @@ fn effects(value: &Value) -> bool {
         } => effects(condition) || effects(then_value) || effects(else_value),
         ValueKind::Aggregate { members, .. } => members.iter().any(|member| effects(&member.value)),
         ValueKind::Lane { vector, index } => effects(vector) || effects(index),
+        ValueKind::Shuffle { left, right, mask } => {
+            effects(left)
+                || right.as_deref().is_some_and(effects)
+                || match mask {
+                    ShuffleMask::Lanes(_) => false,
+                    ShuffleMask::Dynamic(mask) => effects(mask),
+                }
+        }
         ValueKind::Copy { operand, .. }
         | ValueKind::Unary { operand, .. }
         | ValueKind::FloatClass { operand, .. }

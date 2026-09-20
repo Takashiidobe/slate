@@ -490,6 +490,7 @@ Comment { text: Vec<String>, loc: Loc }
 | `VaArg { list, ty: TypeName }`                                                                 |                                                        |
 | `TypesCompatible(TypeName, TypeName)`                                                          | GNU                                                    |
 | `BitCast { ty: TypeName, value }`                                                              |                                                        |
+| `ConvertVector { ty: TypeName, value }`                                                        | GNU/Clang `__builtin_convertvector`                    |
 | `LabelAddress(Span<String>)`                                                                   | GNU `&&label`                                          |
 | `StatementExpression(CompoundStatement)`                                                       | GNU `({ ... })`, parsed                                |
 

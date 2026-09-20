@@ -900,8 +900,26 @@ with omitted lanes zero-filled. `v[i]` on a vector lvalue is the place
 `lane(place, index)`, so a write or compound assignment stays a write to that
 lane; on a vector rvalue, where there is no storage, it is the value
 `lane<T>(vector, index)`. A lane is not addressable, and the index is an
-ordinary runtime value, not a constant. `ext_vector` swizzles (`v.x`, `v.xy`,
-`v.lo`/`.hi`) are still not lowered (`slate-parser-lh7.2.17.7`).
+ordinary runtime value, not a constant.
+
+`ext_vector` component syntax selects lanes by name: `x/y/z/w`, `r/g/b/a`,
+`sN` in hex, and `lo`/`hi`/`even`/`odd`, where the half is taken over the lane
+count rounded up to a power of two, so a 3-lane `.hi` names one lane that does
+not exist. One component is a `lane(..)` place, several distinct components in
+range are a `swizzle<lanes=[..]>(..)` place, and a repeated or out-of-range
+selection is not assignable and becomes a one-operand `shuffle<..>` value.
+Clang accepts these only on `ext_vector_type`; `Type::Vector` does not record
+which spelling declared it, so we accept them on `vector_size` vectors too,
+consistent with treating sema as a debugging aid for input that already
+compiles.
+
+`__builtin_shufflevector` is the same `shuffle<..>` value with two operands,
+its mask indexing their concatenation, and `-1` printed as an `undef` lane;
+its two-argument form takes a runtime integer mask vector and prints
+`mask=dynamic(..)`. `__builtin_convertvector` converts per lane and prints as
+the ordinary scalar conversion of the element types over vector operand and
+result types (`int_to_float<vector<f32, 4>>(..)`), so it carries the same
+exactness and exception policy as the scalar conversion it mirrors.
 `tests/fixtures/sema/ir_vector.c` and `ir_vector_invalid.c` pin these forms.
 
 **Out of scope for current IR lowering:** fixed-point types remain
@@ -1342,7 +1360,7 @@ result of computation. Places retain object and projection structure
 `read(place)`, `write(place, value)`, and `addr_of(place)` consume places.
 `Index` projects into an array place. Pointer indexing uses
 `Deref(ptr_offset(pointer, index))`, with offsets in element units.
-`Lane` projects into a vector place.
+`Lane` and `Swizzle` project into a vector place.
 Each place has a resolved type; field IDs refer to the record layout.
 Bit-fields and vector lanes are readable/writable projections but are not
 addressable.

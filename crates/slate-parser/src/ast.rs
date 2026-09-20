@@ -168,6 +168,10 @@ pub enum ExprKind {
         ty: Box<TypeName>,
         value: Expr,
     },
+    ConvertVector {
+        ty: Box<TypeName>,
+        value: Expr,
+    },
     LabelAddress(Span<String>),
     StatementExpression(Vec<Stmt>),
     BoolLiteral(bool),
@@ -253,6 +257,9 @@ impl std::fmt::Display for ExprKind {
                 formatter.write_str("__builtin_types_compatible_p(...)")
             }
             Self::BitCast { value, .. } => write!(formatter, "__builtin_bit_cast(..., {value})"),
+            Self::ConvertVector { value, .. } => {
+                write!(formatter, "__builtin_convertvector({value}, ...)")
+            }
             Self::LabelAddress(label) => write!(formatter, "&&{label}"),
             Self::StatementExpression(_) => formatter.write_str("({ ... })"),
             Self::BoolLiteral(true) => formatter.write_str("true"),
