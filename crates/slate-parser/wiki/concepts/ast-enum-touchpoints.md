@@ -148,6 +148,14 @@ walk its declarator too.
 - `src/sema/types.rs` — `requested_alignment` and `field_request` read the
   `Layout` group.
 
+## The sema and IR half
+
+This page stops at the AST. Adding a whole type family — a value type with
+its own representation and arithmetic rules, like complex, vector or
+fixed-point — continues through `CTypeKind`, `ir::Type`, target storage, the
+conversion and arithmetic contracts, and the ABI. That walk, and which of its
+match sites the compiler catches, is [[type-family-touchpoints]].
+
 ## Process note
 
 This impact map was reconstructed by reading most of `src/` in one session

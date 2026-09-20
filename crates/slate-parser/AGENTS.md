@@ -66,6 +66,12 @@ re-deriving something from scratch:
   `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`: every file that matches it
   exhaustively, so you don't have to grep the whole crate to find out
   where a new variant needs handling.
+- `wiki/concepts/type-family-touchpoints.md` — before adding a type family
+  (a value type with its own representation and arithmetic, like complex,
+  vector, or fixed-point) or a variant to `ir::Type` or `CTypeKind`: the
+  walk from `TypeSpecifier` down to storage and ABI, and — the part that
+  costs a session to rediscover — which match sites the compiler catches
+  and which accept a new type silently and do the wrong thing.
 - `wiki/index.md` and `wiki/log/` — chronological log of past changes and
   decisions; `llog search <keyword>` to query it.
 - If working on adding a compiler arg, refer to
