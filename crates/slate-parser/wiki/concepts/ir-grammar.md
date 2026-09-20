@@ -414,7 +414,8 @@ conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "complex_to_imaginary" | "imaginary_convert"
            | "vector_splat" | "vector_bit_cast" ;
 arith_op   = "add" | "sub" | "mul" | "div" | "rem"
-           | "and" | "or" | "xor" | "shl" | "shr" ;
+           | "and" | "or" | "xor" | "shl" | "shr"
+           | "minnum" | "maxnum" ;
 unary_op   = "neg" | "not" ;
 compare_op = "eq" | "ne" | "lt" | "le" | "gt" | "ge" ;
 logical_op = "logical_and" | "logical_or" ;
@@ -454,7 +455,8 @@ exceptions        = "ignore" | "observable" ;
 - The arithmetic choices are, in order: `and`/`or`/`xor`/`not` and floating
   `neg`; integer `add`/`sub`/`mul`/`neg`; `div`/`rem` (signed adds
   `min_by_neg_one`); `shl` (signed adds `negative_left`); `shr`; floating
-  arithmetic; complex floating; complex integer.
+  arithmetic (`add`/`sub`/`mul`/`div` and `minnum`/`maxnum`); complex
+  floating; complex integer.
 
 ## Metadata
 

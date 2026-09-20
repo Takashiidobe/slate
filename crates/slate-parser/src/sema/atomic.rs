@@ -749,11 +749,15 @@ impl Lowerer {
                 },
             ));
         }
-        let floating = match &place.ty {
-            Type::Numeric(NumericType::Integer { .. }) => false,
-            Type::Numeric(NumericType::Float(_)) if matches!(op, FetchOp::Add | FetchOp::Sub) => {
-                true
-            }
+        let floating = match (&place.ty, op) {
+            (Type::Numeric(NumericType::Integer { .. }), _) => false,
+            (
+                Type::Numeric(NumericType::Float(_)),
+                FetchOp::Add
+                | FetchOp::Sub
+                | FetchOp::Min { signed: None }
+                | FetchOp::Max { signed: None },
+            ) => true,
             _ => {
                 return Err(ResolveError::Unsupported(
                     "atomic arithmetic on non-integer",
@@ -797,6 +801,14 @@ impl Lowerer {
                         semantics: ArithSema::Exact,
                     },
                 )
+            }
+            FetchOp::Min { .. } | FetchOp::Max { .. } if floating => {
+                let op = if matches!(op, FetchOp::Min { .. }) {
+                    ArithOp::MinNum
+                } else {
+                    ArithOp::MaxNum
+                };
+                arith(self, op, old, operand, wrap)
             }
             FetchOp::Min { signed } | FetchOp::Max { signed } => {
                 let (left, right) = match (signed, &place.ty) {

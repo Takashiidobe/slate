@@ -1336,7 +1336,7 @@ store fits.
 ## Arithmetic
 
 Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
-`shr`, `and`, `or`, `xor`, `neg`, `not`, `eq`/`ne`/`lt`/…
+`shr`, `and`, `or`, `xor`, `minnum`, `maxnum`, `neg`, `not`, `eq`/`ne`/`lt`/…
 
 - `overflow=wrap|ub` (unsigned / signed). `impossible` is an analysis fact,
   not emitted by lowering.
@@ -1344,6 +1344,9 @@ Ops run on concrete widths: `add(a, b)`, `sub`, `mul`, `div`, `rem`, `shl`,
 - `shl`/`shr`: amount type kept separately; `amount_out_of_range=ub`; `shl` of
   a negative signed value is `ub`. Right shift of negative signed values is
   resolved by target (`shr<i32, amount_out_of_range=ub, fill=sign_extend>`).
+- `minnum`/`maxnum` are floating only and have no C operator spelling; they
+  exist for floating atomic `min`/`max` fetches, and are NaN-ignoring (LLVM
+  `minnum`, C `fmin`) rather than the NaN-propagating `minimum`.
 - Comparisons, `!`, `&&`, `||` produce `bool`; `from_bool<i32>` is inserted
   only where the result is used as an integer.
 - Scalars in boolean context lower to `ne<T>(x, const<T>(0))`; pointers to
@@ -1618,8 +1621,11 @@ their own:
   strong or weak at run time.
 - Clang accepts floating `add`/`sub` fetches (`atomicrmw fadd`); they lower
   to floating `add`/`sub` with the ambient floating semantics. Floating
-  `min`/`max` (`atomicrmw fmin`, NaN-ignoring) have no exact compare-and-select
-  form and stay unsupported.
+  `min`/`max` (`atomicrmw fmin`/`fmax`) lower to `minnum`/`maxnum` with the
+  same semantics: those are NaN-ignoring (LLVM `minnum`, C `fmin`), which the
+  integer compare-and-select form cannot express, since `lt(old, v) ? old : v`
+  answers NaN when `v` is NaN. `__sync_fetch_and_min/max` stay integer-only,
+  as clang requires there.
 - `__sync_*` builtins are all `seq_cst` except `lock_test_and_set`
   (acquire, as gcc documents it; clang strengthens it to `seq_cst`) and
   `lock_release` (release). Trailing "protected variable" arguments are

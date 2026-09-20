@@ -264,6 +264,8 @@ pub enum ArithOp {
     Xor,
     Shl,
     Shr,
+    MinNum,
+    MaxNum,
 }
 
 impl fmt::Display for ArithOp {
@@ -279,6 +281,8 @@ impl fmt::Display for ArithOp {
             Self::Xor => "xor",
             Self::Shl => "shl",
             Self::Shr => "shr",
+            Self::MinNum => "minnum",
+            Self::MaxNum => "maxnum",
         })
     }
 }
