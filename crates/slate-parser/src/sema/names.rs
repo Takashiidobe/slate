@@ -321,7 +321,14 @@ impl Resolver {
                 self.visit_expr(value)
             }
             ExprKind::Call { callee, arguments } => {
-                if super::expression::va_builtin(callee).is_none()
+                let implicit_builtin = match &callee.value {
+                    ExprKind::Identifier(name) if self.lookup_ordinary(name).is_none() => {
+                        super::builtins::clang_builtin(name)
+                    }
+                    _ => None,
+                };
+                if implicit_builtin.is_none()
+                    && super::expression::va_builtin(callee).is_none()
                     && super::atomic::atomic_builtin(callee).is_none()
                     && super::expression::constant_p_operand(callee, arguments).is_none()
                 {
@@ -657,18 +664,19 @@ impl Resolver {
         if self.collecting_labels {
             return Ok(());
         }
-        let entry = self
-            .ordinary
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(name))
-            .cloned()
-            .ok_or_else(|| ResolveError::Unresolved {
-                namespace: "ordinary",
-                name: name.into(),
-            })?;
+        let entry =
+            self.lookup_ordinary(name)
+                .cloned()
+                .ok_or_else(|| ResolveError::Unresolved {
+                    namespace: "ordinary",
+                    name: name.into(),
+                })?;
         self.push_reference(name, entry, span);
         Ok(())
+    }
+
+    fn lookup_ordinary(&self, name: &str) -> Option<&Entry> {
+        self.ordinary.iter().rev().find_map(|scope| scope.get(name))
     }
 
     fn reference_typedef<T>(&mut self, name: &str, span: &Span<T>) -> Result<(), ResolveError> {

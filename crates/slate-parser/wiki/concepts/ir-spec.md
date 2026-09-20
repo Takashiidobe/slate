@@ -97,14 +97,26 @@ Variables and parameters have binding IDs; root places use those IDs and concret
 Statements support declarations, writes, and numeric operations.
 Pointer nulls, address-of values, byte-array constants, array decay,
 function decay, and calls are represented explicitly. A call names its callee
-either as a binding ID (`call<T>(%3, ...)`) when the designator resolves to a
-known function, or as a pointer value (`call<T>(read<ptr<fn(..)>>(%7), ...)`)
-for an indirect call, so a direct call stays distinguishable after lowering.
+as a binding ID (`call<T>(%3, ...)`) when the designator resolves to a known
+function, as a builtin spelling (`call<T>(__builtin_memcpy, ...)`) for a
+compiler-provided function-like builtin, or as a pointer value
+(`call<T>(read<ptr<fn(..)>>(%7), ...)`) for an indirect call. Builtin callees
+carry `c_builtin` metadata and have no fabricated source declaration or binding.
 Each call value carries the signature sema resolved at its own call site,
 printed as `signature=fn(...) -> T`, preserving the prototype, variadic,
 and unprototyped distinction even when a later redeclaration of the same
 function changes it
 (`tests/fixtures/sema/ir_call_signatures.c`); `--compact-ir` hides it.
+
+Clang's target-independent `Builtins.td` is expanded through `clang-tblgen`
+into the checked-in Rust registry in `src/sema/clang_builtins.rs`. The registry
+provides builtin identity, prototypes, attributes, language restrictions, and
+library aliases; semantic handlers remain handwritten. Ordinary declarations
+take precedence over implicit builtin recognition. The generic checked
+arithmetic builtins lower to `overflow_add/sub/mul<bool>(left, right, place)`,
+which computes in the mathematical domain, stores the converted result through
+the destination place, and returns whether conversion overflowed. Fixture:
+`tests/fixtures/sema/ir_implicit_builtins.c`.
 
 `__builtin_va_list` lowers to the opaque `Type::VaList` (printed `va_list`),
 with per-target storage: 24/8 on x86_64 Linux, 32/8 on aarch64 Linux, pointer

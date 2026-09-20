@@ -2,6 +2,39 @@ pub(super) fn is_foldable_builtin(name: &str) -> bool {
     FOLDABLE_BUILTINS.binary_search(&name).is_ok()
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum ClangBuiltinKind {
+    Builtin,
+    Atomic,
+    Language,
+    Library,
+}
+
+#[derive(Clone, Copy, Debug)]
+#[expect(
+    dead_code,
+    reason = "generated semantic metadata is consumed incrementally"
+)]
+pub(super) struct ClangBuiltin {
+    pub name: &'static str,
+    pub record: &'static str,
+    pub prototype: &'static str,
+    pub kind: ClangBuiltinKind,
+    pub attributes: &'static [&'static str],
+    pub languages: Option<&'static str>,
+    pub header: Option<&'static str>,
+    pub features: Option<&'static str>,
+}
+
+pub(super) fn clang_builtin(name: &str) -> Option<&'static ClangBuiltin> {
+    CLANG_BUILTINS
+        .binary_search_by_key(&name, |builtin| builtin.name)
+        .ok()
+        .map(|index| &CLANG_BUILTINS[index])
+}
+
+include!("clang_builtins.rs");
+
 const FOLDABLE_BUILTINS: &[&str] = &[
     "__addressof",
     "__arithmetic_fence",

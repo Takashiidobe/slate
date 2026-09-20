@@ -29,6 +29,149 @@ pub(super) struct Lowerer {
 }
 
 impl Lowerer {
+    fn call(
+        &mut self,
+        e: &Expr,
+        callee: Callee,
+        signature: QualType,
+        arguments: &[Expr],
+    ) -> Result<Operand, ResolveError> {
+        let (returned, params, _, _) = self
+            .types
+            .ctypes
+            .function_parts(signature)
+            .ok_or(ResolveError::Unsupported("non-function callee"))?;
+        let params = params.to_vec();
+        let ty = self.types.ir_type(signature);
+        let Type::Function {
+            parameters,
+            variadic,
+            prototyped,
+            ..
+        } = &ty
+        else {
+            return Err(ResolveError::Unsupported("non-function callee"));
+        };
+        if *prototyped
+            && (arguments.len() < parameters.len()
+                || (!*variadic && arguments.len() != parameters.len()))
+        {
+            return Err(ResolveError::Unsupported("call argument count"));
+        }
+        let mut lowered = Vec::new();
+        for (index, argument) in arguments.iter().enumerate() {
+            let value = self.expr(argument)?;
+            let value = if index < params.len() && *prototyped {
+                value
+            } else {
+                self.enum_operand(value)
+            };
+            let to = if let Some(to) = params.get(index).filter(|_| *prototyped) {
+                self.types.ctypes.adjust_parameter(*to)
+            } else {
+                self.types
+                    .ctypes
+                    .default_promotion(value.c, &self.context.target)
+            };
+            let reason = if index < params.len() && *prototyped {
+                ConversionReason::Arg
+            } else {
+                ConversionReason::Vararg
+            };
+            lowered.push(self.convert_expr(argument, value, to, reason)?.value);
+        }
+        let abi = self.abi_signature(&ty, Some(&lowered))?;
+        Ok(self.operand(
+            e,
+            returned,
+            ValueKind::Call {
+                callee,
+                signature: ty,
+                abi,
+                arguments: lowered,
+            },
+        ))
+    }
+
+    fn function_like_builtin(
+        &mut self,
+        e: &Expr,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Result<Option<Operand>, ResolveError> {
+        let (name, record) = if let ExprKind::Identifier(name) = &callee.value
+            && !self
+                .names
+                .references
+                .iter()
+                .any(|reference| reference.id == callee.id)
+            && let Some(builtin) = super::builtins::clang_builtin(name)
+        {
+            (builtin.name.to_owned(), builtin.record.to_owned())
+        } else {
+            return Ok(None);
+        };
+        let record = record.as_str();
+        if matches!(record, "AddOverflow" | "SubOverflow" | "MulOverflow") {
+            let [left, right, result] = arguments else {
+                return Err(ResolveError::Unsupported("overflow builtin argument count"));
+            };
+            let left = self.expr(left)?;
+            let right = self.expr(right)?;
+            let pointer = self.expr(result)?;
+            let result = self.deref(pointer)?;
+            if !self.types.ctypes.is_integer(left.c)
+                || !self.types.ctypes.is_integer(right.c)
+                || !self.types.ctypes.is_integer(result.c)
+            {
+                return Err(ResolveError::Invalid("overflow builtin operand type"));
+            }
+            let op = match record {
+                "AddOverflow" => ArithOp::Add,
+                "SubOverflow" => ArithOp::Sub,
+                "MulOverflow" => ArithOp::Mul,
+                _ => return Err(ResolveError::Unsupported("overflow builtin")),
+            };
+            let c = self.types.ctypes.qual(CTypeKind::Bool);
+            let value = self.operand(
+                e,
+                c,
+                ValueKind::Overflow {
+                    op,
+                    left: Box::new(left.value),
+                    right: Box::new(right.value),
+                    result: result.place,
+                },
+            );
+            self.module
+                .annotate(&value.value.node, [("c_builtin".into(), name)]);
+            return Ok(Some(value));
+        }
+        let void = self.types.ctypes.qual(CTypeKind::Void);
+        let int = self.types.ctypes.int();
+        let size = self.types.ctypes.size_type(&self.context.target);
+        let const_void = void.with(super::ctype::Qualifiers::CONST);
+        let void_pointer = self.types.ctypes.pointer(void);
+        let const_void_pointer = self.types.ctypes.pointer(const_void);
+        let (ret, params) = match record {
+            "Abort" => (void, Vec::new()),
+            "BuiltinMemCmp" | "MemCmp" => (int, vec![const_void_pointer, const_void_pointer, size]),
+            "MemCpy" | "MemMove" => (void_pointer, vec![void_pointer, const_void_pointer, size]),
+            "MemSet" => (void_pointer, vec![void_pointer, int, size]),
+            _ => return Ok(None),
+        };
+        let signature = self.types.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic: false,
+            prototyped: true,
+        });
+        let value = self.call(e, Callee::Builtin(name.clone()), signature, arguments)?;
+        self.module
+            .annotate(&value.value.node, [("c_builtin".into(), name)]);
+        Ok(Some(value))
+    }
+
     pub(super) fn builtin_operand(
         &mut self,
         e: &Expr,
@@ -293,7 +436,7 @@ impl Lowerer {
             .references
             .get(&e.id)
             .copied()
-            .ok_or(ResolveError::Unsupported("missing expression binding"))
+            .ok_or_else(|| ResolveError::MissingExpressionBinding(e.value.to_string()))
     }
 
     pub fn kind(&self, ty: &Type) -> Option<&TypeDefinitionKind> {
@@ -953,6 +1096,11 @@ impl Lowerer {
     }
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
+        if let ExprKind::Call { callee, arguments } = &e.value
+            && let Some(value) = self.function_like_builtin(e, callee, arguments)?
+        {
+            return Ok(value);
+        }
         match &e.value {
             ExprKind::Paren(inner) => self.expr(inner),
             ExprKind::Identifier(_)
@@ -1387,62 +1535,7 @@ impl Lowerer {
             }
             ExprKind::Call { callee, arguments } => {
                 let (callee, signature) = self.callee(callee)?;
-                let (returned, params, _, _) = self
-                    .types
-                    .ctypes
-                    .function_parts(signature)
-                    .ok_or(ResolveError::Unsupported("non-function callee"))?;
-                let params = params.to_vec();
-                let ty = self.types.ir_type(signature);
-                let Type::Function {
-                    return_type: _,
-                    parameters,
-                    variadic,
-                    prototyped,
-                } = &ty
-                else {
-                    return Err(ResolveError::Unsupported("non-function callee"));
-                };
-                if *prototyped
-                    && (arguments.len() < parameters.len()
-                        || (!*variadic && arguments.len() != parameters.len()))
-                {
-                    return Err(ResolveError::Unsupported("call argument count"));
-                }
-                let mut lowered = Vec::new();
-                for (index, argument) in arguments.iter().enumerate() {
-                    let value = self.expr(argument)?;
-                    let value = if index < params.len() && *prototyped {
-                        value
-                    } else {
-                        self.enum_operand(value)
-                    };
-                    let to = if let Some(to) = params.get(index).filter(|_| *prototyped) {
-                        self.types.ctypes.adjust_parameter(*to)
-                    } else {
-                        self.types
-                            .ctypes
-                            .default_promotion(value.c, &self.context.target)
-                    };
-                    let reason = if index < params.len() && *prototyped {
-                        ConversionReason::Arg
-                    } else {
-                        ConversionReason::Vararg
-                    };
-                    let value = self.convert_expr(argument, value, to, reason)?;
-                    lowered.push(value.value);
-                }
-                let abi = self.abi_signature(&ty, Some(&lowered))?;
-                Ok(self.operand(
-                    e,
-                    returned,
-                    ValueKind::Call {
-                        callee,
-                        signature: ty,
-                        abi,
-                        arguments: lowered,
-                    },
-                ))
+                self.call(e, callee, signature, arguments)
             }
             ExprKind::IntegerLiteral(_) | ExprKind::FloatLiteral(_) | ExprKind::BoolLiteral(_) => {
                 self.types.literal(&self.context, e)

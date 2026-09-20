@@ -436,6 +436,7 @@ impl Hoister {
             } => {
                 let callee = match callee {
                     Callee::Direct(id) => Callee::Direct(id),
+                    Callee::Builtin(name) => Callee::Builtin(name),
                     Callee::Indirect(value) => Callee::Indirect(Box::new(self.value(*value, out)?)),
                 };
                 let mut lowered = Vec::new();
@@ -464,6 +465,17 @@ impl Hoister {
                     semantics,
                 }
             }
+            ValueKind::Overflow {
+                op,
+                left,
+                right,
+                result,
+            } => ValueKind::Overflow {
+                op,
+                left: Box::new(self.value(*left, out)?),
+                right: Box::new(self.value(*right, out)?),
+                result: self.place(result, out)?,
+            },
             ValueKind::Compare {
                 op,
                 left,
@@ -605,6 +617,7 @@ fn effects(value: &Value) -> bool {
         ValueKind::Store { .. }
         | ValueKind::Update { .. }
         | ValueKind::CompareExchange { .. }
+        | ValueKind::Overflow { .. }
         | ValueKind::Fence { .. }
         | ValueKind::Call { .. }
         | ValueKind::VaArg { .. }

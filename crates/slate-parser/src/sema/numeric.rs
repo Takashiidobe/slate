@@ -23,6 +23,8 @@ pub enum ResolveError {
     Invalid(&'static str),
     #[error("integer literal `{0}` has no supported target type")]
     IntegerLiteral(String),
+    #[error("missing expression binding for `{0}`")]
+    MissingExpressionBinding(String),
     #[error("invalid operands to binary expression: {left} {operator} {right}")]
     InvalidOperands {
         left: NumericType,

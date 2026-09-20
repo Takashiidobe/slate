@@ -41,6 +41,7 @@ pub struct Value {
 #[derive(Debug, Clone)]
 pub enum Callee {
     Direct(BindingId),
+    Builtin(String),
     Indirect(Box<Value>),
 }
 
@@ -153,6 +154,12 @@ pub enum ValueKind {
         left: Box<Value>,
         right: Box<Value>,
         semantics: ArithSema,
+    },
+    Overflow {
+        op: ArithOp,
+        left: Box<Value>,
+        right: Box<Value>,
+        result: Place,
     },
     Unary {
         op: UnaryArithOp,
@@ -430,6 +437,7 @@ impl Value {
                 f.write_str(">(")?;
                 match callee {
                     Callee::Direct(id) => write!(f, "%{}", id.0)?,
+                    Callee::Builtin(name) => f.write_str(name)?,
                     Callee::Indirect(value) => write!(
                         f,
                         "{}",
@@ -579,6 +587,21 @@ impl Value {
                         .with_compact(compact)
                 )
             }
+            ValueKind::Overflow {
+                op,
+                left,
+                right,
+                result,
+            } => write!(
+                f,
+                "overflow_{op}<{}>({}, {}, {result})",
+                self.ty,
+                left.display_metadata(show_spans, metadata)
+                    .with_compact(compact),
+                right
+                    .display_metadata(show_spans, metadata)
+                    .with_compact(compact)
+            ),
             ValueKind::Unary {
                 op,
                 operand,

@@ -294,12 +294,14 @@ core       = "const<" type ">(" constant ")"
            | "conditional<" type ">(" value ", " value ", " value ")"
            | "sequence<" type ">(" value ", " value ")"
            | "call<" type ", signature=" fn_type [ ", abi=" abi_signature ]
-             ">(" ( binding | value ) { ", " value } ")"
+             ">(" ( binding | builtin_name | value ) { ", " value } ")"
            | "va_arg<" type ">(" place ")"
            | "va_start(" place ")" | "va_end(" place ")"
            | "va_copy(" place ", " place ")"
            | conversion "<" type ", reason=" reason conversion_policy ">(" value ")"
            | arith_op "<" type arith_policy ">(" value ", " value ")"
+           | "overflow_" ( "add" | "sub" | "mul" ) "<bool>("
+             value ", " value ", " place ")"
            | unary_op "<" type arith_policy ">(" value ")"
            | compare_op "<" type [ ", result=" type ] [ ", reason=" reason ]
              [ ", exceptions=" exceptions ] ">(" value ", " value ")"
@@ -322,9 +324,12 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 - `aggregate` members are resolved targets in order; nested subobjects are
   nested `aggregate`s. `zero_fill=true` means some member or element was
   omitted and is zero-initialized. A union has exactly one member.
-- `call` names a direct callee by `binding` and an indirect one by a pointer
-  value. `signature` is the type visible at this call site, which can differ
-  from the function's final declaration.
+- `call` names a direct callee by `binding`, an implicit compiler builtin by
+  `builtin_name`, and an indirect callee by a pointer value. `signature` is the
+  type visible at this call site, which can differ from the function's final
+  declaration. A builtin name starts with `__builtin_` and has no binding.
+- `overflow_add/sub/mul` stores the converted arithmetic result through its
+  place operand and returns whether that conversion overflowed.
 - Side-effect hoisting turns `store` and non-atomic `update` into `write`
   statements, so the module dump contains only atomic `update`s (one
   read-modify-write). Atomic `update` and `compare_exchange` are each kept
